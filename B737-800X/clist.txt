@@ -1,0 +1,551 @@
+#
+#       This checklist works with Xcheklist 1.21+ plugin by Sparker and uglyDwarf
+#       Link to plugin page: http://forums.x-plane.org/index.php?/files/file/20785-xchecklist-linwinmac3264/
+#       Copy the checklist to the root folder of Zibo's B737X and rename it to "clist.txt"
+#       For example: c:\X-Plane 11\Aircraft\Extra Aircraft\B737-800X\clist.txt
+#
+
+sw_checklist:INTRODUCTION:INTRODUCTION
+
+sw_itemvoid:BOEING 737-800X-Zibo XP11 NORMAL CHECKLIST v1.1
+sw_itemvoid:By Pedro Bach (aka Remigio) & Denis Antontsev (aka DrGluck)
+sw_itemvoid:Special thanks to 737 captain Denis Okan (aka Denokan)
+sw_itemvoid:Tested with Zibo's modification v3.05v2
+
+
+
+
+sw_checklist:FLIGHT PLANNING:FLIGHT PLANNING
+
+sw_item:FLIGHTPLAN ROUTE FILE|DOWNLOADED
+sw_item:FUEL, TIME and LOAD|CALCULATE
+sw_item:THRUST LIMIT|CALCULATE
+sw_item:DEPARTURE WEATER|CHECK & NOTE
+sw_item:ARRIVAL WEATHER|CHECK & NOTE
+sw_item:WEIGHT, BALANCE and FUEL|CHECKED
+
+sw_continue:PRELIMINARY PREFLIGHT PROCEDURE
+
+
+
+
+sw_checklist:PRELIMINARY PREFLIGHT PROCEDURE:PRELIMINARY PREFLIGHT PROCEDURE
+
+sw_itemvoid:COLD & DARK
+sw_item:PARKING BRAKE|SET:sim/cockpit2/controls/parking_brake_ratio:1.0
+sw_item:LANDING GEAR lever|DOWN:laminar/B738/switches/landing_gear:2
+sw_item:SPEED BRAKE lever|DOWN detent:sim/cockpit2/controls/speedbrake_ratio:0.0
+sw_item:FLAP lever|UP:sim/cockpit2/controls/flap_ratio:0.0
+sw_item:MANUAL GEAR EXTENSION access door|CLOSED:laminar/B738/emergency/landgear_cover_pos:0.0
+
+sw_itemvoid:
+sw_itemvoid:ELECTRICAL POWER UP
+sw_item:BATTERY|ON / GUARD CLOSED:(sim/cockpit2/electrical/battery_on[0]:1)&&(laminar/B738/button_switch/cover_position[2]:0)&&(sim/operation/failures/rel_batter0:0)
+sw_item:STANDBY POWER switch|AUTO / GUARD CLOSED:(sim/cockpit2/electrical/battery_on[1]:1)&&(laminar/B738/button_switch/cover_position[3]:0)&&(sim/operation/failures/rel_batter1:0)
+sw_item:GENERATORS DRIVE DISCONNECT switches|GUARD CLOSED:(laminar/B738/one_way_switch/drive_disconnect1_pos:0)&&(laminar/B738/one_way_switch/drive_disconnect2_pos:0)&&(laminar/B738/button_switch/cover_position[4]:0)&&(laminar/B738/button_switch/cover_position[5]:0)
+sw_item:BUS TRANSFER switch|AUTO / GUARD CLOSED:(sim/cockpit2/electrical/cross_tie:1)&&(laminar/B738/button_switch/cover_position[6]:0)
+sw_item:GROUND POWER|ON:(sim/cockpit/electrical/gpu_amps:>0.0)&&(sim/operation/failures/rel_ex_power_on:0)
+
+sw_itemvoid:
+sw_itemvoid:IRS ALIGNMENT
+sw_item:IRS mode selectors|OFF, then NAV:(laminar/B738/toggle_switch/irs_left:2.0)&&(laminar/B738/toggle_switch/irs_right:2.0)&&(laminar/B738/annunciator/irs_align_left:1.0)&&(laminar/B738/annunciator/irs_align_right:1.0)
+
+sw_itemvoid:
+sw_item:ELT switch|OFF / GUARD CLOSED:(laminar/B738/toggle_switch/elt:0.0)&&(laminar/B738/annunciator/elt:0.0)&&(laminar/B738/button_switch/cover_position[8]:0)
+sw_item:SERVICE INTERPHONE switch|OFF:laminar/B738/toggle_switch/service_interphone:0
+sw_item:EEC switches|ON / GUARD CLOSED:(sim/cockpit2/engine/actuators/fadec_on[0]:1.0)&&(sim/cockpit2/engine/actuators/fadec_on[1]:1.0)&&(laminar/B738/button_switch/cover_position[0]:0.0)&&(laminar/B738/button_switch/cover_position[1]:0.0)
+
+#sw_item:CREW OXYGEN pressure|CHECK
+sw_item:PASSENGER OXYGEN switch|NORMAL / GUARD CLOSED:(laminar/B738/one_way_switch/pax_oxy_pos:0.0)&&(laminar/B738/button_switch/cover_position[7]:0)&&(sim/operation/failures/rel_pass_o2_on:0)
+sw_item:LANDING GEAR indicator lights|ILLUMINATED:(laminar/B738/annunciator/left_gear_safe:>0.1)&&(laminar/B738/annunciator/nose_gear_safe:>0.1)&&(laminar/B738/annunciator/right_gear_safe:>0.1)
+sw_item:MACH AIRSPEED WARNING TEST switch 1|PUSH:laminar/B738/push_button/mach_warn1_pos:1
+sw_item:MACH AIRSPEED WARNING TEST switch 2|PUSH:laminar/B738/push_button/mach_warn2_pos:1
+sw_item:STALL WARNING TEST switch 1|PUSH:(laminar/B738/push_button/stall_test1:1)&&(sim/cockpit2/annunciators/stall_warning:1)&&(sim/operation/failures/rel_stall_warn:0)
+sw_item:STALL WARNING TEST switch 2|PUSH:(laminar/B738/push_button/stall_test2:1)&&(sim/cockpit2/annunciators/stall_warning:1)&&(sim/operation/failures/rel_stall_warn:0)
+
+sw_continue:CDU PREFLIGHT PROCEDURE 1/2
+
+
+
+
+sw_checklist:CDU PREFLIGHT PROCEDURE 1/2:CDU PREFLIGHT PROCEDURE 1/2
+
+sw_item:Verify your measurement UNITS LBS / KGS|CHECK
+sw_item:XTRAS->OTHERS set CHOCK|ON:laminar/B738/fms/chock_status:1.0
+
+sw_itemvoid:
+sw_itemvoid:IDENT PAGE
+sw_item:Verify that the MODEL and ENG RATING is correct|CHECK
+sw_item:Verify that the Navigation data base ACTIVE date range is current|CHECK
+
+sw_itemvoid:
+sw_itemvoid:POS INIT PAGE
+sw_item:Verify that the TIME is correct|CHECK
+sw_item:Enter the present position on the SET IRS POS line|SET
+
+sw_itemvoid:
+sw_itemvoid:ROUTE PAGE
+sw_item:Enter the ORIGIN and DESTINATION|SET
+sw_item:Enter the FLIGHT NUMBER|SET
+#TODO: до сих пор не понимаю как это работает у Zibo
+sw_item:Enter, activate and execute the route|SET and EXECUTE
+
+sw_itemvoid:
+sw_itemvoid:DEPARTURES PAGE
+sw_item:Select and execute the runway and departure routing|SELECT and EXECUTE
+
+sw_itemvoid:
+sw_itemvoid:LEGS PAGE
+sw_item:Verify route and clear dicontinuity as needed|CHECK
+
+sw_continue:CDU PREFLIGHT PROCEDURE 2/2
+
+
+
+
+sw_checklist:CDU PREFLIGHT PROCEDURE 2/2:CDU PREFLIGHT PROCEDURE 2/2
+
+sw_itemvoid:PERF INIT PAGE
+sw_item:Enter the ZFW (press SLK1)|SET
+sw_item:Enter fuel RESERVES|SET
+sw_item:Enter COST INDEX|SET
+sw_item:Enter TRIP/CRZ ALT|SET
+sw_item:Enter CRZ WIND|SET
+#TODO: not sure:
+sw_item:Enter ISA DEV or T/C OAT
+sw_item:Enter TRANS ALT|CHECK
+sw_item:Verify that the fuel is sufficient for flight|CHECK
+
+sw_itemvoid:
+sw_itemvoid:LEGS PAGE
+sw_item:Verify speed and altitude restrictions and modify as needed|CHECK
+
+sw_itemvoid:
+sw_itemvoid:N1 LIMIT PAGE
+sw_item:Select an assumed temperature, or a fixed derate takeoff, or both as needed|SELECT
+sw_item:Select a full or a derated climb thrust as needed|SELECT
+
+sw_itemvoid:
+sw_itemvoid:TAKEOFF REF PAGE
+sw_itemvoid:Make data entries on page 2/2 before page 1/2
+sw_item:Enter T/OFF FLAPS position|SET
+sw_item:Enter the CG|ENTER
+sw_item:Verify that a trim value is shown|CHECK
+sw_item:Select or enter the takeoff V speeds|SELECT
+
+sw_continue:PREFLIGHT PROCEDURE 1/5
+
+
+
+
+sw_checklist:PREFLIGHT PROCEDURE 1/5:PREFLIGHT PROCEDURE 1/5
+
+sw_item:IRS alignment is complete|CHECK:(laminar/B738/irs/irs_mode:>1.0)&&(laminar/B738/irs/irs2_mode:>1.0)
+
+sw_itemvoid:
+sw_itemvoid:FLIGHT CONTROL PANEL
+sw_item:YAW DAMPER|ON:(sim/cockpit2/switches/yaw_damper_on:1.0)
+sw_item:ALTERNATE FLAPS position switch|OFF:laminar/B738/toggle_switch/alt_flaps_ctrl:0.0
+
+sw_itemvoid:
+sw_itemvoid:NAVIGATION PANEL
+sw_item:VHF/NAV Transfer Sw|NORMAL:laminar/B738/toggle_switch/vhf_nav_source:0.0
+sw_item:IRS Transfer Sw|NORMAL:laminar/B738/toggle_switch/irs_source:0.0
+sw_item:FMC Transfer  Sw|NORMAL:laminar/B738/toggle_switch/fmc_source:0.0
+sw_item:DISPLAY SOURCE Selector Sw|AUTO:laminar/B738/toggle_switch/dspl_source:0.0
+sw_item:DISPLAY CONTROL PANEL select Sw|NORMAL:laminar/B738/toggle_switch/dspl_ctrl_pnl:0.0
+
+sw_itemvoid:
+sw_itemvoid:FUEL PANEL
+sw_item:CROSSFEED Selector|CLOSED:laminar/B738/knobs/cross_feed:0.0
+sw_item:FUEL PUMPS|OFF:(laminar/B738/fuel/fuel_tank_pos_lft1:0.0)&&(laminar/B738/fuel/fuel_tank_pos_lft2:0.0)&&(laminar/B738/fuel/fuel_tank_pos_rgt1:0.0)&&(laminar/B738/fuel/fuel_tank_pos_rgt2:0.0)&&(laminar/B738/fuel/fuel_tank_pos_ctr1:0.0)&&(laminar/B738/fuel/fuel_tank_pos_ctr2:0.0)
+
+sw_continue:PREFLIGHT PROCEDURE 2/5
+
+
+
+
+sw_checklist:PREFLIGHT PROCEDURE 2/5:PREFLIGHT PROCEDURE 2/5
+
+sw_itemvoid:OVHT/FIRE PANEL
+sw_item:TEST switch - Hold to|FAULT / INOP:laminar/B738/toggle_switch/fire_test:-1.0
+sw_item:TEST switch - Hold to|OVHT / FIRE:laminar/B738/toggle_switch/fire_test:1.0
+sw_item:EXTINGUISHER TEST switch|POSITION 1 and release:laminar/B738/toggle_switch/extinguisher_circuit_test:-1.0
+sw_item:EXTINGUISHER TEST switch|POSITION 2 and release:laminar/B738/toggle_switch/extinguisher_circuit_test:1.0
+
+sw_itemvoid:
+sw_itemvoid:OVHD PANEL
+sw_item:CAB/UTIL power switch|ON:laminar/B738/toggle_switch/cab_util_pos:1.0
+sw_item:IFE/PASS seat power switch|ON:laminar/B738/toggle_switch/ife_pass_seat_pos:1.0
+sw_item:APU START (hold switch for 3 seconds)|ON:(sim/cockpit/engine/APU_running:1)&&(laminar/B738/electrical/apu_bus_enable:1)
+sw_item:APU GENERATORS|ON:(sim/cockpit2/electrical/APU_generator_on[0]:1)&&(sim/cockpit2/electrical/APU_generator_on[1]:1)&&(laminar/B738/annunciator/source_off1:0.0)&&(laminar/B738/annunciator/source_off2:0.0)
+sw_item:GROUND POWER|DISCONNECT:sim/cockpit/electrical/gpu_amps:0
+sw_item:EQUIPMENT COOLING switches|NORMAL:(laminar/B738/toggle_switch/eq_cool_supply:0.0)&&(laminar/B738/toggle_switch/eq_cool_exhaust:0.0)
+sw_item:EMERGENCY EXIT LIGHTS switch|ARMED / GUARD CLOSED:(laminar/B738/toggle_switch/emer_exit_lights:1.0)&&(laminar/B738/button_switch/cover_position[9]:0)
+sw_item:SEATBELTS SIGN|AUTO or ON:laminar/B738/toggle_switch/seatbelt_sign_pos:>0.0
+sw_item:Windshield WIPER selectors|PARK:sim/cockpit2/switches/wiper_speed:-0.0000
+sw_item:WINDOW HEAT PWR TEST|DONE:laminar/B738/toggle_switch/window_ovht_test:1.0
+sw_item:WINDOW HEAT OVHT|DONE:laminar/B738/toggle_switch/window_ovht_test:-1.0
+sw_item:WINDOW HEAT switches|ON:(laminar/B738/ice/window_heat_l_side_pos:1.0)&&(laminar/B738/ice/window_heat_l_fwd_pos:1.0)&&(laminar/B738/ice/window_heat_r_fwd_pos:1.0)&&(laminar/B738/ice/window_heat_r_side_pos:1.0)
+sw_item:PROBE HEAT switches|OFF:(laminar/B738/toggle_switch/capt_probes_pos:0.0)&&(laminar/B738/toggle_switch/fo_probes_pos:0.0)
+sw_item:WING ANTI ICE switch|OFF:laminar/B738/ice/wing_heat_pos:0.0
+sw_item:ENGINE ANTI ICE switches|OFF:(laminar/B738/ice/eng1_heat_pos:0.0)&&(laminar/B738/ice/eng2_heat_pos:0.0)
+
+sw_continue:PREFLIGHT PROCEDURE 3/5
+
+
+
+
+sw_checklist:PREFLIGHT PROCEDURE 3/5:PREFLIGHT PROCEDURE 3/5
+
+sw_itemvoid:HYDRAULIC PANEL
+sw_item:ENGINE HYDRAULIC PUMPS|ON:(laminar/B738/toggle_switch/hydro_pumps1_pos:1.0)&&(sim/operation/failures/rel_hydpmp:0)&&(laminar/B738/toggle_switch/hydro_pumps2_pos:1.0)&&(sim/operation/failures/rel_hydpmp2:0)
+sw_item:ELECTRIC HYDRAULIC PUMPS|OFF:(laminar/B738/toggle_switch/electric_hydro_pumps1_pos:0.0)&&(laminar/B738/toggle_switch/electric_hydro_pumps2_pos:0.0)
+
+sw_itemvoid:
+sw_itemvoid:AIR CONDITIONING PANEL
+sw_item:AIR TEMPERATURE source selector|AS NEEDED
+sw_item:TRIM AIR switch|ON:laminar/B738/air/trim_air_pos:1
+sw_item:TEMPERATURE selectors|AS NEEDED
+
+sw_item:RECIRCULATION FAN switches|AUTO:(laminar/B738/air/l_recirc_fan_pos:1.0)&&(laminar/B738/air/r_recirc_fan_pos:1.0)
+sw_item:AIR CONDITIONING PACK switches|AUTO:(laminar/B738/air/l_pack_pos>0.0)&&(laminar/B738/air/r_pack_pos:>0.0)
+sw_item:ISOLATION VALVE switch|OPEN:laminar/B738/air/isolation_valve_pos:2.0000
+sw_item:ENGINE BLEED switches|ON:(laminar/B738/toggle_switch/bleed_air_1_pos:1.0)&&(laminar/B738/toggle_switch/bleed_air_2_pos:1.0)&&(sim/operation/failures/rel_bleed_air_lft:0)&&(sim/operation/failures/rel_bleed_air_rgt:0)
+sw_item:APU BLEED|ON:(laminar/B738/toggle_switch/bleed_air_apu_pos:1.0)&&(sim/operation/failures/rel_APU_press:0)
+
+sw_itemvoid:
+sw_itemvoid:CABIN PRESSURIZATION PANEL
+sw_item:FLIGHT ALTITUDE indicator|Cruise altitude
+sw_item:LANDING ALTITUDE indicator|Destination field elevation
+sw_item:PRESSURIZATION SELECTOR|AUTO:laminar/B738/toggle_switch/air_valve_ctrl:0.0
+
+sw_itemvoid:
+sw_itemvoid:LIGHTING PANEL
+sw_item:LANDING LIGHT switches|RETRACT and OFF:(sim/cockpit2/switches/landing_lights_switch[0]:0)&&(sim/cockpit2/switches/landing_lights_switch[1]:0)&&(sim/cockpit2/switches/landing_lights_switch[2]:0)&&(sim/cockpit2/switches/landing_lights_switch[3]:0)
+sw_item:RUNWAY TURNOFF light switches|OFF:(sim/cockpit2/switches/generic_lights_switch[2]:0.0)&&(sim/cockpit2/switches/generic_lights_switch[3]:0.0)
+sw_item:TAXI LIGHTS switch|OFF:laminar/B738/toggle_switch/taxi_light_brightness_pos:0.0
+sw_itemvoid:Alternate the ignition select switch position on subsequent starts:
+sw_item:IGNITION select switch|IGN L or R:(laminar/B738/toggle_switch/eng_start_source:-1)||(laminar/B738/toggle_switch/eng_start_source:1)
+sw_item:ENGINE START switches|AUTO:(laminar/B738/engine/starter1_pos:1)&&(laminar/B738/engine/starter2_pos:1)
+sw_item:ANTI COLLISION LIGHT switch|OFF:sim/cockpit/electrical/beacon_lights_on:0
+sw_itemvoid:
+sw_itemvoid:LOGO light switch,
+sw_itemvoid:POSITION light switch,
+sw_itemvoid:WING light switch,
+sw_item:WHEEL WELL light switch|AS NEEDED
+
+sw_continue:PREFLIGHT PROCEDURE 4/5
+
+
+
+
+sw_checklist:PREFLIGHT PROCEDURE 4/5:PREFLIGHT PROCEDURE 4/5
+
+#Merged CAPT and FO procedures:
+sw_itemvoid:MODE CONTROL PANEL
+sw_item:COURSE(S)|SET
+sw_item:FLIGHT DIRECTORS|ON:(laminar/B738/autopilot/flight_director_pos:1.0)&&(laminar/B738/autopilot/flight_director_fo_pos:1.0)
+Move the switch for the pilot flying to ON first
+sw_item:BANK ANGLE selector|AS NEEDED
+sw_item:AUTOPILOT DISENGAGE bar|UP:laminar/B738/autopilot/disconnect_pos:0.0
+
+sw_itemvoid:
+sw_itemvoid:EFIS PANEL
+sw_item:MINIMUMS reference selector|RADIO or BARO
+sw_item:MINIMUMS selector|DECIS HEIGHT or ALT REF
+sw_item:FLIGHT PATH VECTOR switch|AS NEEDED
+sw_item:METERS switch|AS NEEDED
+sw_item:BAROMETRIC reference selector|IN or HPA
+sw_item:BAROMETRIC selector|QNH
+sw_item:VOR/ADF switches|AS NEEDED
+sw_item:MODE selector|MAP:sim/cockpit2/EFIS/map_mode:2
+sw_item:CENTER switch|AS NEEDED
+sw_item:RANGE selector|AS NEEDED
+sw_item:TRAFFIC switch|AS NEEDED
+sw_item:WEATHER RADAR|OFF:sim/cockpit/switches/EFIS_shows_weather:0
+
+sw_continue:PREFLIGHT PROCEDURE 5/5
+
+
+
+
+sw_checklist:PREFLIGHT PROCEDURE 5/5:PREFLIGHT PROCEDURE 5/5
+
+sw_item:Master LIGHTS|TEST:laminar/B738/annunciator/test:1.0
+sw_item:AP disconnect lights cap TEST 1:laminar/B738/toggle_switch/ap_discon_test1:1.0
+sw_item:AP disconnect lights cap TEST 2:laminar/B738/toggle_switch/ap_discon_test1:-1.0
+
+sw_itemvoid:
+sw_itemvoid:GROUND PROXIMITY PANEL
+sw_item:FLAP INHIBIT switch|Guard closed:(laminar/B738/toggle_switch/gpws_flap_pos:0.0)&&(laminar/B738/toggle_switch/gpws_flap_cover_pos:0.0)
+sw_item:GEAR INHIBIT switch|Guard closed:(laminar/B738/toggle_switch/gpws_gear_pos:0.0)&&(laminar/B738/toggle_switch/gpws_gear_cover_pos:0.0)
+sw_item:TERRAIN INHIBIT switch|Guard closed:(laminar/B738/toggle_switch/gpws_terr_pos:0.0)&&(laminar/B738/toggle_switch/gpws_terr_cover_pos:0.0)
+
+sw_itemvoid:
+sw_itemvoid:LANDING GEAR PANEL
+sw_item:LANDING GEAR lever|DOWN:laminar/B738/switches/landing_gear:2
+sw_item:AUTOBRAKE Selector|RTO:(laminar/B738/autobrake/autobrake_RTO_arm:1.0)&&(sim/operation/failures/rel_lbrakes:0)&&(sim/operation/failures/rel_rbrakes:0)
+
+sw_itemvoid:
+sw_itemvoid:ENGINE DISPLAY CONTROL PANEL
+sw_item:N1 SET selector|AUTO:laminar/B738/toggle_switch/n1_set_source:0.0
+sw_item:SPEED REFERENCE selector|AUTO:laminar/B738/toggle_switch/spd_ref:0.0
+sw_item:FUEL FLOW switch|RESET, then RATE:laminar/B738/toggle_switch/fuel_flow_pos:-1.0
+
+sw_itemvoid:
+sw_itemvoid:CARGO FIRE PANEL
+sw_item:TEST switch|PUSH:(laminar/B738/push_botton/cargo_fire_test:>0.5)&&(laminar/B738/annunciator/cargo_fire:>0.1)
+
+sw_itemvoid:
+sw_itemvoid:RADIO TUNING PANEL
+sw_item:VHF communications radios|SET
+sw_item:VHF NAVIGATION radios|SET FOR DEPARTURE
+#sw_item:Audio control panel|SET
+sw_item:ATC/TCAS|STANDBY:(laminar/B738/knob/transponder_pos:1)&&(sim/operation/failures/rel_xpndr:0)
+
+sw_continue:BEFORE START PROCEDURE
+
+
+
+sw_checklist:BEFORE START PROCEDURE:BEFORE START PROCEDURE
+
+sw_item:CDU display|SET
+sw_item:N1 bugs|CHECK
+sw_item:IAS bugs|CHECK
+
+sw_itemvoid:
+sw_itemvoid:MCP PANEL
+sw_item:AUTOTHROTTLE|ARM:laminar/B738/autopilot/autothrottle_arm_pos:1.0
+sw_item:IAS/MACH Selector|SET V2
+#TODO: sw_item:Arm LNAV|AS NEEDED  эту штуку можно заармировать в этот момент?
+#TODO: sw_item:Arm VNAV|SET  эту штуку можно заармировать в этот момент?
+sw_item:Initial HEADING|SET
+sw_item:Initial ALTITUDE|SET
+
+sw_itemvoid:
+sw_item:TAXI and TAKEOFF BRIEFINGS|COMPLETE
+sw_item:START CLEARANCE|OBTAIN
+
+sw_itemvoid:
+sw_item:FUEL PUMPS LEFT and RIGHT|ON:(laminar/B738/fuel/fuel_tank_pos_lft1:1.0)&&(laminar/B738/fuel/fuel_tank_pos_lft2:1.0)&&(sim/operation/failures/rel_ele_fuepmp0:0)&&(laminar/B738/fuel/fuel_tank_pos_rgt1:1.0)&&(laminar/B738/fuel/fuel_tank_pos_rgt2:1.0)&&(sim/operation/failures/rel_ele_fuepmp1:0)
+sw_itemvoid:If fuel in center tanks exceeds 453kgs/1000lbs
+sw_item:FUEL PUMPS CENTER|ON
+sw_item:System A ELECTRIC HYDRAULIC PUMP|AS NEEDED
+sw_item:System B ELECTRIC HYDRAULIC PUMP|ON:laminar/B738/toggle_switch/electric_hydro_pumps2_pos:1.0)&&(sim/operation/failures/rel_hydpmp_ele:0)
+
+sw_itemvoid:
+sw_item:ANTI COLLISION LIGHTS|ON:(sim/cockpit/electrical/beacon_lights_on:1)&&(sim/operation/failures/rel_lites_beac:0)
+sw_item:STABILIZER TRIM|SET:laminar/B738/FMS/trim_set:1
+sw_item:AILERON and RUDDER TRIMS|CHECK 0 units:(sim/cockpit2/controls/aileron_trim:0.0)&&(sim/cockpit2/controls/rudder_trim:0.0)
+
+sw_continue:PUSHBACK and ENGINE START PROCEDURE
+
+
+
+
+sw_checklist:PUSHBACK and ENGINE START PROCEDURE:PUSHBACK and ENGINE START PROCEDURE
+
+sw_itemvoid:The Engine Start procedure may be done during pushback or towing.
+sw_itemvoid:Establish communications with ground handling personnel.
+sw_itemvoid:During pushback set or release the parking brake as directed.
+
+sw_itemvoid:
+sw_item:CDU XTRAS->OTHERS set CHOCK|OFF:laminar/B738/fms/chock_status:0.0
+sw_item:Transponder|AS NEEDED
+sw_item:AIR CONDITIONING PACKS|OFF:(laminar/B738/air/l_pack_pos:0.0)&&(laminar/B738/air/r_pack_pos:0.0)
+
+sw_itemvoid:
+sw_itemvoid:Start engine 1:
+sw_item:ENGINE 1 START SWITCH|GROUND:(laminar/B738/engine/starter1_pos:0)&&(sim/operation/failures/rel_startr0:0)
+sw_itemvoid:N2 REACHING 25%
+sw_item:ENGINE 1 START LEVER|IDLE:laminar/B738/engine/mixture_ratio1:1.0
+sw_item:ENGINE 1|STABLE IDLE:laminar/B738/engine/starter1_pos:1
+
+sw_itemvoid:
+sw_itemvoid:Start engine 2:
+sw_item:ENGINE 2 START switch|GROUND:(laminar/B738/engine/starter2_pos:0)&&(sim/operation/failures/rel_startr1:0)
+sw_itemvoid:N2 REACHING 25%
+sw_item:ENGINE 2 START LEVER|IDLE:laminar/B738/engine/mixture_ratio2:1.0
+sw_item:ENGINE 2|STABLE IDLE:laminar/B738/engine/starter2_pos:1
+
+sw_itemvoid:
+sw_item:System A ELECTRIC HYDRAULIC PUMP|ON:laminar/B738/toggle_switch/electric_hydro_pumps1_pos:1.0)&&(sim/operation/failures/rel_hydpmp_ele:0)
+
+sw_continue:BEFORE TAXI PROCEDURE
+
+
+
+#TODO: -------------------------------------------- to be continued!
+
+sw_checklist:BEFORE TAXI PROCEDURE:BEFORE TAXI PROCEDURE
+
+sw_item:ENGINE GENERATORS|ON:(sim/cockpit2/electrical/generator_on[0]:1.0)&&(sim/operation/failures/rel_genera0:0)&&(sim/cockpit2/electrical/generator_on[1]:1.0)&&(sim/operation/failures/rel_genera1:0)
+sw_item:PROBE HEAT switches|ON:(laminar/B738/toggle_switch/capt_probes_pos:1.0)&&(sim/operation/failures/rel_ice_pitot_heat1:0)&&(laminar/B738/toggle_switch/fo_probes_pos:1.0)&&(sim/operation/failures/rel_ice_pitot_heat2:0)
+sw_item:ANTI ICE SWITCHES|AS REQUIRED
+sw_item:AIR CONDITIONING PACK switches|AUTO:(laminar/B738/air/l_pack_pos:1.0)&&(laminar/B738/air/r_pack_pos:1.0)
+sw_item:ISOLATION switch|AUTO:laminar/B738/air/isolation_valve_pos:1.0
+sw_item:PRESSURIZATION SELECTOR|AUTO:laminar/B738/toggle_switch/air_valve_ctrl:0.0
+sw_item:APU BLEED|OFF:laminar/B738/toggle_switch/bleed_air_apu_pos:0.0
+sw_item:APU SWITCH|OFF:sim/cockpit/engine/APU_running:0
+sw_item:ENGINE START switches|CONT:(laminar/B738/engine/starter1_pos:2)&&(laminar/B738/engine/starter2_pos:2)
+sw_item:FLAPS|TAKE OFF:laminar/B738/FMS/takeoff_flaps_set:1
+sw_item:TRIMS|TAKE OFF:laminar/B738/FMS/trim_set:1
+sw_item:FLIGHT CONTROLS|CHECK
+sw_item:TAXI LIGHTS|ON:(laminar/B738/toggle_switch/taxi_light_brightness_pos:>0.0)&&(sim/operation/failures/rel_lites_taxi:0)
+sw_item:PARKING BRAKE|RELEASE:sim/cockpit2/controls/parking_brake_ratio:0.0
+sw_itemvoid:AFTER START MOVING:
+sw_item:BRAKES TEST|PRESS AND RELEASE
+
+sw_continue:BEFORE TAKE OFF PROCEDURE
+
+
+
+
+sw_checklist:BEFORE TAKE OFF PROCEDURE:BEFORE TAKE OFF PROCEDURE
+
+sw_item:VCARD SPEED BUGS|SET
+sw_item:TAXI LIGHTS|OFF:laminar/B738/toggle_switch/taxi_light_brightness_pos:0.0
+sw_item:FIXED LANDING LIGHTS|ON:(sim/cockpit2/switches/landing_lights_switch[0]:1)&&(sim/cockpit2/switches/landing_lights_switch[3]:1)&&(sim/operation/failures/rel_lites_land:0)
+sw_item:POSITION LIGHTS|STROBE&STEADY:(sim/cockpit2/switches/navigation_lights_on:1.0)&&(sim/cockpit2/switches/strobe_lights_on:1.0)&&(sim/operation/failures/rel_lites_strobe:0)&&(sim/operation/failures/rel_lites_nav:0)
+sw_item:ATC/TCAS|TA/RA:(laminar/B738/knob/transponder_pos:5)&&(sim/operation/failures/rel_xpndr:0)
+sw_item:WEATHER RADAR|ON:sim/cockpit/switches/EFIS_shows_weather:1
+sw_item:HEADING BUG|SET RUNWAY HEADING
+sw_item:FLIGHT DIRECTORS|ON:(laminar/B738/autopilot/flight_director_pos:1.0)&&(laminar/B738/autopilot/flight_director_fo_pos:1.0)
+
+
+
+
+sw_checklist:AFTER TAKE OFF PROCEDURE:AFTER TAKE OFF PROCEDURE
+
+sw_item:LANDING GEAR|UP & OFF:(sim/flightmodel2/gear/deploy_ratio[0]:0)&&(sim/flightmodel2/gear/deploy_ratio[1]:0)&&(sim/flightmodel2/gear/deploy_ratio[2]:0)&&(laminar/B738/switches/landing_gear:1)
+sw_item:FLAPS|RETRACT:(sim/cockpit2/controls/flap_ratio:0.00)&&(sim/operation/failures/rel_flap_act:0)
+sw_item:AUTOPILOT|ENGAGE:(laminar/B738/autopilot/cmd_a_status:1.0)||(laminar/B738/autopilot/cmd_b_status:1.0)
+sw_item:AIR CONDITIONING PACK switches|AUTO:(laminar/B738/air/l_pack_pos:1.0)&&(laminar/B738/air/r_pack_pos:1.0)
+sw_item:AUTOBRAKE|OFF:laminar/B738/autobrake/autobrake_pos:1.0
+
+
+
+
+sw_checklist:CLIMB:CLIMB
+
+sw_item:POWER|ADJUST
+sw_itemvoid:At transition altitude
+sw_item:ALTIMETERS|SET STANDARD:(laminar/B738/EFIS/baro_set_std_pilot:1.0)&&(laminar/B738/EFIS/baro_set_std_copilot:1.0)
+sw_itemvoid:
+sw_itemvoid:PASSING 10 THOUSAND FEET
+sw_item:LANDING LIGHTS|OFF:(sim/cockpit2/switches/landing_lights_switch[0]:0)&&(sim/cockpit2/switches/landing_lights_switch[1]:0)&&(sim/cockpit2/switches/landing_lights_switch[2]:0)&&(sim/cockpit2/switches/landing_lights_switch[3]:0)
+sw_item:POSITION LIGHTS|STEADY:(sim/cockpit2/switches/navigation_lights_on:1.0)&&(sim/cockpit2/switches/strobe_lights_on:0.0)&&(sim/operation/failures/rel_lites_nav:0)
+sw_itemvoid:ABOVE WEATHER
+sw_item:ENGINE START switches|AUTO:(laminar/B738/engine/starter1_pos:1)&&(laminar/B738/engine/starter2_pos:1)
+
+
+
+
+sw_checklist:DESCENT PROCEDURE:DESCENT PROCEDURE
+
+sw_item:ALTITUDE SELECT|SET
+sw_item:ENGINE START switches|CONT:(laminar/B738/engine/starter1_pos:2)&&(laminar/B738/engine/starter2_pos:2)
+sw_itemvoid:
+sw_itemvoid:PASSING 10 THOUSAND FEET
+sw_item:LANDING LIGHTS|ON:(sim/cockpit2/switches/landing_lights_switch[0]:1)&&(sim/cockpit2/switches/landing_lights_switch[1]:1)&&(sim/cockpit2/switches/landing_lights_switch[2]:1)&&(sim/cockpit2/switches/landing_lights_switch[3]:1)&&(sim/operation/failures/rel_lites_land:0)
+
+
+
+
+sw_checklist:APPROACH PROCEDURE:APPROACH PROCEDURE
+
+sw_item:AIRSPEED|ADJUST
+sw_item:NAVAID FREQUENCIES|SET
+sw_item:ALTIMETER QNH|SET
+sw_item:VCARD SPEED BUG|SET
+sw_item:POSITION LIGHTS|STROBE&STEADY:(sim/cockpit2/switches/navigation_lights_on:1.0)&&(sim/cockpit2/switches/strobe_lights_on:1.0)&&(sim/operation/failures/rel_lites_strobe:0)&&(sim/operation/failures/rel_lites_nav:0)
+
+
+
+
+sw_checklist:LANDING PROCEDURE:LANDING PROCEDURE
+
+sw_item:FLAPS|LANDING:laminar/B738/FMS/approach_flaps_set:1
+sw_item:SPEED BRAKE|ARMED:sim/cockpit2/controls/speedbrake_ratio:-0.5
+sw_item:AUTOBRAKE|SET
+sw_item:LANDING GEAR DOWN|THREE GREENS:(sim/flightmodel2/gear/deploy_ratio[0]:1)&&(sim/flightmodel2/gear/deploy_ratio[1]:1)&&(sim/flightmodel2/gear/deploy_ratio[2]:1)&&(sim/operation/failures/rel_gear_act:0)
+
+
+
+
+sw_checklist:LANDING ROLL PROCEDURE:LANDING ROLL PROCEDURE
+
+sw_item:AUTOPILOT|DISENGAGE:(laminar/B738/autopilot/cmd_a_status:0.0)&&(laminar/B738/autopilot/cmd_b_status:0.0)
+sw_item:SPEED BRAKES|UP:sim/cockpit2/controls/speedbrake_ratio:>0.0
+sw_item:THRUST REVERSES|As needed
+
+
+
+
+sw_checklist:AFTER LANDING PROCEDURE:AFTER LANDING PROCEDURE
+
+sw_item:SPEED BRAKES|DOWN:sim/cockpit2/controls/speedbrake_ratio:0.0
+sw_item:APU START|ON:sim/cockpit/engine/APU_running:1
+sw_item:PROBE HEAT switches|OFF:(laminar/B738/toggle_switch/capt_probes_pos:0.0)&&(laminar/B738/toggle_switch/fo_probes_pos:0.0)
+sw_item:LANDING LIGHTS|OFF:(sim/cockpit2/switches/landing_lights_switch[0]:0)&&(sim/cockpit2/switches/landing_lights_switch[1]:0)&&(sim/cockpit2/switches/landing_lights_switch[2]:0)&&(sim/cockpit2/switches/landing_lights_switch[3]:0)
+sw_item:POSITION LIGHTS|STEADY:(sim/cockpit2/switches/navigation_lights_on:1.0)&&(sim/cockpit2/switches/strobe_lights_on:0.0)&&(sim/operation/failures/rel_lites_nav:0)
+sw_item:TAXI LIGHTS|ON:(laminar/B738/toggle_switch/taxi_light_brightness_pos:>0.0)&&(sim/operation/failures/rel_lites_taxi:0)
+sw_item:ENGINE START switches|AUTO:(laminar/B738/engine/starter1_pos:1)&&(laminar/B738/engine/starter2_pos:1)
+sw_item:AUTOBRAKE|OFF:laminar/B738/autobrake/autobrake_RTO_arm:0.0
+sw_item:FLAPS|RETRACT:sim/cockpit2/controls/flap_ratio:0.0
+sw_item:ATC/TCAS|STANDBY:laminar/B738/knob/transponder_pos:1
+sw_item:WEATHER RADAR|OFF:sim/cockpit/switches/EFIS_shows_weather:0
+
+
+
+
+sw_checklist:SHUTDOWN PROCEDURE 1/2:SHUTDOWN PROCEDURE 1/2
+
+sw_item:PARKING BRAKE|SET:sim/cockpit2/controls/parking_brake_ratio:1.0
+sw_item:APU GENERATORS|ON:(sim/cockpit2/electrical/APU_generator_on[0]:1)&&(sim/cockpit2/electrical/APU_generator_on[1]:1)
+sw_item:ENGINE START LEVERS|CUT OFF:sim/cockpit2/engine/actuators/mixture_ratio_all:0.0
+sw_item:SEATBELTS SIGN|OFF:laminar/B738/toggle_switch/seatbelt_sign_pos:0.0
+sw_item:ANTI COLISSION LIGHTS|OFF:(sim/cockpit/electrical/beacon_lights_on:0.0)
+sw_item:FUEL PUMPS LEFT |OFF:(laminar/B738/fuel/fuel_tank_pos_lft1:0.0)&&(laminar/B738/fuel/fuel_tank_pos_lft2:0.0)&&(sim/operation/failures/rel_ele_fuepmp0:0)&&(sim/operation/failures/rel_ele_fuepmp1:0)
+sw_item:FUEL PUMPS RIGHT|OFF:(laminar/B738/fuel/fuel_tank_pos_rgt1:0.0)&&(laminar/B738/fuel/fuel_tank_pos_rgt2:0.0)&&(sim/operation/failures/rel_ele_fuepmp2:0)&&(sim/operation/failures/rel_ele_fuepmp3:0)
+sw_item:FUEL PUMPS CENTER|OFF:(laminar/B738/fuel/fuel_tank_pos_ctr1:0.0)&&(laminar/B738/fuel/fuel_tank_pos_ctr2:0.0)&&(sim/operation/failures/rel_ele_fuepmp4:0)&&(sim/operation/failures/rel_ele_fuepmp5:0)
+sw_item:CAB/UTIL power switch|OFF:laminar/B738/toggle_switch/cab_util_pos:0.0
+sw_item:IFE/PASS SEAT power switch|OFF:laminar/B738/toggle_switch/ife_pass_seat_pos:0.0
+sw_item:WING ANTI ICE switch|OFF:laminar/B738/ice/wing_heat_pos:0.0
+sw_item:ENGINE ANTI ICE 1&2 switches|OFF:(laminar/B738/ice/eng1_heat_pos:0.0)&&(laminar/B738/ice/eng2_heat_pos:0.0)
+sw_item:HYDRAULIC PUMP ELEC 1&2|OFF:(laminar/B738/toggle_switch/electric_hydro_pumps1_pos:0.0)&&(laminar/B738/toggle_switch/electric_hydro_pumps2_pos:0.0)
+sw_item:YAW DAMPER|OFF:sim/cockpit2/switches/yaw_damper_on:0.0
+
+sw_continue:SHUTDOWN PROCEDURE 2/2
+
+
+
+sw_checklist:SHUTDOWN PROCEDURE 2/2:SHUTDOWN PROCEDURE 2/2
+
+sw_item:RECIRC. FAN switches|OFF:(laminar/B738/air/l_recirc_fan_pos:0.0)&&(laminar/B738/air/r_recirc_fan_pos:0.0)
+sw_item:AIR CONDITIONING PACK switches|AUTO:(laminar/B738/air/l_pack_pos:1.0)&&(laminar/B738/air/r_pack_pos:1.0)
+sw_item:ISOLATION SWITCH|OPEN:laminar/B738/air/isolation_valve_pos:1.0
+sw_item:ENGINE BLEED switches|ON:(laminar/B738/toggle_switch/bleed_air_1_pos:1.0)&&(laminar/B738/toggle_switch/bleed_air_2_pos:1.0)&&(sim/operation/failures/rel_bleed_air_lft:0)&&(sim/operation/failures/rel_bleed_air_rgt:0)
+sw_item:APU BLEED|ON:laminar/B738/toggle_switch/bleed_air_apu_pos:1.0
+sw_item:TAXI LIGHTS|OFF:laminar/B738/toggle_switch/taxi_light_brightness_pos:0.0
+sw_item:POSITION LIGHTS|OFF:(sim/cockpit2/switches/navigation_lights_on:0)&&(sim/cockpit2/switches/strobe_lights_on:0)
+sw_item:FLIGHT DIRECTORS|OFF:(laminar/B738/autopilot/flight_director_pos:0.0)&&(laminar/B738/autopilot/flight_director_fo_pos:0.0)
+sw_item:APU START|OFF:sim/cockpit/engine/APU_running:0
+
+sw_continue:SECURE PROCEDURE
+
+
+
+sw_checklist:SECURE PROCEDURE:SECURE PROCEDURE
+
+sw_item:EMERGENCY LIGHTS|OFF:laminar/B738/toggle_switch/emer_exit_lights:0.0
+sw_item:WINDOW HEAT LEFT 1&2|OFF:(laminar/B738/ice/window_heat_l_side_pos:0.0)&&(laminar/B738/ice/window_heat_l_fwd_pos:0.0)
+sw_item:WINDOW HEAT RIGHT 1&2|OFF:(laminar/B738/ice/window_heat_r_fwd_pos:0.0)&&(laminar/B738/ice/window_heat_r_side_pos:0.0)
+sw_item:AIR CONDITIONING PACKS|OFF:(laminar/B738/air/l_pack_pos:0.0)&&(laminar/B738/air/r_pack_pos:0.0)
+sw_item:APU GENERATORS|OFF:(sim/cockpit2/electrical/APU_generator_on[0]:0)&&(sim/cockpit2/electrical/APU_generator_on[1]:0)
+sw_item:STANDBY POWER switch|OFF:sim/cockpit2/electrical/battery_on[1]:0
+sw_item:BATTERY|OFF:sim/cockpit2/electrical/battery_on:0
+sw_itemvoid:
+sw_item:END OF CHECKLIST, say thanks to Zibo for beautiful modification!
+
