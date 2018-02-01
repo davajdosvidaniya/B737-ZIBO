@@ -7210,8 +7210,8 @@ function B738_vnav6()
 				
 				--------
 				-- automatic descent
-				--if B738DR_vnav_td_dist > 0 and B738DR_vnav_td_dist < 1 then
-				if B738DR_vnav_td_dist < 1.5 and B738DR_missed_app_act == 0 then
+				--if B738DR_vnav_td_dist < 1.5 and B738DR_missed_app_act == 0 then
+				if B738DR_vnav_td_dist < 1.0 and B738DR_missed_app_act == 0 then
 					if simDR_ap_altitude_dial_ft < B738DR_fmc_cruise_alt then
 						-- vnav descent
 						if simDR_autopilot_altitude_mode ~= 4 then

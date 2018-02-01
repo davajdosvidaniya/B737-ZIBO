@@ -2994,17 +2994,16 @@ B738DR_fms_light_fo			= create_dataref("laminar/B738/push_button/fms_light_fo", 
 
 -- LEGS as string
 B738DR_fms_legs				= create_dataref("laminar/B738/fms/legs", "string")
-
--- B738DR_fms_legs_lat        = create_dataref("laminar/B738/fms/legs_lat", "array[100]")
--- B738DR_fms_legs_lon        = create_dataref("laminar/B738/fms/legs_lon", "array[100]")
--- B738DR_fms_legs_type        = create_dataref("laminar/B738/fms/legs_type", "array[100]")
+B738DR_fms_legs_lat        = create_dataref("laminar/B738/fms/legs_lat", "array[100]")
+B738DR_fms_legs_lon        = create_dataref("laminar/B738/fms/legs_lon", "array[100]")
+B738DR_fms_legs_type        = create_dataref("laminar/B738/fms/legs_type", "array[100]")
 
 B738DR_fms_legs2			= create_dataref("laminar/B738/fms/legs2", "string")
 B738DR_fms_legs_num2		= create_dataref("laminar/B738/fms/legs_num2", "number")
--- B738DR_fms_legs_lat2 		= create_dataref("laminar/B738/fms/legs_lat2", "array[100]")
--- B738DR_fms_legs_lon2 		= create_dataref("laminar/B738/fms/legs_lon2", "array[100]")
--- B738DR_fms_legs_type2 		= create_dataref("laminar/B738/fms/legs_type2", "array[100]")
--- B738DR_fms_legs_connect2	= create_dataref("laminar/B738/fms/legs_connect2", "array[100]")
+B738DR_fms_legs_lat2 		= create_dataref("laminar/B738/fms/legs_lat2", "array[100]")
+B738DR_fms_legs_lon2 		= create_dataref("laminar/B738/fms/legs_lon2", "array[100]")
+B738DR_fms_legs_type2 		= create_dataref("laminar/B738/fms/legs_type2", "array[100]")
+B738DR_fms_legs_connect2	= create_dataref("laminar/B738/fms/legs_connect2", "array[100]")
 
 
 B738DR_wind_show			= create_dataref("laminar/B738/nd/wind_show", "number")
@@ -13050,6 +13049,7 @@ function copy_to_legsdata2()
 
 	local ii = 0
 	local jj = 0
+	local fms_line = ""
 	
 	legs_num2 = 0
 	legs_data2 = {}
@@ -13059,6 +13059,28 @@ function copy_to_legsdata2()
 			legs_data2[ii] = {}
 			for jj = 1, MAX_LEGS_DATA do
 				legs_data2[ii][jj] = legs_data[ii][jj]
+			end
+			
+			-- legs data2 + lat,lon
+			
+			if ii == 1 then
+				fms_line = legs_data2[1][1]
+			else
+				fms_line = fms_line .. " " .. legs_data2[ii][1]
+			end
+			B738DR_fms_legs_lat2[ii] = legs_data2[ii][7]
+			B738DR_fms_legs_lon2[ii] = legs_data2[ii][8]
+			if legs_data2[ii][32] ~= 0 then
+				B738DR_fms_legs_type2[ii] = 5
+			else
+				B738DR_fms_legs_type2[ii] = 0
+			end
+			if legs_data2[ii][17] > 199 then
+				B738DR_fms_legs_connect2[ii] = 2
+			elseif legs_data2[ii][17] > 99 then
+				B738DR_fms_legs_connect2[ii] = 1
+			else
+				B738DR_fms_legs_connect2[ii] = 0
 			end
 		end
 		legs_num2 = legs_num
@@ -19847,13 +19869,13 @@ function B738_find_rnav()
 			else
 				fms_line = fms_line .. " " .. legs_data[ii][1]
 			end
-			-- B738DR_fms_legs_lat[ii] = legs_data[ii][7]
-			-- B738DR_fms_legs_lon[ii] = legs_data[ii][8]
-			-- if legs_data[ii][32] ~= 0 then
-				-- B738DR_fms_legs_type[ii] = 5
-			-- else
-				-- B738DR_fms_legs_type[ii] = 0
-			-- end
+			B738DR_fms_legs_lat[ii] = legs_data[ii][7]
+			B738DR_fms_legs_lon[ii] = legs_data[ii][8]
+			if legs_data[ii][32] ~= 0 then
+				B738DR_fms_legs_type[ii] = 5
+			else
+				B738DR_fms_legs_type[ii] = 0
+			end
 		end
 	end
 	
@@ -19946,20 +19968,20 @@ function B738_find_rnav_mod()
 			else
 				fms_line = fms_line .. " " .. legs_data2[ii][1]
 			end
-			-- B738DR_fms_legs_lat2[ii] = legs_data2[ii][7]
-			-- B738DR_fms_legs_lon2[ii] = legs_data2[ii][8]
-			-- if legs_data2[ii][32] ~= 0 then
-				-- B738DR_fms_legs_type2[ii] = 5
-			-- else
-				-- B738DR_fms_legs_type2[ii] = 0
-			-- end
-			-- if legs_data2[ii][17] > 199 then
-				-- B738DR_fms_legs_connect2[ii] = 2
-			-- elseif legs_data2[ii][17] > 99 then
-				-- B738DR_fms_legs_connect2[ii] = 1
-			-- else
-				-- B738DR_fms_legs_connect2[ii] = 0
-			-- end
+			B738DR_fms_legs_lat2[ii] = legs_data2[ii][7]
+			B738DR_fms_legs_lon2[ii] = legs_data2[ii][8]
+			if legs_data2[ii][32] ~= 0 then
+				B738DR_fms_legs_type2[ii] = 5
+			else
+				B738DR_fms_legs_type2[ii] = 0
+			end
+			if legs_data2[ii][17] > 199 then
+				B738DR_fms_legs_connect2[ii] = 2
+			elseif legs_data2[ii][17] > 99 then
+				B738DR_fms_legs_connect2[ii] = 1
+			else
+				B738DR_fms_legs_connect2[ii] = 0
+			end
 		end
 	end
 	
@@ -43760,16 +43782,16 @@ function B738_N1_thrust_calc()
 	
 	fmc_dto_thrust = B738DR_thr_takeoff_N1
 	
-	if sel_temp == "----" then
-		fmc_sel_thrust = fmc_full_thrust
-	else
-		fmc_sel_thrust = fmc_dto_thrust
-	end
+	-- if sel_temp == "----" then
+		-- fmc_sel_thrust = fmc_full_thrust
+	-- else
+		-- fmc_sel_thrust = fmc_dto_thrust
+	-- end
 	
 	fmc_clb_thrust = B738DR_thr_climb_N1
 	fmc_crz_thrust = B738DR_thr_cruise_N1
-	fmc_con_thrust = 0.88
-	fmc_ga_thrust = fmc_full_thrust
+	fmc_con_thrust = math.min(math.max( B738DR_thr_climb_N1, B738DR_thr_cruise_N1, B738DR_thr_goaround_N1) + 0.1, 1.04)
+	fmc_ga_thrust = B738DR_thr_goaround_N1
 
 end
 
@@ -44204,7 +44226,7 @@ end
 function B738_N1_thrust_set()
 	fmc_takeoff_mode = 1
 	fmc_goaround_mode = 1
-	fmc_ga_thrust = B738DR_thr_goaround_N1
+	--fmc_ga_thrust = B738DR_thr_goaround_N1
 	fmc_cruise_mode = 1
 	fmc_climb_mode = 1
 	fmc_cont_mode = 1
@@ -57333,7 +57355,7 @@ function B738_fmc_calc()
 		end
 		
 		if legs_num > legs_num_old then
-			if nav_mode == 1 then	--cancel NAV to Dest ICAO
+			if nav_mode == 1 or nav_mode == 99 then	--cancel NAV to Dest ICAO
 				nav_mode = 0
 				offset = offset + 1
 			end
@@ -57420,14 +57442,16 @@ function B738_fmc_calc()
 		
 		if nav_mode == 1 then	-- navigate to destination ICAO
 			legs_intdir_act = 0
-			if simDR_fmc_dist < 5 then
+			if simDR_fmc_dist < 5 and B738DR_heading_mode > 3 and B738DR_heading_mode < 7 then
 				B738DR_lnav_disconnect = 1
 				B738DR_vnav_disconnect = 1
 				add_fmc_msg(LNAV_DISCON)
 				B738DR_fmc_message_warn = 1
-				nav_mode = 0
+				--nav_mode == 0
+				nav_mode = 99
 			end
-		else
+		
+		elseif nav_mode ~= 99 then
 		
 			if offset == 1 then
 				nd_lat2 = math.rad(legs_data[offset][7])
@@ -61073,7 +61097,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.24m"
+	version = "v3.24n"
 
 end
 

@@ -81,6 +81,13 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.24n: (beta)
+------
+- tweaked flight model by twkster (moded by me)
+- improved thrust curve (for taxi thrust)
+- correct function CHR button for reset chrono timer - hold 2 seconds
+- fixed bugs
+
 3.24m:
 ------
 FMC

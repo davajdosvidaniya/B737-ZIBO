@@ -340,10 +340,25 @@ function B738_chrono_cycle_capt_CMDhandler(phase, duration)
 			B738DR_chrono_display_mode_capt = 0
 			B738DR_clock_captain_CHR = 1
 		elseif B738DR_clock_captain_chrono_mode == B738_STOP then
+		 	B738DR_clock_captain_chrono_mode = B738_START
+			B738DR_chrono_display_mode_capt = 0
+			B738DR_clock_captain_CHR = 1
+			-- B738DR_clock_captain_chrono_mode = B738_RESET
+			-- if B738DR_clock_captain_et_seconds == 0 and B738DR_clock_captain_et_minutes == 0 then
+				-- B738DR_chrono_display_mode_capt = 2
+				-- B738DR_clock_captain_ET = 0
+			-- else
+				-- B738DR_chrono_display_mode_capt = 1
+			-- end
+			-- B738DR_clock_captain_CHR = 0
+		elseif B738DR_clock_captain_chrono_mode == B738_RESET then
+			B738DR_clock_captain_chrono_mode = B738_START
+			B738DR_chrono_display_mode_capt = 0
+			B738DR_clock_captain_CHR = 1
+		end
+	elseif phase == 1 and duration > 2 then
+		if B738DR_clock_captain_chrono_mode ~= B738_RESET then
 			B738DR_clock_captain_chrono_mode = B738_RESET
-			--run_after_time(B738_chrono_mode_zeroed_capt, 2.0)
-			--B738DR_clock_captain_CHR = 1
-			--B738DR_chrono_display_mode_capt = 1
 			if B738DR_clock_captain_et_seconds == 0 and B738DR_clock_captain_et_minutes == 0 then
 				B738DR_chrono_display_mode_capt = 2
 				B738DR_clock_captain_ET = 0
@@ -351,10 +366,6 @@ function B738_chrono_cycle_capt_CMDhandler(phase, duration)
 				B738DR_chrono_display_mode_capt = 1
 			end
 			B738DR_clock_captain_CHR = 0
-		elseif B738DR_clock_captain_chrono_mode == B738_RESET then
-			B738DR_clock_captain_chrono_mode = B738_START
-			B738DR_chrono_display_mode_capt = 0
-			B738DR_clock_captain_CHR = 1
 		end
 	elseif phase == 2 then
 		B738DR_clock_captain_CHR = 0
@@ -426,10 +437,28 @@ function B738_chrono_cycle_fo_CMDhandler(phase, duration)
 			B738DR_chrono_display_mode_fo = 0
 			B738DR_clock_fo_CHR = 1
 		elseif B738DR_clock_fo_chrono_mode == B738_STOP then
-			B738DR_clock_fo_chrono_mode = B738_RESET
-			--run_after_time(B738_chrono_mode_zeroed_fo, 2.0)
+		 	B738DR_clock_fo_chrono_mode = B738_START
+			B738DR_chrono_display_mode_fo = 0
 			B738DR_clock_fo_CHR = 1
-			--B738DR_chrono_display_mode_fo = 1
+			
+			-- B738DR_clock_fo_chrono_mode = B738_RESET
+			-- B738DR_clock_fo_CHR = 1
+			-- if B738DR_clock_fo_et_seconds == 0 and B738DR_clock_fo_et_minutes == 0 then
+				-- B738DR_chrono_display_mode_fo = 2
+				-- B738DR_clock_fo_ET = 0
+			-- else
+				-- B738DR_chrono_display_mode_fo = 1
+			-- end
+			-- B738DR_clock_captain_CHR = 0
+		elseif B738DR_clock_fo_chrono_mode == B738_RESET then
+			B738DR_clock_fo_chrono_mode = B738_START
+			B738DR_chrono_display_mode_fo = 0
+			B738DR_clock_fo_CHR = 1
+		end
+	elseif phase == 1 and duration > 2 then
+		if B738DR_clock_fo_chrono_mode ~= B738_RESET then
+			B738DR_clock_fo_chrono_mode = B738_RESET
+			B738DR_clock_fo_CHR = 1
 			if B738DR_clock_fo_et_seconds == 0 and B738DR_clock_fo_et_minutes == 0 then
 				B738DR_chrono_display_mode_fo = 2
 				B738DR_clock_fo_ET = 0
@@ -437,10 +466,6 @@ function B738_chrono_cycle_fo_CMDhandler(phase, duration)
 				B738DR_chrono_display_mode_fo = 1
 			end
 			B738DR_clock_captain_CHR = 0
-		elseif B738DR_clock_fo_chrono_mode == B738_RESET then
-			B738DR_clock_fo_chrono_mode = B738_START
-			B738DR_chrono_display_mode_fo = 0
-			B738DR_clock_fo_CHR = 1
 		end
 	elseif phase == 2 then
 		B738DR_clock_fo_CHR = 0

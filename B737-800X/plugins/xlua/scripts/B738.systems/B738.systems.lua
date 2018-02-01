@@ -610,6 +610,10 @@ simDR_TAT				= find_dataref("sim/cockpit2/temperature/outside_air_LE_temp_degc")
 simDR_roll_brake		= find_dataref("sim/aircraft/overflow/acf_brake_co")
 simDR_roll_co			= find_dataref("sim/aircraft/overflow/acf_roll_co")
 
+simDR_throttle1_use		= find_dataref("sim/flightmodel/engine/ENGN_thro_use[0]")
+simDR_throttle2_use		= find_dataref("sim/flightmodel/engine/ENGN_thro_use[1]")
+
+
 simDR_outflow_ratio		= find_dataref("sim/flightmodel2/misc/pressure_outflow_ratio")
 
 simDR_panel_brightness 		= find_dataref("sim/cockpit2/switches/panel_brightness_ratio")
@@ -8534,21 +8538,17 @@ function B738_nose_steer()
 		--simDR_right_brake = right_brake
 	end
 	
-	local ground_speed_kts = simDR_ground_speed * 1.9438
-	local limit_ground_speed = math.min(80, ground_speed_kts)
-	local limit_ground_speed2 = math.min(20, ground_speed_kts)
-	local max_roll_brake = B738_rescale(0, 0.9, 40, 1.5, limit_ground_speed)
-	local min_roll_brake = B738_rescale(0, 0.8, 40, 0.9, limit_ground_speed)
-	local abs_steer_cmd = simDR_steer_cmd
-	if abs_steer_cmd < 0 then
-		abs_steer_cmd = -abs_steer_cmd
-	end
-	simDR_roll_brake = B738_rescale(0, min_roll_brake, 65, max_roll_brake, abs_steer_cmd)
-	if ground_speed_kts < 2 then
-		simDR_roll_co = 0.021
+	local thrust = math.max(simDR_throttle1_use, simDR_throttle2_use) * 100
+	
+	if thrust < 4 then
+		simDR_roll_co = 0.0448
+		simDR_roll_brake = 1.2
 	else
-		simDR_roll_co = B738_rescale(0, 0.015, 20, 0.025, limit_ground_speed2)
+		thrust = math.min(thrust, 12)
+		simDR_roll_co = B738_rescale(4, 0.0448, 12, 0.025, thrust)
+		simDR_roll_brake = B738_rescale(4, 1.2, 12, 1.0, thrust)
 	end
+	
 end
 
 
@@ -10138,7 +10138,9 @@ B738_init_engineMGMT_fltStart()
 	simDR_left_brake_old = simDR_left_brake
 	simDR_right_brake_old = simDR_right_brake
 	brake_inop = 0
-	simDR_roll_brake = 0.8
+	
+	simDR_roll_brake = 1.2	--1.0	--0.8
+	simDR_roll_co = 0.03
 	
 	B738DR_zone_temp = 80
 	

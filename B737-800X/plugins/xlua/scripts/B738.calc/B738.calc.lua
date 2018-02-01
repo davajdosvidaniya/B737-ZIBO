@@ -1606,6 +1606,9 @@ function B738DR_calc_trim_DRhandler()end
 
 function B738DR_kill_calc_DRhandler()end
 
+function B738DR_low_idle_DRhandler()end
+function B738DR_high_idle_DRhandler()end
+
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
@@ -1618,6 +1621,11 @@ B738DR_mixture_ratio2	= create_dataref("laminar/B738/engine/mixture_ratio2", "nu
 B738DR_calc_vspd		= create_dataref("laminar/B738/FMS/calc_vspd", "number", B738DR_calc_vspd_DRhandler)
 B738DR_calc_trim		= create_dataref("laminar/B738/FMS/calc_trim", "number", B738DR_calc_trim_DRhandler)
 
+simDR_high_idle_ratio			= find_dataref("sim/aircraft2/engine/high_idle_ratio")
+simDR_low_idle_ratio			= find_dataref("sim/aircraft2/engine/low_idle_ratio")
+
+B738DR_low_idle		= create_dataref("laminar/B738/engine/thrust_low_idle", "number", B738DR_low_idle_DRhandler)
+B738DR_high_idle	= create_dataref("laminar/B738/engine/thrust_high_idle", "number", B738DR_high_idle_DRhandler)
 
 --*************************************************************************************--
 --** 				              CUSTOM COMMAND HANDLERS            			     **--
@@ -1877,8 +1885,8 @@ function B738_engine_rpm2()
 	mixture1_cur = B738_set_animation_position(mixture1_cur, mixture1, 0, 1.0, 1)
 	mixture2_cur = B738_set_animation_position(mixture2_cur, mixture2, 0, 1.0, 1)
 	
-	simDR_engine_mixture1 = mixture1_cur
-	simDR_engine_mixture2 = mixture2_cur
+	simDR_engine_mixture1 = mixture1_cur	--B738DR_mixture_ratio1	--mixture1_cur
+	simDR_engine_mixture2 = mixture2_cur	--B738DR_mixture_ratio2	--mixture2_cur
 	
 	req_idle = math.max(0.5, mixture1_cur)
 	req1_idle = B738_rescale(0.5, 0.218, 1.0, 0.382, req_idle)
@@ -1889,8 +1897,12 @@ function B738_engine_rpm2()
 	
 	B738DR_eng1_N1 = eng1_N1
 	B738DR_eng2_N1 = eng2_N1
-	B738DR_eng1_N2 = eng1_N2
-	B738DR_eng2_N2 = eng2_N2
+	B738DR_eng1_N2 = math.max(0, eng1_N2 - 5.5)
+	B738DR_eng2_N2 = math.max(0, eng2_N2 - 5.5)
+	
+	simDR_high_idle_ratio = 2.161	--B738DR_high_idle	--2.15	--B738DR_high_idle
+	simDR_low_idle_ratio = 1.162		--B738DR_low_idle	--1.152	--B738DR_low_idle
+
 
 end
 
@@ -3086,6 +3098,9 @@ function flight_start()
 	B738DR_calc_trim = 0
 	
 	calc_timer_set = 0
+	
+	B738DR_high_idle = 1
+	B738DR_low_idle = 1
 
 end
 
