@@ -6882,7 +6882,11 @@ function B738_vnav6()
 					-- end
 				else
 					if simDR_altitude_pilot < (B738DR_fmc_descent_r_alt1 + 900) then
-						spd_250_10000 = B738DR_fmc_descent_r_speed1
+						if B738DR_fmc_descent_r_alt1 == 10000 and B738DR_fmc_descent_r_speed1 == 250 then
+							spd_250_10000 = 240
+						else
+							spd_250_10000 = B738DR_fmc_descent_r_speed1
+						end
 					else
 						spd_250_10000 = 340
 					end
@@ -8040,43 +8044,30 @@ function B738_vnav6()
 								at_mode_old = at_mode
 								simCMD_autopilot_lvl_chg:once()
 								at_mode = at_mode_old
-								--at_mode_eng = 20
-								--fmc_speed_cur = simDR_airspeed_pilot
 							end
 							vnav_vs = 0
 							if B738DR_autopilot_autothr_arm_pos == 1 then
 								at_mode = 7		-- N1 thrust
-								--at_mode_eng = 20
 							end
 							simDR_ap_vvi_dial = 0
 						else
-							speed_step = simDR_airspeed_pilot + 10
-							if vnav_speed_trg > speed_step and B738DR_speed_ratio < 2 then
-								-- turn climb vvi 900 ft
-								if simDR_autopilot_altitude_mode ~= 4 then
-									simDR_ap_vvi_dial = 1100	--850
+							if simDR_altitude_pilot > 25000 then
+								speed_step = simDR_airspeed_pilot + 10
+								if vnav_speed_trg > speed_step and B738DR_speed_ratio < 2 then
+									-- turn climb vvi 900 ft
+									simDR_ap_vvi_dial = 1500	--850
 									vvi_trg = simDR_ap_vvi_dial
 									fmc_vvi_cur = simDR_vvi_fpm_pilot
 									simCMD_autopilot_vs_sel:once()
+									vnav_vs = 1
 								end
-								vnav_vs = 1
 							end
-							-- if vnav_vs == 0 and simDR_vvi_fpm_pilot < 850 then
-								-- -- turn climb vvi 900 ft
-								-- if simDR_autopilot_altitude_mode ~= 4 then
-									-- simDR_ap_vvi_dial = 850
-									-- vvi_trg = simDR_ap_vvi_dial
-									-- fmc_vvi_cur = simDR_vvi_fpm_pilot
-									-- simCMD_autopilot_vs_sel:once()
-								-- end
-								-- vnav_vs = 1
-							-- end
+							
 							if simDR_autopilot_altitude_mode == 4 then
-								fmc_vvi_cur = B738_set_anim_value(fmc_vvi_cur, vvi_trg, 850, 8000, 0.15)
+								fmc_vvi_cur = B738_set_anim_value(fmc_vvi_cur, vvi_trg, 1500, 8000, 0.15)
 								simDR_ap_vvi_dial = fmc_vvi_cur
 								if B738DR_autopilot_autothr_arm_pos == 1 then
 									at_mode = 7		-- N1 thrust
-									--at_mode_eng = 20
 								end
 							end
 						end
@@ -8584,13 +8575,16 @@ function B738_app()
 	if ap_roll_mode == 3 and ap_roll_mode_eng == 3 then
 		B738DR_ap_ils_active = 1
 		
-		if simDR_approach_status == 2 and approach_status_old ~= simDR_approach_status then
+		if simDR_approach_status == 0 then
+			simCMD_autopilot_app:once()
+		elseif simDR_approach_status == 2 and approach_status_old ~= simDR_approach_status then
 			if B738DR_autopilot_autothr_arm_pos == 1 then
 				at_mode = 2
 			end
 		end
 		if simDR_glideslope_status == 2 and glideslope_status_old ~= simDR_glideslope_status then
-			if ap_pitch_mode_eng == 1 and ap_pitch_mode == 1 then
+			--if ap_pitch_mode_eng == 1 and ap_pitch_mode == 1 then
+			if ap_pitch_mode ~= 3 then
 				simCMD_autopilot_app:once()
 				if simDR_approach_status == 0 then
 					simCMD_autopilot_app:once()

@@ -799,6 +799,9 @@ simDR_gen2_on					= find_dataref("sim/cockpit2/electrical/generator_on[1]")
 simDR_gen_off_bus1 				= find_dataref("sim/cockpit2/annunciators/generator_off[0]")
 simDR_gen_off_bus2 				= find_dataref("sim/cockpit2/annunciators/generator_off[1]")
 
+B738DR_eng1_N2					= find_dataref("laminar/B738/engine/indicators/N2_percent_1")
+B738DR_eng2_N2					= find_dataref("laminar/B738/engine/indicators/N2_percent_2")
+
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -4833,8 +4836,6 @@ end
 
 ------------- CUSTOM
 
-
-
 function B738_start_engine()
 	
 	--ENGINE 1
@@ -4843,7 +4844,7 @@ function B738_start_engine()
 		if simDR_engine_mixture1 < 0.1 then		-- start lever> cutoff
 			ignition1 = 4
 		end
-		if simDR_engine_N2_pct1 > 56 and simDR_engine_N2_pct1 < 58 then -- release to OFF and starter off
+		if B738DR_eng1_N2 > 56 and B738DR_eng1_N2 < 58 then -- release to OFF and starter off
 			ignition1 = 3
 			B738DR_engine1_starter_pos = 1
 		end
@@ -4856,11 +4857,11 @@ function B738_start_engine()
 	elseif B738DR_engine1_starter_pos == 1 then
 		ignition1 = 0
 		if simDR_engine_mixture1 > 0.5 then		-- start lever> idle
-			if simDR_engine_N2_pct1 > 50 and simDR_engine_N2_pct1 < 57 then
+			if B738DR_eng1_N2 > 50 and B738DR_eng1_N2 < 57 then
 				ignition1 = 3
 			end
 			if simDR_on_ground_0 == 0 and simDR_on_ground_1 == 0 and simDR_on_ground_2 == 0 
-			and simDR_engine_N2_pct1 < 70 and simDR_engine_N2_pct1 > 5 then
+			and B738DR_eng1_N2 < 70 and B738DR_eng1_N2 > 5 then
 				ignition1 = 3
 			end
 		end
@@ -4869,7 +4870,7 @@ function B738_start_engine()
 		ignition1 = 0
 		if simDR_engine_mixture1 > 0.5 and simDR_engine_N1_pct1 > 19 then
 			if simDR_on_ground_0 == 0 and simDR_on_ground_1 == 0 and simDR_on_ground_2 == 0 then
-				if simDR_engine_N2_pct1 < 70 then
+				if B738DR_eng1_N2 < 70 then
 					ignition1 = 3
 				end
 			else
@@ -4890,7 +4891,7 @@ function B738_start_engine()
 		if simDR_engine_mixture2 < 0.1 then		-- start lever> cutoff
 			ignition2 = 4
 		end
-		if simDR_engine_N2_pct2 > 56 and simDR_engine_N2_pct2 < 58 then -- release to OFF and starter off
+		if B738DR_eng2_N2 > 56 and B738DR_eng2_N2 < 58 then -- release to OFF and starter off
 			ignition2 = 3
 			B738DR_engine2_starter_pos = 1
 		end
@@ -4903,11 +4904,11 @@ function B738_start_engine()
 	elseif B738DR_engine2_starter_pos == 1 then
 		ignition2 = 0
 		if simDR_engine_mixture2 > 0.5 then		-- start lever> idle
-			if simDR_engine_N2_pct2 > 50 and simDR_engine_N2_pct2 < 57 then
+			if B738DR_eng2_N2 > 50 and B738DR_eng2_N2 < 57 then
 				ignition2 = 3
 			end
 			if simDR_on_ground_0 == 0 and simDR_on_ground_1 == 0 and simDR_on_ground_2 == 0 
-			and simDR_engine_N2_pct2 < 70 and simDR_engine_N2_pct2 > 5 then 
+			and B738DR_eng2_N2 < 70 and B738DR_eng2_N2 > 5 then 
 				ignition2 = 3
 			end
 		end
@@ -4916,7 +4917,7 @@ function B738_start_engine()
 		ignition2 = 0
 		if simDR_engine_mixture2 > 0.5 and simDR_engine_N1_pct2 > 19 then
 			if simDR_on_ground_0 == 0 and simDR_on_ground_1 == 0 and simDR_on_ground_2 == 0 then
-				if simDR_engine_N2_pct2 < 70 then
+				if B738DR_eng2_N2 < 70 then
 					ignition2 = 3
 				end
 			else
@@ -4931,21 +4932,107 @@ function B738_start_engine()
 		end
 	end
 	
+	
+	
+	-- --ENGINE 1
+	-- --Position GRD
+	-- if B738DR_engine1_starter_pos == 0 then
+		-- if simDR_engine_mixture1 < 0.1 then		-- start lever> cutoff
+			-- ignition1 = 4
+		-- end
+		-- if simDR_engine_N2_pct1 > 56 and simDR_engine_N2_pct1 < 58 then -- release to OFF and starter off
+			-- ignition1 = 3
+			-- B738DR_engine1_starter_pos = 1
+		-- end
+		-- if simDR_engine_mixture1 > 0.5 then		-- start lever> idle
+			-- if ignition1 ~= 4 then
+				-- ignition1 = 3
+			-- end
+		-- end
+	-- -- Position AUTO
+	-- elseif B738DR_engine1_starter_pos == 1 then
+		-- ignition1 = 0
+		-- if simDR_engine_mixture1 > 0.5 then		-- start lever> idle
+			-- if simDR_engine_N2_pct1 > 50 and simDR_engine_N2_pct1 < 57 then
+				-- ignition1 = 3
+			-- end
+			-- if simDR_on_ground_0 == 0 and simDR_on_ground_1 == 0 and simDR_on_ground_2 == 0 
+			-- and simDR_engine_N2_pct1 < 70 and simDR_engine_N2_pct1 > 5 then
+				-- ignition1 = 3
+			-- end
+		-- end
+	-- -- Position CNT
+	-- elseif B738DR_engine1_starter_pos == 2 then
+		-- ignition1 = 0
+		-- if simDR_engine_mixture1 > 0.5 and simDR_engine_N1_pct1 > 19 then
+			-- if simDR_on_ground_0 == 0 and simDR_on_ground_1 == 0 and simDR_on_ground_2 == 0 then
+				-- if simDR_engine_N2_pct1 < 70 then
+					-- ignition1 = 3
+				-- end
+			-- else
+				-- ignition1 = 3
+			-- end
+		-- end
+	-- -- Position FLT
+	-- elseif B738DR_engine1_starter_pos == 3 then
+		-- ignition1 = 0
+		-- if simDR_engine_mixture1 > 0.5 then		-- start lever> idle
+			-- ignition1 = 3
+		-- end
+	-- end
+	
+	-- -- ENGINE 2
+	-- -- Position GRD
+	-- if B738DR_engine2_starter_pos == 0 then
+		-- if simDR_engine_mixture2 < 0.1 then		-- start lever> cutoff
+			-- ignition2 = 4
+		-- end
+		-- if simDR_engine_N2_pct2 > 56 and simDR_engine_N2_pct2 < 58 then -- release to OFF and starter off
+			-- ignition2 = 3
+			-- B738DR_engine2_starter_pos = 1
+		-- end
+		-- if simDR_engine_mixture2 > 0.5 then		-- start lever> idle
+			-- if ignition2 ~= 4 then
+				-- ignition2 = 3
+			-- end
+		-- end
+	-- -- Position AUTO
+	-- elseif B738DR_engine2_starter_pos == 1 then
+		-- ignition2 = 0
+		-- if simDR_engine_mixture2 > 0.5 then		-- start lever> idle
+			-- if simDR_engine_N2_pct2 > 50 and simDR_engine_N2_pct2 < 57 then
+				-- ignition2 = 3
+			-- end
+			-- if simDR_on_ground_0 == 0 and simDR_on_ground_1 == 0 and simDR_on_ground_2 == 0 
+			-- and simDR_engine_N2_pct2 < 70 and simDR_engine_N2_pct2 > 5 then 
+				-- ignition2 = 3
+			-- end
+		-- end
+	-- -- Position CNT
+	-- elseif B738DR_engine2_starter_pos == 2 then
+		-- ignition2 = 0
+		-- if simDR_engine_mixture2 > 0.5 and simDR_engine_N1_pct2 > 19 then
+			-- if simDR_on_ground_0 == 0 and simDR_on_ground_1 == 0 and simDR_on_ground_2 == 0 then
+				-- if simDR_engine_N2_pct2 < 70 then
+					-- ignition2 = 3
+				-- end
+			-- else
+				-- ignition2 = 3
+			-- end
+		-- end
+	-- -- Position FLT
+	-- elseif B738DR_engine2_starter_pos == 3 then
+		-- ignition2 = 0
+		-- if simDR_engine_mixture2 > 0.5 then		-- start lever> idle
+			-- ignition2 = 3
+		-- end
+	-- end
+	
+	
+	
+	
+	
 	---- ENGINES START
-	
-	-- B738DR_eng1_start_disable = 0
-	-- if apu_start_eng1 == 0 and eng2_start_eng1 == 0 then
-		-- if ignition1 == 4  and simDR_engine_N1_pct1 < 19 then
-			-- B738DR_eng1_start_disable = 1
-		-- end
-	-- end
-	
-	-- B738DR_eng2_start_disable = 0
-	-- if apu_start_eng2 == 0 and eng1_start_eng2 == 0 then
-		-- if ignition2 == 4 and simDR_engine_N1_pct2 < 19 then
-			-- B738DR_eng2_start_disable = 1
-		-- end
-	-- end
 	
 	local eng1_start_disable = 0
 	if apu_start_eng1 == 0 and eng2_start_eng1 == 0 then
@@ -8538,16 +8625,16 @@ function B738_nose_steer()
 		--simDR_right_brake = right_brake
 	end
 	
-	local thrust = math.max(simDR_throttle1_use, simDR_throttle2_use) * 100
+	-- local thrust = math.max(simDR_throttle1_use, simDR_throttle2_use) * 100
 	
-	if thrust < 4 then
-		simDR_roll_co = 0.0448
-		simDR_roll_brake = 1.2
-	else
-		thrust = math.min(thrust, 12)
-		simDR_roll_co = B738_rescale(4, 0.0448, 12, 0.025, thrust)
-		simDR_roll_brake = B738_rescale(4, 1.2, 12, 1.0, thrust)
-	end
+	-- if thrust < 4 then
+		-- simDR_roll_co = 0.030
+		-- simDR_roll_brake = 1.2
+	-- else
+		-- thrust = math.min(thrust, 12)
+		-- simDR_roll_co = B738_rescale(4, 0.030, 12, 0.025, thrust)
+		-- simDR_roll_brake = B738_rescale(4, 1.2, 12, 1.0, thrust)
+	-- end
 	
 end
 
@@ -10139,8 +10226,8 @@ B738_init_engineMGMT_fltStart()
 	simDR_right_brake_old = simDR_right_brake
 	brake_inop = 0
 	
-	simDR_roll_brake = 1.2	--1.0	--0.8
-	simDR_roll_co = 0.03
+	--simDR_roll_brake = 1.2	--1.0	--0.8
+	--simDR_roll_co = 0.03
 	
 	B738DR_zone_temp = 80
 	

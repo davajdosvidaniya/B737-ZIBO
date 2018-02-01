@@ -81,6 +81,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.24o: (beta)
+------
+- twkster flight model
+- fixed some bugs (decode CIFP, windshield effect...)
+
+
 3.24n: (beta)
 ------
 - tweaked flight model by twkster (moded by me)

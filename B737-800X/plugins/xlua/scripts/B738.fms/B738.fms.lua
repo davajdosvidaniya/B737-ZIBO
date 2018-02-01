@@ -10426,6 +10426,7 @@ function dec_lat_lon(dec_mode, dec_idx)
 	local dec_prev_lat = 0
 	local dec_prev_lon = 0
 	local dec_prev_crs = 0
+	local dec_prev_navaid = ""
 	
 	local dec_next_brg = 0
 	
@@ -10454,7 +10455,7 @@ function dec_lat_lon(dec_mode, dec_idx)
 		dec_prev_lat = legs_data[dec_idx-1][7]
 		dec_prev_lon = legs_data[dec_idx-1][8]
 		dec_prev_crs = legs_data[dec_idx-1][2]
-		
+		dec_prev_navaid = legs_data[dec_idx-1][1]
 		
 		dec_calc_lat = dec_prev_lat
 		dec_calc_lon = dec_prev_lon
@@ -10476,6 +10477,7 @@ function dec_lat_lon(dec_mode, dec_idx)
 		dec_prev_lat = legs_data2[dec_idx-1][7]
 		dec_prev_lon = legs_data2[dec_idx-1][8]
 		dec_prev_crs = legs_data2[dec_idx-1][2]
+		dec_prev_navaid = legs_data2[dec_idx-1][1]
 		
 		
 		dec_calc_lat = dec_prev_lat
@@ -10977,52 +10979,54 @@ function dec_lat_lon(dec_mode, dec_idx)
 	-- (1000) -> FA
 	elseif dec_path == "FA" then
 		
-		ndb_navaid = 0
-		if dec_mode == 0 then
-			if legs_data[dec_idx][32] > 19 then
-				ndb_navaid = 2
-			elseif legs_data[dec_idx][32] > 9 then
-				ndb_navaid = 1
-			end
-			if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
-				find_navaid2(legs_data[dec_idx][34], "", 1, legs_data[dec_idx][16], ndb_navaid)
-			elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
-				find_navaid2(legs_data[dec_idx][34], "", 2, legs_data[dec_idx][16], ndb_navaid)
-			elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
-				find_navaid2(legs_data[dec_idx][34], "", 2, legs_data[dec_idx][16], ndb_navaid)
+		if string.sub(dec_prev_navaid, 1, 2) ~= "RW" then
+			ndb_navaid = 0
+			if dec_mode == 0 then
+				if legs_data[dec_idx][32] > 19 then
+					ndb_navaid = 2
+				elseif legs_data[dec_idx][32] > 9 then
+					ndb_navaid = 1
+				end
+				if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
+					find_navaid2(legs_data[dec_idx][34], "", 1, legs_data[dec_idx][16], ndb_navaid)
+				elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
+					find_navaid2(legs_data[dec_idx][34], "", 2, legs_data[dec_idx][16], ndb_navaid)
+				elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
+					find_navaid2(legs_data[dec_idx][34], "", 2, legs_data[dec_idx][16], ndb_navaid)
+				else
+					find_navaid2(legs_data[dec_idx][34], "", 0, legs_data[dec_idx][16], ndb_navaid)
+				end
 			else
-				find_navaid2(legs_data[dec_idx][34], "", 0, legs_data[dec_idx][16], ndb_navaid)
+				if legs_data2[dec_idx][32] > 19 then
+					ndb_navaid = 2
+				elseif legs_data2[dec_idx][32] > 9 then
+					ndb_navaid = 1
+				end
+				if legs_data2[dec_idx][19] == 1 or legs_data2[dec_idx][19] == 3 then
+					find_navaid2(legs_data2[dec_idx][34], "", 1, legs_data2[dec_idx][16], ndb_navaid)
+				elseif legs_data2[dec_idx][19] == 2 or legs_data2[dec_idx][19] == 4 then
+					find_navaid2(legs_data2[dec_idx][34], "", 2, legs_data2[dec_idx][16], ndb_navaid)
+				elseif legs_data2[dec_idx][19] == 7 or legs_data2[dec_idx][19] == 8 or legs_data2[dec_idx][19] == 9 then
+					find_navaid2(legs_data2[dec_idx][34], "", 2, legs_data2[dec_idx][16], ndb_navaid)
+				else
+					find_navaid2(legs_data2[dec_idx][34], "", 0, legs_data2[dec_idx][16], ndb_navaid)
+				end
 			end
-		else
-			if legs_data2[dec_idx][32] > 19 then
-				ndb_navaid = 2
-			elseif legs_data2[dec_idx][32] > 9 then
-				ndb_navaid = 1
+			
+			-- if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
+				-- find_navaid(dec_navaid, "", 1, dec_navaid_rc)
+			-- elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
+				-- find_navaid(dec_navaid, "", 2, dec_navaid_rc)
+			-- elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
+				-- find_navaid(dec_navaid, "", 2, dec_navaid_rc)
+			-- else
+				-- find_navaid(dec_navaid, "", 0, dec_navaid_rc)
+			-- end
+			
+			if navaid_list_n > 0 then
+				dec_prev_lat = navaid_list[1][2]
+				dec_prev_lon = navaid_list[1][3]
 			end
-			if legs_data2[dec_idx][19] == 1 or legs_data2[dec_idx][19] == 3 then
-				find_navaid2(legs_data2[dec_idx][34], "", 1, legs_data2[dec_idx][16], ndb_navaid)
-			elseif legs_data2[dec_idx][19] == 2 or legs_data2[dec_idx][19] == 4 then
-				find_navaid2(legs_data2[dec_idx][34], "", 2, legs_data2[dec_idx][16], ndb_navaid)
-			elseif legs_data2[dec_idx][19] == 7 or legs_data2[dec_idx][19] == 8 or legs_data2[dec_idx][19] == 9 then
-				find_navaid2(legs_data2[dec_idx][34], "", 2, legs_data2[dec_idx][16], ndb_navaid)
-			else
-				find_navaid2(legs_data2[dec_idx][34], "", 0, legs_data2[dec_idx][16], ndb_navaid)
-			end
-		end
-		
-		-- if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
-			-- find_navaid(dec_navaid, "", 1, dec_navaid_rc)
-		-- elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
-			-- find_navaid(dec_navaid, "", 2, dec_navaid_rc)
-		-- elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
-			-- find_navaid(dec_navaid, "", 2, dec_navaid_rc)
-		-- else
-			-- find_navaid(dec_navaid, "", 0, dec_navaid_rc)
-		-- end
-		
-		if navaid_list_n > 0 then
-			dec_prev_lat = navaid_list[1][2]
-			dec_prev_lon = navaid_list[1][3]
 		end
 		
 		crs1 = tonumber(dec_brg)
@@ -11157,44 +11161,46 @@ function dec_lat_lon(dec_mode, dec_idx)
 	-- FD Track/Course to distance
 	elseif dec_path == "FD" then
 		
-		ndb_navaid = 0
-		if dec_mode == 0 then
-			if legs_data[dec_idx][32] > 19 then
-				ndb_navaid = 2
-			elseif legs_data[dec_idx][32] > 9 then
-				ndb_navaid = 1
-			end
-			dec_navaid = legs_data[dec_idx][34]
-			if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
-				find_navaid2(dec_navaid, "", 1, dec_navaid_rc, ndb_navaid)
-			elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
-				find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
-			elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
-				find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
+		if string.sub(dec_prev_navaid, 1, 2) ~= "RW" then
+			ndb_navaid = 0
+			if dec_mode == 0 then
+				if legs_data[dec_idx][32] > 19 then
+					ndb_navaid = 2
+				elseif legs_data[dec_idx][32] > 9 then
+					ndb_navaid = 1
+				end
+				dec_navaid = legs_data[dec_idx][34]
+				if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
+					find_navaid2(dec_navaid, "", 1, dec_navaid_rc, ndb_navaid)
+				elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
+					find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
+				elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
+					find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
+				else
+					find_navaid2(dec_navaid, "", 0, dec_navaid_rc, ndb_navaid)
+				end
 			else
-				find_navaid2(dec_navaid, "", 0, dec_navaid_rc, ndb_navaid)
+				if legs_data2[dec_idx][32] > 19 then
+					ndb_navaid = 2
+				elseif legs_data2[dec_idx][32] > 9 then
+					ndb_navaid = 1
+				end
+				dec_navaid = legs_data2[dec_idx][34]
+				if legs_data2[dec_idx][19] == 1 or legs_data2[dec_idx][19] == 3 then
+					find_navaid2(dec_navaid, "", 1, dec_navaid_rc, ndb_navaid)
+				elseif legs_data2[dec_idx][19] == 2 or legs_data2[dec_idx][19] == 4 then
+					find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
+				elseif legs_data2[dec_idx][19] == 7 or legs_data2[dec_idx][19] == 8 or legs_data2[dec_idx][19] == 9 then
+					find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
+				else
+					find_navaid2(dec_navaid, "", 0, dec_navaid_rc, ndb_navaid)
+				end
 			end
-		else
-			if legs_data2[dec_idx][32] > 19 then
-				ndb_navaid = 2
-			elseif legs_data2[dec_idx][32] > 9 then
-				ndb_navaid = 1
+			
+			if navaid_list_n > 0 then
+				dec_prev_lat = navaid_list[1][2]
+				dec_prev_lon = navaid_list[1][3]
 			end
-			dec_navaid = legs_data2[dec_idx][34]
-			if legs_data2[dec_idx][19] == 1 or legs_data2[dec_idx][19] == 3 then
-				find_navaid2(dec_navaid, "", 1, dec_navaid_rc, ndb_navaid)
-			elseif legs_data2[dec_idx][19] == 2 or legs_data2[dec_idx][19] == 4 then
-				find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
-			elseif legs_data2[dec_idx][19] == 7 or legs_data2[dec_idx][19] == 8 or legs_data2[dec_idx][19] == 9 then
-				find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
-			else
-				find_navaid2(dec_navaid, "", 0, dec_navaid_rc, ndb_navaid)
-			end
-		end
-		
-		if navaid_list_n > 0 then
-			dec_prev_lat = navaid_list[1][2]
-			dec_prev_lon = navaid_list[1][3]
 		end
 		
 		crs1 = tonumber(dec_brg)
@@ -11284,76 +11290,46 @@ function dec_lat_lon(dec_mode, dec_idx)
 	-- FC Track to Fix
 	elseif dec_path == "FC" then
 		
-		-- if dec_mode == 0 then
-			-- if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
-				-- find_navaid(legs_data[dec_idx][34], "", 1, legs_data[dec_idx][16])
-			-- elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
-				-- find_navaid(legs_data[dec_idx][34], "", 2, legs_data[dec_idx][16])
-			-- elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
-				-- find_navaid(legs_data[dec_idx][34], "", 2, legs_data[dec_idx][16])
-			-- else
-				-- find_navaid(legs_data[dec_idx][34], "", 0, legs_data[dec_idx][16])
-			-- end
-		-- else
-			-- if legs_data2[dec_idx][19] == 1 or legs_data2[dec_idx][19] == 3 then
-				-- find_navaid(legs_data2[dec_idx][34], "", 1, legs_data2[dec_idx][16])
-			-- elseif legs_data2[dec_idx][19] == 2 or legs_data2[dec_idx][19] == 4 then
-				-- find_navaid(legs_data2[dec_idx][34], "", 2, legs_data2[dec_idx][16])
-			-- elseif legs_data2[dec_idx][19] == 7 or legs_data2[dec_idx][19] == 8 or legs_data2[dec_idx][19] == 9 then
-				-- find_navaid(legs_data2[dec_idx][34], "", 2, legs_data2[dec_idx][16])
-			-- else
-				-- find_navaid(legs_data2[dec_idx][34], "", 0, legs_data2[dec_idx][16])
-			-- end
-		-- end
-		
-		ndb_navaid = 0
-		if dec_mode == 0 then
-			if legs_data[dec_idx][32] > 19 then
-				ndb_navaid = 2
-			elseif legs_data[dec_idx][32] > 9 then
-				ndb_navaid = 1
-			end
-			dec_navaid = legs_data[dec_idx][34]
-			if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
-				find_navaid2(dec_navaid, "", 1, dec_navaid_rc, ndb_navaid)
-			elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
-				find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
-			elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
-				find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
+		if string.sub(dec_prev_navaid, 1, 2) ~= "RW" then
+			ndb_navaid = 0
+			if dec_mode == 0 then
+				if legs_data[dec_idx][32] > 19 then
+					ndb_navaid = 2
+				elseif legs_data[dec_idx][32] > 9 then
+					ndb_navaid = 1
+				end
+				dec_navaid = legs_data[dec_idx][34]
+				if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
+					find_navaid2(dec_navaid, "", 1, dec_navaid_rc, ndb_navaid)
+				elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
+					find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
+				elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
+					find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
+				else
+					find_navaid2(dec_navaid, "", 0, dec_navaid_rc, ndb_navaid)
+				end
 			else
-				find_navaid2(dec_navaid, "", 0, dec_navaid_rc, ndb_navaid)
+				if legs_data2[dec_idx][32] > 19 then
+					ndb_navaid = 2
+				elseif legs_data2[dec_idx][32] > 9 then
+					ndb_navaid = 1
+				end
+				dec_navaid = legs_data2[dec_idx][34]
+				if legs_data2[dec_idx][19] == 1 or legs_data2[dec_idx][19] == 3 then
+					find_navaid2(dec_navaid, "", 1, dec_navaid_rc, ndb_navaid)
+				elseif legs_data2[dec_idx][19] == 2 or legs_data2[dec_idx][19] == 4 then
+					find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
+				elseif legs_data2[dec_idx][19] == 7 or legs_data2[dec_idx][19] == 8 or legs_data2[dec_idx][19] == 9 then
+					find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
+				else
+					find_navaid2(dec_navaid, "", 0, dec_navaid_rc, ndb_navaid)
+				end
 			end
-		else
-			if legs_data2[dec_idx][32] > 19 then
-				ndb_navaid = 2
-			elseif legs_data2[dec_idx][32] > 9 then
-				ndb_navaid = 1
+			
+			if navaid_list_n > 0 then
+				dec_prev_lat = navaid_list[1][2]
+				dec_prev_lon = navaid_list[1][3]
 			end
-			dec_navaid = legs_data2[dec_idx][34]
-			if legs_data2[dec_idx][19] == 1 or legs_data2[dec_idx][19] == 3 then
-				find_navaid2(dec_navaid, "", 1, dec_navaid_rc, ndb_navaid)
-			elseif legs_data2[dec_idx][19] == 2 or legs_data2[dec_idx][19] == 4 then
-				find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
-			elseif legs_data2[dec_idx][19] == 7 or legs_data2[dec_idx][19] == 8 or legs_data2[dec_idx][19] == 9 then
-				find_navaid2(dec_navaid, "", 2, dec_navaid_rc, ndb_navaid)
-			else
-				find_navaid2(dec_navaid, "", 0, dec_navaid_rc, ndb_navaid)
-			end
-		end
-		
-		-- if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
-			-- find_navaid(dec_navaid, "", 1, dec_navaid_rc)
-		-- elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
-			-- find_navaid(dec_navaid, "", 2, dec_navaid_rc)
-		-- elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
-			-- find_navaid(dec_navaid, "", 2, dec_navaid_rc)
-		-- else
-			-- find_navaid(dec_navaid, "", 0, dec_navaid_rc)
-		-- end
-		
-		if navaid_list_n > 0 then
-			dec_prev_lat = navaid_list[1][2]
-			dec_prev_lon = navaid_list[1][3]
 		end
 		
 		crs1 = tonumber(dec_brg)
@@ -11378,55 +11354,47 @@ function dec_lat_lon(dec_mode, dec_idx)
 	-- VECTOR -> FM
 	elseif dec_path == "FM" then
 		
-		ndb_navaid = 0
-		if dec_mode == 0 then
-			if legs_data[dec_idx][32] > 19 then
-				ndb_navaid = 2
-			elseif legs_data[dec_idx][32] > 9 then
-				ndb_navaid = 1
-			end
-			if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
-				find_navaid2(legs_data[dec_idx][34], "", 1, legs_data[dec_idx][16], ndb_navaid)
-			elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
-				find_navaid2(legs_data[dec_idx][34], "", 2, legs_data[dec_idx][16], ndb_navaid)
-			elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
-				find_navaid2(legs_data[dec_idx][34], "", 2, legs_data[dec_idx][16], ndb_navaid)
+		if string.sub(dec_prev_navaid, 1, 2) ~= "RW" then
+			ndb_navaid = 0
+			if dec_mode == 0 then
+				if legs_data[dec_idx][32] > 19 then
+					ndb_navaid = 2
+				elseif legs_data[dec_idx][32] > 9 then
+					ndb_navaid = 1
+				end
+				if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
+					find_navaid2(legs_data[dec_idx][34], "", 1, legs_data[dec_idx][16], ndb_navaid)
+				elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
+					find_navaid2(legs_data[dec_idx][34], "", 2, legs_data[dec_idx][16], ndb_navaid)
+				elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
+					find_navaid2(legs_data[dec_idx][34], "", 2, legs_data[dec_idx][16], ndb_navaid)
+				else
+					find_navaid2(legs_data[dec_idx][34], "", 0, legs_data[dec_idx][16], ndb_navaid)
+				end
 			else
-				find_navaid2(legs_data[dec_idx][34], "", 0, legs_data[dec_idx][16], ndb_navaid)
+				if legs_data2[dec_idx][32] > 19 then
+					ndb_navaid = 2
+				elseif legs_data2[dec_idx][32] > 9 then
+					ndb_navaid = 1
+				end
+				if legs_data2[dec_idx][19] == 1 or legs_data2[dec_idx][19] == 3 then
+					find_navaid2(legs_data2[dec_idx][34], "", 1, legs_data2[dec_idx][16], ndb_navaid)
+				elseif legs_data2[dec_idx][19] == 2 or legs_data2[dec_idx][19] == 4 then
+					find_navaid2(legs_data2[dec_idx][34], "", 2, legs_data2[dec_idx][16], ndb_navaid)
+				elseif legs_data2[dec_idx][19] == 7 or legs_data2[dec_idx][19] == 8 or legs_data2[dec_idx][19] == 9 then
+					find_navaid2(legs_data2[dec_idx][34], "", 2, legs_data2[dec_idx][16], ndb_navaid)
+				else
+					find_navaid2(legs_data2[dec_idx][34], "", 0, legs_data2[dec_idx][16], ndb_navaid)
+				end
 			end
-		else
-			if legs_data2[dec_idx][32] > 19 then
-				ndb_navaid = 2
-			elseif legs_data2[dec_idx][32] > 9 then
-				ndb_navaid = 1
-			end
-			if legs_data2[dec_idx][19] == 1 or legs_data2[dec_idx][19] == 3 then
-				find_navaid2(legs_data2[dec_idx][34], "", 1, legs_data2[dec_idx][16], ndb_navaid)
-			elseif legs_data2[dec_idx][19] == 2 or legs_data2[dec_idx][19] == 4 then
-				find_navaid2(legs_data2[dec_idx][34], "", 2, legs_data2[dec_idx][16], ndb_navaid)
-			elseif legs_data2[dec_idx][19] == 7 or legs_data2[dec_idx][19] == 8 or legs_data2[dec_idx][19] == 9 then
-				find_navaid2(legs_data2[dec_idx][34], "", 2, legs_data2[dec_idx][16], ndb_navaid)
+			
+			if navaid_list_n > 0 then
+				dec_prev_lat = navaid_list[1][2]
+				dec_prev_lon = navaid_list[1][3]
+				dec_find_type = navaid_list[1][1]
 			else
-				find_navaid2(legs_data2[dec_idx][34], "", 0, legs_data2[dec_idx][16], ndb_navaid)
+				dec_find_type = 0
 			end
-		end
-		
-		-- if legs_data[dec_idx][19] == 1 or legs_data[dec_idx][19] == 3 then
-			-- find_navaid(dec_navaid, "", 1, dec_navaid_rc)
-		-- elseif legs_data[dec_idx][19] == 2 or legs_data[dec_idx][19] == 4 then
-			-- find_navaid(dec_navaid, "", 2, dec_navaid_rc)
-		-- elseif legs_data[dec_idx][19] == 7 or legs_data[dec_idx][19] == 8 or legs_data[dec_idx][19] == 9 then
-			-- find_navaid(dec_navaid, "", 2, dec_navaid_rc)
-		-- else
-			-- find_navaid(dec_navaid, "", 0, dec_navaid_rc)
-		-- end
-		
-		if navaid_list_n > 0 then
-			dec_prev_lat = navaid_list[1][2]
-			dec_prev_lon = navaid_list[1][3]
-			dec_find_type = navaid_list[1][1]
-		else
-			dec_find_type = 0
 		end
 		
 		crs1 = tonumber(dec_brg)
@@ -27106,6 +27074,10 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 		elseif page_dep_arr == 1 then
 			-- Reference ARR
 			if des_icao ~= "****" and ref_icao ~= "----" and exec_load_fpln == 0 then
+				if arr_data == 0 then
+					des_app2 = "------"
+					des_app_tns2 = "------"
+				end
 				arr_data = 1
 				if des_icao == ref_icao then
 					page_arr = 1
@@ -34628,7 +34600,7 @@ function B738_fmc_menu()
 		line4_l = "  Z I B O               "
 		line4_s = "           M O D  " .. version
 		if menu_tick < 5 then
-			line5_x = "FLIGHT MODEL 3.2 TWKSTER"
+			line5_x = "FLIGHT MODEL 4.0 TWKSTER"
 			line5_l = "         A   S  D  G    "
 			line5_s = "      BY  ERO IM EV ROUP"
 			line6_x = "SOUND PACK "
@@ -38969,6 +38941,7 @@ function B738_fmc_legs2()
 		local discon_last = 0
 		
 		local allign_ok = 0
+		local disable_page = 0
 		
 		line1_x = ""
 		line2_x = ""
@@ -39004,7 +38977,19 @@ function B738_fmc_legs2()
 			legs_step2 = legs_num2
 		end
 		
-		if legs_num2 > 0 then --and simDR_fmc_nav_id ~= des_icao then
+		if nav_mode == 1 then
+			if legs_delete == 0 then
+				disable_page = 1
+			else
+				offset_temp = offset + 1
+				if offset_temp > legs_num2 then
+					disable_page = 1
+				end
+			end
+		end
+		
+		if legs_num2 > 0 and disable_page == 0 then
+		-- if legs_num2 > 0 then
 			
 			if offset_temp > legs_num2 then
 				offset_temp = legs_num2
@@ -57364,7 +57349,10 @@ function B738_fmc_calc()
 		-----------------------------
 		
 		if offset > 0 and offset <= legs_num then
-			if legs_num > 0 then
+			
+			
+			--if legs_num > 0 then
+			if legs_num > 0 and legs_num2 > 1 and rte_exec == 0 then
 				B738DR_fpln_active = 1
 				B738DR_fpln_active_fo = 1
 				if nav_mode == 1 then
@@ -61097,7 +61085,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.24n"
+	version = "v3.24o"
 
 end
 
@@ -61323,6 +61311,7 @@ function after_physics()
 	
 		B738DR_fms_test1 = 0
 		B738_fmc_on()
+		B738_exec_light()
 		B738DR_fms_test1 = 1
 		B738_calc_rte()
 		B738DR_fms_test1 = 2
@@ -61484,7 +61473,7 @@ function after_physics()
 		B738DR_fms_test1 = 33
 		via_via_check()
 		B738DR_fms_test1 = 34
-		B738_exec_light()
+		--B738_exec_light()
 
 		B738DR_fms_test1 = 35
 		B738_vnav_desc_spd()
