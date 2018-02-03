@@ -1327,6 +1327,7 @@ cruise_max_alt =
 	}
 
 	
+	
 --*************************************************************************************--
 --** 					            GLOBAL VARIABLES                				 **--
 --*************************************************************************************--
@@ -1897,8 +1898,18 @@ function B738_engine_rpm2()
 	
 	B738DR_eng1_N1 = eng1_N1
 	B738DR_eng2_N1 = eng2_N1
-	B738DR_eng1_N2 = math.max(0, eng1_N2 - 4)
-	B738DR_eng2_N2 = math.max(0, eng2_N2 - 4)
+	if eng1_N2 < 10 then
+		B738DR_eng1_N2 = B738_rescale(0, 0, 10, 6, eng1_N2)
+	else
+		B738DR_eng1_N2 = eng1_N2 - 4
+	end
+	if eng2_N2 < 10 then
+		B738DR_eng2_N2 = B738_rescale(0, 0, 10, 6, eng2_N2)
+	else
+		B738DR_eng2_N2 = eng2_N2 - 4
+	end
+	-- B738DR_eng1_N2 = math.max(0, eng1_N2 - 4)
+	-- B738DR_eng2_N2 = math.max(0, eng2_N2 - 4)
 	
 	--simDR_high_idle_ratio = 2.161	--B738DR_high_idle	--2.15	--B738DR_high_idle
 	--simDR_low_idle_ratio = 1.162		--B738DR_low_idle	--1.152	--B738DR_low_idle

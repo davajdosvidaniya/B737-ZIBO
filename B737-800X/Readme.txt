@@ -81,6 +81,23 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.24s:
+------
+OTHERS
+- improved steering code for taxi
+- fixed small bugs (FMC switch page, load flightplan fms v11, compas light switch,...)
+
+3.24r:
+------
+- fixed annunciates during autoland
+
+3.24p:
+------
+- tuned AP constant for twkster flightmodel 4.0
+- corrected fire test (engine, apu, cargo)
+- corrected flight recorder test
+- fix small bugs (decode CIFP,...)
+
 3.24o: (beta)
 ------
 - twkster flight model

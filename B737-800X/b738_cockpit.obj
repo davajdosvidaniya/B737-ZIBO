@@ -13664,9 +13664,9 @@ ANIM_end
 ANIM_begin
 ANIM_trans -0.011700 0.877100 2.127700 -0.011700 0.877100 2.127700 0.000000 0.000000 none
 ANIM_rotate_begin 0.000000 0.525921 0.850534 laminar/B738/toggle_switch/compass_brightness_pos
-ANIM_rotate_key -1.000000 25.000000
+ANIM_rotate_key -1.000000 -25.000000
 ANIM_rotate_key 0.000000 0.000000
-ANIM_rotate_key 1.000000 -25.000000
+ANIM_rotate_key 1.000000 25.000000
 ANIM_rotate_end
 ANIM_trans 0.011700 -0.877100 -2.127700 0.011700 -0.877100 -2.127700 0.000000 0.000000 none
 ATTR_manip_command_switch_left_right left_right laminar/B738/toggle_switch/compass_brightness_rgt laminar/B738/toggle_switch/compass_brightness_lft Standby Compass Brightness

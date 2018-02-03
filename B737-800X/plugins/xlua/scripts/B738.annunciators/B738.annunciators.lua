@@ -1930,7 +1930,7 @@ function wing_body_ovht_act()
 end
 
 function fdr_test_timer()
-	fdr_test = 1
+	fdr_test = 2
 end
 
 ----- ANNUNCIATORS -----------------------------------------------------------------------
@@ -2303,7 +2303,6 @@ B738DR_audio_panel_obs_mic6_light = B738DR_audio_panel_obs_mic6_pos * brightness
 
 	B738DR_equip_door = equipment * brightness_level
 
-
 -- YAW DAMPER
 
 	local yaw_damper_off = 1
@@ -2318,13 +2317,14 @@ B738DR_audio_panel_obs_mic6_light = B738DR_audio_panel_obs_mic6_pos * brightness
 	local fdr_off = 0
 		
 		if B738DR_fdr_pos == 1 then
-			if is_timer_scheduled(fdr_test_timer) == false and fdr_test == 0 then
-				run_after_time(fdr_test_timer, 10)
-			end
+			-- if is_timer_scheduled(fdr_test_timer) == false and fdr_test == 0 then
+				fdr_test = 1
+				-- run_after_time(fdr_test_timer, 10)
+			-- end
 		else
-			if is_timer_scheduled(fdr_test_timer) == true then
-				stop_timer(fdr_test_timer)
-			end
+			-- if is_timer_scheduled(fdr_test_timer) == true then
+				-- stop_timer(fdr_test_timer)
+			-- end
 			fdr_test = 0
 		end
 		
@@ -2336,9 +2336,11 @@ B738DR_audio_panel_obs_mic6_light = B738DR_audio_panel_obs_mic6_pos * brightness
 		
 		elseif simDR_aircraft_on_ground == 0 and simDR_bus_amps1 < 0.3 then
 			fdr_off = 1
+		end
 		
-		elseif fdr_test == 1 then
-			fdr_off = 1
+		-- test running
+		if simDR_aircraft_on_ground == 1 and fdr_test == 1 then
+			fdr_off = 0
 		end
 		
 		
@@ -2452,37 +2454,43 @@ B738DR_audio_panel_obs_mic6_light = B738DR_audio_panel_obs_mic6_pos * brightness
 		end	
 
 	eng1_ovht = 0
-		if simDR_engine1_egt > 950
-		or B738DR_fire_test_switch_pos == 1 then
+		if simDR_engine1_egt > 950 then
+		--or B738DR_fire_test_switch_pos == 1 then
 		eng1_ovht = 1
 		end
 
 	eng2_ovht = 0
-		if simDR_engine2_egt > 950
-		or B738DR_fire_test_switch_pos == 1 then
+		if simDR_engine2_egt > 950 then
+		--or B738DR_fire_test_switch_pos == 1 then
 		eng2_ovht = 1
 		end
 
 	-- FIRE BELL LOGIC
 
 	fire_bell_annun = 0
+	local apu_fire_annun = 0
+	local wheel_well_fire = 0
 	if eng1_fire_annun == 1
 		or eng2_fire_annun == 1
 		--or cargo_fire_annuns == 1
 		or cargo_fire_test == 1
-		or fire_panel_annuns_test == 1 then
+		or B738DR_fire_test_switch_pos == 1 then
+		--or fire_panel_annuns_test == 1 then
 		fire_bell_annun = 1
+	end
+	
+	if B738DR_fire_test_switch_pos == 1 then
+		wheel_well_fire = 1
 	end
 
 	-- if fire_panel_annuns_test == 1
 	-- then
-	local apu_fire_annun = 0
-	local wheel_well_fire = 0
-	if B738DR_fire_test_switch_pos == 1 then
+	--if B738DR_fire_test_switch_pos == 1 then
+	if fire_panel_annuns_test == 1 then
 		apu_fire_annun = 1
 		eng1_fire_annun = 1
 		eng2_fire_annun = 1
-		wheel_well_fire = 1
+		--wheel_well_fire = 1
 		eng1_ovht = 1
 		eng2_ovht = 1
 	end
@@ -2490,10 +2498,12 @@ B738DR_audio_panel_obs_mic6_light = B738DR_audio_panel_obs_mic6_pos * brightness
 	local cargo_fire_annuns = 0
 	local extinguisher_circuit_annun2 = 0
 	if B738DR_cargo_fire_test_button_pos == 1 then
-		cargo_fire_annuns = 1
+		--cargo_fire_annuns = 1
 		extinguisher_circuit_annun2 = 1
 	end
-
+	if cargo_fire_test == 1 then
+		cargo_fire_annuns = 1
+	end
 
 	local l_bottle_discharge = 0
 		if B738DR_l_bottle_psi == 0 then
