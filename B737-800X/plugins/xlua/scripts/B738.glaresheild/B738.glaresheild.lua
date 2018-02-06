@@ -6728,6 +6728,9 @@ function B738_vnav6()
 	local spd_250_10000 = 0
 	
 	local at_mode_old = 0
+	local lvl_chg_fpm = 0
+	local lvl_chg_alt = 0
+	
 	--local hold_for_vpath = 0
 	
 	if ap_pitch_mode_eng == 5 and ap_pitch_mode == 5 and B738DR_autopilot_vnav_status == 1 then --ap_vnav_status == 2 then
@@ -8047,7 +8050,7 @@ function B738_vnav6()
 				
 				if simDR_autopilot_altitude_mode ~= 6 and (B738DR_flight_phase < 2 or B738DR_missed_app_act > 0) then
 					if init_climb == 0 and (B738DR_flight_phase < 2 or B738DR_missed_app_act > 0) then
-						speed_step = simDR_airspeed_pilot + (B738DR_speed_ratio * 8)	--12.5, 11, 9.5, 8, 10
+						speed_step = simDR_airspeed_pilot + (B738DR_speed_ratio * 5) + 5	--12.5, 11, 9.5, 8, 10
 						if speed_step > vnav_speed_trg and (B738DR_flight_phase < 2 or B738DR_missed_app_act > 0) then
 							if simDR_autopilot_altitude_mode ~= 5 then
 								at_mode_old = at_mode
@@ -8060,17 +8063,27 @@ function B738_vnav6()
 							end
 							simDR_ap_vvi_dial = 0
 						else
-							if simDR_altitude_pilot > 25000 then
+							--if simDR_altitude_pilot > 25000 then
 								speed_step = simDR_airspeed_pilot + 10
-								if vnav_speed_trg > speed_step and B738DR_speed_ratio < 2 then
+								--if vnav_speed_trg > speed_step and B738DR_speed_ratio < 2 then
+								lvl_chg_alt = math.max(simDR_altitude_pilot, 15000)
+								lvl_chg_alt = math.min(lvl_chg_alt, 41000)
+								lvl_chg_fpm = B738_rescale(15000, 1100, 41000, 50, lvl_chg_alt)
+								if vnav_speed_trg > speed_step and simDR_vvi_fpm_pilot < (lvl_chg_fpm - 100) then
 									-- turn climb vvi 900 ft
-									simDR_ap_vvi_dial = 1500	--850
-									vvi_trg = simDR_ap_vvi_dial
-									fmc_vvi_cur = simDR_vvi_fpm_pilot
-									simCMD_autopilot_vs_sel:once()
+									if simDR_autopilot_altitude_mode ~= 4 then
+										-- simDR_ap_vvi_dial = 1500	--850
+										-- vvi_trg = simDR_ap_vvi_dial
+										-- fmc_vvi_cur = simDR_vvi_fpm_pilot
+										-- simCMD_autopilot_vs_sel:once()
+										simDR_ap_vvi_dial = lvl_chg_fpm
+										vvi_trg = simDR_ap_vvi_dial
+										fmc_vvi_cur = simDR_vvi_fpm_pilot
+										simCMD_autopilot_vs_sel:once()
+									end
 									vnav_vs = 1
 								end
-							end
+							--end
 							
 							if simDR_autopilot_altitude_mode == 4 then
 								fmc_vvi_cur = B738_set_anim_value(fmc_vvi_cur, vvi_trg, 1500, 8000, 0.15)
@@ -8134,6 +8147,8 @@ function B738_lvl_chg()
 	local at_mode_old = 0
 	local lvl_chg_fpm = 0
 	local lvl_chg_alt = 0
+	local lvl_vvi_trg = 0
+	local fmc_vvi_cur = 0
 
 	--if ap_on == 1 and B738DR_autopilot_vnav_status == 0 then
 	if B738DR_autopilot_vnav_status == 0 then
@@ -8203,7 +8218,7 @@ function B738_lvl_chg()
 					
 					if simDR_airspeed_is_mach == 0 then
 						if simDR_autopilot_altitude_mode ~= 6 then
-							speed_step = simDR_airspeed_pilot + (B738DR_speed_ratio * 8)
+							speed_step = simDR_airspeed_pilot + (B738DR_speed_ratio * 5) + 5
 							if speed_step > simDR_airspeed_dial then
 								if simDR_autopilot_altitude_mode ~= 5 then
 									at_mode_old = at_mode
@@ -8221,11 +8236,15 @@ function B738_lvl_chg()
 								simDR_ap_vvi_dial = 0
 							else
 								speed_step = simDR_airspeed_pilot + 10
-								if simDR_airspeed_dial > speed_step and B738DR_speed_ratio < 2 then
+								--if simDR_airspeed_dial > speed_step and B738DR_speed_ratio < 2 then
+								lvl_chg_alt = math.max(simDR_altitude_pilot, 15000)
+								lvl_chg_alt = math.min(lvl_chg_alt, 41000)
+								lvl_chg_fpm = B738_rescale(15000, 1000, 41000, 50, lvl_chg_alt)
+								if simDR_airspeed_dial > speed_step and simDR_vvi_fpm_pilot < (lvl_chg_fpm - 100) then
 									-- turn climb vvi 1100 ft
-									lvl_chg_alt = math.max(simDR_altitude_pilot, 15000)
-									lvl_chg_alt = math.min(lvl_chg_alt, 41000)
-									lvl_chg_fpm = B738_rescale(15000, 1000, 41000, 50, lvl_chg_alt)
+									-- lvl_chg_alt = math.max(simDR_altitude_pilot, 15000)
+									-- lvl_chg_alt = math.min(lvl_chg_alt, 41000)
+									-- lvl_chg_fpm = B738_rescale(15000, 1000, 41000, 50, lvl_chg_alt)
 									
 									if simDR_autopilot_altitude_mode ~= 4 then
 										simDR_ap_vvi_dial = lvl_chg_fpm
@@ -8236,7 +8255,7 @@ function B738_lvl_chg()
 									lvl_chg_vs = 1
 								end
 								if simDR_autopilot_altitude_mode == 4 then
-									fmc_vvi_cur = B738_set_anim_value(fmc_vvi_cur, lvl_vvi_trg, 850, 8000, 0.15)
+									fmc_vvi_cur = B738_set_anim_value(fmc_vvi_cur, lvl_vvi_trg, 800, 8000, 0.15)
 									simDR_ap_vvi_dial = fmc_vvi_cur
 									if B738DR_autopilot_autothr_arm_pos == 1 then
 										at_mode = 7		-- N1 thrust
@@ -8293,7 +8312,7 @@ function B738_alt_hld()
 					if alt_x < 0 then
 						alt_x = -alt_x
 					end
-					if alt_x >= 350 and simDR_glideslope_status == 0 
+					if alt_x >= 300 and simDR_glideslope_status == 0 
 					and altitude_dial_ft_old ~= simDR_ap_altitude_dial_ft then
 						--B738DR_autopilot_vvi_status_pfd = 1		-- V/S arm
 						B738DR_pfd_alt_mode_arm = PFD_ALT_VS_ARM
@@ -8321,7 +8340,7 @@ function B738_alt_hld()
 					end
 				end
 			else
-				if simDR_vvi_fpm_pilot > -100 and simDR_vvi_fpm_pilot < 100 then
+				if simDR_vvi_fpm_pilot > -200 and simDR_vvi_fpm_pilot < 200 then
 					simCMD_autopilot_alt_hold:once()
 				else
 					if simDR_autopilot_altitude_mode ~= 4 then
@@ -8406,7 +8425,7 @@ function B738_alt_acq()	--ALT ACQ mode
 			alt_acq_disable = 1
 		end
 		if alt_acq_disable == 0 then
-			if ap_pitch_mode ~= 6 then
+			if ap_pitch_mode ~= 6 and ap_pitch_mode ~= 3 then
 				if simDR_autopilot_altitude_mode == 4 or simDR_autopilot_altitude_mode == 5 then	-- V/S or LVL CHG
 					alt_x = simDR_altitude_pilot + (simDR_vvi_fpm_pilot / 3.5)	-- 17 seconds to MCP ALT
 					alt_y = simDR_ap_altitude_dial_ft - simDR_altitude_pilot
@@ -9415,18 +9434,6 @@ function B738_ap_logic()
 	local airspeed_dial = 0
 	local alt_x = 0
 	local thrust = 0
-	local crs_min = 0
-	local crs_max = 0
-	local vdot = 0
-	local nav_course_pilot = 0
-	local nav_bearing = 0
-	local nav_hdispl = 0
-	local nav_hdots = 0
-	local nav1_hdots_pilot = 0
-	local nav2_hdots_pilot = 0
-	local nav1_hdots_copilot = 0
-	local nav2_hdots_copilot = 0
-	local vnav_enable = 0
 	local allign_ok = 0
 
 	if simDR_flight_dir_mode == 0 then
@@ -9499,7 +9506,9 @@ function B738_ap_logic()
 	end
 	if B738DR_lnav_disconnect == 1 then
 		B738DR_lnav_disconnect = 0
-		ap_roll_mode = 0
+		if (ap_roll_mode > 3 and ap_roll_mode < 7) or ap_roll_mode == 8 or ap_roll_mode == 13 then
+			ap_roll_mode = 0
+		end
 	end
 	
 	roll_mode_old = ap_roll_mode_eng
