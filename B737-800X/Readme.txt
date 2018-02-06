@@ -81,6 +81,13 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.24t:
+------
+OTHERS
+- improved steering code for taxi
+- fixed AP for flightmodel tuned by twkster (LVL CHG, ALT HOLD, VNAV, AP constants)
+- fixed small bugs
+
 3.24s:
 ------
 OTHERS

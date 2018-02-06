@@ -609,6 +609,8 @@ simDR_TAT				= find_dataref("sim/cockpit2/temperature/outside_air_LE_temp_degc")
 
 simDR_roll_brake		= find_dataref("sim/aircraft/overflow/acf_brake_co")
 simDR_roll_co			= find_dataref("sim/aircraft/overflow/acf_roll_co")
+simDR_nosewheel_skid	= find_dataref("sim/flightmodel2/gear/tire_skid_ratio[0]")
+simDR_beta				= find_dataref("sim/flightmodel/position/beta")
 
 simDR_throttle1_use		= find_dataref("sim/flightmodel/engine/ENGN_thro_use[0]")
 simDR_throttle2_use		= find_dataref("sim/flightmodel/engine/ENGN_thro_use[1]")
@@ -6044,7 +6046,7 @@ function B738_init_engineMGMT_fltStart()
 		first_generators2 = 0
 		-- simDR_brake = 1
 		-- B738DR_parking_brake_pos = simDR_brake
-		DR_sys_test = 2
+		--DR_sys_test = 2
 		B738DR_mach_test_enable = 1
 
     end
@@ -8518,13 +8520,11 @@ function B738_nose_steer()
 	local nose_steer_deg_trg = 0
 	local steer_left_brake = 0
 	local steer_right_brake = 0
-	local steer_position = 0
-	local steer_pos_min = 0
-	local steer_pos_max = 0
+	local steer_pos_min = -78
+	local steer_pos_max = 78
 	
 	local yoke_steer = 0
-	local gs_limit = math.min(simDR_ground_speed, 80)
-	local steer_max = 0
+	local gs_limit = math.min(simDR_ground_speed, 15)
 	local roll_co_max = 0
 	
 	-- deactivate Parking brate
@@ -8554,89 +8554,47 @@ function B738_nose_steer()
 		else
 			if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1
 			or simDR_on_ground_2 == 1 then
-				if B738DR_nosewheel == 1 then
-					yoke_steer = simDR_yoke_hdg_ratio
-				elseif B738DR_nosewheel == 2 then
-					yoke_steer = simDR_yoke_roll2_ratio
+				
+				simDR_toe_brakes_ovr = 1
+				if B738DR_nosewheel == 0 then
+					nose_steer_deg_trg = simDR_steer_cmd
+				elseif B738DR_nosewheel == 1 then
+					nose_steer_deg_trg = B738_rescale(-1, -78, 1, 78, simDR_yoke_hdg_ratio)
+				else
+					nose_steer_deg_trg = B738_rescale(-1, -78, 1, 78, simDR_yoke_roll2_ratio)
 				end
-				-- if simDR_airspeed_pilot < 45 then
-					simDR_toe_brakes_ovr = 1
-					nose_steer_deg_trg = B738_rescale(-1, -65, 1, 65, yoke_steer)
-					if B738DR_nosewheel == 0 then
-						steer_position = simDR_steer_cmd
-						steer_pos_min = -65
-						steer_pos_max = 65
+				
+				if nose_steer_deg_trg < 0 then
+					steer_right_brake = 0
+					if simDR_ground_speed < 5 then
+						steer_left_brake = -B738_rescale(steer_pos_min, -0.25, steer_pos_max, 0.25, nose_steer_deg_trg)
+						steer_left_brake = B738_rescale(0, 0, 5, steer_left_brake, simDR_ground_speed)
 					else
-						steer_position = yoke_steer
-						steer_pos_min = -1
-						steer_pos_max = 1
-					end
-					if steer_position < 0 then
-						steer_right_brake = 0
-						if simDR_ground_speed < 5 then
-							steer_left_brake = -B738_rescale(steer_pos_min, -0.15, steer_pos_max, 0.15, steer_position)
-							steer_left_brake = B738_rescale(0, 0, 5, steer_left_brake, simDR_ground_speed)
-						-- elseif simDR_ground_speed < 23 then
-							--steer_left_brake = -B738_rescale(steer_pos_min, -0.15, steer_pos_max, 0.15, steer_position)
-						else
-							if gs_limit < 23 then
-								steer_max = 0.15
-							else
-								steer_max = B738_rescale(23, 0.15, 80, 0.25, gs_limit)
-							end
-							steer_left_brake = -B738_rescale(steer_pos_min, -steer_max, steer_pos_max, steer_max, steer_position)
-							if steer_position < -5 then
-								nose_steer_deg_trg = -5
-							end
-						end
-					else
-						steer_left_brake = 0
-						if simDR_ground_speed < 5 then
-							steer_right_brake = B738_rescale(steer_pos_min, -0.15, steer_pos_max, 0.15, steer_position)
-							steer_right_brake = B738_rescale(0, 0, 5, steer_right_brake, simDR_ground_speed)
-						-- elseif simDR_ground_speed < 23 then
-							--steer_right_brake = B738_rescale(steer_pos_min, -0.15, steer_pos_max, 0.15, steer_position)
-						else
-							if gs_limit < 23 then
-								steer_max = 0.15
-							else
-								steer_max = B738_rescale(23, 0.15, 80, 0.25, gs_limit)
-							end
-							steer_right_brake = B738_rescale(steer_pos_min, -steer_max, steer_pos_max, steer_max, steer_position)
-							if steer_position > 5 then
-								nose_steer_deg_trg = 5
-							end
+						steer_left_brake = -B738_rescale(steer_pos_min, -0.25, steer_pos_max, 0.25, nose_steer_deg_trg)
+						if nose_steer_deg_trg < -7 and simDR_ground_speed > 23 then
+							nose_steer_deg_trg = -7
 						end
 					end
-					if B738DR_nosewheel > 0 then
-						simDR_steer_ovr = 1
-						simDR_steer_cmd = B738_set_anim_value(simDR_steer_cmd, nose_steer_deg_trg, -65, 65, 2)
+				else
+					steer_left_brake = 0
+					if simDR_ground_speed < 5 then
+						steer_right_brake = B738_rescale(steer_pos_min, -0.25, steer_pos_max, 0.25, nose_steer_deg_trg)
+						steer_right_brake = B738_rescale(0, 0, 5, steer_right_brake, simDR_ground_speed)
 					else
-						simDR_steer_ovr = 0
+						steer_right_brake = B738_rescale(steer_pos_min, -0.25, steer_pos_max, 0.25, nose_steer_deg_trg)
+						if nose_steer_deg_trg > 7 and simDR_ground_speed > 23 then
+							nose_steer_deg_trg = 7
+						end
 					end
-					-- gs_limit = math.min(simDR_ground_speed, 15)
-					-- roll_co_max = B738_rescale(0, 0.025, 15, 0.040, gs_limit)
-					-- if simDR_steer_cmd < 0 then
-						-- simDR_roll_co = B738_rescale(-65, roll_co_max, 0, 0.025, simDR_steer_cmd)
-					-- else
-						-- simDR_roll_co = B738_rescale(0, 0.025, 65, roll_co_max, simDR_steer_cmd)
-					-- end
-					simDR_left_brake = math.max(left_brake, steer_left_brake, autobrake_ratio)
-					simDR_right_brake = math.max(right_brake, steer_right_brake, autobrake_ratio)
-				-- else
-					-- simDR_steer_ovr = 0
-					-- if left_brake > 0 or right_brake > 0 then
-						-- simDR_toe_brakes_ovr = 1
-						-- simDR_left_brake = left_brake
-						-- simDR_right_brake = right_brake
-					-- else
-						-- simDR_toe_brakes_ovr = 0
-					-- end
-					-- if B738DR_nosewheel > 0 then
-						-- simDR_steer_cmd = 0
-					-- end
-					-- simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos)
-				-- end
+				end
+				if B738DR_nosewheel > 0 then
+					simDR_steer_ovr = 1
+					simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, 0.028)
+				else
+					simDR_steer_ovr = 0
+				end
+				simDR_left_brake = math.max(left_brake, steer_left_brake, autobrake_ratio)
+				simDR_right_brake = math.max(right_brake, steer_right_brake, autobrake_ratio)
 			else
 				simDR_steer_ovr = 0
 				if left_brake > 0 or right_brake > 0 then
@@ -8652,30 +8610,20 @@ function B738_nose_steer()
 			
 		end
 		
-		gs_limit = math.min(simDR_ground_speed, 15)
-		roll_co_max = B738_rescale(0, 0.025, 15, 0.040, gs_limit)
+		roll_co_max = B738_rescale(0, 0.030, 15, 0.060, gs_limit)
 		if simDR_steer_cmd < 0 then
-			simDR_roll_co = B738_rescale(-65, roll_co_max, 0, 0.025, simDR_steer_cmd)
+			simDR_roll_co = B738_rescale(-78, roll_co_max, 0, 0.025, simDR_steer_cmd)
 		else
-			simDR_roll_co = B738_rescale(0, 0.025, 65, roll_co_max, simDR_steer_cmd)
+			simDR_roll_co = B738_rescale(0, 0.025, 78, roll_co_max, simDR_steer_cmd)
 		end
-	
+		
+		local nosewheel_skid = math.min(simDR_nosewheel_skid, 0.3)
+		nosewheel_skid = math.max(nosewheel_skid, 0)
+		simDR_roll_brake = B738_rescale(0, 0.8, 0.3, 1.5, nosewheel_skid)
+		
 	else
 		simDR_steer_ovr = 1
-		--simDR_left_brake = left_brake
-		--simDR_right_brake = right_brake
 	end
-	
-	-- local thrust = math.max(simDR_throttle1_use, simDR_throttle2_use) * 100
-	
-	-- if thrust < 4 then
-		-- simDR_roll_co = 0.030
-		-- simDR_roll_brake = 1.2
-	-- else
-		-- thrust = math.min(thrust, 12)
-		-- simDR_roll_co = B738_rescale(4, 0.030, 12, 0.025, thrust)
-		-- simDR_roll_brake = B738_rescale(4, 1.2, 12, 1.0, thrust)
-	-- end
 	
 end
 
@@ -9946,7 +9894,7 @@ function B738_generators()
 				simDR_generator1_on = 1
 			end
 			first_generators1 = 1
-			DR_sys_test = 1
+			--DR_sys_test = 1
 		end
 	end
 	if first_generators2 == 0 then
@@ -10411,7 +10359,7 @@ function after_physics()
 	
 
 	--B738_bus_trans()
-	--DR_sys_test = first_generators1
+	--DR_sys_test = steer_position
 	--B738DR_tcas_test_test = fuel_delta_0
 	
 end

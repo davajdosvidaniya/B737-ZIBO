@@ -18184,7 +18184,6 @@ function B738_default_others_config()
 end
 
 
-
 function B738_load_config()
 	
 	local fms_line = ""
@@ -18732,26 +18731,26 @@ function B738_load_config()
 							end
 						end
 					end
-				elseif string.sub(fms_line, 1, 16) == "LAST POS LAT   =" then
-					temp_fmod = string.len(fms_line)
-					if temp_fmod > 16 then
-						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
-						if temp_fmod == nil then
-							B738DR_last_pos_lat = 0
-						else
-							B738DR_last_pos_lat = temp_fmod
-						end
-					end
-				elseif string.sub(fms_line, 1, 16) == "LAST POS LON   =" then
-					temp_fmod = string.len(fms_line)
-					if temp_fmod > 16 then
-						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
-						if temp_fmod == nil then
-							B738DR_last_pos_lon = 0
-						else
-							B738DR_last_pos_lon = temp_fmod
-						end
-					end
+				-- elseif string.sub(fms_line, 1, 16) == "LAST POS LAT   =" then
+					-- temp_fmod = string.len(fms_line)
+					-- if temp_fmod > 16 then
+						-- temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						-- if temp_fmod == nil then
+							-- B738DR_last_pos_lat = 0
+						-- else
+							-- B738DR_last_pos_lat = temp_fmod
+						-- end
+					-- end
+				-- elseif string.sub(fms_line, 1, 16) == "LAST POS LON   =" then
+					-- temp_fmod = string.len(fms_line)
+					-- if temp_fmod > 16 then
+						-- temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						-- if temp_fmod == nil then
+							-- B738DR_last_pos_lon = 0
+						-- else
+							-- B738DR_last_pos_lon = temp_fmod
+						-- end
+					-- end
 				-- elseif string.sub(fms_line, 1, 16) == "ANNOUNCEM SET  =" then
 					-- temp_fmod = string.len(fms_line)
 					-- if temp_fmod > 16 then
@@ -19294,10 +19293,6 @@ function B738_save_config()
 		file_navdata:write(fms_line)
 		fms_line = "*** Config file        ***\n"
 		file_navdata:write(fms_line)
-		fms_line = "LAST POS LAT   = " .. tostring(simDR_latitude) .. "\n"
-		file_navdata:write(fms_line)
-		fms_line = "LAST POS LON   = " .. tostring(simDR_longitude) .. "\n"
-		file_navdata:write(fms_line)
 		fms_line = "UNITS          = " .. string.format("%2d", B738DR_fmc_units) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "ALIGN TIME     = " .. string.format("%2d", B738DR_align_time) .. "\n"
@@ -19471,6 +19466,73 @@ function B738_save_fmod_config()
 	end
 
 end
+
+
+function B738_load_status()
+	
+	local fms_line = ""
+	local temp_fmod = 0
+	
+	file_name = "b738x_status.dat"
+	file_navdata = io.open(file_name, "r")
+	if file_navdata ~= nil then
+		fms_line = file_navdata:read()
+		while fms_line do
+			if string.len(fms_line) > 1 and string.byte(fms_line, -1) == 13 then	-- CR
+				fms_line = string.sub(fms_line, 1, -2)
+			end
+			
+			if string.len(fms_line) > 16 then
+				if string.sub(fms_line, 1, 16) == "LAST POS LAT   =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod == nil then
+							B738DR_last_pos_lat = 0
+						else
+							B738DR_last_pos_lat = temp_fmod
+						end
+					end
+				elseif string.sub(fms_line, 1, 16) == "LAST POS LON   =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod == nil then
+							B738DR_last_pos_lon = 0
+						else
+							B738DR_last_pos_lon = temp_fmod
+						end
+					end
+				end
+			end
+			fms_line = file_navdata:read()
+		end
+		file_navdata:close()
+	end
+end
+
+function B738_save_status()
+	
+	local fms_line = ""
+	local ff = 0
+	
+	--file_name = file_path .. "b738x.cfg"
+	file_name = "b738x_status.dat"
+	file_navdata = io.open(file_name, "w")
+	if file_navdata ~= nil then
+		-- OTHERS
+		fms_line = "*** B737-800X ZIBO MOD ***\n"
+		file_navdata:write(fms_line)
+		fms_line = "*** Statusfile         ***\n"
+		file_navdata:write(fms_line)
+		fms_line = "LAST POS LAT   = " .. tostring(simDR_latitude) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "LAST POS LON   = " .. tostring(simDR_longitude) .. "\n"
+		file_navdata:write(fms_line)
+		file_navdata:close()
+	end
+end
+
 
 -- function dataref_legs()
 	-- local vvv = 0
@@ -44595,10 +44657,11 @@ function B738_fmc_msg()
 		if string.sub(B738DR_fpln_nav_id, 1, 7) == "DISCONT" then
 			if lnav_mode == 1 then
 				B738DR_lnav_disconnect = 1
-				B738DR_vnav_disconnect = 1
+				--B738DR_vnav_disconnect = 1
 				add_fmc_msg(DISCON)
 				B738DR_fmc_message_warn = 1
 			end
+			B738DR_vnav_disconnect = 1
 		end
 		
 		-- ABOVE MAX CERT ALT
@@ -44625,11 +44688,14 @@ function B738_fmc_msg()
 		end
 		
 		-- LNAV DISCONNECT
-		if lnav_mode == 1 and legs_num < 1 then
-			B738DR_lnav_disconnect = 1
+		if legs_num < 1 then
+			if lnav_mode == 1 then
+				B738DR_lnav_disconnect = 1
+				--B738DR_vnav_disconnect = 1
+				add_fmc_msg(LNAV_DISCON)
+				B738DR_fmc_message_warn = 1
+			end
 			B738DR_vnav_disconnect = 1
-			add_fmc_msg(LNAV_DISCON)
-			B738DR_fmc_message_warn = 1
 		end
 		if legs_num < 1 then
 			B738DR_end_route = 1
@@ -57341,12 +57407,14 @@ function B738_fmc_calc()
 			else
 				offset = first_star_idx - 1
 			end
-			if B738DR_heading_mode > 3 and B738DR_heading_mode < 7 then
+			--if B738DR_heading_mode > 3 and B738DR_heading_mode < 7 then
+			if (ap_roll_mode > 3 and ap_roll_mode < 7) or ap_roll_mode == 8 or ap_roll_mode == 13 then
 				B738DR_lnav_disconnect = 1
-				B738DR_vnav_disconnect = 1
+				--B738DR_vnav_disconnect = 1
 				add_fmc_msg(LNAV_DISCON)
 				B738DR_fmc_message_warn = 1
 			end
+			B738DR_vnav_disconnect = 1
 		end
 		
 		if legs_num > legs_num_old then
@@ -57440,13 +57508,16 @@ function B738_fmc_calc()
 		
 		if nav_mode == 1 then	-- navigate to destination ICAO
 			legs_intdir_act = 0
-			if simDR_fmc_dist < 5 and B738DR_heading_mode > 3 and B738DR_heading_mode < 7 then
-				B738DR_lnav_disconnect = 1
+			if simDR_fmc_dist < 5 then
+				if (ap_roll_mode > 3 and ap_roll_mode < 7) or ap_roll_mode == 8 or ap_roll_mode == 13 then
+					B738DR_lnav_disconnect = 1
+					--B738DR_vnav_disconnect = 1
+					add_fmc_msg(LNAV_DISCON)
+					B738DR_fmc_message_warn = 1
+					--nav_mode == 0
+					nav_mode = 99
+				end
 				B738DR_vnav_disconnect = 1
-				add_fmc_msg(LNAV_DISCON)
-				B738DR_fmc_message_warn = 1
-				--nav_mode == 0
-				nav_mode = 99
 			end
 		
 		elseif nav_mode ~= 99 then
@@ -58109,12 +58180,13 @@ function B738_fmc_calc()
 					if offset > legs_num then
 						-- end of route if selected approach
 						if des_app ~= "------" then
-							if B738DR_heading_mode > 3 and B738DR_heading_mode < 7 then
+							if (ap_roll_mode > 3 and ap_roll_mode < 7) or ap_roll_mode == 8 or ap_roll_mode == 13 then
 								B738DR_lnav_disconnect = 1
-								B738DR_vnav_disconnect = 1
+								--B738DR_vnav_disconnect = 1
 								add_fmc_msg(LNAV_DISCON)
 								B738DR_fmc_message_warn = 1
 							end
+							B738DR_vnav_disconnect = 1
 							nav_mode = 0
 						else
 							-- navigate to destination ICAO
@@ -58284,6 +58356,10 @@ function B738_fmc_calc()
 			
 			simDR_fmc_dist = nd_dis
 			simDR_fmc_dist2 = nd_dis --+ dist_corr
+			
+			-- relative_brg = math.abs(relative_brg)
+			-- relative_brg = math.min(90, relative_brg)
+			-- simDR_fmc_dist2 = nd_dis * B738_rescale(0, 1.5, 90, 1.0, relative_brg)
 			
 		elseif nav_mode == 2 then
 			
@@ -61095,7 +61171,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.24s"
+	version = "v3.24t"
 
 end
 
@@ -61221,7 +61297,7 @@ end
 --function aircraft_load() end
 
 function aircraft_unload() 
-	B738_save_config()
+	B738_save_status()
 end
 
 function flight_start() 
@@ -61288,6 +61364,7 @@ function flight_start()
 	B738_default_others_config()
 	B738_load_config()
 	B738_load_fmod_config()
+	B738_load_status()
 	B738_set_last_pos()
 	
 	simDR_kill_map_fms = 1
