@@ -21146,7 +21146,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 			local jj = 0
 			local kk = 0
 			
-			if nav_mode == 1 then
+			if nav_mode == 1 and act_page == 1 then
 				item = legs_num2 + 1
 			else
 				item = (act_page - 1) * 5 + offset - 1 + button
@@ -24441,7 +24441,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					v1_set = "---"
 					vr_set = "---"
 					v2_set = "---"
-					B738DR_calc_vspd = 1
+					--B738DR_calc_vspd = 1
 					B738DR_calc_trim = 1
 				end
 			else
@@ -24455,7 +24455,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					v1_set = "---"
 					vr_set = "---"
 					v2_set = "---"
-					B738DR_calc_vspd = 1
+					--B738DR_calc_vspd = 1
 					B738DR_calc_trim = 1
 				else
 					if n == nil then
@@ -24473,7 +24473,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							v1_set = "---"
 							vr_set = "---"
 							v2_set = "---"
-							B738DR_calc_vspd = 1
+							--B738DR_calc_vspd = 1
 							B738DR_calc_trim = 1
 						end
 					end
@@ -44272,6 +44272,8 @@ function B738_flight_phase3()
 			switch_fmc_page(2)
 		elseif B738DR_flight_phase == 5 then
 			switch_fmc_page(3)
+		elseif flight_phase_old < 5 and B738DR_flight_phase == 6 then
+			switch_fmc_page(3)
 		end
 	end
 	flight_phase_old = B738DR_flight_phase
@@ -57408,7 +57410,7 @@ function B738_fmc_calc()
 				offset = first_star_idx - 1
 			end
 			--if B738DR_heading_mode > 3 and B738DR_heading_mode < 7 then
-			if (ap_roll_mode > 3 and ap_roll_mode < 7) or ap_roll_mode == 8 or ap_roll_mode == 13 then
+			if (B738DR_heading_mode > 3 and B738DR_heading_mode < 7) or B738DR_heading_mode == 8 or B738DR_heading_mode == 13 then
 				B738DR_lnav_disconnect = 1
 				--B738DR_vnav_disconnect = 1
 				add_fmc_msg(LNAV_DISCON)
@@ -57509,7 +57511,7 @@ function B738_fmc_calc()
 		if nav_mode == 1 then	-- navigate to destination ICAO
 			legs_intdir_act = 0
 			if simDR_fmc_dist < 5 then
-				if (ap_roll_mode > 3 and ap_roll_mode < 7) or ap_roll_mode == 8 or ap_roll_mode == 13 then
+				if (B738DR_heading_mode > 3 and B738DR_heading_mode < 7) or B738DR_heading_mode == 8 or B738DR_heading_mode == 13 then
 					B738DR_lnav_disconnect = 1
 					--B738DR_vnav_disconnect = 1
 					add_fmc_msg(LNAV_DISCON)
@@ -57703,7 +57705,11 @@ function B738_fmc_calc()
 									dist_thrshld = dta_radius / math.tan(dta_angle / 2)
 									radii_dist_ctr = dta_radius / math.sin(dta_angle / 2)
 									delta_radius = radii_dist_ctr - dta_radius - (1.2 * B738DR_rnp)
-									delta_radius2 = dist_thrshld - ((legs_data[offset+1][3] / 2) - 0.1)
+									if offset+2 <= legs_num and legs_data[offset+1][3] == 0 then
+										delta_radius2 = dist_thrshld - (legs_data[offset+2][3] - 0.1)
+									else
+										delta_radius2 = dist_thrshld - (legs_data[offset+1][3] - 0.1)	--((legs_data[offset+1][3] / 2) - 0.1)
+									end
 									if delta_radius > 0 or delta_radius2 > 0 or dist_thrshld > 4 then
 										dta_bank_angle = 5	-- bank angle 25deg
 										dta_rate_speed = B738_rescale(71, 0.3368, 236, 0.8931, gnd_spd)
@@ -57716,7 +57722,11 @@ function B738_fmc_calc()
 										dist_thrshld = dta_radius / math.tan(dta_angle / 2)
 										radii_dist_ctr = dta_radius / math.sin(dta_angle / 2)
 										delta_radius = radii_dist_ctr - dta_radius - (1.2 * B738DR_rnp)
-										delta_radius2 = dist_thrshld - ((legs_data[offset+1][3] / 2) - 0.1)
+										if offset+2 <= legs_num and legs_data[offset+1][3] == 0 then
+											delta_radius2 = dist_thrshld - (legs_data[offset+2][3] - 0.1)
+										else
+											delta_radius2 = dist_thrshld - (legs_data[offset+1][3] - 0.1)	--((legs_data[offset+1][3] / 2) - 0.1)
+										end
 									end
 									if delta_radius > 0 or delta_radius2 > 0 or dist_thrshld > 4 then
 										dta_bank_angle = 6	-- bank angle 30deg
@@ -57932,7 +57942,8 @@ function B738_fmc_calc()
 							offset = offset + 1
 							B738DR_fmc_bank_angle = dta_bank_angle
 							
-							if legs_data[offset][31] ~= "HA" and legs_data[offset][31] ~= "HF" and legs_data[offset][31] ~= "HM" and legs_data[offset][31] ~= "VM" then
+							if legs_data[offset][31] ~= "HA" and legs_data[offset][31] ~= "HF" and legs_data[offset][31] ~= "HM" 
+							and legs_data[offset][31] ~= "VM" and legs_data[offset][31] ~= "FM" then
 								while legs_data[offset][3] == 0 do
 									offset = offset + 1
 									if offset > legs_num then
@@ -57940,7 +57951,7 @@ function B738_fmc_calc()
 									end
 									if legs_data[offset][3] == 0 then
 										if legs_data[offset][31] == "HA" or legs_data[offset][31] == "HF" and legs_data[offset][31] == "HM" 
-										or legs_data[offset][31] == "VM" then
+										or legs_data[offset][31] == "VM" or legs_data[offset][31] == "FM" then
 											break
 										end
 									end
@@ -58128,66 +58139,67 @@ function B738_fmc_calc()
 						
 						legs_intdir_act = 0
 						
-						if legs_data[offset][31] == "AF" then
-							if legs_data[offset][23] ~= 0 or legs_data[offset][24] == 0 then
-								af_lat = legs_data[offset][23]
-								af_lon = legs_data[offset][24]
-								af_dist = tonumber(legs_data[offset][22])
-								
-								nd_x = simDR_mag_hdg
-								nd_y = nd_calc_brg(math.deg(nd_lat), math.deg(nd_lon), af_lat, af_lon)
-								relative_brg = (nd_x - nd_y + 360) % 360
-								if relative_brg > 180 then
-									relative_brg = relative_brg - 360
-								end
-								if relative_brg > -75 and relative_brg < 75 then
-									-- from Center Arc
-									if legs_data[offset][21] == 2 then
-										af_turn = 3
-									else
-										af_turn = 2
+						if offset <= legs_num then
+							if legs_data[offset][31] == "AF" then
+								if legs_data[offset][23] ~= 0 or legs_data[offset][24] == 0 then
+									af_lat = legs_data[offset][23]
+									af_lon = legs_data[offset][24]
+									af_dist = tonumber(legs_data[offset][22])
+									
+									nd_x = simDR_mag_hdg
+									nd_y = nd_calc_brg(math.deg(nd_lat), math.deg(nd_lon), af_lat, af_lon)
+									relative_brg = (nd_x - nd_y + 360) % 360
+									if relative_brg > 180 then
+										relative_brg = relative_brg - 360
 									end
-								else
-									-- to Center Arc
-									af_turn = legs_data[offset][21]
+									if relative_brg > -75 and relative_brg < 75 then
+										-- from Center Arc
+										if legs_data[offset][21] == 2 then
+											af_turn = 3
+										else
+											af_turn = 2
+										end
+									else
+										-- to Center Arc
+										af_turn = legs_data[offset][21]
+									end
+									if af_dist ~= nil then
+										af_dist = af_dist / 10
+										nav_mode = 4
+									end
 								end
-								if af_dist ~= nil then
-									af_dist = af_dist / 10
-									nav_mode = 4
+							elseif legs_data[offset][31] == "RF" then
+								if legs_data[offset][23] ~= 0 or legs_data[offset][24] == 0 then
+									af_lat = legs_data[offset][23]
+									af_lon = legs_data[offset][24]
+									af_dist = tonumber(legs_data[offset][33])
+									--af_turn = legs_data[offset][21]
+									af_turn = -1
+									if af_dist ~= nil then
+										af_dist = af_dist / 1000
+										nav_mode = 4
+									end
 								end
+							elseif legs_data[offset][31] == "CF" or legs_data[offset][31] == "DF" then
+								nav_mode = 0
+								B738DR_hold_phase = 0
+								hold_term = 0
 							end
-						elseif legs_data[offset][31] == "RF" then
-							if legs_data[offset][23] ~= 0 or legs_data[offset][24] == 0 then
-								af_lat = legs_data[offset][23]
-								af_lon = legs_data[offset][24]
-								af_dist = tonumber(legs_data[offset][33])
-								--af_turn = legs_data[offset][21]
-								af_turn = -1
-								if af_dist ~= nil then
-									af_dist = af_dist / 1000
-									nav_mode = 4
-								end
-							end
-						elseif legs_data[offset][31] == "CF" or legs_data[offset][31] == "DF" then
-							nav_mode = 0
-							B738DR_hold_phase = 0
-							hold_term = 0
 						end
-						
 						
 					end
 					
 					if offset > legs_num then
 						-- end of route if selected approach
 						if des_app ~= "------" then
-							if (ap_roll_mode > 3 and ap_roll_mode < 7) or ap_roll_mode == 8 or ap_roll_mode == 13 then
+							if (B738DR_heading_mode > 3 and B738DR_heading_mode < 7) or B738DR_heading_mode == 8 or B738DR_heading_mode == 13 then
 								B738DR_lnav_disconnect = 1
 								--B738DR_vnav_disconnect = 1
 								add_fmc_msg(LNAV_DISCON)
 								B738DR_fmc_message_warn = 1
 							end
 							B738DR_vnav_disconnect = 1
-							nav_mode = 0
+							--nav_mode = 0
 						else
 							-- navigate to destination ICAO
 							nav_mode = 1	-- ICAO nav mode
@@ -61171,7 +61183,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.24t"
+	version = "v3.24u"
 
 end
 

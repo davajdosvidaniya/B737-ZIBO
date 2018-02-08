@@ -262,6 +262,7 @@ thrust2 = 0
 airspeed_pilot_old = 0
 v_speed_pilot_old = 0
 vdot_ratio_old = 0
+radio_height_old = 0
 nav_id_old = "*"
 vnav_vs = 0
 lvl_chg_vs = 0
@@ -1073,6 +1074,8 @@ B738DR_EFIS_TCAS_on_fo		= create_dataref("laminar/B738/EFIS/tcas_on_fo", "number
 B738DR_speed_ratio			= create_dataref("laminar/B738/FMS/speed_ratio", "number")
 B738DR_v_speed_ratio		= create_dataref("laminar/B738/FMS/v_speed_ratio", "number")
 B738DR_vdot_ratio			= create_dataref("laminar/B738/FMS/vdot_ratio", "number")
+B738DR_radio_height_ratio	= create_dataref("laminar/B738/FMS/radio_height_ratio", "number")
+B738DR_altitude_pilot_ratio	= create_dataref("laminar/B738/FMS/altitude_pilot_ratio", "number")
 
 flaps_speed					= create_dataref("laminar/B738/FMS/flaps_speed", "number")
 vnav_speed					= create_dataref("laminar/B738/FMS/vnav_speed", "number")
@@ -7175,34 +7178,57 @@ function B738_vnav6()
 				end
 				-- cruise speed
 				if simDR_airspeed_is_mach == 0 then
+					-- flaps limit speeds
+					if flaps == 0 then
+						flaps_speed = 340
+					elseif flaps <= 0.25 then		-- flaps 1,2
+						flaps_speed = 230
+					elseif flaps <= 0.375 then		-- flaps 5
+						flaps_speed = 230
+					elseif flaps <= 0.5 then		-- flaps 10
+						flaps_speed = 205
+					elseif flaps <= 0.625 then		-- flaps 15
+						flaps_speed = 195
+					elseif flaps <= 0.75 then		-- flaps 25
+						flaps_speed = 185
+					else
+						flaps_speed = 160
+					end
+					if flaps_speed == 0 then
+						if flaps == 0 then
+							flaps_speed = 340
+						else
+							flaps_speed = 230
+						end
+					end
 					if B738DR_rest_wpt_spd > 0 then
 						if B738DR_mcp_speed_dial < 100 then
 							--vnav_speed_trg = B738DR_rest_wpt_spd
-							vnav_speed_trg = math.min(spd_250_10000, B738DR_rest_wpt_spd, B738DR_fmc_cruise_speed)
+							vnav_speed_trg = math.min(spd_250_10000, B738DR_rest_wpt_spd, B738DR_fmc_cruise_speed, flaps_speed)
 						else
 							--if simDR_airspeed_dial ~= B738DR_rest_wpt_spd and simDR_dme_dist < decel_dist then
 							if simDR_dme_dist < decel_dist then
 								--vnav_speed_trg = B738DR_rest_wpt_spd
-								vnav_speed_trg = math.min(spd_250_10000, B738DR_rest_wpt_spd, B738DR_fmc_cruise_speed)
+								vnav_speed_trg = math.min(spd_250_10000, B738DR_rest_wpt_spd, B738DR_fmc_cruise_speed, flaps_speed)
 							else
-								vnav_speed_trg = math.min(spd_250_10000, B738DR_fmc_cruise_speed)
+								vnav_speed_trg = math.min(spd_250_10000, B738DR_fmc_cruise_speed, flaps_speed)
 							end
 						end
 						-- 4NM before T/D
 						if B738DR_vnav_td_dist > 0 and B738DR_vnav_td_dist < 4.5 then
-							vnav_speed_trg = math.min(vnav_speed_trg, spd_250_10000, B738DR_fmc_descent_speed)
+							vnav_speed_trg = math.min(vnav_speed_trg, spd_250_10000, B738DR_fmc_descent_speed, flaps_speed)
 						else
-							vnav_speed_trg = math.min(vnav_speed_trg, spd_250_10000, B738DR_fmc_cruise_speed)
+							vnav_speed_trg = math.min(vnav_speed_trg, spd_250_10000, B738DR_fmc_cruise_speed, flaps_speed)
 						end
 						--vnav_speed_trg = math.min(vnav_speed_trg, spd_250_10000, B738DR_fmc_cruise_speed)
 					else
 						-- 4NM before T/D
 						if B738DR_vnav_td_dist > 0 and B738DR_vnav_td_dist < 4.5 then
 							--vnav_speed_trg = B738DR_fmc_descent_speed
-							vnav_speed_trg = math.min(spd_250_10000, B738DR_fmc_descent_speed)
+							vnav_speed_trg = math.min(spd_250_10000, B738DR_fmc_descent_speed, flaps_speed)
 						else
 							--vnav_speed_trg = B738DR_fmc_cruise_speed
-							vnav_speed_trg = math.min(spd_250_10000, B738DR_fmc_cruise_speed)
+							vnav_speed_trg = math.min(spd_250_10000, B738DR_fmc_cruise_speed, flaps_speed)
 						end
 					end
 				else
@@ -10531,6 +10557,14 @@ function B738_at_logic()
 		fd_go_disable = 0
 	end
 	B738DR_speed_mode = at_mode
+	
+	if at_mode_eng == 2 then
+		if B738DR_autopilot_autothr_arm_pos == 1 then
+			if simDR_autothrottle_enable == 0 then
+				simDR_autothrottle_enable = 1	-- speed on
+			end
+		end
+	end
 
 end
 
@@ -13472,6 +13506,15 @@ function speed_ratio_timer()
 		B738DR_vdot_ratio = vdot_ratio_old - vdot
 		vdot_ratio_old = vdot
 	end
+	
+	local radio_height = simDR_radio_height_pilot_ft
+	B738DR_radio_height_ratio = radio_height - radio_height_old
+	radio_height_old = radio_height
+	
+	local altitude_pilot = simDR_altitude_pilot
+	B738DR_altitude_pilot_ratio = altitude_pilot - altitude_pilot_old
+	altitude_pilot_old = altitude_pilot
+	
 end
 
 function B738_radio_height()

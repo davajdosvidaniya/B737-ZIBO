@@ -418,10 +418,11 @@ simDR_flaps_ratio_physics		= find_dataref("sim/cockpit2/controls/flap_handle_dep
 	simDR_reverse_thrust1		= find_dataref("sim/cockpit2/engine/actuators/prop_mode[0]")
 	simDR_reverse_thrust2		= find_dataref("sim/cockpit2/engine/actuators/prop_mode[1]")
 
-
-simDR_gs_flag					= find_dataref("sim/cockpit2/radios/indicators/nav1_flag_glideslope")
-simDR_nav1_vdef_dots			= find_dataref("sim/cockpit2/radios/indicators/nav1_vdef_dots_pilot")
-simDR_nav1_vert_signal			= find_dataref("sim/cockpit2/radios/indicators/nav1_display_vertical")
+--B738DR_glide_slope			= create_dataref("laminar/b738/fmodpack/msg_glide_slope", "number")
+B738DR_glide_slope			= find_dataref("laminar/B738/system/below_gs_warn")
+-- simDR_gs_flag					= find_dataref("sim/cockpit2/radios/indicators/nav1_flag_glideslope")
+-- simDR_nav1_vdef_dots			= find_dataref("sim/cockpit2/radios/indicators/nav1_vdef_dots_pilot")
+-- simDR_nav1_vert_signal			= find_dataref("sim/cockpit2/radios/indicators/nav1_display_vertical")
 simDR_slat_1_deploy				= find_dataref("sim/flightmodel2/controls/slat1_deploy_ratio")
 simDR_slat_2_deploy				= find_dataref("sim/flightmodel2/controls/slat2_deploy_ratio")
 simDR_radio_height_pilot_ft		= find_dataref("sim/cockpit2/gauges/indicators/radio_altimeter_height_ft_pilot")
@@ -628,6 +629,7 @@ B738DR_below_gs_copilot	= find_dataref("laminar/B738/push_button/below_gs_copilo
 B738DR_fdr_pos				= find_dataref("laminar/B738/switches/fdr_pos")
 B738DR_duct_ovht_test_pos	= find_dataref("laminar/B738/push_button/duct_ovht_test_pos")
 
+B738DR_gpws_test_running	= find_dataref("laminar/B738/system/gpws_test_running")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
@@ -846,7 +848,7 @@ B738DR_GPWS_annun				= create_dataref("laminar/B738/annunciator/gpws", "number")
 B738DR_takeoff_config_annun		= create_dataref("laminar/B738/annunciator/takeoff_config", "number")
 B738DR_takeoff_config_warn		= create_dataref("laminar/B738/system/takeoff_config_warn", "number")
 B738DR_below_gs					= create_dataref("laminar/B738/annunciator/below_gs", "number")
-B738DR_below_gs_warn			= create_dataref("laminar/B738/system/below_gs_warn", "number")
+--B738DR_below_gs_warn			= create_dataref("laminar/B738/system/below_gs_warn", "number")
 
 B738DR_slats_transit			= create_dataref("laminar/B738/annunciator/slats_transit", "number")
 B738DR_slats_extended			= create_dataref("laminar/B738/annunciator/slats_extend", "number")
@@ -1225,41 +1227,58 @@ end
 
 function B738_ap_disconnect_test1_up_CMDhandler(phase, duration)
 	if phase == 0 then
-		if B738DR_ap_disconnect1_test_switch_pos == -1 then
-			B738DR_ap_disconnect1_test_switch_pos = 0
-		elseif B738DR_ap_disconnect1_test_switch_pos == 0 then
-			B738DR_ap_disconnect1_test_switch_pos = 1
-		end
+		-- if B738DR_ap_disconnect1_test_switch_pos == -1 then
+			-- B738DR_ap_disconnect1_test_switch_pos = 0
+		-- if B738DR_ap_disconnect1_test_switch_pos == 0 then
+		B738DR_ap_disconnect1_test_switch_pos = 1
+		-- end
+	elseif phase == 2 then
+		B738DR_ap_disconnect1_test_switch_pos = 0
 	end
 end
 
 function B738_ap_disconnect_test1_dn_CMDhandler(phase, duration)
 	if phase == 0 then
-		if B738DR_ap_disconnect1_test_switch_pos == 1 then
-		B738DR_ap_disconnect1_test_switch_pos = 0
-	elseif B738DR_ap_disconnect1_test_switch_pos == 0 then
+		-- if B738DR_ap_disconnect1_test_switch_pos == 1 then
+			-- B738DR_ap_disconnect1_test_switch_pos = 0
+		-- if B738DR_ap_disconnect1_test_switch_pos == 0 then
 		B738DR_ap_disconnect1_test_switch_pos = -1
-		end
+		-- end
+	elseif phase == 2 then
+		B738DR_ap_disconnect1_test_switch_pos = 0
+													   
+											
+	 
 	end
 end
 
 function B738_ap_disconnect_test2_up_CMDhandler(phase, duration)
 	if phase == 0 then
-		if B738DR_ap_disconnect2_test_switch_pos == -1 then
-		B738DR_ap_disconnect2_test_switch_pos = 0
-	elseif B738DR_ap_disconnect2_test_switch_pos == 0 then
+		-- if B738DR_ap_disconnect2_test_switch_pos == -1 then
+			-- B738DR_ap_disconnect2_test_switch_pos = 0
+		-- elseif B738DR_ap_disconnect2_test_switch_pos == 0 then
 		B738DR_ap_disconnect2_test_switch_pos = 1
-		end
+		-- end
+	elseif phase == 2 then
+		B738DR_ap_disconnect2_test_switch_pos = 0
+													   
+										   
+	 
 	end
 end
 
 function B738_ap_disconnect_test2_dn_CMDhandler(phase, duration)
 	if phase == 0 then
-		if B738DR_ap_disconnect2_test_switch_pos == 1 then
-		B738DR_ap_disconnect2_test_switch_pos = 0
-	elseif B738DR_ap_disconnect2_test_switch_pos == 0 then
+		-- if B738DR_ap_disconnect2_test_switch_pos == 1 then
+			-- B738DR_ap_disconnect2_test_switch_pos = 0
+		-- elseif B738DR_ap_disconnect2_test_switch_pos == 0 then
 		B738DR_ap_disconnect2_test_switch_pos = -1
-		end
+		-- end
+	elseif phase == 2 then
+		B738DR_ap_disconnect2_test_switch_pos = 0
+													   
+											
+	 
 	end
 end
 
@@ -3077,16 +3096,17 @@ B738DR_audio_panel_obs_mic6_light = B738DR_audio_panel_obs_mic6_pos * brightness
 	end
 	
 	local below_gs = 0
-		if simDR_nav1_vert_signal == 1
-		and simDR_gs_flag == 0
-		and simDR_nav1_vdef_dots < -1
-		--and simDR_aircraft_on_ground == 0
-		and on_the_ground == 0
-		and simDR_radio_height_pilot_ft < 1000 then
-		below_gs = 1
-		end
+		-- if simDR_nav1_vert_signal == 1
+		-- and simDR_gs_flag == 0
+		-- and simDR_nav1_vdef_dots < -1
+		-- --and simDR_aircraft_on_ground == 0
+		-- and on_the_ground == 0
+		-- and simDR_radio_height_pilot_ft < 1000 then
+		-- below_gs = 1
+		-- end
 		
-		B738DR_below_gs_warn = below_gs
+		below_gs = B738DR_glide_slope
+		--B738DR_below_gs_warn = below_gs
 		
 		if B738DR_below_gs_pilot == 1 then
 			below_gs = 1
@@ -3207,7 +3227,13 @@ local takeoff_config_warn = 0
 
 -- GPWS
 
-	B738DR_GPWS_annun = simDR_GPWS * brightness_level
+	local gpws_annun = 0
+	if B738DR_gpws_test_running == 1 then
+		gpws_annun = 1
+	end
+	
+	--B738DR_GPWS_annun = simDR_GPWS * brightness_level
+	B738DR_GPWS_annun = gpws_annun * brightness_level
 
 -- SPEEDBRAKE ANNUNS
 

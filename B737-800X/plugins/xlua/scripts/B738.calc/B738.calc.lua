@@ -1583,7 +1583,11 @@ B738DR_eng2_oil_filter_bypass	= create_dataref("laminar/B738/engine/eng2_oil_fil
 
 B738DR_pfd_no_vspd	= create_dataref("laminar/B738/pfd/no_vspd", "number")
 
+B738DR_eng1_oil_press		= create_dataref("laminar/B738/engine/eng1_oil_press", "number")
+B738DR_eng2_oil_press		= create_dataref("laminar/B738/engine/eng2_oil_press", "number")
 
+simDR_oil_pressure_psi1 	= find_dataref("sim/cockpit2/engine/indicators/oil_pressure_psi[0]")
+simDR_oil_pressure_psi2 	= find_dataref("sim/cockpit2/engine/indicators/oil_pressure_psi[1]")
 B738DR_thr_takeoff_N1		= create_dataref("laminar/B738/engine/calc/thr_takeoff_N1", "number")
 B738DR_thr_climb_N1			= create_dataref("laminar/B738/engine/calc/thr_climb_N1", "number")
 B738DR_thr_cruise_N1		= create_dataref("laminar/B738/engine/calc/thr_cruise_N1", "number")
@@ -1628,6 +1632,7 @@ simDR_low_idle_ratio			= find_dataref("sim/aircraft2/engine/low_idle_ratio")
 B738DR_low_idle		= create_dataref("laminar/B738/engine/thrust_low_idle", "number", B738DR_low_idle_DRhandler)
 B738DR_high_idle	= create_dataref("laminar/B738/engine/thrust_high_idle", "number", B738DR_high_idle_DRhandler)
 
+simDR_SFC_half_lo_JET			= find_dataref("sim/aircraft/overflow/SFC_half_lo_JET")
 --*************************************************************************************--
 --** 				              CUSTOM COMMAND HANDLERS            			     **--
 --*************************************************************************************--
@@ -1818,6 +1823,7 @@ function B738_engine_rpm2()
 	local mixture2 = 1.0
 	local req1_idle = 0.0
 	local req2_idle = 0.0
+	local SFC_half_lo_JET = 0.000016
 	
 	if simDR_radio_height_pilot_ft > 400 
 	and aircraft_was_on_air2 == 0 then		-- aircraft above 400 ft RA
@@ -1871,6 +1877,7 @@ function B738_engine_rpm2()
 --		idle_thrust = 0.00
 		mixture1 = 0.50 * B738DR_mixture_ratio1
 		mixture2 = 0.50 * B738DR_mixture_ratio2
+		SFC_half_lo_JET = 0.000014
 	elseif idle_mode == 1 then	-- flight mode
 --		idle_thrust = 0.00
 --		req_idle = 0.317
@@ -1908,6 +1915,7 @@ function B738_engine_rpm2()
 	else
 		B738DR_eng2_N2 = eng2_N2 - 4
 	end
+	--simDR_SFC_half_lo_JET = SFC_half_lo_JET
 	-- B738DR_eng1_N2 = math.max(0, eng1_N2 - 4)
 	-- B738DR_eng2_N2 = math.max(0, eng2_N2 - 4)
 	
@@ -1922,6 +1930,17 @@ function B738_engine_egt()
 	B738DR_eng1_egt = math.max(simDR_OAT, simDR_eng1_egt)
 	B738DR_eng2_egt = math.max(simDR_OAT, simDR_eng2_egt)
 	
+	if simDR_oil_pressure_psi1 < 6.2 then
+		B738DR_eng1_oil_press = 0
+	else
+		B738DR_eng1_oil_press = B738_rescale(6.2, 1.0, 100.0, 100.0, simDR_oil_pressure_psi1)
+	end
+	
+	if simDR_oil_pressure_psi2 < 6.2 then
+		B738DR_eng2_oil_press = 0
+	else
+		B738DR_eng2_oil_press = B738_rescale(6.2, 1.0, 100.0, 100.0, simDR_oil_pressure_psi2)
+	end
 end
 
 

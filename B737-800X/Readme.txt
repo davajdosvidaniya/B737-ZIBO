@@ -81,6 +81,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.24u:
+------
+- fixed flaps animation
+- fixed freeze FMC (typo error)
+- fixed small bugs
+
 3.24t:
 ------
 OTHERS

@@ -27408,107 +27408,107 @@ ANIM_end
 ANIM_begin
 	ANIM_trans_begin	sim/flightmodel2/wing/flap1_deg[0]
 		ANIM_trans_key	0	  -1.7987   -1.5196   20.2918
-		ANIM_trans_key	8.0	  -1.7992   -1.5107   20.3381
-		ANIM_trans_key	11.0	  -1.7972   -1.4995   20.3647
-		ANIM_trans_key	14.0	  -1.7969   -1.4967   20.4364
-		ANIM_trans_key	19.0	  -1.7991   -1.4968   20.4719
-		ANIM_trans_key	22.0	  -1.8025   -1.4979   20.5082
-		ANIM_trans_key	26.0	  -1.8047   -1.5032   20.5712
-		ANIM_trans_key	35.0	  -1.8043   -1.5012   20.5818
-		ANIM_trans_key	46.0	  -1.8028   -1.4931   20.5813
+		ANIM_trans_key	1.0	  -1.7992   -1.5107   20.3381
+		ANIM_trans_key	2.0	  -1.7972   -1.4995   20.3647
+		ANIM_trans_key	5.0	  -1.7969   -1.4967   20.4364
+		ANIM_trans_key	10.0	  -1.7991   -1.4968   20.4719
+		ANIM_trans_key	15.0	  -1.8025   -1.4979   20.5082
+		ANIM_trans_key	25.0	  -1.8047   -1.5032   20.5712
+		ANIM_trans_key	30.0	  -1.8043   -1.5012   20.5818
+		ANIM_trans_key	40.0	  -1.8028   -1.4931   20.5813
 	ANIM_trans_end
 	ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap1_deg[0]
 		ANIM_rotate_key	0	  0.00
-		ANIM_rotate_key	8.0	  0.06
-		ANIM_rotate_key	11.0	  0.08
-		ANIM_rotate_key	14.0	  0.15
-		ANIM_rotate_key	19.0	  0.09
-		ANIM_rotate_key	22.0	  0.02
-		ANIM_rotate_key	26.0	 -0.28
-		ANIM_rotate_key	35.0	 -0.72
-		ANIM_rotate_key	46.0	 -1.22
+		ANIM_rotate_key	1.0	  0.06
+		ANIM_rotate_key	2.0	  0.08
+		ANIM_rotate_key	5.0	  0.15
+		ANIM_rotate_key	10.0	  0.09
+		ANIM_rotate_key	15.0	  0.02
+		ANIM_rotate_key	25.0	 -0.28
+		ANIM_rotate_key	30.0	 -0.72
+		ANIM_rotate_key	40.0	 -1.22
 	ANIM_rotate_end
 	ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap1_deg[0]
 		ANIM_rotate_key	0	 -0.00
-		ANIM_rotate_key	8.0	 -0.38
-		ANIM_rotate_key	11.0	 -0.98
-		ANIM_rotate_key	14.0	 -1.65
-		ANIM_rotate_key	19.0	 -2.38
-		ANIM_rotate_key	22.0	 -3.07
-		ANIM_rotate_key	26.0	 -4.07
-		ANIM_rotate_key	35.0	 -5.16
-		ANIM_rotate_key	46.0	 -6.04
+		ANIM_rotate_key	1.0	 -0.38
+		ANIM_rotate_key	2.0	 -0.98
+		ANIM_rotate_key	5.0	 -1.65
+		ANIM_rotate_key	10.0	 -2.38
+		ANIM_rotate_key	15.0	 -3.07
+		ANIM_rotate_key	25.0	 -4.07
+		ANIM_rotate_key	30.0	 -5.16
+		ANIM_rotate_key	40.0	 -6.04
 	ANIM_rotate_end
 	ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap1_deg[0]
 		ANIM_rotate_key	0	  0.00
-		ANIM_rotate_key	8.0	  2.17
-		ANIM_rotate_key	11.0	  5.41
-		ANIM_rotate_key	14.0	  9.05
-		ANIM_rotate_key	19.0	 12.99
-		ANIM_rotate_key	22.0	 16.73
-		ANIM_rotate_key	26.0	 22.55
-		ANIM_rotate_key	35.0	 29.60
-		ANIM_rotate_key	46.0	 35.56
+		ANIM_rotate_key	1.0	  2.17
+		ANIM_rotate_key	2.0	  5.41
+		ANIM_rotate_key	5.0	  9.05
+		ANIM_rotate_key	10.0	 12.99
+		ANIM_rotate_key	15.0	 16.73
+		ANIM_rotate_key	25.0	 22.55
+		ANIM_rotate_key	30.0	 29.60
+		ANIM_rotate_key	40.0	 35.56
 	ANIM_rotate_end
 	TRIS	6528 1638
 	ANIM_begin
 		ANIM_trans_begin	sim/flightmodel2/wing/flap1_deg[0]
 			ANIM_trans_key	0	  -0.0100    0.1026    0.5062
-			ANIM_trans_key	8.0	  -0.0113    0.1012    0.5546
-			ANIM_trans_key	11.0	  -0.0124    0.1006    0.6043
-			ANIM_trans_key	14.0	  -0.0099    0.1084    0.6271
-			ANIM_trans_key	19.0	  -0.0130    0.0911    0.6514
-			ANIM_trans_key	22.0	  -0.0142    0.0845    0.6552
-			ANIM_trans_key	26.0	  -0.0124    0.0778    0.6561
-			ANIM_trans_key	35.0	  -0.0079    0.0802    0.6608
-			ANIM_trans_key	46.0	  -0.0079    0.0802    0.6608
+			ANIM_trans_key	1.0	  -0.0113    0.1012    0.5546
+			ANIM_trans_key	2.0	  -0.0124    0.1006    0.6043
+			ANIM_trans_key	5.0	  -0.0099    0.1084    0.6271
+			ANIM_trans_key	10.0	  -0.0130    0.0911    0.6514
+			ANIM_trans_key	15.0	  -0.0142    0.0845    0.6552
+			ANIM_trans_key	25.0	  -0.0124    0.0778    0.6561
+			ANIM_trans_key	30.0	  -0.0079    0.0802    0.6608
+			ANIM_trans_key	40.0	  -0.0079    0.0802    0.6608
 		ANIM_trans_end
 		ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap1_deg[0]
 			ANIM_rotate_key	0	  0.00
-			ANIM_rotate_key	8.0	  0.11
-			ANIM_rotate_key	11.0	  0.15
-			ANIM_rotate_key	14.0	  0.06
-			ANIM_rotate_key	19.0	 -0.08
-			ANIM_rotate_key	22.0	 -0.33
-			ANIM_rotate_key	26.0	 -0.68
-			ANIM_rotate_key	35.0	 -0.80
-			ANIM_rotate_key	46.0	 -0.89
+			ANIM_rotate_key	1.0	  0.11
+			ANIM_rotate_key	2.0	  0.15
+			ANIM_rotate_key	5.0	  0.06
+			ANIM_rotate_key	10.0	 -0.08
+			ANIM_rotate_key	15.0	 -0.33
+			ANIM_rotate_key	25.0	 -0.68
+			ANIM_rotate_key	30.0	 -0.80
+			ANIM_rotate_key	40.0	 -0.89
 		ANIM_rotate_end
 		ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap1_deg[0]
 			ANIM_rotate_key	0	 -0.00
-			ANIM_rotate_key	8.0	 -0.58
-			ANIM_rotate_key	11.0	 -1.47
-			ANIM_rotate_key	14.0	 -2.29
-			ANIM_rotate_key	19.0	 -2.72
-			ANIM_rotate_key	22.0	 -3.38
-			ANIM_rotate_key	26.0	 -4.09
-			ANIM_rotate_key	35.0	 -4.26
-			ANIM_rotate_key	46.0	 -4.46
+			ANIM_rotate_key	1.0	 -0.58
+			ANIM_rotate_key	2.0	 -1.47
+			ANIM_rotate_key	5.0	 -2.29
+			ANIM_rotate_key	10.0	 -2.72
+			ANIM_rotate_key	15.0	 -3.38
+			ANIM_rotate_key	25.0	 -4.09
+			ANIM_rotate_key	30.0	 -4.26
+			ANIM_rotate_key	40.0	 -4.46
 		ANIM_rotate_end
 		ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap1_deg[0]
 			ANIM_rotate_key	0	  0.00
-			ANIM_rotate_key	8.0	  3.45
-			ANIM_rotate_key	11.0	  8.58
-			ANIM_rotate_key	14.0	 13.41
-			ANIM_rotate_key	19.0	 16.08
-			ANIM_rotate_key	22.0	 20.13
-			ANIM_rotate_key	26.0	 24.59
-			ANIM_rotate_key	35.0	 25.78
-			ANIM_rotate_key	46.0	 27.06
+			ANIM_rotate_key	1.0	  3.45
+			ANIM_rotate_key	2.0	  8.58
+			ANIM_rotate_key	5.0	 13.41
+			ANIM_rotate_key	10.0	 16.08
+			ANIM_rotate_key	15.0	 20.13
+			ANIM_rotate_key	25.0	 24.59
+			ANIM_rotate_key	30.0	 25.78
+			ANIM_rotate_key	40.0	 27.06
 		ANIM_rotate_end
 		TRIS	8166 726
 		ANIM_begin
 			ANIM_trans	  -0.1859    0.2592   -0.0615	  -0.1859    0.2592   -0.0615	0 0	no_ref
 			ANIM_rotate_begin	  -0.9846    0.1751   -0.0000	sim/flightmodel2/wing/flap1_deg[0]
 				ANIM_rotate_key	0	  0.00
-				ANIM_rotate_key	8.0	  5.00
-				ANIM_rotate_key	11.0	 10.00
-				ANIM_rotate_key	14.0	 14.00
-				ANIM_rotate_key	19.0	 11.00
-				ANIM_rotate_key	22.0	 12.00
-				ANIM_rotate_key	26.0	 16.00
-				ANIM_rotate_key	35.0	 18.00
-				ANIM_rotate_key	46.0	 19.50
+				ANIM_rotate_key	1.0	  5.00
+				ANIM_rotate_key	2.0	 10.00
+				ANIM_rotate_key	5.0	 14.00
+				ANIM_rotate_key	10.0	 11.00
+				ANIM_rotate_key	15.0	 12.00
+				ANIM_rotate_key	25.0	 16.00
+				ANIM_rotate_key	30.0	 18.00
+				ANIM_rotate_key	40.0	 19.50
 			ANIM_rotate_end
 			TRIS	8892 348
 		ANIM_end
@@ -27517,107 +27517,107 @@ ANIM_end
 ANIM_begin
 	ANIM_trans_begin	sim/flightmodel2/wing/flap1_deg[1]
 		ANIM_trans_key	0	   1.7987   -1.5196   20.2918
-		ANIM_trans_key	8.0	   1.7992   -1.5107   20.3381
-		ANIM_trans_key	11.0	   1.7972   -1.4995   20.3647
-		ANIM_trans_key	14.0	   1.7969   -1.4967   20.4364
-		ANIM_trans_key	19.0	   1.7991   -1.4968   20.4719
-		ANIM_trans_key	22.0	   1.8025   -1.4979   20.5082
-		ANIM_trans_key	26.0	   1.8047   -1.5032   20.5712
-		ANIM_trans_key	35.0	   1.8043   -1.5012   20.5818
-		ANIM_trans_key	46.0	   1.8028   -1.4931   20.5813
+		ANIM_trans_key	1.0	   1.7992   -1.5107   20.3381
+		ANIM_trans_key	2.0	   1.7972   -1.4995   20.3647
+		ANIM_trans_key	5.0	   1.7969   -1.4967   20.4364
+		ANIM_trans_key	10.0	   1.7991   -1.4968   20.4719
+		ANIM_trans_key	15.0	   1.8025   -1.4979   20.5082
+		ANIM_trans_key	25.0	   1.8047   -1.5032   20.5712
+		ANIM_trans_key	30.0	   1.8043   -1.5012   20.5818
+		ANIM_trans_key	40.0	   1.8028   -1.4931   20.5813
 	ANIM_trans_end
 	ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap1_deg[1]
 		ANIM_rotate_key	0	  0.00
-		ANIM_rotate_key	8.0	 -0.06
-		ANIM_rotate_key	11.0	 -0.08
-		ANIM_rotate_key	14.0	 -0.15
-		ANIM_rotate_key	19.0	 -0.09
-		ANIM_rotate_key	22.0	 -0.02
-		ANIM_rotate_key	26.0	  0.28
-		ANIM_rotate_key	35.0	  0.72
-		ANIM_rotate_key	46.0	  1.22
+		ANIM_rotate_key	1.0	 -0.06
+		ANIM_rotate_key	2.0	 -0.08
+		ANIM_rotate_key	5.0	 -0.15
+		ANIM_rotate_key	10.0	 -0.09
+		ANIM_rotate_key	15.0	 -0.02
+		ANIM_rotate_key	25.0	  0.28
+		ANIM_rotate_key	30.0	  0.72
+		ANIM_rotate_key	40.0	  1.22
 	ANIM_rotate_end
 	ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap1_deg[1]
 		ANIM_rotate_key	0	 -0.00
-		ANIM_rotate_key	8.0	  0.38
-		ANIM_rotate_key	11.0	  0.98
-		ANIM_rotate_key	14.0	  1.65
-		ANIM_rotate_key	19.0	  2.38
-		ANIM_rotate_key	22.0	  3.07
-		ANIM_rotate_key	26.0	  4.07
-		ANIM_rotate_key	35.0	  5.16
-		ANIM_rotate_key	46.0	  6.04
+		ANIM_rotate_key	1.0	  0.38
+		ANIM_rotate_key	2.0	  0.98
+		ANIM_rotate_key	5.0	  1.65
+		ANIM_rotate_key	10.0	  2.38
+		ANIM_rotate_key	15.0	  3.07
+		ANIM_rotate_key	25.0	  4.07
+		ANIM_rotate_key	30.0	  5.16
+		ANIM_rotate_key	40.0	  6.04
 	ANIM_rotate_end
 	ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap1_deg[1]
 		ANIM_rotate_key	0	  0.00
-		ANIM_rotate_key	8.0	  2.17
-		ANIM_rotate_key	11.0	  5.41
-		ANIM_rotate_key	14.0	  9.05
-		ANIM_rotate_key	19.0	 12.99
-		ANIM_rotate_key	22.0	 16.73
-		ANIM_rotate_key	26.0	 22.55
-		ANIM_rotate_key	35.0	 29.60
-		ANIM_rotate_key	46.0	 35.56
+		ANIM_rotate_key	1.0	  2.17
+		ANIM_rotate_key	2.0	  5.41
+		ANIM_rotate_key	5.0	  9.05
+		ANIM_rotate_key	10.0	 12.99
+		ANIM_rotate_key	15.0	 16.73
+		ANIM_rotate_key	25.0	 22.55
+		ANIM_rotate_key	30.0	 29.60
+		ANIM_rotate_key	40.0	 35.56
 	ANIM_rotate_end
 	TRIS	9240 1638
 	ANIM_begin
 		ANIM_trans_begin	sim/flightmodel2/wing/flap1_deg[1]
 			ANIM_trans_key	0	   0.0100    0.1026    0.5062
-			ANIM_trans_key	8.0	   0.0113    0.1012    0.5546
-			ANIM_trans_key	11.0	   0.0124    0.1006    0.6043
-			ANIM_trans_key	14.0	   0.0099    0.1084    0.6271
-			ANIM_trans_key	19.0	   0.0130    0.0911    0.6514
-			ANIM_trans_key	22.0	   0.0142    0.0845    0.6552
-			ANIM_trans_key	26.0	   0.0124    0.0778    0.6561
-			ANIM_trans_key	35.0	   0.0079    0.0802    0.6608
-			ANIM_trans_key	46.0	   0.0079    0.0802    0.6608
+			ANIM_trans_key	1.0	   0.0113    0.1012    0.5546
+			ANIM_trans_key	2.0	   0.0124    0.1006    0.6043
+			ANIM_trans_key	5.0	   0.0099    0.1084    0.6271
+			ANIM_trans_key	10.0	   0.0130    0.0911    0.6514
+			ANIM_trans_key	15.0	   0.0142    0.0845    0.6552
+			ANIM_trans_key	25.0	   0.0124    0.0778    0.6561
+			ANIM_trans_key	30.0	   0.0079    0.0802    0.6608
+			ANIM_trans_key	40.0	   0.0079    0.0802    0.6608
 		ANIM_trans_end
 		ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap1_deg[1]
 			ANIM_rotate_key	0	  0.00
-			ANIM_rotate_key	8.0	 -0.11
-			ANIM_rotate_key	11.0	 -0.15
-			ANIM_rotate_key	14.0	 -0.06
-			ANIM_rotate_key	19.0	  0.08
-			ANIM_rotate_key	22.0	  0.33
-			ANIM_rotate_key	26.0	  0.68
-			ANIM_rotate_key	35.0	  0.80
-			ANIM_rotate_key	46.0	  0.89
+			ANIM_rotate_key	1.0	 -0.11
+			ANIM_rotate_key	2.0	 -0.15
+			ANIM_rotate_key	5.0	 -0.06
+			ANIM_rotate_key	10.0	  0.08
+			ANIM_rotate_key	15.0	  0.33
+			ANIM_rotate_key	25.0	  0.68
+			ANIM_rotate_key	30.0	  0.80
+			ANIM_rotate_key	40.0	  0.89
 		ANIM_rotate_end
 		ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap1_deg[1]
 			ANIM_rotate_key	0	 -0.00
-			ANIM_rotate_key	8.0	  0.58
-			ANIM_rotate_key	11.0	  1.47
-			ANIM_rotate_key	14.0	  2.29
-			ANIM_rotate_key	19.0	  2.72
-			ANIM_rotate_key	22.0	  3.38
-			ANIM_rotate_key	26.0	  4.09
-			ANIM_rotate_key	35.0	  4.26
-			ANIM_rotate_key	46.0	  4.46
+			ANIM_rotate_key	1.0	  0.58
+			ANIM_rotate_key	2.0	  1.47
+			ANIM_rotate_key	5.0	  2.29
+			ANIM_rotate_key	10.0	  2.72
+			ANIM_rotate_key	15.0	  3.38
+			ANIM_rotate_key	25.0	  4.09
+			ANIM_rotate_key	30.0	  4.26
+			ANIM_rotate_key	40.0	  4.46
 		ANIM_rotate_end
 		ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap1_deg[1]
 			ANIM_rotate_key	0	  0.00
-			ANIM_rotate_key	8.0	  3.45
-			ANIM_rotate_key	11.0	  8.58
-			ANIM_rotate_key	14.0	 13.41
-			ANIM_rotate_key	19.0	 16.08
-			ANIM_rotate_key	22.0	 20.13
-			ANIM_rotate_key	26.0	 24.59
-			ANIM_rotate_key	35.0	 25.78
-			ANIM_rotate_key	46.0	 27.06
+			ANIM_rotate_key	1.0	  3.45
+			ANIM_rotate_key	2.0	  8.58
+			ANIM_rotate_key	5.0	 13.41
+			ANIM_rotate_key	10.0	 16.08
+			ANIM_rotate_key	15.0	 20.13
+			ANIM_rotate_key	25.0	 24.59
+			ANIM_rotate_key	30.0	 25.78
+			ANIM_rotate_key	40.0	 27.06
 		ANIM_rotate_end
 		TRIS	10878 726
 		ANIM_begin
 			ANIM_trans	   0.1859    0.2592   -0.0615	   0.1859    0.2592   -0.0615	0 0	no_ref
 			ANIM_rotate_begin	  -0.9846   -0.1751    0.0000	sim/flightmodel2/wing/flap2_deg[1]
 				ANIM_rotate_key	0	  0.00
-				ANIM_rotate_key	8.0	  5.00
-				ANIM_rotate_key	11.0	 10.00
-				ANIM_rotate_key	14.0	 14.00
-				ANIM_rotate_key	19.0	 11.00
-				ANIM_rotate_key	22.0	 12.00
-				ANIM_rotate_key	26.0	 16.00
-				ANIM_rotate_key	35.0	 18.00
-				ANIM_rotate_key	46.0	 19.50
+				ANIM_rotate_key	1.0	  5.00
+				ANIM_rotate_key	2.0	 10.00
+				ANIM_rotate_key	5.0	 14.00
+				ANIM_rotate_key	10.0	 11.00
+				ANIM_rotate_key	15.0	 12.00
+				ANIM_rotate_key	25.0	 16.00
+				ANIM_rotate_key	30.0	 18.00
+				ANIM_rotate_key	40.0	 19.50
 			ANIM_rotate_end
 			TRIS	11604 348
 		ANIM_end
@@ -27763,129 +27763,129 @@ ANIM_begin
 	ANIM_begin
 		ANIM_trans_begin	sim/flightmodel2/wing/flap2_deg[2]
 			ANIM_trans_key	0	  -0.6055   -0.3132    2.7742
-			ANIM_trans_key	8.0	  -0.6102   -0.3064    2.8244
-			ANIM_trans_key	11.0	  -0.6153   -0.2991    2.8516
-			ANIM_trans_key	14.0	  -0.6229   -0.3037    2.9233
-			ANIM_trans_key	19.0	  -0.6342   -0.3090    2.9589
-			ANIM_trans_key	22.0	  -0.6462   -0.3131    2.9917
-			ANIM_trans_key	26.0	  -0.6599   -0.3201    3.0575
-			ANIM_trans_key	35.0	  -0.6749   -0.3216    3.0705
-			ANIM_trans_key	46.0	  -0.6839   -0.3158    3.0785
+			ANIM_trans_key	1.0	  -0.6102   -0.3064    2.8244
+			ANIM_trans_key	2.0	  -0.6153   -0.2991    2.8516
+			ANIM_trans_key	5.0	  -0.6229   -0.3037    2.9233
+			ANIM_trans_key	10.0	  -0.6342   -0.3090    2.9589
+			ANIM_trans_key	15.0	  -0.6462   -0.3131    2.9917
+			ANIM_trans_key	25.0	  -0.6599   -0.3201    3.0575
+			ANIM_trans_key	30.0	  -0.6749   -0.3216    3.0705
+			ANIM_trans_key	40.0	  -0.6839   -0.3158    3.0785
 		ANIM_trans_end
 		ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap2_deg[2]
 			ANIM_rotate_key	0	  0.00
-			ANIM_rotate_key	8.0	 -0.74
-			ANIM_rotate_key	11.0	 -1.73
-			ANIM_rotate_key	14.0	 -3.04
-			ANIM_rotate_key	19.0	 -4.50
-			ANIM_rotate_key	22.0	 -5.85
-			ANIM_rotate_key	26.0	 -7.91
-			ANIM_rotate_key	35.0	-10.41
-			ANIM_rotate_key	46.0	-12.60
+			ANIM_rotate_key	1.0	 -0.74
+			ANIM_rotate_key	2.0	 -1.73
+			ANIM_rotate_key	5.0	 -3.04
+			ANIM_rotate_key	10.0	 -4.50
+			ANIM_rotate_key	15.0	 -5.85
+			ANIM_rotate_key	25.0	 -7.91
+			ANIM_rotate_key	30.0	-10.41
+			ANIM_rotate_key	40.0	-12.60
 		ANIM_rotate_end
 		ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap2_deg[2]
 			ANIM_rotate_key	0	 -0.00
-			ANIM_rotate_key	8.0	 -0.24
-			ANIM_rotate_key	11.0	 -0.53
-			ANIM_rotate_key	14.0	 -0.80
-			ANIM_rotate_key	19.0	 -0.99
-			ANIM_rotate_key	22.0	 -1.14
-			ANIM_rotate_key	26.0	 -1.10
-			ANIM_rotate_key	35.0	 -0.87
-			ANIM_rotate_key	46.0	 -0.42
+			ANIM_rotate_key	1.0	 -0.24
+			ANIM_rotate_key	2.0	 -0.53
+			ANIM_rotate_key	5.0	 -0.80
+			ANIM_rotate_key	10.0	 -0.99
+			ANIM_rotate_key	15.0	 -1.14
+			ANIM_rotate_key	25.0	 -1.10
+			ANIM_rotate_key	30.0	 -0.87
+			ANIM_rotate_key	40.0	 -0.42
 		ANIM_rotate_end
 		ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap2_deg[2]
 			ANIM_rotate_key	0	  0.00
-			ANIM_rotate_key	8.0	  2.27
-			ANIM_rotate_key	11.0	  5.43
-			ANIM_rotate_key	14.0	  9.20
-			ANIM_rotate_key	19.0	 13.22
-			ANIM_rotate_key	22.0	 17.05
-			ANIM_rotate_key	26.0	 22.92
-			ANIM_rotate_key	35.0	 29.97
-			ANIM_rotate_key	46.0	 36.39
+			ANIM_rotate_key	1.0	  2.27
+			ANIM_rotate_key	2.0	  5.43
+			ANIM_rotate_key	5.0	  9.20
+			ANIM_rotate_key	10.0	 13.22
+			ANIM_rotate_key	15.0	 17.05
+			ANIM_rotate_key	25.0	 22.92
+			ANIM_rotate_key	30.0	 29.97
+			ANIM_rotate_key	40.0	 36.39
 		ANIM_rotate_end
 		TRIS	19308 432
 		ANIM_begin
 			ANIM_trans_begin	sim/flightmodel2/wing/flap2_deg[2]
 				ANIM_trans_key	0	  -0.5788    0.1499    0.6741
-				ANIM_trans_key	8.0	  -0.5630    0.1406    0.7270
-				ANIM_trans_key	11.0	  -0.5507    0.1280    0.7699
-				ANIM_trans_key	14.0	  -0.5409    0.1305    0.7948
-				ANIM_trans_key	19.0	  -0.5295    0.1201    0.8394
-				ANIM_trans_key	22.0	  -0.5363    0.1222    0.8322
-				ANIM_trans_key	26.0	  -0.5369    0.1241    0.8295
-				ANIM_trans_key	35.0	  -0.5392    0.1160    0.8269
-				ANIM_trans_key	46.0	  -0.5449    0.1115    0.8110
+				ANIM_trans_key	1.0	  -0.5630    0.1406    0.7270
+				ANIM_trans_key	2.0	  -0.5507    0.1280    0.7699
+				ANIM_trans_key	5.0	  -0.5409    0.1305    0.7948
+				ANIM_trans_key	10.0	  -0.5295    0.1201    0.8394
+				ANIM_trans_key	15.0	  -0.5363    0.1222    0.8322
+				ANIM_trans_key	25.0	  -0.5369    0.1241    0.8295
+				ANIM_trans_key	30.0	  -0.5392    0.1160    0.8269
+				ANIM_trans_key	40.0	  -0.5449    0.1115    0.8110
 			ANIM_trans_end
 			ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap2_deg[2]
 				ANIM_rotate_key	0	  0.00
-				ANIM_rotate_key	8.0	 -1.04
-				ANIM_rotate_key	11.0	 -2.62
-				ANIM_rotate_key	14.0	 -4.15
-				ANIM_rotate_key	19.0	 -5.01
-				ANIM_rotate_key	22.0	 -6.28
-				ANIM_rotate_key	26.0	 -7.68
-				ANIM_rotate_key	35.0	 -8.05
-				ANIM_rotate_key	46.0	 -8.43
+				ANIM_rotate_key	1.0	 -1.04
+				ANIM_rotate_key	2.0	 -2.62
+				ANIM_rotate_key	5.0	 -4.15
+				ANIM_rotate_key	10.0	 -5.01
+				ANIM_rotate_key	15.0	 -6.28
+				ANIM_rotate_key	25.0	 -7.68
+				ANIM_rotate_key	30.0	 -8.05
+				ANIM_rotate_key	40.0	 -8.43
 			ANIM_rotate_end
 			ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap2_deg[2]
 				ANIM_rotate_key	0	 -0.00
-				ANIM_rotate_key	8.0	 -0.42
-				ANIM_rotate_key	11.0	 -0.90
-				ANIM_rotate_key	14.0	 -1.38
-				ANIM_rotate_key	19.0	 -1.83
-				ANIM_rotate_key	22.0	 -1.84
-				ANIM_rotate_key	26.0	 -1.81
-				ANIM_rotate_key	35.0	 -1.73
-				ANIM_rotate_key	46.0	 -1.64
+				ANIM_rotate_key	1.0	 -0.42
+				ANIM_rotate_key	2.0	 -0.90
+				ANIM_rotate_key	5.0	 -1.38
+				ANIM_rotate_key	10.0	 -1.83
+				ANIM_rotate_key	15.0	 -1.84
+				ANIM_rotate_key	25.0	 -1.81
+				ANIM_rotate_key	30.0	 -1.73
+				ANIM_rotate_key	40.0	 -1.64
 			ANIM_rotate_end
 			ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap2_deg[2]
 				ANIM_rotate_key	0	  0.00
-				ANIM_rotate_key	8.0	  3.32
-				ANIM_rotate_key	11.0	  8.27
-				ANIM_rotate_key	14.0	 12.94
-				ANIM_rotate_key	19.0	 15.51
-				ANIM_rotate_key	22.0	 19.45
-				ANIM_rotate_key	26.0	 23.77
-				ANIM_rotate_key	35.0	 24.92
-				ANIM_rotate_key	46.0	 26.17
+				ANIM_rotate_key	1.0	  3.32
+				ANIM_rotate_key	2.0	  8.27
+				ANIM_rotate_key	5.0	 12.94
+				ANIM_rotate_key	10.0	 15.51
+				ANIM_rotate_key	15.0	 19.45
+				ANIM_rotate_key	25.0	 23.77
+				ANIM_rotate_key	30.0	 24.92
+				ANIM_rotate_key	40.0	 26.17
 			ANIM_rotate_end
 			TRIS	19740 708
 			ANIM_begin
 				ANIM_trans	  -0.3103    0.2313    0.0663	  -0.3103    0.2313    0.0663	0 0	no_ref
 				ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap2_deg[2]
 					ANIM_rotate_key	0	  0.00
-					ANIM_rotate_key	8.0	  0.04
-					ANIM_rotate_key	11.0	  0.74
-					ANIM_rotate_key	14.0	  2.49
-					ANIM_rotate_key	19.0	  2.65
-					ANIM_rotate_key	22.0	  3.68
-					ANIM_rotate_key	26.0	  4.77
-					ANIM_rotate_key	35.0	  4.61
-					ANIM_rotate_key	46.0	  4.63
+					ANIM_rotate_key	1.0	  0.04
+					ANIM_rotate_key	2.0	  0.74
+					ANIM_rotate_key	5.0	  2.49
+					ANIM_rotate_key	10.0	  2.65
+					ANIM_rotate_key	15.0	  3.68
+					ANIM_rotate_key	25.0	  4.77
+					ANIM_rotate_key	30.0	  4.61
+					ANIM_rotate_key	40.0	  4.63
 				ANIM_rotate_end
 				ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap2_deg[2]
 					ANIM_rotate_key	0	 -0.00
-					ANIM_rotate_key	8.0	  0.01
-					ANIM_rotate_key	11.0	  0.30
-					ANIM_rotate_key	14.0	  1.16
-					ANIM_rotate_key	19.0	  1.25
-					ANIM_rotate_key	22.0	  1.87
-					ANIM_rotate_key	26.0	  2.64
-					ANIM_rotate_key	35.0	  2.52
-					ANIM_rotate_key	46.0	  2.54
+					ANIM_rotate_key	1.0	  0.01
+					ANIM_rotate_key	2.0	  0.30
+					ANIM_rotate_key	5.0	  1.16
+					ANIM_rotate_key	10.0	  1.25
+					ANIM_rotate_key	15.0	  1.87
+					ANIM_rotate_key	25.0	  2.64
+					ANIM_rotate_key	30.0	  2.52
+					ANIM_rotate_key	40.0	  2.54
 				ANIM_rotate_end
 				ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap2_deg[2]
 					ANIM_rotate_key	0	  0.00
-					ANIM_rotate_key	8.0	 -0.12
-					ANIM_rotate_key	11.0	 -2.42
-					ANIM_rotate_key	14.0	 -8.35
-					ANIM_rotate_key	19.0	 -8.91
-					ANIM_rotate_key	22.0	-12.55
-					ANIM_rotate_key	26.0	-16.56
-					ANIM_rotate_key	35.0	-15.94
-					ANIM_rotate_key	46.0	-16.05
+					ANIM_rotate_key	1.0	 -0.12
+					ANIM_rotate_key	2.0	 -2.42
+					ANIM_rotate_key	5.0	 -8.35
+					ANIM_rotate_key	10.0	 -8.91
+					ANIM_rotate_key	15.0	-12.55
+					ANIM_rotate_key	25.0	-16.56
+					ANIM_rotate_key	30.0	-15.94
+					ANIM_rotate_key	40.0	-16.05
 				ANIM_rotate_end
 				TRIS	20448 348
 			ANIM_end
@@ -28509,107 +28509,107 @@ ANIM_begin
 		ANIM_begin
 			ANIM_trans_begin	sim/flightmodel2/wing/flap2_deg[2]
 				ANIM_trans_key	0	   2.9143   -0.6940    1.0845
-				ANIM_trans_key	8.0	   2.9096   -0.6872    1.1347
-				ANIM_trans_key	11.0	   2.9045   -0.6799    1.1619
-				ANIM_trans_key	14.0	   2.8969   -0.6845    1.2336
-				ANIM_trans_key	19.0	   2.8856   -0.6898    1.2692
-				ANIM_trans_key	22.0	   2.8736   -0.6939    1.3020
-				ANIM_trans_key	26.0	   2.8599   -0.7009    1.3678
-				ANIM_trans_key	35.0	   2.8449   -0.7024    1.3808
-				ANIM_trans_key	46.0	   2.8359   -0.6966    1.3888
+				ANIM_trans_key	1.0	   2.9096   -0.6872    1.1347
+				ANIM_trans_key	2.0	   2.9045   -0.6799    1.1619
+				ANIM_trans_key	5.0	   2.8969   -0.6845    1.2336
+				ANIM_trans_key	10.0	   2.8856   -0.6898    1.2692
+				ANIM_trans_key	15.0	   2.8736   -0.6939    1.3020
+				ANIM_trans_key	25.0	   2.8599   -0.7009    1.3678
+				ANIM_trans_key	30.0	   2.8449   -0.7024    1.3808
+				ANIM_trans_key	40.0	   2.8359   -0.6966    1.3888
 			ANIM_trans_end
 			ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap2_deg[2]
 				ANIM_rotate_key	0	  0.00
-				ANIM_rotate_key	8.0	 -0.74
-				ANIM_rotate_key	11.0	 -1.73
-				ANIM_rotate_key	14.0	 -3.04
-				ANIM_rotate_key	19.0	 -4.50
-				ANIM_rotate_key	22.0	 -5.85
-				ANIM_rotate_key	26.0	 -7.91
-				ANIM_rotate_key	35.0	-10.41
-				ANIM_rotate_key	46.0	-12.60
+				ANIM_rotate_key	1.0	 -0.74
+				ANIM_rotate_key	2.0	 -1.73
+				ANIM_rotate_key	5.0	 -3.04
+				ANIM_rotate_key	10.0	 -4.50
+				ANIM_rotate_key	15.0	 -5.85
+				ANIM_rotate_key	25.0	 -7.91
+				ANIM_rotate_key	30.0	-10.41
+				ANIM_rotate_key	40.0	-12.60
 			ANIM_rotate_end
 			ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap2_deg[2]
 				ANIM_rotate_key	0	 -0.00
-				ANIM_rotate_key	8.0	 -0.24
-				ANIM_rotate_key	11.0	 -0.53
-				ANIM_rotate_key	14.0	 -0.80
-				ANIM_rotate_key	19.0	 -0.99
-				ANIM_rotate_key	22.0	 -1.14
-				ANIM_rotate_key	26.0	 -1.10
-				ANIM_rotate_key	35.0	 -0.87
-				ANIM_rotate_key	46.0	 -0.42
+				ANIM_rotate_key	1.0	 -0.24
+				ANIM_rotate_key	2.0	 -0.53
+				ANIM_rotate_key	5.0	 -0.80
+				ANIM_rotate_key	10.0	 -0.99
+				ANIM_rotate_key	15.0	 -1.14
+				ANIM_rotate_key	25.0	 -1.10
+				ANIM_rotate_key	30.0	 -0.87
+				ANIM_rotate_key	40.0	 -0.42
 			ANIM_rotate_end
 			ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap2_deg[2]
 				ANIM_rotate_key	0	  0.00
-				ANIM_rotate_key	8.0	  2.27
-				ANIM_rotate_key	11.0	  5.43
-				ANIM_rotate_key	14.0	  9.20
-				ANIM_rotate_key	19.0	 13.22
-				ANIM_rotate_key	22.0	 17.05
-				ANIM_rotate_key	26.0	 22.92
-				ANIM_rotate_key	35.0	 29.97
-				ANIM_rotate_key	46.0	 36.39
+				ANIM_rotate_key	1.0	  2.27
+				ANIM_rotate_key	2.0	  5.43
+				ANIM_rotate_key	5.0	  9.20
+				ANIM_rotate_key	10.0	 13.22
+				ANIM_rotate_key	15.0	 17.05
+				ANIM_rotate_key	25.0	 22.92
+				ANIM_rotate_key	30.0	 29.97
+				ANIM_rotate_key	40.0	 36.39
 			ANIM_rotate_end
 			TRIS	39519 324
 			ANIM_begin
 				ANIM_trans_begin	sim/flightmodel2/wing/flap2_deg[2]
 					ANIM_trans_key	0	  -0.5788    0.1499    0.6741
-					ANIM_trans_key	8.0	  -0.5630    0.1406    0.7270
-					ANIM_trans_key	11.0	  -0.5507    0.1280    0.7699
-					ANIM_trans_key	14.0	  -0.5409    0.1305    0.7949
-					ANIM_trans_key	19.0	  -0.5295    0.1201    0.8394
-					ANIM_trans_key	22.0	  -0.5363    0.1222    0.8322
-					ANIM_trans_key	26.0	  -0.5369    0.1241    0.8295
-					ANIM_trans_key	35.0	  -0.5392    0.1160    0.8269
-					ANIM_trans_key	46.0	  -0.5449    0.1115    0.8110
+					ANIM_trans_key	1.0	  -0.5630    0.1406    0.7270
+					ANIM_trans_key	2.0	  -0.5507    0.1280    0.7699
+					ANIM_trans_key	5.0	  -0.5409    0.1305    0.7949
+					ANIM_trans_key	10.0	  -0.5295    0.1201    0.8394
+					ANIM_trans_key	15.0	  -0.5363    0.1222    0.8322
+					ANIM_trans_key	25.0	  -0.5369    0.1241    0.8295
+					ANIM_trans_key	30.0	  -0.5392    0.1160    0.8269
+					ANIM_trans_key	40.0	  -0.5449    0.1115    0.8110
 				ANIM_trans_end
 				ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap2_deg[2]
 					ANIM_rotate_key	0	  0.00
-					ANIM_rotate_key	8.0	 -1.04
-					ANIM_rotate_key	11.0	 -2.62
-					ANIM_rotate_key	14.0	 -4.15
-					ANIM_rotate_key	19.0	 -5.01
-					ANIM_rotate_key	22.0	 -6.28
-					ANIM_rotate_key	26.0	 -7.68
-					ANIM_rotate_key	35.0	 -8.05
-					ANIM_rotate_key	46.0	 -8.43
+					ANIM_rotate_key	1.0	 -1.04
+					ANIM_rotate_key	2.0	 -2.62
+					ANIM_rotate_key	5.0	 -4.15
+					ANIM_rotate_key	10.0	 -5.01
+					ANIM_rotate_key	15.0	 -6.28
+					ANIM_rotate_key	25.0	 -7.68
+					ANIM_rotate_key	30.0	 -8.05
+					ANIM_rotate_key	40.0	 -8.43
 				ANIM_rotate_end
 				ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap2_deg[2]
 					ANIM_rotate_key	0	 -0.00
-					ANIM_rotate_key	8.0	 -0.42
-					ANIM_rotate_key	11.0	 -0.90
-					ANIM_rotate_key	14.0	 -1.38
-					ANIM_rotate_key	19.0	 -1.83
-					ANIM_rotate_key	22.0	 -1.84
-					ANIM_rotate_key	26.0	 -1.81
-					ANIM_rotate_key	35.0	 -1.73
-					ANIM_rotate_key	46.0	 -1.64
+					ANIM_rotate_key	1.0	 -0.42
+					ANIM_rotate_key	2.0	 -0.90
+					ANIM_rotate_key	5.0	 -1.38
+					ANIM_rotate_key	10.0	 -1.83
+					ANIM_rotate_key	15.0	 -1.84
+					ANIM_rotate_key	25.0	 -1.81
+					ANIM_rotate_key	30.0	 -1.73
+					ANIM_rotate_key	40.0	 -1.64
 				ANIM_rotate_end
 				ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap2_deg[2]
 					ANIM_rotate_key	0	  0.00
-					ANIM_rotate_key	8.0	  3.32
-					ANIM_rotate_key	11.0	  8.27
-					ANIM_rotate_key	14.0	 12.94
-					ANIM_rotate_key	19.0	 15.51
-					ANIM_rotate_key	22.0	 19.45
-					ANIM_rotate_key	26.0	 23.77
-					ANIM_rotate_key	35.0	 24.92
-					ANIM_rotate_key	46.0	 26.17
+					ANIM_rotate_key	1.0	  3.32
+					ANIM_rotate_key	2.0	  8.27
+					ANIM_rotate_key	5.0	 12.94
+					ANIM_rotate_key	10.0	 15.51
+					ANIM_rotate_key	15.0	 19.45
+					ANIM_rotate_key	25.0	 23.77
+					ANIM_rotate_key	30.0	 24.92
+					ANIM_rotate_key	40.0	 26.17
 				ANIM_rotate_end
 				TRIS	39843 624
 				ANIM_begin
 					ANIM_trans	  -2.8388    0.5196    0.8469	  -2.8388    0.5196    0.8469	0 0	no_ref
 					ANIM_rotate_begin	  -0.9513    0.0973    0.2925	sim/flightmodel2/wing/flap2_deg[2]
 						ANIM_rotate_key	0	  0.00
-						ANIM_rotate_key	8.0	  3.16
-						ANIM_rotate_key	11.0	  4.61
-						ANIM_rotate_key	14.0	 10.75
-						ANIM_rotate_key	19.0	 10.88
-						ANIM_rotate_key	22.0	 14.65
-						ANIM_rotate_key	26.0	 18.83
-						ANIM_rotate_key	35.0	 17.79
-						ANIM_rotate_key	46.0	 17.52
+						ANIM_rotate_key	1.0	  3.16
+						ANIM_rotate_key	2.0	  4.61
+						ANIM_rotate_key	5.0	 10.75
+						ANIM_rotate_key	10.0	 10.88
+						ANIM_rotate_key	15.0	 14.65
+						ANIM_rotate_key	25.0	 18.83
+						ANIM_rotate_key	30.0	 17.79
+						ANIM_rotate_key	40.0	 17.52
 					ANIM_rotate_end
 					TRIS	40467 348
 				ANIM_end
@@ -28644,107 +28644,107 @@ ANIM_begin
 	ANIM_begin
 		ANIM_trans_begin	sim/flightmodel2/wing/flap2_deg[4]
 			ANIM_trans_key	0	   0.6055   -0.3132    2.7742
-			ANIM_trans_key	8.0	   0.6102   -0.3064    2.8244
-			ANIM_trans_key	11.0	   0.6153   -0.2991    2.8516
-			ANIM_trans_key	14.0	   0.6229   -0.3037    2.9233
-			ANIM_trans_key	19.0	   0.6342   -0.3090    2.9589
-			ANIM_trans_key	22.0	   0.6462   -0.3131    2.9917
-			ANIM_trans_key	26.0	   0.6599   -0.3201    3.0575
-			ANIM_trans_key	35.0	   0.6749   -0.3216    3.0705
-			ANIM_trans_key	46.0	   0.6839   -0.3158    3.0785
+			ANIM_trans_key	1.0	   0.6102   -0.3064    2.8244
+			ANIM_trans_key	2.0	   0.6153   -0.2991    2.8516
+			ANIM_trans_key	5.0	   0.6229   -0.3037    2.9233
+			ANIM_trans_key	10.0	   0.6342   -0.3090    2.9589
+			ANIM_trans_key	15.0	   0.6462   -0.3131    2.9917
+			ANIM_trans_key	25.0	   0.6599   -0.3201    3.0575
+			ANIM_trans_key	30.0	   0.6749   -0.3216    3.0705
+			ANIM_trans_key	40.0	   0.6839   -0.3158    3.0785
 		ANIM_trans_end
 		ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap2_deg[4]
 			ANIM_rotate_key	0	  0.00
-			ANIM_rotate_key	8.0	  0.74
-			ANIM_rotate_key	11.0	  1.73
-			ANIM_rotate_key	14.0	  3.04
-			ANIM_rotate_key	19.0	  4.50
-			ANIM_rotate_key	22.0	  5.85
-			ANIM_rotate_key	26.0	  7.91
-			ANIM_rotate_key	35.0	 10.41
-			ANIM_rotate_key	46.0	 12.60
+			ANIM_rotate_key	1.0	  0.74
+			ANIM_rotate_key	2.0	  1.73
+			ANIM_rotate_key	5.0	  3.04
+			ANIM_rotate_key	10.0	  4.50
+			ANIM_rotate_key	15.0	  5.85
+			ANIM_rotate_key	25.0	  7.91
+			ANIM_rotate_key	30.0	 10.41
+			ANIM_rotate_key	40.0	 12.60
 		ANIM_rotate_end
 		ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap2_deg[4]
 			ANIM_rotate_key	0	 -0.00
-			ANIM_rotate_key	8.0	  0.24
-			ANIM_rotate_key	11.0	  0.53
-			ANIM_rotate_key	14.0	  0.80
-			ANIM_rotate_key	19.0	  0.99
-			ANIM_rotate_key	22.0	  1.14
-			ANIM_rotate_key	26.0	  1.10
-			ANIM_rotate_key	35.0	  0.87
-			ANIM_rotate_key	46.0	  0.42
+			ANIM_rotate_key	1.0	  0.24
+			ANIM_rotate_key	2.0	  0.53
+			ANIM_rotate_key	5.0	  0.80
+			ANIM_rotate_key	10.0	  0.99
+			ANIM_rotate_key	15.0	  1.14
+			ANIM_rotate_key	25.0	  1.10
+			ANIM_rotate_key	30.0	  0.87
+			ANIM_rotate_key	40.0	  0.42
 		ANIM_rotate_end
 		ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap2_deg[4]
 			ANIM_rotate_key	0	  0.00
-			ANIM_rotate_key	8.0	  2.27
-			ANIM_rotate_key	11.0	  5.43
-			ANIM_rotate_key	14.0	  9.20
-			ANIM_rotate_key	19.0	 13.22
-			ANIM_rotate_key	22.0	 17.05
-			ANIM_rotate_key	26.0	 22.92
-			ANIM_rotate_key	35.0	 29.97
-			ANIM_rotate_key	46.0	 36.39
+			ANIM_rotate_key	1.0	  2.27
+			ANIM_rotate_key	2.0	  5.43
+			ANIM_rotate_key	5.0	  9.20
+			ANIM_rotate_key	10.0	 13.22
+			ANIM_rotate_key	15.0	 17.05
+			ANIM_rotate_key	25.0	 22.92
+			ANIM_rotate_key	30.0	 29.97
+			ANIM_rotate_key	40.0	 36.39
 		ANIM_rotate_end
 		TRIS	43269 432
 		ANIM_begin
 			ANIM_trans_begin	sim/flightmodel2/wing/flap2_deg[4]
 				ANIM_trans_key	0	   0.5788    0.1499    0.6741
-				ANIM_trans_key	8.0	   0.5630    0.1406    0.7270
-				ANIM_trans_key	11.0	   0.5507    0.1280    0.7699
-				ANIM_trans_key	14.0	   0.5409    0.1305    0.7948
-				ANIM_trans_key	19.0	   0.5295    0.1201    0.8394
-				ANIM_trans_key	22.0	   0.5363    0.1222    0.8322
-				ANIM_trans_key	26.0	   0.5369    0.1241    0.8295
-				ANIM_trans_key	35.0	   0.5392    0.1160    0.8269
-				ANIM_trans_key	46.0	   0.5449    0.1115    0.8110
+				ANIM_trans_key	1.0	   0.5630    0.1406    0.7270
+				ANIM_trans_key	2.0	   0.5507    0.1280    0.7699
+				ANIM_trans_key	5.0	   0.5409    0.1305    0.7948
+				ANIM_trans_key	10.0	   0.5295    0.1201    0.8394
+				ANIM_trans_key	15.0	   0.5363    0.1222    0.8322
+				ANIM_trans_key	25.0	   0.5369    0.1241    0.8295
+				ANIM_trans_key	30.0	   0.5392    0.1160    0.8269
+				ANIM_trans_key	40.0	   0.5449    0.1115    0.8110
 			ANIM_trans_end
 			ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap2_deg[4]
 				ANIM_rotate_key	0	  0.00
-				ANIM_rotate_key	8.0	  1.04
-				ANIM_rotate_key	11.0	  2.62
-				ANIM_rotate_key	14.0	  4.15
-				ANIM_rotate_key	19.0	  5.01
-				ANIM_rotate_key	22.0	  6.28
-				ANIM_rotate_key	26.0	  7.68
-				ANIM_rotate_key	35.0	  8.05
-				ANIM_rotate_key	46.0	  8.43
+				ANIM_rotate_key	1.0	  1.04
+				ANIM_rotate_key	2.0	  2.62
+				ANIM_rotate_key	5.0	  4.15
+				ANIM_rotate_key	10.0	  5.01
+				ANIM_rotate_key	15.0	  6.28
+				ANIM_rotate_key	25.0	  7.68
+				ANIM_rotate_key	30.0	  8.05
+				ANIM_rotate_key	40.0	  8.43
 			ANIM_rotate_end
 			ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap2_deg[4]
 				ANIM_rotate_key	0	 -0.00
-				ANIM_rotate_key	8.0	  0.42
-				ANIM_rotate_key	11.0	  0.90
-				ANIM_rotate_key	14.0	  1.38
-				ANIM_rotate_key	19.0	  1.83
-				ANIM_rotate_key	22.0	  1.84
-				ANIM_rotate_key	26.0	  1.81
-				ANIM_rotate_key	35.0	  1.73
-				ANIM_rotate_key	46.0	  1.64
+				ANIM_rotate_key	1.0	  0.42
+				ANIM_rotate_key	2.0	  0.90
+				ANIM_rotate_key	5.0	  1.38
+				ANIM_rotate_key	10.0	  1.83
+				ANIM_rotate_key	15.0	  1.84
+				ANIM_rotate_key	25.0	  1.81
+				ANIM_rotate_key	30.0	  1.73
+				ANIM_rotate_key	40.0	  1.64
 			ANIM_rotate_end
 			ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap2_deg[4]
 				ANIM_rotate_key	0	  0.00
-				ANIM_rotate_key	8.0	  3.32
-				ANIM_rotate_key	11.0	  8.27
-				ANIM_rotate_key	14.0	 12.94
-				ANIM_rotate_key	19.0	 15.51
-				ANIM_rotate_key	22.0	 19.45
-				ANIM_rotate_key	26.0	 23.77
-				ANIM_rotate_key	35.0	 24.92
-				ANIM_rotate_key	46.0	 26.17
+				ANIM_rotate_key	1.0	  3.32
+				ANIM_rotate_key	2.0	  8.27
+				ANIM_rotate_key	5.0	 12.94
+				ANIM_rotate_key	10.0	 15.51
+				ANIM_rotate_key	15.0	 19.45
+				ANIM_rotate_key	25.0	 23.77
+				ANIM_rotate_key	30.0	 24.92
+				ANIM_rotate_key	40.0	 26.17
 			ANIM_rotate_end
 			TRIS	43701 708
 			ANIM_begin
 				ANIM_trans	   0.3103    0.2313    0.0663	   0.3103    0.2313    0.0663	0 0	no_ref
 				ANIM_rotate_begin	  -0.9501   -0.1103   -0.2919	sim/flightmodel2/wing/flap2_deg[4]
 					ANIM_rotate_key	0	  0.00
-					ANIM_rotate_key	8.0	  0.13
-					ANIM_rotate_key	11.0	  2.55
-					ANIM_rotate_key	14.0	  8.82
-					ANIM_rotate_key	19.0	  9.40
-					ANIM_rotate_key	22.0	 13.27
-					ANIM_rotate_key	26.0	 17.53
-					ANIM_rotate_key	35.0	 16.88
-					ANIM_rotate_key	46.0	 16.98
+					ANIM_rotate_key	1.0	  0.13
+					ANIM_rotate_key	2.0	  2.55
+					ANIM_rotate_key	5.0	  8.82
+					ANIM_rotate_key	10.0	  9.40
+					ANIM_rotate_key	15.0	 13.27
+					ANIM_rotate_key	25.0	 17.53
+					ANIM_rotate_key	30.0	 16.88
+					ANIM_rotate_key	40.0	 16.98
 				ANIM_rotate_end
 				TRIS	44409 348
 			ANIM_end
@@ -29368,107 +29368,107 @@ ANIM_begin
 		ANIM_begin
 			ANIM_trans_begin	sim/flightmodel2/wing/flap2_deg[4]
 				ANIM_trans_key	0	  -2.9142   -0.6941    1.0845
-				ANIM_trans_key	8.0	  -2.9095   -0.6874    1.1347
-				ANIM_trans_key	11.0	  -2.9044   -0.6800    1.1619
-				ANIM_trans_key	14.0	  -2.8968   -0.6846    1.2336
-				ANIM_trans_key	19.0	  -2.8855   -0.6899    1.2692
-				ANIM_trans_key	22.0	  -2.8736   -0.6941    1.3020
-				ANIM_trans_key	26.0	  -2.8599   -0.7010    1.3678
-				ANIM_trans_key	35.0	  -2.8449   -0.7025    1.3808
-				ANIM_trans_key	46.0	  -2.8359   -0.6968    1.3888
+				ANIM_trans_key	1.0	  -2.9095   -0.6874    1.1347
+				ANIM_trans_key	2.0	  -2.9044   -0.6800    1.1619
+				ANIM_trans_key	5.0	  -2.8968   -0.6846    1.2336
+				ANIM_trans_key	10.0	  -2.8855   -0.6899    1.2692
+				ANIM_trans_key	15.0	  -2.8736   -0.6941    1.3020
+				ANIM_trans_key	25.0	  -2.8599   -0.7010    1.3678
+				ANIM_trans_key	30.0	  -2.8449   -0.7025    1.3808
+				ANIM_trans_key	40.0	  -2.8359   -0.6968    1.3888
 			ANIM_trans_end
 			ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap2_deg[4]
 				ANIM_rotate_key	0	  0.00
-				ANIM_rotate_key	8.0	  0.74
-				ANIM_rotate_key	11.0	  1.73
-				ANIM_rotate_key	14.0	  3.04
-				ANIM_rotate_key	19.0	  4.50
-				ANIM_rotate_key	22.0	  5.85
-				ANIM_rotate_key	26.0	  7.91
-				ANIM_rotate_key	35.0	 10.41
-				ANIM_rotate_key	46.0	 12.60
+				ANIM_rotate_key	1.0	  0.74
+				ANIM_rotate_key	2.0	  1.73
+				ANIM_rotate_key	5.0	  3.04
+				ANIM_rotate_key	10.0	  4.50
+				ANIM_rotate_key	15.0	  5.85
+				ANIM_rotate_key	25.0	  7.91
+				ANIM_rotate_key	30.0	 10.41
+				ANIM_rotate_key	40.0	 12.60
 			ANIM_rotate_end
 			ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap2_deg[4]
 				ANIM_rotate_key	0	 -0.00
-				ANIM_rotate_key	8.0	  0.24
-				ANIM_rotate_key	11.0	  0.53
-				ANIM_rotate_key	14.0	  0.80
-				ANIM_rotate_key	19.0	  1.00
-				ANIM_rotate_key	22.0	  1.14
-				ANIM_rotate_key	26.0	  1.10
-				ANIM_rotate_key	35.0	  0.87
-				ANIM_rotate_key	46.0	  0.42
+				ANIM_rotate_key	1.0	  0.24
+				ANIM_rotate_key	2.0	  0.53
+				ANIM_rotate_key	5.0	  0.80
+				ANIM_rotate_key	10.0	  1.00
+				ANIM_rotate_key	15.0	  1.14
+				ANIM_rotate_key	25.0	  1.10
+				ANIM_rotate_key	30.0	  0.87
+				ANIM_rotate_key	40.0	  0.42
 			ANIM_rotate_end
 			ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap2_deg[4]
 				ANIM_rotate_key	0	  0.00
-				ANIM_rotate_key	8.0	  2.27
-				ANIM_rotate_key	11.0	  5.43
-				ANIM_rotate_key	14.0	  9.20
-				ANIM_rotate_key	19.0	 13.22
-				ANIM_rotate_key	22.0	 17.05
-				ANIM_rotate_key	26.0	 22.92
-				ANIM_rotate_key	35.0	 29.97
-				ANIM_rotate_key	46.0	 36.39
+				ANIM_rotate_key	1.0	  2.27
+				ANIM_rotate_key	2.0	  5.43
+				ANIM_rotate_key	5.0	  9.20
+				ANIM_rotate_key	10.0	 13.22
+				ANIM_rotate_key	15.0	 17.05
+				ANIM_rotate_key	25.0	 22.92
+				ANIM_rotate_key	30.0	 29.97
+				ANIM_rotate_key	40.0	 36.39
 			ANIM_rotate_end
 			TRIS	63480 324
 			ANIM_begin
 				ANIM_trans_begin	sim/flightmodel2/wing/flap2_deg[4]
 					ANIM_trans_key	0	   0.5787    0.1499    0.6741
-					ANIM_trans_key	8.0	   0.5629    0.1406    0.7270
-					ANIM_trans_key	11.0	   0.5506    0.1280    0.7699
-					ANIM_trans_key	14.0	   0.5408    0.1305    0.7948
-					ANIM_trans_key	19.0	   0.5294    0.1202    0.8394
-					ANIM_trans_key	22.0	   0.5362    0.1222    0.8322
-					ANIM_trans_key	26.0	   0.5368    0.1241    0.8295
-					ANIM_trans_key	35.0	   0.5391    0.1160    0.8269
-					ANIM_trans_key	46.0	   0.5448    0.1115    0.8110
+					ANIM_trans_key	1.0	   0.5629    0.1406    0.7270
+					ANIM_trans_key	2.0	   0.5506    0.1280    0.7699
+					ANIM_trans_key	5.0	   0.5408    0.1305    0.7948
+					ANIM_trans_key	10.0	   0.5294    0.1202    0.8394
+					ANIM_trans_key	15.0	   0.5362    0.1222    0.8322
+					ANIM_trans_key	25.0	   0.5368    0.1241    0.8295
+					ANIM_trans_key	30.0	   0.5391    0.1160    0.8269
+					ANIM_trans_key	40.0	   0.5448    0.1115    0.8110
 				ANIM_trans_end
 				ANIM_rotate_begin	0 0 1	sim/flightmodel2/wing/flap2_deg[4]
 					ANIM_rotate_key	0	  0.00
-					ANIM_rotate_key	8.0	  1.04
-					ANIM_rotate_key	11.0	  2.62
-					ANIM_rotate_key	14.0	  4.15
-					ANIM_rotate_key	19.0	  5.01
-					ANIM_rotate_key	22.0	  6.28
-					ANIM_rotate_key	26.0	  7.68
-					ANIM_rotate_key	35.0	  8.05
-					ANIM_rotate_key	46.0	  8.43
+					ANIM_rotate_key	1.0	  1.04
+					ANIM_rotate_key	2.0	  2.62
+					ANIM_rotate_key	5.0	  4.15
+					ANIM_rotate_key	10.0	  5.01
+					ANIM_rotate_key	15.0	  6.28
+					ANIM_rotate_key	25.0	  7.68
+					ANIM_rotate_key	30.0	  8.05
+					ANIM_rotate_key	40.0	  8.43
 				ANIM_rotate_end
 				ANIM_rotate_begin	0 1 0	sim/flightmodel2/wing/flap2_deg[4]
 					ANIM_rotate_key	0	 -0.00
-					ANIM_rotate_key	8.0	  0.42
-					ANIM_rotate_key	11.0	  0.90
-					ANIM_rotate_key	14.0	  1.38
-					ANIM_rotate_key	19.0	  1.83
-					ANIM_rotate_key	22.0	  1.84
-					ANIM_rotate_key	26.0	  1.81
-					ANIM_rotate_key	35.0	  1.73
-					ANIM_rotate_key	46.0	  1.64
+					ANIM_rotate_key	1.0	  0.42
+					ANIM_rotate_key	2.0	  0.90
+					ANIM_rotate_key	5.0	  1.38
+					ANIM_rotate_key	10.0	  1.83
+					ANIM_rotate_key	15.0	  1.84
+					ANIM_rotate_key	25.0	  1.81
+					ANIM_rotate_key	30.0	  1.73
+					ANIM_rotate_key	40.0	  1.64
 				ANIM_rotate_end
 				ANIM_rotate_begin	1 0 0	sim/flightmodel2/wing/flap2_deg[4]
 					ANIM_rotate_key	0	  0.00
-					ANIM_rotate_key	8.0	  3.32
-					ANIM_rotate_key	11.0	  8.27
-					ANIM_rotate_key	14.0	 12.94
-					ANIM_rotate_key	19.0	 15.51
-					ANIM_rotate_key	22.0	 19.45
-					ANIM_rotate_key	26.0	 23.77
-					ANIM_rotate_key	35.0	 24.92
-					ANIM_rotate_key	46.0	 26.17
+					ANIM_rotate_key	1.0	  3.32
+					ANIM_rotate_key	2.0	  8.27
+					ANIM_rotate_key	5.0	 12.94
+					ANIM_rotate_key	10.0	 15.51
+					ANIM_rotate_key	15.0	 19.45
+					ANIM_rotate_key	25.0	 23.77
+					ANIM_rotate_key	30.0	 24.92
+					ANIM_rotate_key	40.0	 26.17
 				ANIM_rotate_end
 				TRIS	63804 624
 				ANIM_begin
 					ANIM_trans	   2.8388    0.5197    0.8469	   2.8388    0.5197    0.8469	0 0	no_ref
 					ANIM_rotate_begin	  -0.9513   -0.0973   -0.2925	sim/flightmodel2/wing/flap2_deg[4]
 						ANIM_rotate_key	0	  0.00
-						ANIM_rotate_key	8.0	  3.16
-						ANIM_rotate_key	11.0	  4.61
-						ANIM_rotate_key	14.0	 10.75
-						ANIM_rotate_key	19.0	 10.88
-						ANIM_rotate_key	22.0	 14.65
-						ANIM_rotate_key	26.0	 18.83
-						ANIM_rotate_key	35.0	 17.79
-						ANIM_rotate_key	46.0	 17.52
+						ANIM_rotate_key	1.0	  3.16
+						ANIM_rotate_key	2.0	  4.61
+						ANIM_rotate_key	5.0	 10.75
+						ANIM_rotate_key	10.0	 10.88
+						ANIM_rotate_key	15.0	 14.65
+						ANIM_rotate_key	25.0	 18.83
+						ANIM_rotate_key	30.0	 17.79
+						ANIM_rotate_key	40.0	 17.52
 					ANIM_rotate_end
 					TRIS	64428 348
 				ANIM_end
