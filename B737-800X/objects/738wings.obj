@@ -27903,7 +27903,7 @@ ANIM_begin
 	ANIM_end
 	ANIM_begin
 		ANIM_trans	  -2.0888    0.1561    0.8091	  -2.0888    0.1561    0.8091	0 0	no_ref
-		ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	  0.00
 			ANIM_rotate_key	0.125	  2.41
 			ANIM_rotate_key	0.25	  4.56
@@ -27914,7 +27914,7 @@ ANIM_begin
 			ANIM_rotate_key	0.875	 10.69
 			ANIM_rotate_key	1	 11.60
 		ANIM_rotate_end
-		ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	 -0.00
 			ANIM_rotate_key	0.125	  0.36
 			ANIM_rotate_key	0.25	  0.87
@@ -27925,7 +27925,7 @@ ANIM_begin
 			ANIM_rotate_key	0.875	  3.49
 			ANIM_rotate_key	1	  4.03
 		ANIM_rotate_end
-		ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	  0.00
 			ANIM_rotate_key	0.125	 -4.85
 			ANIM_rotate_key	0.25	 -9.10
@@ -27938,7 +27938,7 @@ ANIM_begin
 		ANIM_rotate_end
 		TRIS	20952 624
 		ANIM_begin
-			ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+			ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_trans_key	0	   0.0087   -0.0023    0.0168
 				ANIM_trans_key	0.125	  -0.0105    0.0027   -0.0201
 				ANIM_trans_key	0.25	  -0.0301    0.0077   -0.0578
@@ -27954,7 +27954,7 @@ ANIM_begin
 	ANIM_end
 	ANIM_begin
 		ANIM_trans	  -1.8243    0.1253    0.5277	  -1.8243    0.1253    0.5277	0 0	no_ref
-		ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	  1.18
 			ANIM_rotate_key	0.125	  4.58
 			ANIM_rotate_key	0.25	  7.25
@@ -27965,7 +27965,7 @@ ANIM_begin
 			ANIM_rotate_key	0.875	 14.09
 			ANIM_rotate_key	1	 15.01
 		ANIM_rotate_end
-		ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	  0.02
 			ANIM_rotate_key	0.125	  0.69
 			ANIM_rotate_key	0.25	  1.60
@@ -27976,7 +27976,7 @@ ANIM_begin
 			ANIM_rotate_key	0.875	  5.60
 			ANIM_rotate_key	1	  6.29
 		ANIM_rotate_end
-		ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	 -2.26
 			ANIM_rotate_key	0.125	 -9.43
 			ANIM_rotate_key	0.25	-15.32
@@ -27989,7 +27989,7 @@ ANIM_begin
 		ANIM_rotate_end
 		TRIS	21648 72
 		ANIM_begin
-			ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+			ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_trans_key	0	  -0.0095    0.0039   -0.0184
 				ANIM_trans_key	0.125	  -0.0282    0.0117   -0.0542
 				ANIM_trans_key	0.25	  -0.0480    0.0200   -0.0924
@@ -28004,7 +28004,7 @@ ANIM_begin
 		ANIM_end
 	ANIM_end
 	ANIM_begin
-		ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+		ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_trans_key	0	  -0.7453   -0.3907    0.0549
 			ANIM_trans_key	0.125	  -0.7489   -0.3980    0.0472
 			ANIM_trans_key	0.25	  -0.7525   -0.4053    0.0394
@@ -28015,7 +28015,7 @@ ANIM_begin
 			ANIM_trans_key	0.875	  -0.7520   -0.4254    0.0346
 			ANIM_trans_key	1	  -0.7495   -0.4273    0.0381
 		ANIM_trans_end
-		ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	  0.00
 			ANIM_rotate_key	0.125	  2.12
 			ANIM_rotate_key	0.25	  4.20
@@ -28026,7 +28026,7 @@ ANIM_begin
 			ANIM_rotate_key	0.875	 11.82
 			ANIM_rotate_key	1	 12.96
 		ANIM_rotate_end
-		ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	 -0.00
 			ANIM_rotate_key	0.125	  0.49
 			ANIM_rotate_key	0.25	  1.14
@@ -28037,7 +28037,7 @@ ANIM_begin
 			ANIM_rotate_key	0.875	  5.02
 			ANIM_rotate_key	1	  5.85
 		ANIM_rotate_end
-		ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	  0.00
 			ANIM_rotate_key	0.125	 -4.13
 			ANIM_rotate_key	0.25	 -8.25
@@ -28073,7 +28073,7 @@ ANIM_begin
 		ANIM_end
 		ANIM_begin
 			ANIM_trans	  -1.2012    0.0513    0.5091	  -1.2012    0.0513    0.5091	0 0	no_ref
-			ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	  0.00
 				ANIM_rotate_key	0.125	  2.30
 				ANIM_rotate_key	0.25	  4.37
@@ -28084,7 +28084,7 @@ ANIM_begin
 				ANIM_rotate_key	0.875	 10.49
 				ANIM_rotate_key	1	 11.37
 			ANIM_rotate_end
-			ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	 -0.00
 				ANIM_rotate_key	0.125	  0.32
 				ANIM_rotate_key	0.25	  0.77
@@ -28095,7 +28095,7 @@ ANIM_begin
 				ANIM_rotate_key	0.875	  3.26
 				ANIM_rotate_key	1	  3.76
 			ANIM_rotate_end
-			ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	  0.00
 				ANIM_rotate_key	0.125	 -4.58
 				ANIM_rotate_key	0.25	 -8.59
@@ -28108,7 +28108,7 @@ ANIM_begin
 			ANIM_rotate_end
 			TRIS	25263 600
 			ANIM_begin
-				ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+				ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_trans_key	0	   0.0087   -0.0022    0.0168
 					ANIM_trans_key	0.125	  -0.0109    0.0028   -0.0208
 					ANIM_trans_key	0.25	  -0.0309    0.0079   -0.0593
@@ -28124,7 +28124,7 @@ ANIM_begin
 		ANIM_end
 		ANIM_begin
 			ANIM_trans	  -0.9292    0.0233    0.2360	  -0.9292    0.0233    0.2360	0 0	no_ref
-			ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	  1.15
 				ANIM_rotate_key	0.125	  4.32
 				ANIM_rotate_key	0.25	  6.80
@@ -28135,7 +28135,7 @@ ANIM_begin
 				ANIM_rotate_key	0.875	 13.44
 				ANIM_rotate_key	1	 14.31
 			ANIM_rotate_end
-			ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	  0.02
 				ANIM_rotate_key	0.125	  0.67
 				ANIM_rotate_key	0.25	  1.46
@@ -28146,7 +28146,7 @@ ANIM_begin
 				ANIM_rotate_key	0.875	  5.04
 				ANIM_rotate_key	1	  5.70
 			ANIM_rotate_end
-			ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	 -2.22
 				ANIM_rotate_key	0.125	 -8.86
 				ANIM_rotate_key	0.25	-14.19
@@ -28159,7 +28159,7 @@ ANIM_begin
 			ANIM_rotate_end
 			TRIS	25935 72
 			ANIM_begin
-				ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+				ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_trans_key	0	  -0.0095    0.0040   -0.0183
 					ANIM_trans_key	0.125	  -0.0287    0.0120   -0.0552
 					ANIM_trans_key	0.25	  -0.0488    0.0204   -0.0937
@@ -28174,7 +28174,7 @@ ANIM_begin
 			ANIM_end
 		ANIM_end
 		ANIM_begin
-			ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+			ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_trans_key	0	   2.7745   -0.7715   -1.6348
 				ANIM_trans_key	0.125	   2.7709   -0.7788   -1.6425
 				ANIM_trans_key	0.25	   2.7673   -0.7861   -1.6503
@@ -28185,7 +28185,7 @@ ANIM_begin
 				ANIM_trans_key	0.875	   2.7678   -0.8062   -1.6551
 				ANIM_trans_key	1	   2.7703   -0.8081   -1.6516
 			ANIM_trans_end
-			ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	  0.00
 				ANIM_rotate_key	0.125	  2.12
 				ANIM_rotate_key	0.25	  4.20
@@ -28196,7 +28196,7 @@ ANIM_begin
 				ANIM_rotate_key	0.875	 11.82
 				ANIM_rotate_key	1	 12.96
 			ANIM_rotate_end
-			ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	 -0.00
 				ANIM_rotate_key	0.125	  0.49
 				ANIM_rotate_key	0.25	  1.14
@@ -28207,7 +28207,7 @@ ANIM_begin
 				ANIM_rotate_key	0.875	  5.02
 				ANIM_rotate_key	1	  5.85
 			ANIM_rotate_end
-			ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	  0.00
 				ANIM_rotate_key	0.125	 -4.13
 				ANIM_rotate_key	0.25	 -8.25
@@ -28243,7 +28243,7 @@ ANIM_begin
 			ANIM_end
 			ANIM_begin
 				ANIM_trans	  -1.2667    0.0640    0.5374	  -1.2667    0.0640    0.5374	0 0	no_ref
-				ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	  0.00
 					ANIM_rotate_key	0.125	  2.20
 					ANIM_rotate_key	0.25	  4.14
@@ -28254,7 +28254,7 @@ ANIM_begin
 					ANIM_rotate_key	0.875	 10.09
 					ANIM_rotate_key	1	 10.94
 				ANIM_rotate_end
-				ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	 -0.00
 					ANIM_rotate_key	0.125	  0.28
 					ANIM_rotate_key	0.25	  0.68
@@ -28265,7 +28265,7 @@ ANIM_begin
 					ANIM_rotate_key	0.875	  2.99
 					ANIM_rotate_key	1	  3.47
 				ANIM_rotate_end
-				ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	  0.00
 					ANIM_rotate_key	0.125	 -4.28
 					ANIM_rotate_key	0.25	 -8.08
@@ -28278,7 +28278,7 @@ ANIM_begin
 				ANIM_rotate_end
 				TRIS	31425 576
 				ANIM_begin
-					ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+					ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_trans_key	0	   0.0088   -0.0023    0.0169
 						ANIM_trans_key	0.125	  -0.0105    0.0026   -0.0202
 						ANIM_trans_key	0.25	  -0.0301    0.0077   -0.0578
@@ -28294,7 +28294,7 @@ ANIM_begin
 			ANIM_end
 			ANIM_begin
 				ANIM_trans	  -1.0631    0.0382    0.2951	  -1.0631    0.0382    0.2951	0 0	no_ref
-				ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	  0.93
 					ANIM_rotate_key	0.125	  3.99
 					ANIM_rotate_key	0.25	  6.44
@@ -28305,7 +28305,7 @@ ANIM_begin
 					ANIM_rotate_key	0.875	 12.99
 					ANIM_rotate_key	1	 13.85
 				ANIM_rotate_end
-				ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	  0.01
 					ANIM_rotate_key	0.125	  0.58
 					ANIM_rotate_key	0.25	  1.30
@@ -28316,7 +28316,7 @@ ANIM_begin
 					ANIM_rotate_key	0.875	  4.68
 					ANIM_rotate_key	1	  5.32
 				ANIM_rotate_end
-				ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	 -1.79
 					ANIM_rotate_key	0.125	 -8.16
 					ANIM_rotate_key	0.25	-13.36
@@ -28329,7 +28329,7 @@ ANIM_begin
 				ANIM_rotate_end
 				TRIS	32073 72
 				ANIM_begin
-					ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+					ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_trans_key	0	  -0.0096    0.0042   -0.0184
 						ANIM_trans_key	0.125	  -0.0282    0.0120   -0.0541
 						ANIM_trans_key	0.25	  -0.0477    0.0201   -0.0915
@@ -28344,7 +28344,7 @@ ANIM_begin
 				ANIM_end
 			ANIM_end
 			ANIM_begin
-				ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+				ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_trans_key	0	   5.3712   -1.0161   -3.0121
 					ANIM_trans_key	0.125	   5.3677   -1.0234   -3.0198
 					ANIM_trans_key	0.25	   5.3641   -1.0306   -3.0275
@@ -28355,7 +28355,7 @@ ANIM_begin
 					ANIM_trans_key	0.875	   5.3645   -1.0508   -3.0324
 					ANIM_trans_key	1	   5.3671   -1.0527   -3.0289
 				ANIM_trans_end
-				ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	  0.00
 					ANIM_rotate_key	0.125	  2.12
 					ANIM_rotate_key	0.25	  4.20
@@ -28366,7 +28366,7 @@ ANIM_begin
 					ANIM_rotate_key	0.875	 11.82
 					ANIM_rotate_key	1	 12.96
 				ANIM_rotate_end
-				ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	 -0.00
 					ANIM_rotate_key	0.125	  0.49
 					ANIM_rotate_key	0.25	  1.14
@@ -28377,7 +28377,7 @@ ANIM_begin
 					ANIM_rotate_key	0.875	  5.02
 					ANIM_rotate_key	1	  5.85
 				ANIM_rotate_end
-				ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	  0.00
 					ANIM_rotate_key	0.125	 -4.13
 					ANIM_rotate_key	0.25	 -8.25
@@ -28407,7 +28407,7 @@ ANIM_begin
 					TRIS	37080 249
 				ANIM_end
 				ANIM_begin
-					ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+					ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_trans_key	0	   8.0882   -1.2666   -4.3117
 						ANIM_trans_key	0.125	   8.0846   -1.2739   -4.3194
 						ANIM_trans_key	0.25	   8.0811   -1.2812   -4.3271
@@ -28418,7 +28418,7 @@ ANIM_begin
 						ANIM_trans_key	0.875	   8.0815   -1.3013   -4.3320
 						ANIM_trans_key	1	   8.0841   -1.3032   -4.3285
 					ANIM_trans_end
-					ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+					ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_rotate_key	0	  0.00
 						ANIM_rotate_key	0.125	  2.12
 						ANIM_rotate_key	0.25	  4.20
@@ -28429,7 +28429,7 @@ ANIM_begin
 						ANIM_rotate_key	0.875	 11.82
 						ANIM_rotate_key	1	 12.96
 					ANIM_rotate_end
-					ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+					ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_rotate_key	0	 -0.00
 						ANIM_rotate_key	0.125	  0.49
 						ANIM_rotate_key	0.25	  1.14
@@ -28440,7 +28440,7 @@ ANIM_begin
 						ANIM_rotate_key	0.875	  5.02
 						ANIM_rotate_key	1	  5.85
 					ANIM_rotate_end
-					ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+					ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_rotate_key	0	  0.00
 						ANIM_rotate_key	0.125	 -4.13
 						ANIM_rotate_key	0.25	 -8.25
@@ -28455,7 +28455,7 @@ ANIM_begin
 				ANIM_end
 				ANIM_begin
 					ANIM_trans	  -1.4103    0.0751    0.7481	  -1.4103    0.0751    0.7481	0 0	no_ref
-					ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+					ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_rotate_key	0	  0.00
 						ANIM_rotate_key	0.125	  1.94
 						ANIM_rotate_key	0.25	  3.73
@@ -28466,7 +28466,7 @@ ANIM_begin
 						ANIM_rotate_key	0.875	  9.79
 						ANIM_rotate_key	1	 10.64
 					ANIM_rotate_end
-					ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+					ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_rotate_key	0	 -0.00
 						ANIM_rotate_key	0.125	  0.25
 						ANIM_rotate_key	0.25	  0.61
@@ -28477,7 +28477,7 @@ ANIM_begin
 						ANIM_rotate_key	0.875	  2.78
 						ANIM_rotate_key	1	  3.24
 					ANIM_rotate_end
-					ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+					ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_rotate_key	0	  0.00
 						ANIM_rotate_key	0.125	 -4.11
 						ANIM_rotate_key	0.25	 -7.77
@@ -28490,7 +28490,7 @@ ANIM_begin
 					ANIM_rotate_end
 					TRIS	38823 624
 					ANIM_begin
-						ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+						ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 							ANIM_trans_key	0	   0.0088   -0.0025    0.0167
 							ANIM_trans_key	0.125	  -0.0095    0.0028   -0.0184
 							ANIM_trans_key	0.25	  -0.0283    0.0082   -0.0545
@@ -28762,7 +28762,7 @@ ANIM_begin
 	ANIM_end
 	ANIM_begin
 		ANIM_trans	   2.0888    0.1561    0.8091	   2.0888    0.1561    0.8091	0 0	no_ref
-		ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	  0.00
 			ANIM_rotate_key	0.125	 -2.30
 			ANIM_rotate_key	0.25	 -4.58
@@ -28773,7 +28773,7 @@ ANIM_begin
 			ANIM_rotate_key	0.875	-10.73
 			ANIM_rotate_key	1	-11.59
 		ANIM_rotate_end
-		ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	 -0.00
 			ANIM_rotate_key	0.125	 -0.37
 			ANIM_rotate_key	0.25	 -0.86
@@ -28784,7 +28784,7 @@ ANIM_begin
 			ANIM_rotate_key	0.875	 -3.49
 			ANIM_rotate_key	1	 -4.00
 		ANIM_rotate_end
-		ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	  0.00
 			ANIM_rotate_key	0.125	 -4.91
 			ANIM_rotate_key	0.25	 -9.09
@@ -28797,7 +28797,7 @@ ANIM_begin
 		ANIM_rotate_end
 		TRIS	44913 624
 		ANIM_begin
-			ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+			ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_trans_key	0	  -0.0087   -0.0023    0.0168
 				ANIM_trans_key	0.125	   0.0105    0.0027   -0.0201
 				ANIM_trans_key	0.25	   0.0302    0.0077   -0.0579
@@ -28813,7 +28813,7 @@ ANIM_begin
 	ANIM_end
 	ANIM_begin
 		ANIM_trans	   1.8243    0.1253    0.5277	   1.8243    0.1253    0.5277	0 0	no_ref
-		ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	  0.00
 			ANIM_rotate_key	0.125	 -3.79
 			ANIM_rotate_key	0.25	 -6.78
@@ -28824,7 +28824,7 @@ ANIM_begin
 			ANIM_rotate_key	0.875	-14.37
 			ANIM_rotate_key	1	-15.35
 		ANIM_rotate_end
-		ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	 -0.00
 			ANIM_rotate_key	0.125	 -0.59
 			ANIM_rotate_key	0.25	 -1.45
@@ -28835,7 +28835,7 @@ ANIM_begin
 			ANIM_rotate_key	0.875	 -5.47
 			ANIM_rotate_key	1	 -6.22
 		ANIM_rotate_end
-		ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	  0.00
 			ANIM_rotate_key	0.125	 -7.00
 			ANIM_rotate_key	0.25	-12.66
@@ -28848,7 +28848,7 @@ ANIM_begin
 		ANIM_rotate_end
 		TRIS	45609 72
 		ANIM_begin
-			ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+			ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_trans_key	0	   0.0096    0.0030   -0.0185
 				ANIM_trans_key	0.125	   0.0284    0.0090   -0.0547
 				ANIM_trans_key	0.25	   0.0483    0.0153   -0.0929
@@ -28863,7 +28863,7 @@ ANIM_begin
 		ANIM_end
 	ANIM_end
 	ANIM_begin
-		ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+		ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_trans_key	0	   0.7453   -0.3907    0.0549
 			ANIM_trans_key	0.125	   0.7489   -0.3980    0.0472
 			ANIM_trans_key	0.25	   0.7525   -0.4053    0.0394
@@ -28874,7 +28874,7 @@ ANIM_begin
 			ANIM_trans_key	0.875	   0.7520   -0.4254    0.0346
 			ANIM_trans_key	1	   0.7495   -0.4273    0.0381
 		ANIM_trans_end
-		ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	  0.00
 			ANIM_rotate_key	0.125	 -2.12
 			ANIM_rotate_key	0.25	 -4.20
@@ -28885,7 +28885,7 @@ ANIM_begin
 			ANIM_rotate_key	0.875	-11.82
 			ANIM_rotate_key	1	-12.96
 		ANIM_rotate_end
-		ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	 -0.00
 			ANIM_rotate_key	0.125	 -0.49
 			ANIM_rotate_key	0.25	 -1.14
@@ -28896,7 +28896,7 @@ ANIM_begin
 			ANIM_rotate_key	0.875	 -5.02
 			ANIM_rotate_key	1	 -5.85
 		ANIM_rotate_end
-		ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+		ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 			ANIM_rotate_key	0	  0.00
 			ANIM_rotate_key	0.125	 -4.13
 			ANIM_rotate_key	0.25	 -8.25
@@ -28932,7 +28932,7 @@ ANIM_begin
 		ANIM_end
 		ANIM_begin
 			ANIM_trans	   1.2012    0.0513    0.5091	   1.2012    0.0513    0.5091	0 0	no_ref
-			ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	  0.00
 				ANIM_rotate_key	0.125	 -2.16
 				ANIM_rotate_key	0.25	 -4.35
@@ -28943,7 +28943,7 @@ ANIM_begin
 				ANIM_rotate_key	0.875	-10.52
 				ANIM_rotate_key	1	-11.36
 			ANIM_rotate_end
-			ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	 -0.00
 				ANIM_rotate_key	0.125	 -0.33
 				ANIM_rotate_key	0.25	 -0.77
@@ -28954,7 +28954,7 @@ ANIM_begin
 				ANIM_rotate_key	0.875	 -3.27
 				ANIM_rotate_key	1	 -3.76
 			ANIM_rotate_end
-			ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	  0.00
 				ANIM_rotate_key	0.125	 -4.65
 				ANIM_rotate_key	0.25	 -8.60
@@ -28967,7 +28967,7 @@ ANIM_begin
 			ANIM_rotate_end
 			TRIS	49224 600
 			ANIM_begin
-				ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+				ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_trans_key	0	  -0.0087   -0.0022    0.0168
 					ANIM_trans_key	0.125	   0.0109    0.0028   -0.0209
 					ANIM_trans_key	0.25	   0.0309    0.0080   -0.0593
@@ -28983,7 +28983,7 @@ ANIM_begin
 		ANIM_end
 		ANIM_begin
 			ANIM_trans	   0.9292    0.0234    0.2360	   0.9292    0.0234    0.2360	0 0	no_ref
-			ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	  0.00
 				ANIM_rotate_key	0.125	 -3.49
 				ANIM_rotate_key	0.25	 -6.30
@@ -28994,7 +28994,7 @@ ANIM_begin
 				ANIM_rotate_key	0.875	-13.81
 				ANIM_rotate_key	1	-14.81
 			ANIM_rotate_end
-			ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	 -0.00
 				ANIM_rotate_key	0.125	 -0.49
 				ANIM_rotate_key	0.25	 -1.23
@@ -29005,7 +29005,7 @@ ANIM_begin
 				ANIM_rotate_key	0.875	 -4.92
 				ANIM_rotate_key	1	 -5.63
 			ANIM_rotate_end
-			ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	  0.00
 				ANIM_rotate_key	0.125	 -6.50
 				ANIM_rotate_key	0.25	-11.76
@@ -29018,7 +29018,7 @@ ANIM_begin
 			ANIM_rotate_end
 			TRIS	49896 72
 			ANIM_begin
-				ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+				ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_trans_key	0	   0.0096    0.0030   -0.0184
 					ANIM_trans_key	0.125	   0.0291    0.0093   -0.0558
 					ANIM_trans_key	0.25	   0.0492    0.0157   -0.0946
@@ -29033,7 +29033,7 @@ ANIM_begin
 			ANIM_end
 		ANIM_end
 		ANIM_begin
-			ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+			ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_trans_key	0	  -2.7744   -0.7716   -1.6348
 				ANIM_trans_key	0.125	  -2.7709   -0.7789   -1.6425
 				ANIM_trans_key	0.25	  -2.7673   -0.7862   -1.6503
@@ -29044,7 +29044,7 @@ ANIM_begin
 				ANIM_trans_key	0.875	  -2.7678   -0.8063   -1.6551
 				ANIM_trans_key	1	  -2.7703   -0.8082   -1.6516
 			ANIM_trans_end
-			ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	  0.00
 				ANIM_rotate_key	0.125	 -2.12
 				ANIM_rotate_key	0.25	 -4.20
@@ -29055,7 +29055,7 @@ ANIM_begin
 				ANIM_rotate_key	0.875	-11.82
 				ANIM_rotate_key	1	-12.96
 			ANIM_rotate_end
-			ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	 -0.00
 				ANIM_rotate_key	0.125	 -0.49
 				ANIM_rotate_key	0.25	 -1.14
@@ -29066,7 +29066,7 @@ ANIM_begin
 				ANIM_rotate_key	0.875	 -5.03
 				ANIM_rotate_key	1	 -5.85
 			ANIM_rotate_end
-			ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+			ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 				ANIM_rotate_key	0	  0.00
 				ANIM_rotate_key	0.125	 -4.13
 				ANIM_rotate_key	0.25	 -8.25
@@ -29102,7 +29102,7 @@ ANIM_begin
 			ANIM_end
 			ANIM_begin
 				ANIM_trans	   1.2667    0.0640    0.5374	   1.2667    0.0640    0.5374	0 0	no_ref
-				ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	  0.00
 					ANIM_rotate_key	0.125	 -2.04
 					ANIM_rotate_key	0.25	 -4.14
@@ -29113,7 +29113,7 @@ ANIM_begin
 					ANIM_rotate_key	0.875	-10.08
 					ANIM_rotate_key	1	-10.95
 				ANIM_rotate_end
-				ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	 -0.00
 					ANIM_rotate_key	0.125	 -0.29
 					ANIM_rotate_key	0.25	 -0.69
@@ -29124,7 +29124,7 @@ ANIM_begin
 					ANIM_rotate_key	0.875	 -3.00
 					ANIM_rotate_key	1	 -3.48
 				ANIM_rotate_end
-				ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	  0.00
 					ANIM_rotate_key	0.125	 -4.36
 					ANIM_rotate_key	0.25	 -8.08
@@ -29137,7 +29137,7 @@ ANIM_begin
 				ANIM_rotate_end
 				TRIS	55386 576
 				ANIM_begin
-					ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+					ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_trans_key	0	  -0.0088   -0.0022    0.0169
 						ANIM_trans_key	0.125	   0.0105    0.0027   -0.0202
 						ANIM_trans_key	0.25	   0.0301    0.0077   -0.0578
@@ -29153,7 +29153,7 @@ ANIM_begin
 			ANIM_end
 			ANIM_begin
 				ANIM_trans	   1.0631    0.0382    0.2951	   1.0631    0.0382    0.2951	0 0	no_ref
-				ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	  0.00
 					ANIM_rotate_key	0.125	 -3.35
 					ANIM_rotate_key	0.25	 -6.04
@@ -29164,7 +29164,7 @@ ANIM_begin
 					ANIM_rotate_key	0.875	-13.46
 					ANIM_rotate_key	1	-14.46
 				ANIM_rotate_end
-				ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	 -0.00
 					ANIM_rotate_key	0.125	 -0.45
 					ANIM_rotate_key	0.25	 -1.11
@@ -29175,7 +29175,7 @@ ANIM_begin
 					ANIM_rotate_key	0.875	 -4.63
 					ANIM_rotate_key	1	 -5.33
 				ANIM_rotate_end
-				ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	  0.00
 					ANIM_rotate_key	0.125	 -6.23
 					ANIM_rotate_key	0.25	-11.30
@@ -29188,7 +29188,7 @@ ANIM_begin
 				ANIM_rotate_end
 				TRIS	56034 72
 				ANIM_begin
-					ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+					ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_trans_key	0	   0.0096    0.0033   -0.0184
 						ANIM_trans_key	0.125	   0.0283    0.0096   -0.0545
 						ANIM_trans_key	0.25	   0.0479    0.0162   -0.0920
@@ -29203,7 +29203,7 @@ ANIM_begin
 				ANIM_end
 			ANIM_end
 			ANIM_begin
-				ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+				ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_trans_key	0	  -5.3712   -1.0163   -3.0121
 					ANIM_trans_key	0.125	  -5.3676   -1.0236   -3.0198
 					ANIM_trans_key	0.25	  -5.3641   -1.0308   -3.0276
@@ -29214,7 +29214,7 @@ ANIM_begin
 					ANIM_trans_key	0.875	  -5.3645   -1.0510   -3.0324
 					ANIM_trans_key	1	  -5.3670   -1.0529   -3.0289
 				ANIM_trans_end
-				ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	  0.00
 					ANIM_rotate_key	0.125	 -2.12
 					ANIM_rotate_key	0.25	 -4.20
@@ -29225,7 +29225,7 @@ ANIM_begin
 					ANIM_rotate_key	0.875	-11.82
 					ANIM_rotate_key	1	-12.96
 				ANIM_rotate_end
-				ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	 -0.00
 					ANIM_rotate_key	0.125	 -0.49
 					ANIM_rotate_key	0.25	 -1.14
@@ -29236,7 +29236,7 @@ ANIM_begin
 					ANIM_rotate_key	0.875	 -5.02
 					ANIM_rotate_key	1	 -5.85
 				ANIM_rotate_end
-				ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+				ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 					ANIM_rotate_key	0	  0.00
 					ANIM_rotate_key	0.125	 -4.13
 					ANIM_rotate_key	0.25	 -8.25
@@ -29262,7 +29262,7 @@ ANIM_begin
 				TRIS	57858 3183
 				ANIM_begin
 					ANIM_trans	   1.4103    0.0750    0.7481	   1.4103    0.0750    0.7481	0 0	no_ref
-					ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+					ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_rotate_key	0	  0.00
 						ANIM_rotate_key	0.125	 -1.94
 						ANIM_rotate_key	0.25	 -3.73
@@ -29273,7 +29273,7 @@ ANIM_begin
 						ANIM_rotate_key	0.875	 -9.79
 						ANIM_rotate_key	1	-10.64
 					ANIM_rotate_end
-					ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+					ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_rotate_key	0	 -0.00
 						ANIM_rotate_key	0.125	 -0.25
 						ANIM_rotate_key	0.25	 -0.61
@@ -29284,7 +29284,7 @@ ANIM_begin
 						ANIM_rotate_key	0.875	 -2.78
 						ANIM_rotate_key	1	 -3.24
 					ANIM_rotate_end
-					ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+					ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_rotate_key	0	  0.00
 						ANIM_rotate_key	0.125	 -4.11
 						ANIM_rotate_key	0.25	 -7.77
@@ -29297,7 +29297,7 @@ ANIM_begin
 					ANIM_rotate_end
 					TRIS	61041 624
 					ANIM_begin
-						ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+						ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 							ANIM_trans_key	0	  -0.0088   -0.0026    0.0168
 							ANIM_trans_key	0.125	   0.0095    0.0027   -0.0184
 							ANIM_trans_key	0.25	   0.0281    0.0081   -0.0540
@@ -29312,7 +29312,7 @@ ANIM_begin
 					ANIM_end
 				ANIM_end
 				ANIM_begin
-					ANIM_trans_begin	laminar/B738/slat2_deploy_ratio
+					ANIM_trans_begin	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_trans_key	0	  -8.0882   -1.2669   -4.3117
 						ANIM_trans_key	0.125	  -8.0846   -1.2741   -4.3194
 						ANIM_trans_key	0.25	  -8.0811   -1.2814   -4.3272
@@ -29323,7 +29323,7 @@ ANIM_begin
 						ANIM_trans_key	0.875	  -8.0815   -1.3015   -4.3320
 						ANIM_trans_key	1	  -8.0840   -1.3034   -4.3285
 					ANIM_trans_end
-					ANIM_rotate_begin	0 0 1	laminar/B738/slat2_deploy_ratio
+					ANIM_rotate_begin	0 0 1	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_rotate_key	0	  0.00
 						ANIM_rotate_key	0.125	 -2.12
 						ANIM_rotate_key	0.25	 -4.20
@@ -29334,7 +29334,7 @@ ANIM_begin
 						ANIM_rotate_key	0.875	-11.82
 						ANIM_rotate_key	1	-12.96
 					ANIM_rotate_end
-					ANIM_rotate_begin	0 1 0	laminar/B738/slat2_deploy_ratio
+					ANIM_rotate_begin	0 1 0	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_rotate_key	0	 -0.00
 						ANIM_rotate_key	0.125	 -0.49
 						ANIM_rotate_key	0.25	 -1.14
@@ -29345,7 +29345,7 @@ ANIM_begin
 						ANIM_rotate_key	0.875	 -5.02
 						ANIM_rotate_key	1	 -5.85
 					ANIM_rotate_end
-					ANIM_rotate_begin	1 0 0	laminar/B738/slat2_deploy_ratio
+					ANIM_rotate_begin	1 0 0	sim/flightmodel2/controls/slat2_deploy_ratio
 						ANIM_rotate_key	0	  0.00
 						ANIM_rotate_key	0.125	 -4.13
 						ANIM_rotate_key	0.25	 -8.25

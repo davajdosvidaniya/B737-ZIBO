@@ -516,6 +516,7 @@ msg_to_vspeed = 0
 qrh = "OFF"
 
 fmc_message = {}
+fmc_message_warn = {}
 fmc_message_num = 0
 --fmc_message2 = {}
 --fmc_message_num2 = 0
@@ -5875,7 +5876,7 @@ function dir_via_add(awy_from2, awy_from_rc2, awy_to2, awy_to_rc2, via2, via_idx
 		if navaid_list_n == 0 then
 			-- fmc_message_num = fmc_message_num + 1
 			-- fmc_message[fmc_message_num] = NOT_IN_DATABASE
-			add_fmc_msg(NOT_IN_DATABASE)
+			add_fmc_msg(NOT_IN_DATABASE, 1)
 		elseif navaid_list_n == 1 then
 			-- add fpln -> direct navaid
 			if via_idx > fpln_num2 then
@@ -5935,7 +5936,7 @@ function dir_via_add(awy_from2, awy_from_rc2, awy_to2, awy_to_rc2, via2, via_idx
 		if navaid_list_n == 0 then
 			-- fmc_message_num = fmc_message_num + 1
 			-- fmc_message[fmc_message_num] = NOT_IN_DATABASE
-			add_fmc_msg(NOT_IN_DATABASE)
+			add_fmc_msg(NOT_IN_DATABASE, 1)
 		elseif navaid_list_n == 1 then
 			fpln_data2[via_idx][1] = navaid_list[1][4]	--entry
 			fpln_data2[via_idx][2] = "DIRECT"
@@ -7773,17 +7774,17 @@ function use_import_data_old()
 				legs_num = 0
 				-- fmc_message_num = fmc_message_num + 1
 				-- fmc_message[fmc_message_num] = "LOAD ROUTE ERR"
-				add_fmc_msg("LOAD ROUTE ERR")
+				add_fmc_msg("LOAD ROUTE ERR", 1)
 			end
 		else
 			-- fmc_message_num = fmc_message_num + 1
 			-- fmc_message[fmc_message_num] = "LOAD ROUTE ERR"
-			add_fmc_msg("LOAD ROUTE ERR")
+			add_fmc_msg("LOAD ROUTE ERR", 1)
 		end
 	else
 		-- fmc_message_num = fmc_message_num + 1
 		-- fmc_message[fmc_message_num] = "LOAD ROUTE ERR"
-		add_fmc_msg("LOAD ROUTE ERR")
+		add_fmc_msg("LOAD ROUTE ERR", 1)
 	end
 	
 	entry = ""
@@ -8197,13 +8198,13 @@ function use_import_data()
 				des_star2 = des_star
 				des_star_trans2 = des_star_trans
 				--legs_num2 = 0
-				add_fmc_msg("LOAD ROUTE ERR")
+				add_fmc_msg("LOAD ROUTE ERR", 1)
 			end
 		else
-			add_fmc_msg("LOAD ROUTE ERR")
+			add_fmc_msg("LOAD ROUTE ERR", 1)
 		end
 	else
-		add_fmc_msg("LOAD ROUTE ERR")
+		add_fmc_msg("LOAD ROUTE ERR", 1)
 	end
 	
 	entry = ""
@@ -13397,7 +13398,7 @@ function rte_add_wpt(aaa)
 		else
 			-- fmc_message_num = fmc_message_num + 1
 			-- fmc_message[fmc_message_num] = NOT_IN_DATABASE
-			add_fmc_msg(NOT_IN_DATABASE)
+			add_fmc_msg(NOT_IN_DATABASE, 1)
 		end
 	end
 	entry = ""
@@ -13639,7 +13640,7 @@ function rte_add_wpt3(aaa, id_nav, id_brg, id_dist)
 		else
 			-- fmc_message_num = fmc_message_num + 1
 			-- fmc_message[fmc_message_num] = NOT_IN_DATABASE
-			add_fmc_msg(NOT_IN_DATABASE)
+			add_fmc_msg(NOT_IN_DATABASE, 1)
 		end
 		entry = ""
 	else
@@ -18472,7 +18473,7 @@ function B738_load_config()
 						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
 						if temp_fmod ~= nil then
 							 temp_fmod = roundUpToIncrement(temp_fmod, 1 )
-							if temp_fmod >= 0 and  temp_fmod <= 7 then
+							if temp_fmod >= 0 and  temp_fmod <= 15 then
 								B738DR_announcement_set = temp_fmod
 							else
 								B738DR_announcement_set = 0
@@ -20593,7 +20594,7 @@ function nav_data_find(nav_data_inp)
 		ref_nav_navaid = "----"
 		ref_nav_apt = "----"
 		ref_nav_new = "*****"
-		add_fmc_msg(NOT_IN_DATABASE)
+		add_fmc_msg(NOT_IN_DATABASE, 1)
 	else
 		for ii = 1, navaid_list_n do
 			add_nav_data = 0
@@ -20625,7 +20626,7 @@ function nav_data_find(nav_data_inp)
 		end
 		navaid_list_n = nav_data_n
 		if navaid_list_n == 0 then
-			add_fmc_msg(NOT_IN_DATABASE)
+			add_fmc_msg(NOT_IN_DATABASE, 1)
 		else
 			for ii = 1, nav_data_n do
 				for jj = 1, 8 do
@@ -20824,9 +20825,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						end
 						
 						if apt_ok == 0 then
-							-- fmc_message_num = fmc_message_num + 1
-							-- fmc_message[fmc_message_num] = NOT_IN_DATABASE
-							add_fmc_msg(NOT_IN_DATABASE)
+							add_fmc_msg(NOT_IN_DATABASE, 1)
 						else
 							ref_icao_x = entry
 							des_icao_x = "****"
@@ -21089,7 +21088,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					find_navaid(entry, "", 0, "")
 					if navaid_list_n == 0 then
 						entry = ""
-						add_fmc_msg(NOT_IN_DATABASE)
+						add_fmc_msg(NOT_IN_DATABASE, 1)
 					else
 						fix_data_num = fix_data_num + 1
 						fix_data[fix_data_num] = {}
@@ -21401,7 +21400,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 					entry = ""
 				else
-					add_fmc_msg(VERIFY_TO_SPEEDS)
+					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 				end
 				v1_set = "---"
 				vr_set = "---"
@@ -21413,7 +21412,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 					entry = ""
 				else
-					add_fmc_msg(VERIFY_TO_SPEEDS)
+					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 				end
 				v1_set = "---"
 				vr_set = "---"
@@ -21425,7 +21424,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 					entry = ""
 				else
-					add_fmc_msg(VERIFY_TO_SPEEDS)
+					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 				end
 				v1_set = "---"
 				vr_set = "---"
@@ -21437,7 +21436,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 					entry = ""
 				else
-					add_fmc_msg(VERIFY_TO_SPEEDS)
+					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 				end
 				v1_set = "---"
 				vr_set = "---"
@@ -21449,7 +21448,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 					entry = ""
 				else
-					add_fmc_msg(VERIFY_TO_SPEEDS)
+					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 				end
 				v1_set = "---"
 				vr_set = "---"
@@ -21462,7 +21461,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 						entry = ""
 					else
-						add_fmc_msg(VERIFY_TO_SPEEDS)
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 					end
 					v1_set = "---"
 					vr_set = "---"
@@ -21519,7 +21518,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						entry = ""
 					else
 						if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
-							add_fmc_msg(VERIFY_TO_SPEEDS)
+							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 						end
 					end
 					B738DR_calc_vspd = 1
@@ -21560,7 +21559,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 								entry = ""
 							else
 								if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
-									add_fmc_msg(VERIFY_TO_SPEEDS)
+									add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 								end
 							end
 							B738DR_calc_vspd = 1
@@ -21721,7 +21720,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 						entry = ""
 					else
-						add_fmc_msg(VERIFY_TO_SPEEDS)
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 					end
 					v1_set = "---"
 					vr_set = "---"
@@ -21749,7 +21748,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 											entry = ""
 										else
-											add_fmc_msg(VERIFY_TO_SPEEDS)
+											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 										end
 										v1_set = "---"
 										vr_set = "---"
@@ -21796,8 +21795,9 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					if n == nil then
 						entry = INVALID_INPUT
 					else
-						local nn = crz_alt_num / 100
-						if n < nn or n > 410 then	-- Cruise level FLxxx min and max
+						--local nn = crz_alt_num / 100
+						--if n < nn or n > 410 then	-- Cruise level FLxxx min and max
+						if n < 10 or n > 410 then	-- Cruise level FLxxx min and max
 							entry = INVALID_INPUT
 						else
 							crz_alt_num = n * 100
@@ -21820,8 +21820,9 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						entry = INVALID_INPUT
 					else
 						if strlen == 3 then
-							local nn = crz_alt_num / 100
-							if n < nn or n > 410 then	-- Cruise level FLxxx min and max
+							--local nn = crz_alt_num / 100
+							--if n < nn or n > 410 then	-- Cruise level FLxxx min and max
+							if n < 10 or n > 410 then	-- Cruise level FLxxx min and max
 								entry = INVALID_INPUT
 							else
 								crz_alt_num = n * 100
@@ -21838,7 +21839,8 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 								msg_chk_alt_constr = 0
 							end
 						else
-							if n < crz_alt_num or n > 41000 then	-- Cruise alt min and max
+							--if n < crz_alt_num or n > 41000 then	-- Cruise alt min and max
+							if n < 1000 or n > 41000 then	-- Cruise level FLxxx min and max
 								entry = INVALID_INPUT
 							else
 								crz_alt_num = n
@@ -22102,7 +22104,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 							entry = ""
 						else
-							add_fmc_msg(VERIFY_TO_SPEEDS)
+							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 						end
 						v1_set = "---"
 						vr_set = "---"
@@ -22155,7 +22157,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 											entry = ""
 										else
-											add_fmc_msg(VERIFY_TO_SPEEDS)
+											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 										end
 										v1_set = "---"
 										vr_set = "---"
@@ -22200,7 +22202,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 											entry = ""
 										else
-											add_fmc_msg(VERIFY_TO_SPEEDS)
+											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 										end
 										v1_set = "---"
 										vr_set = "---"
@@ -22245,7 +22247,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 											entry = ""
 										else
-											add_fmc_msg(VERIFY_TO_SPEEDS)
+											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 										end
 										v1_set = "---"
 										vr_set = "---"
@@ -22869,7 +22871,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					if apt_ok == 0 then
 						-- fmc_message_num = fmc_message_num + 1
 						-- fmc_message[fmc_message_num] = NOT_IN_DATABASE
-						add_fmc_msg(NOT_IN_DATABASE)
+						add_fmc_msg(NOT_IN_DATABASE, 1)
 					else
 						ref_icao_x = entry
 						des_icao_x = "****"
@@ -23014,7 +23016,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					-- if apt_ok == 0 then
 						-- -- fmc_message_num = fmc_message_num + 1
 						-- -- fmc_message[fmc_message_num] = NOT_IN_DATABASE
-						-- add_fmc_msg(NOT_IN_DATABASE)
+						-- add_fmc_msg(NOT_IN_DATABASE, 1)
 					-- else
 						-- ref_icao = entry
 						-- des_icao = "****"
@@ -23211,7 +23213,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 					entry = ""
 				else
-					add_fmc_msg(VERIFY_TO_SPEEDS)
+					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 				end
 				v1_set = "---"
 				vr_set = "---"
@@ -23235,7 +23237,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 						entry = ""
 					else
-						add_fmc_msg(VERIFY_TO_SPEEDS)
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 					end
 					v1_set = "---"
 					vr_set = "---"
@@ -23255,7 +23257,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 									if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 										entry = ""
 									else
-										add_fmc_msg(VERIFY_TO_SPEEDS)
+										add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 									end
 									v1_set = "---"
 									vr_set = "---"
@@ -23274,7 +23276,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 									if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 										entry = ""
 									else
-										add_fmc_msg(VERIFY_TO_SPEEDS)
+										add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 									end
 									v1_set = "---"
 									vr_set = "---"
@@ -24146,7 +24148,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					if rnw_exist(ref_icao, entry) == false then
 						-- fmc_message_num = fmc_message_num + 1
 						-- fmc_message[fmc_message_num] = NOT_IN_DATABASE
-						add_fmc_msg(NOT_IN_DATABASE)
+						add_fmc_msg(NOT_IN_DATABASE, 1)
 					else
 						ref_rwy2 = entry
 						entry = ""
@@ -24436,7 +24438,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 						entry = ""
 					else
-						add_fmc_msg(VERIFY_TO_SPEEDS)
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 					end
 					v1_set = "---"
 					vr_set = "---"
@@ -24450,7 +24452,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 						entry = ""
 					else
-						add_fmc_msg(VERIFY_TO_SPEEDS)
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 					end
 					v1_set = "---"
 					vr_set = "---"
@@ -24468,7 +24470,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 								entry = ""
 							else
-								add_fmc_msg(VERIFY_TO_SPEEDS)
+								add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 							end
 							v1_set = "---"
 							vr_set = "---"
@@ -24534,7 +24536,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 						entry = ""
 					else
-						add_fmc_msg(VERIFY_TO_SPEEDS)
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 					end
 					v1_set = "---"
 					vr_set = "---"
@@ -24559,7 +24561,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 								entry = ""
 							else
-								add_fmc_msg(VERIFY_TO_SPEEDS)
+								add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 							end
 							v1_set = "---"
 							vr_set = "---"
@@ -24600,7 +24602,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 					entry = ""
 				else
-					add_fmc_msg(VERIFY_TO_SPEEDS)
+					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 				end
 				v1_set = "---"
 				vr_set = "---"
@@ -25604,7 +25606,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 					entry = ""
 				else
-					add_fmc_msg(VERIFY_TO_SPEEDS)
+					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 				end
 				v1_set = "---"
 				vr_set = "---"
@@ -25632,7 +25634,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 							entry = ""
 						else
-							add_fmc_msg(VERIFY_TO_SPEEDS)
+							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 						end
 						v1_set = "---"
 						vr_set = "---"
@@ -25685,7 +25687,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 											entry = ""
 										else
-											add_fmc_msg(VERIFY_TO_SPEEDS)
+											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 										end
 										v1_set = "---"
 										vr_set = "---"
@@ -25730,7 +25732,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 											entry = ""
 										else
-											add_fmc_msg(VERIFY_TO_SPEEDS)
+											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 										end
 										v1_set = "---"
 										vr_set = "---"
@@ -25775,7 +25777,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 											entry = ""
 										else
-											add_fmc_msg(VERIFY_TO_SPEEDS)
+											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 										end
 										v1_set = "---"
 										vr_set = "---"
@@ -27025,7 +27027,7 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 			-- fmc_message_num = fmc_message_num + 1
 			-- fmc_message[fmc_message_num] = CONFIG_SAVED
 			-- fms_msg_sound = 1
-			add_fmc_msg(CONFIG_SAVED)
+			add_fmc_msg(CONFIG_SAVED, 1)
 			--entry = CONFIG_SAVED
 		elseif page_xtras_fmod > 0 then
 			-- DEFAULT value
@@ -27234,7 +27236,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 							if apt_ok == 0 then
 								-- fmc_message_num = fmc_message_num + 1
 								-- fmc_message[fmc_message_num] = NOT_IN_DATABASE
-								add_fmc_msg(NOT_IN_DATABASE)
+								add_fmc_msg(NOT_IN_DATABASE, 1)
 							else
 								des_icao_x = entry
 								if des_icao == "****" then --or in_flight_mode == 0 then
@@ -27700,7 +27702,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 			if v1_set == "---" and vr_set == "---" and v2_set == "---" then
 				entry = ""
 			else
-				add_fmc_msg(VERIFY_TO_SPEEDS)
+				add_fmc_msg(VERIFY_TO_SPEEDS, 1)
 				B738DR_fmc_message_warn = 1
 			end
 			v1_set = "---"
@@ -27743,10 +27745,14 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 			local alt_temp = 0
 			if strlen > 0 then
 				if entry == ">DELETE" then
-					crz_alt = "*****"
-					crz_alt_num = 0
-					entry = ""
-					msg_chk_alt_constr = 0
+					if B738DR_flight_phase == 0 then
+						crz_alt = "*****"
+						crz_alt_num = 0
+						entry = ""
+						msg_chk_alt_constr = 0
+					else
+						entry = INVALID_DELETE
+					end
 				elseif strlen == 5 and string.sub(entry, 1, 2) == "FL" then
 					local n = tonumber(string.sub(entry, 3, 5))
 					if n == nil then
@@ -31192,10 +31198,7 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 						B738DR_flight_phase = 3
 						B738DR_fms_descent_now = 0
 					else
-						-- fmc_message_num = fmc_message_num + 1
-						-- fmc_message[fmc_message_num] = CHECK_ALT_TGT
-						-- fms_msg_sound = 1
-						add_fmc_msg(CHECK_ALT_TGT)
+						add_fmc_msg(CHECK_ALT_TGT, 1)
 						--B738DR_vnav_disconnect = 1
 						B738DR_fmc_message_warn = 1
 						B738DR_flight_phase = 1
@@ -31217,10 +31220,7 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 						B738DR_flight_phase = 4
 						B738DR_fms_descent_now = 0
 					else
-						-- fmc_message_num = fmc_message_num + 1
-						-- fmc_message[fmc_message_num] = CHECK_ALT_TGT
-						-- fms_msg_sound = 1
-						add_fmc_msg(CHECK_ALT_TGT)
+						add_fmc_msg(CHECK_ALT_TGT, 1)
 						--B738DR_vnav_disconnect = 1
 						vnav_alt_mode = 1
 					end
@@ -34032,7 +34032,7 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 					-- -- fmc_message_num = fmc_message_num + 1
 					-- -- fmc_message[fmc_message_num] = CHECK_ALT_TGT
 					-- -- fms_msg_sound = 1
-					-- add_fmc_msg(CHECK_ALT_TGT)
+					-- add_fmc_msg(CHECK_ALT_TGT, 1)
 					-- --B738DR_vnav_disconnect = 1
 					-- B738DR_fmc_message_warn = 1
 					-- B738DR_flight_phase = 1
@@ -34056,7 +34056,7 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 					-- -- fmc_message_num = fmc_message_num + 1
 					-- -- fmc_message[fmc_message_num] = CHECK_ALT_TGT
 					-- -- fms_msg_sound = 1
-					-- add_fmc_msg(CHECK_ALT_TGT)
+					-- add_fmc_msg(CHECK_ALT_TGT, 1)
 					-- --B738DR_vnav_disconnect = 1
 					-- vnav_alt_mode = 1
 				-- end
@@ -34654,7 +34654,7 @@ function B738_fmc_menu()
 		line4_l = "  Z I B O               "
 		line4_s = "           M O D  " .. version
 		if menu_tick < 5 then
-			line5_x = "FLIGHT MODEL 4.0 TWKSTER"
+			line5_x = "FLIGHT MODEL 4.1 TWKSTER"
 			line5_l = "         A   S  D  G    "
 			line5_s = "      BY  ERO IM EV ROUP"
 			line6_x = "SOUND PACK "
@@ -35230,7 +35230,7 @@ function B738_fmc_fmod_dspl()
 		line1_l = "<     /0-10/"
 		line2_x = " ANNOUNC.SET NR         "
 		line2_g = "  " .. string.format("%2d", (B738DR_announcement_set+1))
-		line2_l = "<     /1-8/"
+		line2_l = "<     /1-4/"
 		line3_x = " CAPT WELCOME           "
 		line3_l = "< PLAY MESSAGE          "
 		line4_x = " CAPT CRUISE            "
@@ -35340,7 +35340,7 @@ function fmc_fmod_main(fmod_butt, fmod_butt2)
 		-- load preset
 		if fmod_butt ~= 0 then
 			B738_set_fmod_config(fmod_butt)
-			add_fmc_msg(PRESET_LOADED)
+			add_fmc_msg(PRESET_LOADED, 1)
 			entry = ""
 		end
 		-- save preset
@@ -35354,7 +35354,7 @@ function fmc_fmod_main(fmod_butt, fmod_butt2)
 			end
 			B738_mod_fmod_config(fmod_butt2)
 			B738_save_fmod_config()
-			add_fmc_msg(PRESET_SAVED)
+			add_fmc_msg(PRESET_SAVED, 1)
 			entry = ""
 		end
 	end
@@ -44468,8 +44468,8 @@ function B738_fmc_msg()
 		if B738DR_gps_pos == "-----.-------.-"  then
 			if msg_gps_l_fail == 0 then
 				msg_gps_l_fail = 1
-				add_fmc_msg(GPS_L_INVALID)
-				B738DR_fmc_message_warn = 1
+				add_fmc_msg(GPS_L_INVALID, 2)
+				--B738DR_fmc_message_warn = 1
 			end
 		end
 		
@@ -44477,8 +44477,8 @@ function B738_fmc_msg()
 		if B738DR_gps2_pos == "-----.-------.-"  then
 			if msg_gps_r_fail == 0 then
 				msg_gps_r_fail = 1
-				add_fmc_msg(GPS_R_INVALID)
-				B738DR_fmc_message_warn = 1
+				add_fmc_msg(GPS_R_INVALID, 2)
+				--B738DR_fmc_message_warn = 1
 			end
 		end
 		
@@ -44487,7 +44487,7 @@ function B738_fmc_msg()
 		and B738DR_gps2_pos == "-----.-------.-"  then
 			if msg_gps_lr_fail == 0 then
 				msg_gps_lr_fail = 1
-				add_fmc_msg(GPS_LR_INVALID)
+				add_fmc_msg(GPS_LR_INVALID, 1)
 			end
 		end
 		
@@ -44495,8 +44495,8 @@ function B738_fmc_msg()
 		if B738DR_irs1_restart == 1 or B738DR_irs2_restart == 1 then
 			if msg_irs_motion == 0 then
 				msg_irs_motion = 1
-				add_fmc_msg(IRS_MOTION)
-				B738DR_fmc_message_warn = 1
+				add_fmc_msg(IRS_MOTION, 2)
+				--B738DR_fmc_message_warn = 1
 			end
 		end
 		
@@ -44514,7 +44514,7 @@ function B738_fmc_msg()
 		if align_mode == 1 then
 			if msg_irs_hdg == 0 then
 				msg_irs_hdg = 1
-				add_fmc_msg(ENTER_IRS_HDG)
+				add_fmc_msg(ENTER_IRS_HDG, 1)
 			end
 		end
 		
@@ -44532,8 +44532,8 @@ function B738_fmc_msg()
 		if align_mode == 1 then
 			if msg_irs_pos == 0 then
 				msg_irs_pos = 1
-				add_fmc_msg(ENTER_IRS_POS)
-				B738DR_fmc_message_warn = 1
+				add_fmc_msg(ENTER_IRS_POS, 2)
+				--B738DR_fmc_message_warn = 1
 			end
 		end
 		
@@ -44543,8 +44543,8 @@ function B738_fmc_msg()
 			if crz_alt_num > 0 and simDR_ap_altitude_dial_ft >= crz_alt_num then
 				if msg_mcp_alt == 0 then
 					msg_mcp_alt = 1
-					add_fmc_msg(RESET_MCP_ALT)
-					B738DR_fmc_message_warn = 1
+					add_fmc_msg(RESET_MCP_ALT, 2)
+					--B738DR_fmc_message_warn = 1
 				end
 			end
 		end
@@ -44557,30 +44557,39 @@ function B738_fmc_msg()
 			throttle_idle = 1
 		end
 		if B738DR_flight_phase > 4 and B738DR_flight_phase < 8 and B738DR_autopilot_vnav_status == 1 then
-			airspeed = airspeed + 10
-			if simDR_airspeed_pilot > airspeed and drag_timeout == 0 and throttle_idle == 1 then
-				drag_timeout = 1
-				if is_timer_scheduled(drag_timer) == false then
-					run_after_time(drag_timer, 10)
+			
+			airspeed = airspeed + 2
+			if B738DR_speed_ratio > -0.2 and msg_drag_req == 0 and simDR_airspeed_pilot > airspeed then
+				airspeed = airspeed + 10
+				if simDR_airspeed_pilot > airspeed then
+					if drag_timeout == 0 and throttle_idle == 1 then
+						drag_timeout = 1
+						if is_timer_scheduled(drag_timer) == false then
+							run_after_time(drag_timer, 10)
+						end
+					end
+					if drag_timeout == 2 then
+						msg_drag_req = 1
+						add_fmc_msg(DRAG_REQUIRED, 1)
+					end
+				end
+			else
+				if is_timer_scheduled(drag_timer) == true then
+					stop_timer(drag_timer)
+					drag_timeout = 0
+				end
+				if simDR_airspeed_pilot <= airspeed and drag_timeout == 2 then
+					msg_drag_req = 0
+					drag_timeout = 0
 				end
 			end
 			
-			if simDR_airspeed_pilot > airspeed and B738DR_speed_ratio > -0.2 
-			and msg_drag_req == 0 and drag_timeout == 2 then
-				msg_drag_req = 1
-				add_fmc_msg(DRAG_REQUIRED)
-			end
-			
-			airspeed = airspeed - 8
-			if simDR_airspeed_pilot <= B738DR_mcp_speed_dial	--simDR_airspeed_dial 
-			and msg_drag_req == 1 then
+		else
+			if is_timer_scheduled(drag_timer) == true then
 				stop_timer(drag_timer)
-				drag_timeout = 0
-				msg_drag_req = 0
 			end
-			if drag_timeout == 2 then
-				drag_timeout = 0
-			end
+			drag_timeout = 0
+			msg_drag_req = 0
 		end
 		
 		if msg_nav_data == 0 then
@@ -44613,12 +44622,12 @@ function B738_fmc_msg()
 		
 		if msg_nav_data == 1 then
 			msg_nav_data = 2
-			add_fmc_msg(NAV_DATA_OF_DATE)
-			B738DR_fmc_message_warn = 1
+			add_fmc_msg(NAV_DATA_OF_DATE, 2)
+			--B738DR_fmc_message_warn = 1
 		elseif msg_nav_data == 3 then
 			msg_nav_data = 4
-			add_fmc_msg(CORRUPTED_NAVDATA)
-			B738DR_fmc_message_warn = 1
+			add_fmc_msg(CORRUPTED_NAVDATA, 2)
+			--B738DR_fmc_message_warn = 1
 		end
 		
 		-- UNABLE CRZ ALT
@@ -44626,13 +44635,13 @@ function B738_fmc_msg()
 			if tc_idx > td_idx then
 				if msg_unavaible_crz_alt == 0 then
 					msg_unavaible_crz_alt = 1
-					add_fmc_msg(UNABLE_CRUISE_ALT)
+					add_fmc_msg(UNABLE_CRUISE_ALT, 1)
 				end
 			else
 				if tc_idx == td_idx and dist_tc > B738DR_vnav_td_dist then
 					if msg_unavaible_crz_alt == 0 then
 						msg_unavaible_crz_alt = 1
-						add_fmc_msg(UNABLE_CRUISE_ALT)
+						add_fmc_msg(UNABLE_CRUISE_ALT, 1)
 					end
 				end
 			end
@@ -44649,7 +44658,7 @@ function B738_fmc_msg()
 			if simDR_cowl_ice_0_on == 1 or simDR_cowl_ice_1_on == 1 then
 				if msg_tai_above_10 == 0 then
 					msg_tai_above_10 = 1
-					add_fmc_msg(TAI_ON_ABOVE_10C)
+					add_fmc_msg(TAI_ON_ABOVE_10C, 1)
 				end
 			else
 				msg_tai_above_10 = 0
@@ -44660,8 +44669,8 @@ function B738_fmc_msg()
 			if lnav_mode == 1 then
 				B738DR_lnav_disconnect = 1
 				--B738DR_vnav_disconnect = 1
-				add_fmc_msg(DISCON)
-				B738DR_fmc_message_warn = 1
+				add_fmc_msg(DISCON, 2)
+				--B738DR_fmc_message_warn = 1
 			end
 			B738DR_vnav_disconnect = 1
 		end
@@ -44670,7 +44679,7 @@ function B738_fmc_msg()
 		if simDR_altitude_pilot > 41200 then
 			if msg_above_max == 0 then
 				msg_above_max = 1
-				add_fmc_msg(ABOVE_MAX_CERT_ALT)
+				add_fmc_msg(ABOVE_MAX_CERT_ALT, 1)
 			end
 		end
 		if simDR_altitude_pilot < 41000 then
@@ -44682,7 +44691,7 @@ function B738_fmc_msg()
 			if simDR_gear_retract > 0.1 and simDR_flaps_ratio > 0.624 then	-- gear down, flaps >= 15
 				if app_flap == "--" and msg_vref_not_sel == 0 then
 					msg_vref_not_sel = 1
-					add_fmc_msg(APPRCH_VREF_NOT_SELECTED)
+					add_fmc_msg(APPRCH_VREF_NOT_SELECTED, 1)
 				end
 			end
 		else
@@ -44694,8 +44703,8 @@ function B738_fmc_msg()
 			if lnav_mode == 1 then
 				B738DR_lnav_disconnect = 1
 				--B738DR_vnav_disconnect = 1
-				add_fmc_msg(LNAV_DISCON)
-				B738DR_fmc_message_warn = 1
+				add_fmc_msg(LNAV_DISCON, 2)
+				--B738DR_fmc_message_warn = 1
 			end
 			B738DR_vnav_disconnect = 1
 		end
@@ -44720,7 +44729,7 @@ function B738_fmc_msg()
 			if simDR_fuel_weight <= res_fuel then
 				if msg_using_rsv_fuel == 0 then
 					msg_using_rsv_fuel = 1
-					add_fmc_msg(USING_RSV_FUEL)
+					add_fmc_msg(USING_RSV_FUEL, 1)
 				end
 			end
 		end
@@ -44773,8 +44782,8 @@ function B738_fmc_msg()
 		if rnp_alert == 1 and msg_rnp_alert == 0 then
 			msg_rnp_alert = 1
 			rnp_alert = 0
-			add_fmc_msg(UNABLE_REQ_NAV_PERF)
-			B738DR_fmc_message_warn = 1
+			add_fmc_msg(UNABLE_REQ_NAV_PERF, 2)
+			--B738DR_fmc_message_warn = 1
 		end
 		ii = B738DR_anp + 0.2
 		if ii < B738DR_rnp and simDR_radio_height_pilot_ft > 50 then
@@ -44808,11 +44817,21 @@ function B738_fmc_msg()
 	end
 	
 	if fmc_message_num > 0 then
-		-- B738DR_fmc_message = 0
-	-- else
-		-- B738DR_fmc_message = 1
-		fmc1_msg_light = 1
-		fmc2_msg_light = 1
+		-- fmc1_msg_light = 1
+		-- fmc2_msg_light = 1
+		for ii = 1, fmc_message_num do
+			if fmc_message_warn[ii] > 1 then
+				B738DR_fmc_message_warn = 1
+				fmc1_msg_light = 1
+				fmc2_msg_light = 1
+			elseif fmc_message_warn[ii] > 0 then
+				fmc1_msg_light = 1
+				fmc2_msg_light = 1
+			end
+		end
+	else
+		fmc1_msg_light = 0
+		fmc2_msg_light = 0
 	end
 	
 	
@@ -44826,7 +44845,7 @@ function rnp_timer()
 	rnp_alert = 1
 end
 
-function add_fmc_msg(msg_idx)
+function add_fmc_msg(msg_idx, msg_annun)
 	
 	fms_msg_sound = 1
 	fmc_message_num = fmc_message_num + 1
@@ -44834,12 +44853,8 @@ function add_fmc_msg(msg_idx)
 		fmc_message_num = 255
 	end
 	fmc_message[fmc_message_num] = msg_idx
+	fmc_message_warn[fmc_message_num] = msg_annun
 	
-	-- fmc_message_num2 = fmc_message_num2 + 1
-	-- if fmc_message_num2 > 255 then
-		-- fmc_message_num2 = 255
-	-- end
-	-- fmc_message2[fmc_message_num2] = msg_idx
 	simCMD_nosmoking_toggle:once()
 	
 end
@@ -49826,6 +49841,7 @@ function B738_vnav_calc()
 				if legs_data[n][11] > legs_data[n-1][11] then
 					fmc_message_num = fmc_message_num + 1
 					fmc_message[fmc_message_num] = ALT_CONSTRAINT .. legs_data[n][1]
+					fmc_message_warn[fmc_message_num] = 1
 					simCMD_nosmoking_toggle:once()
 					fms_msg_sound = 1
 				else
@@ -49833,6 +49849,7 @@ function B738_vnav_calc()
 						if legs_data[n][11] > legs_data[n][5] then
 							fmc_message_num = fmc_message_num + 1
 							fmc_message[fmc_message_num] = ALT_CONSTRAINT .. legs_data[n][1]
+							fmc_message_warn[fmc_message_num] = 1
 							simCMD_nosmoking_toggle:once()
 							fms_msg_sound = 1
 						end
@@ -49840,6 +49857,7 @@ function B738_vnav_calc()
 						if legs_data[n][11] < legs_data[n][5] then
 							fmc_message_num = fmc_message_num + 1
 							fmc_message[fmc_message_num] = ALT_CONSTRAINT .. legs_data[n][1]
+							fmc_message_warn[fmc_message_num] = 1
 							simCMD_nosmoking_toggle:once()
 							fms_msg_sound = 1
 						end
@@ -49847,6 +49865,7 @@ function B738_vnav_calc()
 						if legs_data[n][11] ~= legs_data[n][5] then
 							fmc_message_num = fmc_message_num + 1
 							fmc_message[fmc_message_num] = ALT_CONSTRAINT .. legs_data[n][1]
+							fmc_message_warn[fmc_message_num] = 1
 							simCMD_nosmoking_toggle:once()
 							fms_msg_sound = 1
 						end
@@ -51051,6 +51070,7 @@ function B738_vnav_calc_mod()
 				if legs_data2[n][11] > legs_data2[n-1][11] then
 					fmc_message_num = fmc_message_num + 1
 					fmc_message[fmc_message_num] = ALT_CONSTRAINT .. legs_data2[n][1]
+					fmc_message_warn[fmc_message_num] = 1
 					simCMD_nosmoking_toggle:once()
 					fms_msg_sound = 1
 				else
@@ -51058,6 +51078,7 @@ function B738_vnav_calc_mod()
 						if legs_data2[n][11] > legs_data2[n][5] then
 							fmc_message_num = fmc_message_num + 1
 							fmc_message[fmc_message_num] = ALT_CONSTRAINT .. legs_data2[n][1]
+							fmc_message_warn[fmc_message_num] = 1
 							simCMD_nosmoking_toggle:once()
 							fms_msg_sound = 1
 						end
@@ -51065,6 +51086,7 @@ function B738_vnav_calc_mod()
 						if legs_data2[n][11] < legs_data2[n][5] then
 							fmc_message_num = fmc_message_num + 1
 							fmc_message[fmc_message_num] = ALT_CONSTRAINT .. legs_data2[n][1]
+							fmc_message_warn[fmc_message_num] = 1
 							simCMD_nosmoking_toggle:once()
 							fms_msg_sound = 1
 						end
@@ -51072,6 +51094,7 @@ function B738_vnav_calc_mod()
 						if legs_data2[n][11] ~= legs_data2[n][5] then
 							fmc_message_num = fmc_message_num + 1
 							fmc_message[fmc_message_num] = ALT_CONSTRAINT .. legs_data2[n][1]
+							fmc_message_warn[fmc_message_num] = 1
 							simCMD_nosmoking_toggle:once()
 							fms_msg_sound = 1
 						end
@@ -57413,8 +57436,8 @@ function B738_fmc_calc()
 			if (B738DR_heading_mode > 3 and B738DR_heading_mode < 7) or B738DR_heading_mode == 8 or B738DR_heading_mode == 13 then
 				B738DR_lnav_disconnect = 1
 				--B738DR_vnav_disconnect = 1
-				add_fmc_msg(LNAV_DISCON)
-				B738DR_fmc_message_warn = 1
+				add_fmc_msg(LNAV_DISCON, 2)
+				--B738DR_fmc_message_warn = 1
 			end
 			B738DR_vnav_disconnect = 1
 		end
@@ -57470,7 +57493,7 @@ function B738_fmc_calc()
 	end
 	
 	
-	if legs_num > 0 and lnav_disco == 0 then --and calc_rte_enable == 0 then
+	if legs_num > 0 and lnav_disco == 0 then --and offset <= legs_num then --and calc_rte_enable == 0 then
 		
 		if offset == 0 then
 			offset = 1
@@ -57514,8 +57537,8 @@ function B738_fmc_calc()
 				if (B738DR_heading_mode > 3 and B738DR_heading_mode < 7) or B738DR_heading_mode == 8 or B738DR_heading_mode == 13 then
 					B738DR_lnav_disconnect = 1
 					--B738DR_vnav_disconnect = 1
-					add_fmc_msg(LNAV_DISCON)
-					B738DR_fmc_message_warn = 1
+					add_fmc_msg(LNAV_DISCON, 2)
+					--B738DR_fmc_message_warn = 1
 					--nav_mode == 0
 					nav_mode = 99
 				end
@@ -57540,7 +57563,7 @@ function B738_fmc_calc()
 				hold_term = 0
 			
 			elseif offset <= legs_num then
-				
+				B738DR_fms_test1 = 100
 				-- if legs_data[offset][1] == "VECTOR" then
 					-- if B738DR_heading_mode ~= 4 then 
 						-- offset = offset + 1
@@ -57694,53 +57717,57 @@ function B738_fmc_calc()
 										next_rel_brg2 = 1
 									end
 									dta_bank_angle = 4	-- bank angle 20deg
-									--dta_rate_speed = B738_rescale(71, 0.3611, 236, 1.1722, gnd_spd)
-									dta_rate_speed = B738_rescale(71, 0.3586, 236, 1.17102, gnd_spd)
+									dta_rate_speed = B738_rescale(71, 0.3486, 236, 1.16102, gnd_spd)	--0.3586/1.17102
 									dta_time = abs_next_rel_brg * dta_rate_speed
 									dta_radius_dist = gnd_spd * dta_time / 1852
-									dta_radius_dist = dta_radius_dist * 1.2 --+ (gnd_spd * 4.5 / 1852)
+									dta_radius_dist = dta_radius_dist * 1.2
 									dta_angle = math.rad((90 - (next_rel_brg2 / 2)) * 2)
 									dta_radius = dta_radius_dist / dta_angle
 									dta_angle = math.rad(next_rel_brg2)
 									dist_thrshld = dta_radius / math.tan(dta_angle / 2)
 									radii_dist_ctr = dta_radius / math.sin(dta_angle / 2)
-									delta_radius = radii_dist_ctr - dta_radius - (1.2 * B738DR_rnp)
+									delta_radius = radii_dist_ctr - dta_radius - (1.5 * B738DR_rnp)
 									if offset+2 <= legs_num and legs_data[offset+1][3] == 0 then
-										delta_radius2 = dist_thrshld - (legs_data[offset+2][3] - 0.1)
+										delta_radius2 = dist_thrshld - (legs_data[offset+2][3] - 0.5)
 									else
-										delta_radius2 = dist_thrshld - (legs_data[offset+1][3] - 0.1)	--((legs_data[offset+1][3] / 2) - 0.1)
+										delta_radius2 = dist_thrshld - (legs_data[offset+1][3] - 0.5)	--((legs_data[offset+1][3] / 2) - 0.1)
 									end
-									if delta_radius > 0 or delta_radius2 > 0 or dist_thrshld > 4 then
+									if delta_radius > 0 or delta_radius2 > 0 then --or (dist_thrshld > 4 and abs_next_rel_brg > 99) then
 										dta_bank_angle = 5	-- bank angle 25deg
-										dta_rate_speed = B738_rescale(71, 0.3368, 236, 0.8931, gnd_spd)
+										dta_rate_speed = B738_rescale(71, 0.3268, 236, 0.8831, gnd_spd)		--0.3368/0.8931
 										dta_time = abs_next_rel_brg * dta_rate_speed
 										dta_radius_dist = gnd_spd * dta_time / 1852
-										dta_radius_dist = dta_radius_dist * 1.2 --+ (gnd_spd * 4.5 / 1852)
+										dta_radius_dist = dta_radius_dist * 1.2
 										dta_angle = math.rad((90 - (next_rel_brg2 / 2)) * 2)
 										dta_radius = dta_radius_dist / dta_angle
 										dta_angle = math.rad(next_rel_brg2)
 										dist_thrshld = dta_radius / math.tan(dta_angle / 2)
 										radii_dist_ctr = dta_radius / math.sin(dta_angle / 2)
-										delta_radius = radii_dist_ctr - dta_radius - (1.2 * B738DR_rnp)
+										delta_radius = radii_dist_ctr - dta_radius - (1.5 * B738DR_rnp)
 										if offset+2 <= legs_num and legs_data[offset+1][3] == 0 then
-											delta_radius2 = dist_thrshld - (legs_data[offset+2][3] - 0.1)
+											delta_radius2 = dist_thrshld - (legs_data[offset+2][3] - 0.5)
 										else
-											delta_radius2 = dist_thrshld - (legs_data[offset+1][3] - 0.1)	--((legs_data[offset+1][3] / 2) - 0.1)
+											delta_radius2 = dist_thrshld - (legs_data[offset+1][3] - 0.5)	--((legs_data[offset+1][3] / 2) - 0.1)
 										end
 									end
-									if delta_radius > 0 or delta_radius2 > 0 or dist_thrshld > 4 then
+									if delta_radius > 0 or delta_radius2 > 0 then --or (dist_thrshld > 4 and abs_next_rel_brg > 99) then
 										dta_bank_angle = 6	-- bank angle 30deg
-										dta_rate_speed = B738_rescale(71, 0.3392, 236, 0.7265, gnd_spd)
+										dta_rate_speed = B738_rescale(71, 0.3292, 236, 0.7165, gnd_spd)		--0.3392/0.7265
 										dta_time = abs_next_rel_brg * dta_rate_speed
 										dta_radius_dist = gnd_spd * dta_time / 1852
-										dta_radius_dist = dta_radius_dist * 1.2 --+ (gnd_spd * 4.5 / 1852)
+										dta_radius_dist = dta_radius_dist * 1.2
 										dta_angle = math.rad((90 - (next_rel_brg2 / 2)) * 2)
 										dta_radius = dta_radius_dist / dta_angle
 										dta_angle = math.rad(next_rel_brg2)
 										dist_thrshld = dta_radius / math.tan(dta_angle / 2)
 										radii_dist_ctr = dta_radius / math.sin(dta_angle / 2)
+										if offset+2 <= legs_num and legs_data[offset+1][3] == 0 then
+											delta_radius2 = dist_thrshld - (legs_data[offset+2][3] - 0.5)
+										else
+											delta_radius2 = dist_thrshld - (legs_data[offset+1][3] - 0.5)	--((legs_data[offset+1][3] / 2) - 0.1)
+										end
 									end
-									if dist_thrshld > 4 then
+									if (delta_radius2 > 0 and abs_next_rel_brg > 99) then --or dist_thrshld > 4 and abs_next_rel_brg > 95 then
 										dist_thrshld = 1
 										radii_dist_ctr = 1.4142
 										dta_radius = 1
@@ -57765,7 +57792,7 @@ function B738_fmc_calc()
 								next_rel_brg2 = 1
 							end
 							dta_bank_angle = 6	-- bank angle 30deg
-							dta_rate_speed = B738_rescale(71, 0.3392, 236, 0.7265, gnd_spd)
+							dta_rate_speed = B738_rescale(71, 0.3292, 236, 0.7165, gnd_spd)
 							dta_time = abs_next_rel_brg * dta_rate_speed
 							dta_radius_dist = gnd_spd * dta_time / 1852
 							dta_radius_dist = dta_radius_dist * 1.2 --+ (gnd_spd * 4.5 / 1852)
@@ -57774,8 +57801,13 @@ function B738_fmc_calc()
 							dta_angle = math.rad(next_rel_brg2)
 							dist_thrshld = dta_radius / math.tan(dta_angle / 2)
 							radii_dist_ctr = dta_radius / math.sin(dta_angle / 2)
+							if offset+2 <= legs_num and legs_data[offset+1][3] == 0 then
+								delta_radius2 = dist_thrshld - (legs_data[offset+2][3] - 0.5)
+							else
+								delta_radius2 = dist_thrshld - (legs_data[offset+1][3] - 0.5)	--((legs_data[offset+1][3] / 2) - 0.1)
+							end
 							
-							if dist_thrshld > 4 then
+							if (delta_radius2 > 0 and abs_next_rel_brg > 99) then --dist_thrshld > 4 and abs_next_rel_brg > 99 then
 								dist_thrshld = 1
 								radii_dist_ctr = 1.4142
 								dta_radius = 1
@@ -57864,6 +57896,8 @@ function B738_fmc_calc()
 						end
 					end
 					
+					B738DR_fms_test1 = 101
+					
 					if next_wpt_enable == 1 then
 						last_lat = 0
 						last_lon = 0
@@ -57936,6 +57970,7 @@ function B738_fmc_calc()
 								legs_intdir_act = 0
 								B738DR_hold_phase = 0
 								hold_term = 0
+								--nav_mode = 99
 							end
 						else
 							
@@ -57947,6 +57982,9 @@ function B738_fmc_calc()
 								while legs_data[offset][3] == 0 do
 									offset = offset + 1
 									if offset > legs_num then
+										if offset > legs_num + 1 then
+											offset = legs_num + 1
+										end
 										break
 									end
 									if legs_data[offset][3] == 0 then
@@ -57958,6 +57996,7 @@ function B738_fmc_calc()
 								end
 							end
 							
+							B738DR_fms_test1 = 102
 							
 							next_rel_brg = ((math.deg(legs_data[offset][2]) - math.deg(legs_data[offset-1][2])) + 360 ) % 360
 							if next_rel_brg > 180 then
@@ -58139,6 +58178,8 @@ function B738_fmc_calc()
 						
 						legs_intdir_act = 0
 						
+						B738DR_fms_test1 = 103
+						
 						if offset <= legs_num then
 							if legs_data[offset][31] == "AF" then
 								if legs_data[offset][23] ~= 0 or legs_data[offset][24] == 0 then
@@ -58189,17 +58230,20 @@ function B738_fmc_calc()
 						
 					end
 					
+					B738DR_fms_test1 = 104
+					
 					if offset > legs_num then
 						-- end of route if selected approach
 						if des_app ~= "------" then
 							if (B738DR_heading_mode > 3 and B738DR_heading_mode < 7) or B738DR_heading_mode == 8 or B738DR_heading_mode == 13 then
 								B738DR_lnav_disconnect = 1
 								--B738DR_vnav_disconnect = 1
-								add_fmc_msg(LNAV_DISCON)
-								B738DR_fmc_message_warn = 1
+								add_fmc_msg(LNAV_DISCON, 2)
+								--B738DR_fmc_message_warn = 1
 							end
 							B738DR_vnav_disconnect = 1
 							--nav_mode = 0
+							nav_mode = 99
 						else
 							-- navigate to destination ICAO
 							nav_mode = 1	-- ICAO nav mode
@@ -58980,6 +59024,8 @@ function B738_fmc_calc()
 			end
 			
 		end
+		
+		B738DR_fms_test1 = 105
 		
 		-- Detect Missed Approach
 		if first_miss_app_idx > 0 and offset >= first_miss_app_idx then
@@ -60698,6 +60744,7 @@ temp_ils4 = ""
 	eng_out_prompt = 0
 
 	fmc_message = {}
+	fmc_message_warn = {}
 	fmc_message_num = 0
 	--fmc_message2 = {}
 	--fmc_message_num2 = 0
@@ -61183,7 +61230,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.24u"
+	version = "v3.24v"
 
 end
 

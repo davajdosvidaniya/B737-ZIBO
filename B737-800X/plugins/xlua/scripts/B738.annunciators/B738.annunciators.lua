@@ -419,7 +419,8 @@ simDR_flaps_ratio_physics		= find_dataref("sim/cockpit2/controls/flap_handle_dep
 	simDR_reverse_thrust2		= find_dataref("sim/cockpit2/engine/actuators/prop_mode[1]")
 
 --B738DR_glide_slope			= create_dataref("laminar/b738/fmodpack/msg_glide_slope", "number")
-B738DR_glide_slope			= find_dataref("laminar/B738/system/below_gs_warn")
+--B738DR_glide_slope			= find_dataref("laminar/B738/system/below_gs_warn")
+B738DR_glide_slope_annun	= find_dataref("laminar/B738/system/below_gs_annun")
 -- simDR_gs_flag					= find_dataref("sim/cockpit2/radios/indicators/nav1_flag_glideslope")
 -- simDR_nav1_vdef_dots			= find_dataref("sim/cockpit2/radios/indicators/nav1_vdef_dots_pilot")
 -- simDR_nav1_vert_signal			= find_dataref("sim/cockpit2/radios/indicators/nav1_display_vertical")
@@ -600,6 +601,7 @@ r_fwd_temp 					= find_dataref("laminar/B738/ice/r_fwd_temp")
 
 DRblink						= find_dataref("laminar/B738/autopilot/blink")
 B738DR_flt_dk_door 			= find_dataref("laminar/B738/toggle_switch/flt_dk_door")
+B738DR_flt_dk_door_ratio	= find_dataref("laminar/B738/door/flt_dk_door_ratio")
 
 B738DR_cabin_alt			= find_dataref("laminar/B738/cabin_alt")
 B738DR_cabin_vvi			= find_dataref("laminar/B738/cabin_vvi")
@@ -1246,9 +1248,6 @@ function B738_ap_disconnect_test1_dn_CMDhandler(phase, duration)
 		-- end
 	elseif phase == 2 then
 		B738DR_ap_disconnect1_test_switch_pos = 0
-													   
-											
-	 
 	end
 end
 
@@ -1261,9 +1260,6 @@ function B738_ap_disconnect_test2_up_CMDhandler(phase, duration)
 		-- end
 	elseif phase == 2 then
 		B738DR_ap_disconnect2_test_switch_pos = 0
-													   
-										   
-	 
 	end
 end
 
@@ -1276,9 +1272,6 @@ function B738_ap_disconnect_test2_dn_CMDhandler(phase, duration)
 		-- end
 	elseif phase == 2 then
 		B738DR_ap_disconnect2_test_switch_pos = 0
-													   
-											
-	 
 	end
 end
 
@@ -3096,16 +3089,9 @@ B738DR_audio_panel_obs_mic6_light = B738DR_audio_panel_obs_mic6_pos * brightness
 	end
 	
 	local below_gs = 0
-		-- if simDR_nav1_vert_signal == 1
-		-- and simDR_gs_flag == 0
-		-- and simDR_nav1_vdef_dots < -1
-		-- --and simDR_aircraft_on_ground == 0
-		-- and on_the_ground == 0
-		-- and simDR_radio_height_pilot_ft < 1000 then
-		-- below_gs = 1
-		-- end
 		
-		below_gs = B738DR_glide_slope
+		--below_gs = B738DR_glide_slope
+		below_gs = B738DR_glide_slope_annun
 		--B738DR_below_gs_warn = below_gs
 		
 		if B738DR_below_gs_pilot == 1 then
@@ -3196,21 +3182,9 @@ local takeoff_config_warn = 0
 
 	local takeoff_config_safe = park_brake_safe * speedbrake_safe * flap_safe * elev_trim_safe
 	
-	-- local eng_run = 0
-	-- if simDR_engine1_n1 > 17 or simDR_engine2_n1 > 17 then
-		-- eng_run = 1
-	-- end
-
-	-- local on_the_ground = 0
-	-- if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
-		-- on_the_ground = 1
-	-- end
 	if takeoff_config_safe == 0
-		--and simDR_throttle_ratio > 0.5
 		and throttle_50 == 1
-		--and simDR_aircraft_on_ground == 1 then
 		and on_the_ground == 1 then
-		--and eng_run == 1 then
 		takeoff_config_warn = 1
 		end
 		
@@ -3221,7 +3195,7 @@ local takeoff_config_warn = 0
 	if is_reverse == 1 then
 	takeoff_config_warn = 0
 	end
-		
+
 	B738DR_takeoff_config_annun = takeoff_config_warn * brightness_level
 	B738DR_takeoff_config_warn = takeoff_config_warn
 
@@ -3232,8 +3206,8 @@ local takeoff_config_warn = 0
 		gpws_annun = 1
 	end
 	
-	--B738DR_GPWS_annun = simDR_GPWS * brightness_level
-	B738DR_GPWS_annun = gpws_annun * brightness_level
+	B738DR_GPWS_annun = simDR_GPWS * brightness_level
+	--B738DR_GPWS_annun = gpws_annun * brightness_level
 
 -- SPEEDBRAKE ANNUNS
 
@@ -3337,16 +3311,26 @@ local takeoff_config_warn = 0
 		-- and simDR_aircraft_groundspeed < 0.05 
 		-- and simDR_parking_brake == 1 then
 		--if B738DR_gpu_available == 1 and simDR_ext_pwr_1_on == 0 then
+		
+		
+		-- if B738DR_gpu_available == 1 then
+			-- if simDR_ext_pwr_1_on == 0 then
+				-- ext_power_annun = 1
+			-- else
+				-- ext_power_annun = 0.5
+			-- end
+		-- end
+		
+		-- if brightness_level < 0.5 then
+			-- B738DR_ground_power_avail_annun = ext_power_annun
+		-- else
+			-- B738DR_ground_power_avail_annun = ext_power_annun * brightness_level
+		-- end
+		
 		if B738DR_gpu_available == 1 then
-			if simDR_ext_pwr_1_on == 0 then
-				ext_power_annun = 1
-			else
-				ext_power_annun = 0.5
-			end
+			ext_power_annun = 1
 		end
-		
-		B738DR_ground_power_avail_annun = ext_power_annun * brightness_level
-		
+		B738DR_ground_power_avail_annun = ext_power_annun
 
 -- TRANSFER BUS ANNUN
 
@@ -3820,29 +3804,28 @@ local takeoff_config_warn = 0
 
 	local nose_gear_transit = 0
 	local nose_gear_down = 1
-		if simDR_nose_gear_status > 0 then
+	
+	if simDR_nose_gear_status > 0 then
 		nose_gear_transit = 1
-		end
-		if simDR_nose_gear_fail == 6 then
+	end
+	
+	-- if simDR_nose_gear_fail == 6 then
+		-- nose_gear_down = 1
+	-- end
+	
+	if simDR_nose_gear_status == 1 then
+		nose_gear_down = 0
+	end
+	
+	if simDR_nose_gear_fail == 6 then
 		nose_gear_down = 1
 	end
 	
-		if simDR_nose_gear_status == 1 then
-		nose_gear_down = 0
-		end
-		if simDR_nose_gear_fail == 6 then
-		nose_gear_down = 1
-	end
 	if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
 		if B738DR_gear_handle_pos < 1 then
 			nose_gear_down = 1
 		end
-		-- if B738DR_hyd_A_status == 0 then
-			-- nose_gear_down = 1
-		-- end
 	end
-
-	B738DR_nose_gear_transit_annun = nose_gear_transit * nose_gear_down * brightness_level
 	
 -- LEFT GEAR TRANSIT ANNUNCIATIOR
 
@@ -3851,9 +3834,9 @@ local takeoff_config_warn = 0
 		if simDR_left_gear_status > 0 then
 		left_gear_transit = 1
 		end
-		if simDR_left_gear_fail == 6 then
-		left_gear_down = 1
-	end
+		-- if simDR_left_gear_fail == 6 then
+		-- left_gear_down = 1
+	-- end
 	
 		if simDR_left_gear_status == 1 then
 		left_gear_down = 0
@@ -3865,12 +3848,8 @@ local takeoff_config_warn = 0
 		if B738DR_gear_handle_pos < 1 then
 			left_gear_down = 1
 		end
-		-- if B738DR_hyd_A_status == 0 then
-			-- left_gear_down = 1
-		-- end
 	end
 
-	B738DR_left_gear_transit_annun = left_gear_transit * left_gear_down * brightness_level
 	
 -- RIGHT GEAR TRANSIT ANNUNCIATIOR
 
@@ -3879,9 +3858,9 @@ local takeoff_config_warn = 0
 		if simDR_right_gear_status > 0 then
 		right_gear_transit = 1
 		end
-		if simDR_right_gear_fail == 6 then
-		right_gear_down = 1
-	end
+		-- if simDR_right_gear_fail == 6 then
+		-- right_gear_down = 1
+	-- end
 	
 		if simDR_right_gear_status == 1 then
 		right_gear_down = 0
@@ -3893,22 +3872,25 @@ local takeoff_config_warn = 0
 		if B738DR_gear_handle_pos < 1 then
 			right_gear_down = 1
 		end
-		-- if B738DR_hyd_A_status == 0 then
-			-- right_gear_down = 1
-		-- end
 	end
 	
+	-- warning landing gear
+	if simDR_radio_height_pilot_ft < 800 then
+		if B738DR_thrust1_leveler == 0 or B738DR_thrust2_leveler == 0 then
+			if B738DR_gear_handle_pos < 1 then
+				if simDR_nose_gear_status < 1 or simDR_left_gear_status < 1 or simDR_right_gear_status < 1 then
+					nose_gear_transit = 1
+					left_gear_transit = 1
+					right_gear_transit = 1
+				end
+			end
+		end
+	end
+	
+	B738DR_nose_gear_transit_annun = nose_gear_transit * nose_gear_down * brightness_level
+	B738DR_left_gear_transit_annun = left_gear_transit * left_gear_down * brightness_level
 	B738DR_right_gear_transit_annun = right_gear_transit * right_gear_down * brightness_level
 	
-	-- if B738DR_nose_gear_transit_annun > 0 then
-		-- nose_gear_safe_status = 0
-	-- end
-	-- if B738DR_left_gear_transit_annun > 0 then
-		-- left_gear_safe_status = 0
-	-- end
-	-- if B738DR_right_gear_transit_annun > 0 then
-		-- right_gear_safe_status = 0
-	-- end
 	B738DR_nose_gear_safe_annun = nose_gear_safe_status * brightness_level * nose_gear_fail
 	B738DR_left_gear_safe_annun = left_gear_safe_status * brightness_level * left_gear_fail
 	B738DR_right_gear_safe_annun = right_gear_safe_status * brightness_level * right_gear_fail
@@ -4315,12 +4297,11 @@ local takeoff_config_warn = 0
 	
 	-- DOOR LOCK FAIL
 	local door_lock_fail = 0
-	local FDAS = 0	-- Flight Deck Acces System (Guarded switch)
-	local cockpit_door_open = 0		-- Status cockpit door (0-close, 1-open)
-	if FDAS == 0 then
+	local fdas = 1	-- Flight Deck Acces System (Guarded switch)
+	if fdas == 0 then
 		door_lock_fail = 1
 	end
-	if cockpit_door_open == 1 and B738DR_flt_dk_door == 0 then
+	if B738DR_flt_dk_door_ratio ~= 0 and B738DR_flt_dk_door == 0 then
 		door_lock_fail = 1
 	end
 	B738DR_door_lock_fail_annun = door_lock_fail * brightness_level

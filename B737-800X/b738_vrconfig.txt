@@ -22,6 +22,16 @@ BEGIN_TELEPORT_HOTSPOT SITTING CoPilot's Seat
 	PRESET_PHI 0.0
 END_TELEPORT_HOTSPOT
 
+BEGIN_MANIP manip_2_axis sim/cockpit2/controls/yoke_roll_ratio	sim/cockpit2/controls/yoke_pitch_ratio
+	#YOKE_MANIP_ROTATE <ptch cent x> <ptch cent y> <ptch cent z> <ptch axis x> <ptch axis y> <ptch axis z> <ptch min ang> <ptch max ang> <roll cent x> <roll cent y> <roll cent z> <roll axis x> <roll axis y> <roll axis z> <roll min ang> <roll max ang>
+	YOKE_MANIP_ROTATE -0.5075 -0.4866 2.1775 -1 0.0 0.0 10.0 -10.0 -0.5075 0.3174 2.1764 -0.0000 -0.0872 -0.9962 -107.5 107.5
+END_MANIP
+
+# CoPilot Yoke. Disabled for now until we make necessary art changes to differentiate this manipulator from the Pilot's side.
+#BEGIN_MANIP manip_2_axis sim/cockpit2/controls/yoke_roll_ratio	sim/cockpit2/controls/yoke_pitch_ratio
+	#YOKE_MANIP_ROTATE <ptch cent x> <ptch cent y> <ptch cent z> <ptch axis x> <ptch axis y> <ptch axis z> <ptch min ang> <ptch max ang> <roll cent x> <roll cent y> <roll cent z> <roll axis x> <roll axis y> <roll axis z> <roll min ang> <roll max ang>
+#	YOKE_MANIP_ROTATE 0.5075 -0.4866 2.1775 -1 0.0 0.0 10.0 -10.0 0.5075 0.3174 2.1764 -0.0000 -0.0872 -0.9962 -107.5 107.5
+#END_MANIP
 
 BEGIN_MANIP manip_axis_knob sim/cockpit2/switches/generic_lights_switch[6]
 	ACTION manip_axis_knob 0.0 1.0 0.006 0.006 sim/cockpit2/switches/generic_lights_switch[6]
@@ -244,5 +254,13 @@ END_MANIP
 
 
 BEGIN_MANIP manip_cmnd_switch_lr laminar/B738/toggle_switch/air_valve_manual_right laminar/B738/toggle_switch/air_valve_manual_left
+	HOLD_MANIP
+END_MANIP
+
+
+BEGIN_MANIP manip_cmnd_switch_ud laminar/B738/toggle_switch/ap_disconnect_test1_up laminar/B738/toggle_switch/ap_disconnect_test1_dn
+	HOLD_MANIP
+END_MANIP
+BEGIN_MANIP manip_cmnd_switch_ud laminar/B738/toggle_switch/ap_disconnect_test2_up laminar/B738/toggle_switch/ap_disconnect_test2_dn
 	HOLD_MANIP
 END_MANIP
