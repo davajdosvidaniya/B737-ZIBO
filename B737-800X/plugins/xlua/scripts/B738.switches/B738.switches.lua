@@ -108,6 +108,27 @@ B738DR_button_switch_cover_position = create_dataref("laminar/B738/button_switch
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
 --*************************************************************************************--
 
+-- EYEBALL VENT
+function B738DR_eyeball_vent_capt_x_pos_DRhandler() end
+function B738DR_eyeball_vent_capt_y_pos_DRhandler() end
+
+function B738DR_eyeball_vent_fo_x_pos_DRhandler() end
+function B738DR_eyeball_vent_fo_y_pos_DRhandler() end
+
+function B738DR_eyeball_vent_jump_x_pos_DRhandler() end
+function B738DR_eyeball_vent_jump_y_pos_DRhandler() end
+
+-- MAP LIGHTS
+function B738DR_map_light_capt_x_pos_DRhandler() end
+function B738DR_map_light_capt_y_pos_DRhandler() end
+
+function B738DR_map_light_fo_x_pos_DRhandler() end
+function B738DR_map_light_fo_y_pos_DRhandler() end
+
+-- HANDLES
+
+function B738DR_handle_capt_pos_DRhandler() end
+function B738DR_handle_fo_pos_DRhandler() end
 
 
 
@@ -115,6 +136,27 @@ B738DR_button_switch_cover_position = create_dataref("laminar/B738/button_switch
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
 
+-- EVEBALL VENT
+B738DR_eyeball_vent_capt_x_pos	= create_dataref("laminar/B738/air/capt/eyeball_vent/x_pos", "number", B738DR_eyeball_vent_capt_x_pos_DRhandler)
+B738DR_eyeball_vent_capt_y_pos	= create_dataref("laminar/B738/air/capt/eyeball_vent/y_pos", "number", B738DR_eyeball_vent_capt_y_pos_DRhandler)
+
+B738DR_eyeball_vent_fo_x_pos	= create_dataref("laminar/B738/air/fo/eyeball_vent/x_pos", "number", B738DR_eyeball_vent_fo_x_pos_DRhandler)
+B738DR_eyeball_vent_fo_y_pos	= create_dataref("laminar/B738/air/fo/eyeball_vent/y_pos", "number", B738DR_eyeball_vent_fo_y_pos_DRhandler)
+
+B738DR_eyeball_vent_jump_x_pos	= create_dataref("laminar/B738/air/jump/eyeball_vent/x_pos", "number", B738DR_eyeball_vent_jump_x_pos_DRhandler)
+B738DR_eyeball_vent_jump_y_pos	= create_dataref("laminar/B738/air/jump/eyeball_vent/y_pos", "number", B738DR_eyeball_vent_jump_y_pos_DRhandler)
+
+-- MAP LIGHTS
+B738DR_map_light_capt_x_pos	= create_dataref("laminar/B738/adjust/capt/map_light/x_pos", "number", B738DR_map_light_capt_x_pos_DRhandler)
+B738DR_map_light_capt_y_pos	= create_dataref("laminar/B738/adjust/capt/map_light/y_pos", "number", B738DR_map_light_capt_y_pos_DRhandler)
+
+B738DR_map_light_fo_x_pos	= create_dataref("laminar/B738/adjust/fo/map_light/x_pos", "number", B738DR_map_light_fo_x_pos_DRhandler)
+B738DR_map_light_fo_y_pos	= create_dataref("laminar/B738/adjust/fo/map_light/y_pos", "number", B738DR_map_light_fo_y_pos_DRhandler)
+
+-- HANDLES
+
+B738DR_handle_capt_pos = create_dataref("laminar/B738/adjust/capt/handle_pos", "number", B738DR_handle_capt_pos_DRhandler)
+B738DR_handle_fo_pos = create_dataref("laminar/B738/adjust/fo/handle_pos", "number", B738DR_handle_fo_pos_DRhandler)
 
 
 --*************************************************************************************--
@@ -293,6 +335,22 @@ function flight_start()
 		B738DR_emer_exit_lights_switch = 1					-- Emergency Exit Lights
 	end
 	
+	math.randomseed( os.time() )
+ 
+	B738DR_eyeball_vent_capt_x_pos = math.random(-35,35)
+	B738DR_eyeball_vent_capt_y_pos = math.random(-35,35)
+	B738DR_eyeball_vent_fo_x_pos = math.random(-35,35)
+	B738DR_eyeball_vent_fo_y_pos = math.random(-35,35)
+	B738DR_eyeball_vent_jump_x_pos = math.random(-35,35)
+	B738DR_eyeball_vent_jump_y_pos = math.random(-35,35)
+	
+	B738DR_map_light_capt_x_pos = math.random(-10,10)
+	B738DR_map_light_capt_y_pos = math.random(-10,10)
+	B738DR_map_light_fo_x_pos = math.random(-10,10)
+	B738DR_map_light_fo_y_pos = math.random(-10,10)
+
+	B738DR_handle_capt_pos = math.random(0,90)
+	B738DR_handle_fo_pos = math.random(0,90)
 
 end
 

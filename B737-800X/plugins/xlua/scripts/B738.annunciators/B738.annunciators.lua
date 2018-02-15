@@ -866,6 +866,9 @@ B738DR_extinguisher_leveler_spill_eng1		= create_dataref("laminar/B738/light/spi
 B738DR_extinguisher_leveler_spill_eng2		= create_dataref("laminar/B738/light/spill/ratio/extinguisher_leveler_spill_eng2", "array[9]")
 B738DR_extinguisher_leveler_spill_apu		= create_dataref("laminar/B738/light/spill/ratio/extinguisher_leveler_spill_apu", "array[9]")
 
+B738DR_master_caution_spill		= create_dataref("laminar/B738/light/spill/ratio/master_caution_spill", "array[9]")
+B738DR_fire_warn_spill			= create_dataref("laminar/B738/light/spill/ratio/fire_warn_spill", "array[9]")
+
 B738DR_extinguisher_circuit_test_pos	= create_dataref("laminar/B738/toggle_switch/extinguisher_circuit_test", "number")
 --B738DR_extinguisher_circuit_annun1		= create_dataref("laminar/B738/annunciator/extinguisher_circuit_annun1", "number")
 B738DR_extinguisher_circuit_annun_left		= create_dataref("laminar/B738/annunciator/extinguisher_circuit_annun_left", "number")
@@ -4532,6 +4535,9 @@ function B738_init_lighting()
 	local extinguisher_leveler_spill_eng2 = {1.0, 0.0, 0.0, 0.0, 0.15, 1, 0, 0, 0}
 	local extinguisher_leveler_spill_apu = {1.0, 0.0, 0.0, 0.0, 0.15, 1, 0, 0, 0}
 	
+	local master_caution_spill 		= {1.0, 1.0, 0.0, 0.0, 0.15, 1, 0, 0, 0}
+	local fire_warn_spill 			= {1.0, 0.0, 0.0, 0.0, 0.15, 1, 0, 0, 0}
+	
 	
     local i = 0
     
@@ -4546,6 +4552,8 @@ function B738_init_lighting()
 		B738DR_extinguisher_leveler_spill_eng1[i] = extinguisher_leveler_spill_eng1[i+1]
 		B738DR_extinguisher_leveler_spill_eng2[i] = extinguisher_leveler_spill_eng2[i+1]
 		B738DR_extinguisher_leveler_spill_apu[i] = extinguisher_leveler_spill_apu[i+1]
+		B738DR_master_caution_spill[i] = master_caution_spill[i+1]
+		B738DR_fire_warn_spill[i] = fire_warn_spill[i+1]
 	end	
     
 end    
@@ -4564,6 +4572,8 @@ function B738_spill_lights()
 	B738DR_extinguisher_leveler_spill_eng1[3] = B738DR_engine1_fire
 	B738DR_extinguisher_leveler_spill_eng2[3] = B738DR_engine2_fire
 	B738DR_extinguisher_leveler_spill_apu[3] = B738DR_apu_fire
+	B738DR_master_caution_spill[3] = B738DR_master_caution_light
+	B738DR_fire_warn_spill[3] = B738DR_fire_bell_annun
 end
 
 

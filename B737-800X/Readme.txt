@@ -81,6 +81,17 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.24w:
+------
+- add map lights (captain and f/o)
+- fixed small bugs (vor1/2 swap arrows,...)
+
+3.24v:
+------
+- new flightmodel from twkster
+- tuned and tweaked AP, autoland, VR,...
+- fixed small bugs
+
 3.24u:
 ------
 - fixed flaps animation

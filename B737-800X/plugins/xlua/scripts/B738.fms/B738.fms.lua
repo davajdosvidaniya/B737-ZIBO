@@ -981,6 +981,7 @@ fmc2_msg_alt = 0
 -- fmc2_msg_alt_rst = 0
 fmc1_msg_light = 0
 fmc2_msg_light = 0
+fmc_message_warn_dis = 0
 
 --radii_turn_act = 0
 
@@ -3148,6 +3149,7 @@ function B738_fms_light_pilot_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_fms_light_pilot = 1
 		B738DR_fmc_message_warn = 0
+		fmc_message_warn_dis = 1
 	elseif phase == 2 then
 		B738DR_fms_light_pilot = 0
 	end
@@ -3157,6 +3159,7 @@ function B738_fms_light_fo_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_fms_light_fo = 1
 		B738DR_fmc_message_warn = 0
+		fmc_message_warn_dis = 1
 	elseif phase == 2 then
 		B738DR_fms_light_fo = 0
 	end
@@ -44805,9 +44808,10 @@ function B738_fmc_msg()
 	end
 	
 	-- FMCs message light
-	if fmc1_msg_alt == 0 then
-		fmc1_msg_light = 0
-	elseif fmc1_msg_alt == 1 then
+	fmc1_msg_light = 0
+	fmc2_msg_light = 0
+	
+	if fmc1_msg_alt == 1 then
 		fmc1_msg_light = 1
 	end
 	if fmc2_msg_alt == 0 then
@@ -44817,25 +44821,17 @@ function B738_fmc_msg()
 	end
 	
 	if fmc_message_num > 0 then
-		-- fmc1_msg_light = 1
-		-- fmc2_msg_light = 1
-		for ii = 1, fmc_message_num do
-			if fmc_message_warn[ii] > 1 then
-				B738DR_fmc_message_warn = 1
-				fmc1_msg_light = 1
-				fmc2_msg_light = 1
-			elseif fmc_message_warn[ii] > 0 then
-				fmc1_msg_light = 1
-				fmc2_msg_light = 1
-			end
-		end
+		fmc1_msg_light = 1
+		fmc2_msg_light = 1
 	else
 		fmc1_msg_light = 0
 		fmc2_msg_light = 0
+		fmc_message_warn_dis = 0
+		B738DR_fmc_message_warn = 0
 	end
 	
-	
 	B738DR_fmc_message = fmc1_msg_light
+	
 	--B738DR_fmc_message2 = fmc2_msg_light		-- FMC2
 
 
@@ -44846,6 +44842,22 @@ function rnp_timer()
 end
 
 function add_fmc_msg(msg_idx, msg_annun)
+	
+	local ii = 0
+	local no_fmc_message_warn = 1
+	if fmc_message_num > 0 then
+		for ii = 1, fmc_message_num do
+			if fmc_message_warn[ii] > 1 then
+				no_fmc_message_warn = 0
+			end
+		end
+	end
+	if no_fmc_message_warn == 1 then
+		fmc_message_warn_dis = 0
+	end
+	if msg_annun == 2 then
+		B738DR_fmc_message_warn = 1
+	end
 	
 	fms_msg_sound = 1
 	fmc_message_num = fmc_message_num + 1
@@ -61230,7 +61242,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.24v"
+	version = "v3.24w"
 
 end
 
