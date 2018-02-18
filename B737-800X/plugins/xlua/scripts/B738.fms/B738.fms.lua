@@ -1013,6 +1013,7 @@ xfirst_time2 = 0
 precalc_done = 0
 
 mag_dec = {}
+app_str = ""
 
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
@@ -15653,6 +15654,7 @@ function rte_add_app()
 	
 	local ii = 0
 	local jj = 0
+	local temp_str = ""
 	
 	if rte_add_sid_act == 0 and rte_add_star_act == 0 then
 		if rte_add_app_act == 1 then
@@ -15668,6 +15670,30 @@ function rte_add_app()
 				end
 			end
 			add_star = 0
+			-- approach name
+			temp_str = string.sub(des_app2, 1, 1)
+			if temp_str == "I" then
+				app_str = "ILS "
+			elseif temp_str == "R" then
+				app_str = "RNAV "
+			elseif temp_str == "D" then
+				app_str = "VDM "
+			elseif temp_str == "S" then
+				app_str = "VDM "
+			elseif temp_str == "L" then
+				app_str = "LOC "
+			elseif temp_str == "Q" then
+				app_str = "NDB "
+			elseif temp_str == "N" then
+				app_str = "NDB "
+			elseif temp_str == "J" then
+				app_str = "GLS "
+			elseif temp_str == "V" then
+				app_str = "VOR "
+			else
+				app_str = temp_str
+			end
+			app_str = app_str .. string.sub(des_app2, 2, -1)
 		elseif rte_add_app_act == 2 then
 			for ii = 1, 20 do
 				sid_cnt = sid_cnt + 1
@@ -16549,7 +16575,7 @@ function rte_add_app2()
 	local only_one_star = 0
 	local temp_str = ""
 	local add_wpt = 0
-	local app_str = ""
+	--local app_str = ""
 	---
 	-- local vvv = 0
 	-- local fms_line = ""
@@ -16578,30 +16604,30 @@ function rte_add_app2()
 			if des_app2 ~= "------" then
 				
 				
-				-- approach name
-				temp_str = string.sub(des_app2, 1, 1)
-				if temp_str == "I" then
-					app_str = "ILS "
-				elseif temp_str == "R" then
-					app_str = "RNAV "
-				elseif temp_str == "D" then
-					app_str = "VDM "
-				elseif temp_str == "S" then
-					app_str = "VDM "
-				elseif temp_str == "L" then
-					app_str = "LOC "
-				elseif temp_str == "Q" then
-					app_str = "NDB "
-				elseif temp_str == "N" then
-					app_str = "NDB "
-				elseif temp_str == "J" then
-					app_str = "GLS "
-				elseif temp_str == "V" then
-					app_str = "VOR "
-				else
-					app_str = temp_str
-				end
-				app_str = app_str .. string.sub(des_app2, 2, -1)
+				-- -- approach name
+				-- temp_str = string.sub(des_app2, 1, 1)
+				-- if temp_str == "I" then
+					-- app_str = "ILS "
+				-- elseif temp_str == "R" then
+					-- app_str = "RNAV "
+				-- elseif temp_str == "D" then
+					-- app_str = "VDM "
+				-- elseif temp_str == "S" then
+					-- app_str = "VDM "
+				-- elseif temp_str == "L" then
+					-- app_str = "LOC "
+				-- elseif temp_str == "Q" then
+					-- app_str = "NDB "
+				-- elseif temp_str == "N" then
+					-- app_str = "NDB "
+				-- elseif temp_str == "J" then
+					-- app_str = "GLS "
+				-- elseif temp_str == "V" then
+					-- app_str = "VOR "
+				-- else
+					-- app_str = temp_str
+				-- end
+				-- app_str = app_str .. string.sub(des_app2, 2, -1)
 				
 				
 				--for gg = 1, rte_app_num do
@@ -44327,7 +44353,11 @@ function B738_N1_thrust_set()
 			end
 		end
 		fms_N1_mode = fms_N1_to_mode_sel
-	
+		
+		if simDR_radio_height_pilot_ft > B738DR_accel_alt - 300 then
+			fmc_auto_thrust = fmc_auto_thrust * 0.96	-- 5% thrust reduction
+		end
+		
 	-- mode CLIMB
 	elseif B738DR_flight_phase == 1 then
 		
@@ -61242,7 +61272,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.24w"
+	version = "v3.24x"
 
 end
 

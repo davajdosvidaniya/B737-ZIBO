@@ -81,6 +81,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.24x:
+------
+- tuned and tweaked AP
+- fixed bugs (climb with VNAV/LVL CHG,...)
+
 3.24w:
 ------
 - add map lights (captain and f/o)

@@ -8141,7 +8141,7 @@ function B738_vnav6()
 								lvl_chg_alt = math.max(simDR_altitude_pilot, 15000)
 								lvl_chg_alt = math.min(lvl_chg_alt, 41000)
 								lvl_chg_fpm = B738_rescale(15000, 1100, 41000, 50, lvl_chg_alt)
-								if vnav_speed_trg > speed_step and simDR_vvi_fpm_pilot < (lvl_chg_fpm - 100) then
+								if vnav_speed_trg > speed_step or simDR_vvi_fpm_pilot < (lvl_chg_fpm - 100) then
 									-- turn climb vvi 900 ft
 									if simDR_autopilot_altitude_mode ~= 4 then
 										-- simDR_ap_vvi_dial = 1500	--850
@@ -8149,7 +8149,8 @@ function B738_vnav6()
 										-- fmc_vvi_cur = simDR_vvi_fpm_pilot
 										-- simCMD_autopilot_vs_sel:once()
 										--simDR_ap_vvi_dial = lvl_chg_fpm
-										vvi_trg = simDR_ap_vvi_dial
+										--vvi_trg = simDR_ap_vvi_dial
+										vvi_trg = lvl_chg_fpm
 										fmc_vvi_cur = simDR_vvi_fpm_pilot
 										simCMD_autopilot_vs_sel:once()
 									end
@@ -8158,7 +8159,7 @@ function B738_vnav6()
 							--end
 							
 							if simDR_autopilot_altitude_mode == 4 then
-								fmc_vvi_cur = B738_set_anim_value(fmc_vvi_cur, vvi_trg, 1500, 8000, 0.15)
+								fmc_vvi_cur = B738_set_anim_value(fmc_vvi_cur, vvi_trg, 50, 8000, 0.15)
 								simDR_ap_vvi_dial = fmc_vvi_cur
 								if B738DR_autopilot_autothr_arm_pos == 1 then
 									at_mode = 7		-- N1 thrust
@@ -8219,8 +8220,8 @@ function B738_lvl_chg()
 	local at_mode_old = 0
 	local lvl_chg_fpm = 0
 	local lvl_chg_alt = 0
-	local lvl_vvi_trg = 0
-	local fmc_vvi_cur = 0
+	--local lvl_vvi_trg = 0
+	--local fmc_vvi_cur = 0
 
 	--if ap_on == 1 and B738DR_autopilot_vnav_status == 0 then
 	if B738DR_autopilot_vnav_status == 0 then
@@ -8312,7 +8313,7 @@ function B738_lvl_chg()
 								lvl_chg_alt = math.max(simDR_altitude_pilot, 15000)
 								lvl_chg_alt = math.min(lvl_chg_alt, 41000)
 								lvl_chg_fpm = B738_rescale(15000, 1000, 41000, 50, lvl_chg_alt)
-								if simDR_airspeed_dial > speed_step and simDR_vvi_fpm_pilot < (lvl_chg_fpm - 100) then
+								if simDR_airspeed_dial > speed_step or simDR_vvi_fpm_pilot < (lvl_chg_fpm - 100) then
 									-- turn climb vvi 1100 ft
 									-- lvl_chg_alt = math.max(simDR_altitude_pilot, 15000)
 									-- lvl_chg_alt = math.min(lvl_chg_alt, 41000)
@@ -8320,14 +8321,15 @@ function B738_lvl_chg()
 									
 									if simDR_autopilot_altitude_mode ~= 4 then
 										--simDR_ap_vvi_dial = lvl_chg_fpm
-										lvl_vvi_trg = simDR_ap_vvi_dial
+										--lvl_vvi_trg = simDR_ap_vvi_dial
+										lvl_vvi_trg = lvl_chg_fpm
 										fmc_vvi_cur = simDR_vvi_fpm_pilot
 										simCMD_autopilot_vs_sel:once()
 									end
 									lvl_chg_vs = 1
 								end
 								if simDR_autopilot_altitude_mode == 4 then
-									fmc_vvi_cur = B738_set_anim_value(fmc_vvi_cur, lvl_vvi_trg, 0, 8000, 0.15)
+									fmc_vvi_cur = B738_set_anim_value(fmc_vvi_cur, lvl_vvi_trg, 50, 8000, 0.15)	-- 0.15
 									simDR_ap_vvi_dial = fmc_vvi_cur
 									if B738DR_autopilot_autothr_arm_pos == 1 then
 										at_mode = 7		-- N1 thrust

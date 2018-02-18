@@ -158,7 +158,7 @@ P _gear/0/_lonE 0.0
 P _gear/0/_lonN 0.0
 P _gear/0/_lonR 111.0
 P _gear/0/_scon 120760.648437500
-P _gear/0/_stat_def 0.097283833
+P _gear/0/_stat_def 0.097283840
 P _gear/0/_steerdeg_hispeed 6.0
 P _gear/0/_steerdeg_lospeed 63.0
 P _gear/0/_strut_comp 0.0
@@ -27377,7 +27377,7 @@ P _part/85/_part_specs_invis 1
 P _part/85/_part_tex 0
 P _part/85/_part_the 0.0
 P _part/85/_part_x 0.0
-P _part/85/_part_y -9.912716866
+P _part/85/_part_y -9.912715912
 P _part/85/_part_z 13.590000153
 P _part/85/_patt_con 0
 P _part/85/_patt_prt 0
@@ -39455,7 +39455,7 @@ P acf/_ott_phi_sec_into_future 2.0
 P acf/_ott_phi_sec_to_tune 2.0
 P acf/_ott_roll_rate 7.599999905
 P acf/_ott_roll_response 16.299999237
-P acf/_ott_the_deg_off_for_full_def 22.0
+P acf/_ott_the_deg_off_for_full_def 36.0
 P acf/_ott_the_deg_per_kt 0.300000012
 P acf/_ott_the_sec_into_future 2.0
 P acf/_ott_the_sec_to_tune 2.0
