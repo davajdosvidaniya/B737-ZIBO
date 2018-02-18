@@ -1147,6 +1147,10 @@ B738DR_vor2_arrow 				= create_dataref("laminar/B738/pfd/vor2_arrow", "number")
 B738DR_vor1_arrow_fo 			= create_dataref("laminar/B738/pfd/vor1_arrow_fo", "number")
 B738DR_vor2_arrow_fo 			= create_dataref("laminar/B738/pfd/vor2_arrow_fo", "number")
 
+B738DR_adf1_arrow 				= create_dataref("laminar/B738/pfd/adf1_arrow", "number")
+B738DR_adf2_arrow 				= create_dataref("laminar/B738/pfd/adf2_arrow", "number")
+B738DR_adf1_arrow_fo 			= create_dataref("laminar/B738/pfd/adf1_arrow_fo", "number")
+B738DR_adf2_arrow_fo 			= create_dataref("laminar/B738/pfd/adf2_arrow_fo", "number")
 B738DR_dh_pilot				= create_dataref("laminar/B738/pfd/dh_pilot", "number")
 B738DR_dh_copilot			= create_dataref("laminar/B738/pfd/dh_copilot", "number")
 
@@ -1276,6 +1280,11 @@ simDR_nav2_freq				= find_dataref("sim/cockpit2/radios/actuators/nav2_frequency_
 
 
 
+-- ADF
+																					
+simDR_adf1_bearing			= find_dataref("sim/cockpit2/radios/indicators/adf1_bearing_deg_mag")
+																						  
+simDR_adf2_bearing			= find_dataref("sim/cockpit2/radios/indicators/adf2_bearing_deg_mag")
 
 
 
@@ -13086,6 +13095,9 @@ function B738_vor_sel()
 	B738DR_vor1_arrow = simDR_nav1_bearing - vor_hdg
 	B738DR_vor2_arrow = simDR_nav2_bearing - vor_hdg
 	
+	B738DR_adf1_arrow = simDR_adf1_bearing - vor_hdg
+	B738DR_adf2_arrow = simDR_adf2_bearing - vor_hdg
+	
 	
 	
 	if B738DR_fo_exp_map_mode == 1 and B738DR_fo_map_mode ~= 3 then
@@ -13443,6 +13455,9 @@ function B738_vor_sel()
 	end
 	B738DR_vor1_arrow_fo = simDR_nav1_bearing - vor_hdg
 	B738DR_vor2_arrow_fo = simDR_nav2_bearing - vor_hdg
+	
+	B738DR_adf1_arrow_fo = simDR_adf1_bearing - vor_hdg
+	B738DR_adf2_arrow_fo = simDR_adf2_bearing - vor_hdg
 
 end
 

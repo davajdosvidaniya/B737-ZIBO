@@ -81,6 +81,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.24y:
+------
+- add ADF
+- fixed small bugs
+
 3.24x:
 ------
 - tuned and tweaked AP

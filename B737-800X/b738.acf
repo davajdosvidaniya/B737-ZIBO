@@ -158,7 +158,7 @@ P _gear/0/_lonE 0.0
 P _gear/0/_lonN 0.0
 P _gear/0/_lonR 111.0
 P _gear/0/_scon 120760.648437500
-P _gear/0/_stat_def 0.097283840
+P _gear/0/_stat_def 0.097283855
 P _gear/0/_steerdeg_hispeed 6.0
 P _gear/0/_steerdeg_lospeed 63.0
 P _gear/0/_strut_comp 0.0
@@ -44846,6 +44846,7 @@ GROUP NAV 1
     IMAGE TYPE/RadioOrange
     DATAREF sim/cockpit2/radios/actuators/nav1_frequency_Mhz
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 9
     BUS_SRC 3
@@ -65205,7 +65206,7 @@ GROUP MFD CAPT FO
 
       END_GROUP
     END_GROUP
-    GROUP VOR arrows 2
+    GROUP VOR ADF arrows 2
       SHOW_LESS 2.000000 laminar/B738/EFIS_control/fo/map_mode_pos
       SHOW_EQUAL 1.000000 laminar/B738/EFIS_control/fo/exp_map
       LOCKED
@@ -65219,6 +65220,66 @@ GROUP MFD CAPT FO
       CLIP
       IS_VERTICAL 0
       OFFSET 0.000000
+      GROUP ADF1 arrow rot 2
+        SHOW_LESS -1.000000 laminar/B738/EFIS_control/fo/vor1_off_pos
+        LOCKED
+        HIDE
+        GROUP_OPEN
+        GROUP_ANIMATE_MODE ROTATE
+        GROUP_WIDTH 490
+        GROUP_HEIGHT 500
+        DATAREF laminar/B738/pfd/adf1_arrow_fo
+        POS 0.000000 0.000000
+        KEY_FRAME 30.000000 30.000000 1.000000
+        KEY_FRAME -30.000000 -30.000000
+        ROTATE_OFFSET_X 771.000000
+        ROTATE_OFFSET_Y 364.000000
+        gen_pointer ADF1 ARROW 2
+          POS 771.000000 364.000000
+          IMAGE EFIS/adf1_arrow
+          DATAREF 
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 3
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 6.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
+
+      END_GROUP
+      GROUP ADF2 arrow rot 2
+        SHOW_LESS -1.000000 laminar/B738/EFIS_control/fo/vor2_off_pos
+        LOCKED
+        HIDE
+        GROUP_OPEN
+        GROUP_ANIMATE_MODE ROTATE
+        GROUP_WIDTH 490
+        GROUP_HEIGHT 500
+        DATAREF laminar/B738/pfd/adf2_arrow_fo
+        POS 0.000000 0.000000
+        KEY_FRAME 30.000000 30.000000 1.000000
+        KEY_FRAME -30.000000 -30.000000
+        ROTATE_OFFSET_X 771.000000
+        ROTATE_OFFSET_Y 364.000000
+        gen_pointer ADF2 ARROW 2
+          POS 770.000000 364.000000
+          IMAGE EFIS/adf2_arrow
+          DATAREF 
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 3
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 6.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
+
+      END_GROUP
       GROUP VOR1 arrow rot 2
         SHOW_EQUAL 4.000000 sim/cockpit2/radios/indicators/nav1_type
         SHOW_GREATER 1.000000 laminar/B738/EFIS_control/fo/vor1_off_pos
@@ -65475,11 +65536,12 @@ GROUP MFD CAPT FO
       CLICK_DY 0
 
   END_GROUP
-  GROUP VOR arrows CTR 2
+  GROUP VOR ADF arrows CTR 
     SHOW_LESS 1.000000 laminar/B738/EFIS_control/fo/map_mode_pos
     SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/fo/exp_map
     LOCKED
     HIDE
+    GROUP_OPEN
     GROUP_ANIMATE_MODE TRANSLATE
     GROUP_WIDTH 500
     GROUP_HEIGHT 490
@@ -65488,6 +65550,66 @@ GROUP MFD CAPT FO
     CLIP
     IS_VERTICAL 0
     OFFSET 0.000000
+    GROUP ADF1 arrow rot 2
+      SHOW_LESS -1.000000 laminar/B738/EFIS_control/fo/vor1_off_pos
+      LOCKED
+      HIDE
+      GROUP_OPEN
+      GROUP_ANIMATE_MODE ROTATE
+      GROUP_WIDTH 490
+      GROUP_HEIGHT 500
+      DATAREF laminar/B738/pfd/adf1_arrow_fo
+      POS 0.000000 0.000000
+      KEY_FRAME 30.000000 30.000000 1.000000
+      KEY_FRAME -30.000000 -30.000000
+      ROTATE_OFFSET_X 771.000000
+      ROTATE_OFFSET_Y 502.000000
+      gen_pointer ADF1 ARROW 2
+        POS 771.000000 500.000000
+        IMAGE EFIS/adf1_ctr_arrow
+        DATAREF 
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 3
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1.000000 6.000000
+        IS_DRAGGABLE 0
+        IS_VERTICAL 1
+        OFFSET 0.000000
+
+    END_GROUP
+    GROUP ADF2 arrow rot 2
+      SHOW_LESS -1.000000 laminar/B738/EFIS_control/fo/vor2_off_pos
+      LOCKED
+      HIDE
+      GROUP_OPEN
+      GROUP_ANIMATE_MODE ROTATE
+      GROUP_WIDTH 490
+      GROUP_HEIGHT 500
+      DATAREF laminar/B738/pfd/adf2_arrow_fo
+      POS 0.000000 0.000000
+      KEY_FRAME 30.000000 30.000000 1.000000
+      KEY_FRAME -30.000000 -30.000000
+      ROTATE_OFFSET_X 771.000000
+      ROTATE_OFFSET_Y 502.000000
+      gen_pointer ADF2 ARROW 2
+        POS 771.000000 500.000000
+        IMAGE EFIS/adf2_ctr_arrow
+        DATAREF 
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 3
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1.000000 6.000000
+        IS_DRAGGABLE 0
+        IS_VERTICAL 1
+        OFFSET 0.000000
+
+    END_GROUP
     GROUP VOR1 arrow rot 2
       SHOW_EQUAL 4.000000 sim/cockpit2/radios/indicators/nav1_type
       SHOW_GREATER 1.000000 laminar/B738/EFIS_control/fo/vor1_off_pos
@@ -91616,11 +91738,12 @@ GROUP MFD CAPT FO
 
       END_GROUP
     END_GROUP
-    GROUP VOR arrows
+    GROUP VOR ADF arrows
       SHOW_LESS 2.000000 laminar/B738/EFIS_control/capt/map_mode_pos
       SHOW_EQUAL 1.000000 laminar/B738/EFIS_control/capt/exp_map
       LOCKED
       HIDE
+      GROUP_OPEN
       GROUP_ANIMATE_MODE TRANSLATE
       GROUP_WIDTH 500
       GROUP_HEIGHT 490
@@ -91629,6 +91752,66 @@ GROUP MFD CAPT FO
       CLIP
       IS_VERTICAL 0
       OFFSET 0.000000
+      GROUP ADF1 arrow rot
+        SHOW_LESS -1.000000 laminar/B738/EFIS_control/capt/vor1_off_pos
+        LOCKED
+        HIDE
+        GROUP_OPEN
+        GROUP_ANIMATE_MODE ROTATE
+        GROUP_WIDTH 490
+        GROUP_HEIGHT 500
+        DATAREF laminar/B738/pfd/adf1_arrow
+        POS 0.000000 0.000000
+        KEY_FRAME 30.000000 30.000000 1.000000
+        KEY_FRAME -30.000000 -30.000000
+        ROTATE_OFFSET_X 771.000000
+        ROTATE_OFFSET_Y -148.000000
+        gen_pointer VOR1 ARROW
+          POS 771.000000 -148.000000
+          IMAGE EFIS/adf1_arrow
+          DATAREF 
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 2
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 6.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
+
+      END_GROUP
+      GROUP VOR2 arrow rot
+        SHOW_LESS -1.000000 laminar/B738/EFIS_control/capt/vor2_off_pos
+        LOCKED
+        HIDE
+        GROUP_OPEN
+        GROUP_ANIMATE_MODE ROTATE
+        GROUP_WIDTH 490
+        GROUP_HEIGHT 500
+        DATAREF laminar/B738/pfd/adf2_arrow
+        POS 0.000000 0.000000
+        KEY_FRAME 30.000000 30.000000 1.000000
+        KEY_FRAME -30.000000 -30.000000
+        ROTATE_OFFSET_X 771.000000
+        ROTATE_OFFSET_Y -148.000000
+        gen_pointer VOR2 ARROW
+          POS 770.000000 -148.000000
+          IMAGE EFIS/adf2_arrow
+          DATAREF 
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 2
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 6.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
+
+      END_GROUP
       GROUP VOR1 arrow rot
         SHOW_EQUAL 4.000000 sim/cockpit2/radios/indicators/nav1_type
         SHOW_GREATER 1.000000 laminar/B738/EFIS_control/capt/vor1_off_pos
@@ -91882,11 +92065,12 @@ GROUP MFD CAPT FO
       CLICK_DY 0
 
   END_GROUP
-  GROUP VOR arrows CTR
+  GROUP VOR ADF arrows CTR
     SHOW_LESS 1.000000 laminar/B738/EFIS_control/capt/map_mode_pos
     SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/capt/exp_map
     LOCKED
     HIDE
+    GROUP_OPEN
     GROUP_ANIMATE_MODE TRANSLATE
     GROUP_WIDTH 500
     GROUP_HEIGHT 490
@@ -91895,6 +92079,66 @@ GROUP MFD CAPT FO
     CLIP
     IS_VERTICAL 0
     OFFSET 0.000000
+    GROUP ADF1 arrow rot
+      SHOW_LESS -1.000000 laminar/B738/EFIS_control/capt/vor1_off_pos
+      LOCKED
+      HIDE
+      GROUP_OPEN
+      GROUP_ANIMATE_MODE ROTATE
+      GROUP_WIDTH 490
+      GROUP_HEIGHT 500
+      DATAREF laminar/B738/pfd/adf1_arrow
+      POS 0.000000 0.000000
+      KEY_FRAME 30.000000 30.000000 1.000000
+      KEY_FRAME -30.000000 -30.000000
+      ROTATE_OFFSET_X 771.000000
+      ROTATE_OFFSET_Y -10.000000
+      gen_pointer ADF1 ARROW
+        POS 771.000000 -12.000000
+        IMAGE EFIS/adf1_ctr_arrow
+        DATAREF 
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 2
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1.000000 6.000000
+        IS_DRAGGABLE 0
+        IS_VERTICAL 1
+        OFFSET 0.000000
+
+    END_GROUP
+    GROUP ADF2 arrow rot
+      SHOW_LESS -1.000000 laminar/B738/EFIS_control/capt/vor2_off_pos
+      LOCKED
+      HIDE
+      GROUP_OPEN
+      GROUP_ANIMATE_MODE ROTATE
+      GROUP_WIDTH 490
+      GROUP_HEIGHT 500
+      DATAREF laminar/B738/pfd/adf2_arrow
+      POS 0.000000 0.000000
+      KEY_FRAME 30.000000 30.000000 1.000000
+      KEY_FRAME -30.000000 -30.000000
+      ROTATE_OFFSET_X 771.000000
+      ROTATE_OFFSET_Y -10.000000
+      gen_pointer ADF2 ARROW
+        POS 771.000000 -12.000000
+        IMAGE EFIS/adf2_ctr_arrow
+        DATAREF 
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 2
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1.000000 6.000000
+        IS_DRAGGABLE 0
+        IS_VERTICAL 1
+        OFFSET 0.000000
+
+    END_GROUP
     GROUP VOR1 arrow rot
       SHOW_EQUAL 4.000000 sim/cockpit2/radios/indicators/nav1_type
       SHOW_GREATER 1.000000 laminar/B738/EFIS_control/capt/vor1_off_pos
@@ -92304,6 +92548,7 @@ GROUP MFD CAPT FO
   END_GROUP
   GROUP DO NOT SHOW in PLAN
     LOCKED
+    GROUP_OPEN
     GROUP Captain
       SHOW_LESS 2.000000 laminar/B738/EFIS_control/capt/map_mode_pos
       LOCKED
@@ -92312,8 +92557,9 @@ GROUP MFD CAPT FO
         POS 559.000000 -217.000000
         IMAGE MFD/VOR1_null
         DATAREF sim/cockpit2/radios/indicators/nav1_type
-        SHOW_EQUAL 2.000000 sim/cockpit2/EFIS/EFIS_1_selection_pilot
+        SHOW_EQUAL 1.000000 laminar/B738/EFIS_control/capt/vor1_off_pos
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 2
         BUS_SRC 3
@@ -92337,8 +92583,9 @@ GROUP MFD CAPT FO
         POS 982.000000 -217.000000
         IMAGE MFD/VOR2_null
         DATAREF sim/cockpit2/radios/indicators/nav2_type
-        SHOW_EQUAL 2.000000 sim/cockpit2/EFIS/EFIS_2_selection_pilot
+        SHOW_EQUAL 1.000000 laminar/B738/EFIS_control/capt/vor2_off_pos
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 2
         BUS_SRC 3
@@ -92358,16 +92605,93 @@ GROUP MFD CAPT FO
         CLICK_DX 0
         CLICK_DY 0
 
+      GROUP ADF1
+        SHOW_LESS -1.000000 laminar/B738/EFIS_control/capt/vor1_off_pos
+        gen_rotary ADF1 Indicator
+          POS 559.000000 -217.000000
+          IMAGE MFD/Radio Information/ADF1
+          DATAREF 
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 2
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 1.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+        gen_text ADF ID1
+          POS 555.000000 -211.000000
+          IMAGE MFD/type_blue
+          DATAREF sim/cockpit2/radios/indicators/adf1_nav_id
+          LOCKED
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 2
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 1.000000
+          OFFSET_X -20
+          OFFSET_Y -11.000000
+
+      END_GROUP
+      GROUP ADF2
+        SHOW_LESS -1.000000 laminar/B738/EFIS_control/capt/vor2_off_pos
+        gen_rotary ADF2 Indicator
+          POS 982.000000 -217.000000
+          IMAGE MFD/Radio Information/ADF2
+          DATAREF 
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 2
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 1.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+        gen_text ADF ID2
+          POS 967.000000 -211.000000
+          IMAGE MFD/type_blue
+          DATAREF sim/cockpit2/radios/indicators/adf2_nav_id
+          LOCKED
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 2
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 1.000000
+          OFFSET_X -20
+          OFFSET_Y -11.000000
+
+      END_GROUP
       GROUP VOR1
         SHOW_EQUAL 4.000000 sim/cockpit2/radios/indicators/nav1_type
-        SHOW_GREATER 2.000000 sim/cockpit2/EFIS/EFIS_1_selection_pilot
+        SHOW_GREATER 1.000000 laminar/B738/EFIS_control/capt/vor1_off_pos
         LOCKED
-        GROUP_OPEN
+        HIDE
         gen_rotary VOR1 Indicator
           POS 559.000000 -217.000000
           IMAGE MFD/Radio Information/VOR1
           DATAREF 
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92390,6 +92714,7 @@ GROUP MFD CAPT FO
           DATAREF 
           SHOW_LESS 0.000000 sim/cockpit2/radios/indicators/nav1_display_horizontal
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92411,6 +92736,7 @@ GROUP MFD CAPT FO
           IMAGE MFD/type
           DATAREF sim/cockpit2/radios/indicators/nav1_nav_id
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92424,6 +92750,7 @@ GROUP MFD CAPT FO
           IMAGE MFD/Radio Information/VORDME
           DATAREF sim/cockpit2/radios/indicators/nav1_has_dme
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92447,6 +92774,7 @@ GROUP MFD CAPT FO
           SHOW_EQUAL 1.000000 sim/cockpit/radios/nav1_has_dme
           SHOW_GREATER 99.949997 sim/cockpit/radios/nav1_dme_dist_m
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92464,6 +92792,7 @@ GROUP MFD CAPT FO
           SHOW_LESS 99.949997 sim/cockpit/radios/nav1_dme_dist_m
           SHOW_EQUAL 1.000000 sim/cockpit/radios/nav1_has_dme
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92477,13 +92806,15 @@ GROUP MFD CAPT FO
       END_GROUP
       GROUP VOR2
         SHOW_EQUAL 4.000000 sim/cockpit2/radios/indicators/nav2_type
-        SHOW_GREATER 2.000000 sim/cockpit2/EFIS/EFIS_2_selection_pilot
+        SHOW_GREATER 1.000000 laminar/B738/EFIS_control/capt/vor2_off_pos
         LOCKED
+        HIDE
         gen_rotary VOR2 Indicator
           POS 982.000000 -217.000000
           IMAGE MFD/Radio Information/VOR2
           DATAREF 
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92506,6 +92837,7 @@ GROUP MFD CAPT FO
           DATAREF 
           SHOW_LESS 0.000000 sim/cockpit2/radios/indicators/nav2_display_horizontal
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92527,6 +92859,7 @@ GROUP MFD CAPT FO
           IMAGE MFD/type
           DATAREF sim/cockpit2/radios/indicators/nav2_nav_id
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92540,6 +92873,7 @@ GROUP MFD CAPT FO
           IMAGE MFD/Radio Information/VORDME
           DATAREF sim/cockpit2/radios/indicators/nav2_has_dme
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92563,6 +92897,7 @@ GROUP MFD CAPT FO
           SHOW_EQUAL 1.000000 sim/cockpit/radios/nav2_has_dme
           SHOW_GREATER 99.949997 sim/cockpit/radios/nav2_dme_dist_m
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92580,6 +92915,7 @@ GROUP MFD CAPT FO
           SHOW_LESS 99.949997 sim/cockpit/radios/nav2_dme_dist_m
           SHOW_EQUAL 1.000000 sim/cockpit/radios/nav2_has_dme
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92594,12 +92930,14 @@ GROUP MFD CAPT FO
     END_GROUP
     GROUP First Officer
       SHOW_LESS 2.000000 laminar/B738/EFIS_control/fo/map_mode_pos
+      GROUP_OPEN
       gen_rotary VOR1 Null FO
         POS 559.000000 295.000000
         IMAGE MFD/VOR1_null
         DATAREF sim/cockpit2/radios/indicators/nav1_type
-        SHOW_EQUAL 2.000000 sim/cockpit2/EFIS/EFIS_1_selection_copilot
+        SHOW_EQUAL 1.000000 laminar/B738/EFIS_control/fo/vor1_off_pos
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 3
         BUS_SRC 3
@@ -92623,8 +92961,9 @@ GROUP MFD CAPT FO
         POS 982.000000 295.000000
         IMAGE MFD/VOR2_null
         DATAREF sim/cockpit2/radios/indicators/nav2_type
-        SHOW_EQUAL 2.000000 sim/cockpit2/EFIS/EFIS_2_selection_copilot
+        SHOW_EQUAL 1.000000 laminar/B738/EFIS_control/fo/vor2_off_pos
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 3
         BUS_SRC 3
@@ -92644,15 +92983,93 @@ GROUP MFD CAPT FO
         CLICK_DX 0
         CLICK_DY 0
 
+      GROUP ADF1 FO
+        SHOW_LESS -1.000000 laminar/B738/EFIS_control/fo/vor1_off_pos
+        GROUP_OPEN
+        gen_rotary ADF1 Indicator 2
+          POS 559.000000 295.000000
+          IMAGE MFD/Radio Information/ADF1
+          DATAREF 
+          LOCKED
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 3
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 1.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+        gen_text ADF ID1
+          POS 555.000000 301.000000
+          IMAGE MFD/type_blue
+          DATAREF sim/cockpit2/radios/indicators/adf1_nav_id
+          LOCKED
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 3
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 1.000000
+          OFFSET_X -20
+          OFFSET_Y -11.000000
+
+      END_GROUP
+      GROUP ADF2 FO
+        SHOW_LESS -1.000000 laminar/B738/EFIS_control/fo/vor2_off_pos
+        GROUP_OPEN
+        gen_rotary ADF2 Indicator 2
+          POS 982.000000 295.000000
+          IMAGE MFD/Radio Information/ADF2
+          DATAREF 
+          LOCKED
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 3
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 1.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+        gen_text ADF ID2
+          POS 967.000000 301.000000
+          IMAGE MFD/type_blue
+          DATAREF sim/cockpit2/radios/indicators/adf2_nav_id
+          LOCKED
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 3
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 1.000000
+          OFFSET_X -20
+          OFFSET_Y -11.000000
+
+      END_GROUP
       GROUP VOR1 FO
         SHOW_EQUAL 4.000000 sim/cockpit2/radios/indicators/nav1_type
-        SHOW_GREATER 2.000000 sim/cockpit2/EFIS/EFIS_1_selection_copilot
+        SHOW_GREATER 1.000000 laminar/B738/EFIS_control/fo/vor1_off_pos
         LOCKED
+        HIDE
         gen_rotary VOR1 Indicator 2
           POS 559.000000 295.000000
           IMAGE MFD/Radio Information/VOR1
           DATAREF 
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -92675,6 +93092,7 @@ GROUP MFD CAPT FO
           DATAREF 
           SHOW_LESS 0.000000 sim/cockpit2/radios/indicators/nav1_display_horizontal
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -92696,6 +93114,7 @@ GROUP MFD CAPT FO
           IMAGE MFD/type
           DATAREF sim/cockpit2/radios/indicators/nav1_nav_id
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -92709,6 +93128,7 @@ GROUP MFD CAPT FO
           IMAGE MFD/Radio Information/VORDME
           DATAREF sim/cockpit2/radios/indicators/nav1_has_dme
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -92732,6 +93152,7 @@ GROUP MFD CAPT FO
           SHOW_EQUAL 1.000000 sim/cockpit/radios/nav1_has_dme
           SHOW_GREATER 99.949997 sim/cockpit/radios/nav1_dme_dist_m
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -92749,6 +93170,7 @@ GROUP MFD CAPT FO
           SHOW_LESS 99.949997 sim/cockpit/radios/nav1_dme_dist_m
           SHOW_EQUAL 1.000000 sim/cockpit/radios/nav1_has_dme
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -92762,13 +93184,15 @@ GROUP MFD CAPT FO
       END_GROUP
       GROUP VOR2 FO
         SHOW_EQUAL 4.000000 sim/cockpit2/radios/indicators/nav2_type
-        SHOW_GREATER 2.000000 sim/cockpit2/EFIS/EFIS_2_selection_copilot
+        SHOW_GREATER 1.000000 laminar/B738/EFIS_control/fo/vor2_off_pos
         LOCKED
+        HIDE
         gen_rotary VOR2 Indicator 2
           POS 982.000000 295.000000
           IMAGE MFD/Radio Information/VOR2
           DATAREF 
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -92791,6 +93215,7 @@ GROUP MFD CAPT FO
           DATAREF 
           SHOW_LESS 0.000000 sim/cockpit2/radios/indicators/nav2_display_horizontal
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -92812,6 +93237,7 @@ GROUP MFD CAPT FO
           IMAGE MFD/type
           DATAREF sim/cockpit2/radios/indicators/nav2_nav_id
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -92825,6 +93251,7 @@ GROUP MFD CAPT FO
           IMAGE MFD/Radio Information/VORDME
           DATAREF sim/cockpit2/radios/indicators/nav2_has_dme
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -92848,6 +93275,7 @@ GROUP MFD CAPT FO
           SHOW_EQUAL 1.000000 sim/cockpit/radios/nav2_has_dme
           SHOW_GREATER 99.949997 sim/cockpit/radios/nav2_dme_dist_m
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -92865,6 +93293,7 @@ GROUP MFD CAPT FO
           SHOW_LESS 99.949997 sim/cockpit/radios/nav2_dme_dist_m
           SHOW_EQUAL 1.000000 sim/cockpit/radios/nav2_has_dme
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -105591,6 +106020,7 @@ END_GROUP
 GROUP MAP Range
   LOCKED
   HIDE
+  GROUP_OPEN
   gen_rotary Range Map Mode
     POS 750.000000 32.000000
     IMAGE MFD/range_expanded
@@ -105648,6 +106078,310 @@ GROUP MAP Range
     CURSOR DEFAULT
     CLICK_DX 0
     CLICK_DY 0
+
+END_GROUP
+GROUP ADF 1
+  SHOW_EQUAL 1.000000 laminar/B738/comm/nav1_status
+  LOCKED
+  gen_rotary ADF annun
+    POS 1723.000000 872.500000
+    IMAGE TYPE/ADF_ann
+    DATAREF 
+    SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant1
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
+  gen_rotary ANT annun
+    POS 1723.000000 858.500000
+    IMAGE TYPE/ANT_ann
+    DATAREF 
+    SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant1
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
+  gen_rotary ADF annun
+    POS 1886.500000 872.500000
+    IMAGE TYPE/ADF_ann
+    DATAREF 
+    SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant1
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
+  gen_rotary ANT annun
+    POS 1886.500000 858.500000
+    IMAGE TYPE/ANT_ann
+    DATAREF 
+    SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant1
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
+  gen_LED ADF1 Active
+    POS 1784.500000 864.500000
+    IMAGE TYPE/RadioOrange_3n
+    DATAREF sim/cockpit2/radios/actuators/adf1_frequency_hz
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
+    DIGITS 4
+    DECIMALS 0
+    PERIOD_WIDTH 18
+    LED_ROWS 0
+
+  gen_LED ADF1 Active frac
+    POS 1824.500000 864.500000
+    IMAGE TYPE/RadioOrange_3n
+    DATAREF sim/cockpit2/radios/actuators/adf1_frequency_hz
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 10000.000000 0.000000
+    DIGITS 1
+    DECIMALS 1
+    PERIOD_WIDTH 18
+    LED_ROWS 0
+
+  gen_LED ADF1 Standby
+    POS 1948.000000 864.000000
+    IMAGE TYPE/RadioOrange_3n
+    DATAREF sim/cockpit2/radios/actuators/adf1_standby_frequency_hz
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
+    DIGITS 4
+    DECIMALS 0
+    PERIOD_WIDTH 18
+    LED_ROWS 0
+
+  gen_LED ADF1 Standby frac
+    POS 1988.000000 864.000000
+    IMAGE TYPE/RadioOrange_3n
+    DATAREF sim/cockpit2/radios/actuators/adf1_standby_frequency_hz
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 10000.000000 0.000000
+    DIGITS 1
+    DECIMALS 1
+    PERIOD_WIDTH 18
+    LED_ROWS 0
+
+END_GROUP
+GROUP ADF 2
+  SHOW_EQUAL 1.000000 laminar/B738/comm/nav2_status
+  LOCKED
+  gen_rotary ADF annun
+    POS 1723.000000 819.500000
+    IMAGE TYPE/ADF_ann
+    DATAREF 
+    SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant2
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
+  gen_rotary ANT annun
+    POS 1723.000000 805.500000
+    IMAGE TYPE/ANT_ann
+    DATAREF 
+    SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant2
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
+  gen_rotary ADF annun
+    POS 1886.000000 819.500000
+    IMAGE TYPE/ADF_ann
+    DATAREF 
+    SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant2
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
+  gen_rotary ANT annun
+    POS 1886.000000 805.500000
+    IMAGE TYPE/ANT_ann
+    DATAREF 
+    SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant2
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
+  gen_LED ADF2 Active
+    POS 1784.000000 811.000000
+    IMAGE TYPE/RadioOrange_3n
+    DATAREF sim/cockpit2/radios/actuators/adf2_frequency_hz
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
+    DIGITS 4
+    DECIMALS 0
+    PERIOD_WIDTH 18
+    LED_ROWS 0
+
+  gen_LED ADF2 Active frac
+    POS 1824.000000 811.000000
+    IMAGE TYPE/RadioOrange_3n
+    DATAREF sim/cockpit2/radios/actuators/adf2_frequency_hz
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 10000.000000 0.000000
+    DIGITS 1
+    DECIMALS 1
+    PERIOD_WIDTH 18
+    LED_ROWS 0
+
+  gen_LED ADF2 Standby
+    POS 1948.000000 811.000000
+    IMAGE TYPE/RadioOrange_3n
+    DATAREF sim/cockpit2/radios/actuators/adf2_standby_frequency_hz
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
+    DIGITS 4
+    DECIMALS 0
+    PERIOD_WIDTH 18
+    LED_ROWS 0
+
+  gen_LED ADF2 Standby frac
+    POS 1988.000000 811.000000
+    IMAGE TYPE/RadioOrange_3n
+    DATAREF sim/cockpit2/radios/actuators/adf2_standby_frequency_hz
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 10000.000000 0.000000
+    DIGITS 1
+    DECIMALS 1
+    PERIOD_WIDTH 18
+    LED_ROWS 0
 
 END_GROUP
 GROUP Display light test
@@ -105741,6 +106475,49 @@ GROUP Display light test
     CLICK_DX 0
     CLICK_DY 0
 
+  gen_rotary ADF TEST2
+    POS 1866.000000 864.000000
+    IMAGE Standby/adf_test2
+    DATAREF 
+    LOCKED
+    HIDE
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 6.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
+  gen_rotary ADF TEST2
+    POS 1866.000000 811.000000
+    IMAGE Standby/adf_test2
+    DATAREF 
+    HIDE
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 6.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
   GROUP Display light test2
     SHOW_EQUAL 1.000000 laminar/B738/dspl_light_test
     HIDE
@@ -105813,6 +106590,48 @@ GROUP Display light test
     gen_rotary XPND TEST
       POS 1505.000000 556.000000
       IMAGE Standby/xpnd_test
+      DATAREF 
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 9
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 6.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary ADF TEST
+      POS 1863.000000 864.000000
+      IMAGE Standby/adf_test
+      DATAREF 
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 9
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 6.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary ADF TEST
+      POS 1863.000000 811.000000
+      IMAGE Standby/adf_test
       DATAREF 
       HIDE
       LIGHT_MODE GLASS_AUTO

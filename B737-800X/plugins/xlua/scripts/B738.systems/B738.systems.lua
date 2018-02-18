@@ -698,6 +698,15 @@ simDR_flaps_ratio				= find_dataref("sim/cockpit2/controls/flap_ratio")
 simDR_throttle_1				= find_dataref("sim/cockpit2/engine/actuators/throttle_ratio[0]")
 simDR_throttle_2				= find_dataref("sim/cockpit2/engine/actuators/throttle_ratio[1]")
 
+simDR_adf1_freq				= find_dataref("sim/cockpit2/radios/actuators/adf1_standby_frequency_hz")
+simDR_adf2_freq				= find_dataref("sim/cockpit2/radios/actuators/adf2_standby_frequency_hz")
+simDR_adf1_act_freq			= find_dataref("sim/cockpit2/radios/actuators/adf1_frequency_hz")
+simDR_adf2_act_freq			= find_dataref("sim/cockpit2/radios/actuators/adf2_frequency_hz")
+
+simDR_adf1_power			= find_dataref("sim/cockpit2/radios/actuators/adf1_power")
+simDR_adf2_power			= find_dataref("sim/cockpit2/radios/actuators/adf2_power")
+
+
 --*************************************************************************************--
 --** 				               FIND X-PLANE COMMANDS                   	    	 **--
 --*************************************************************************************--
@@ -728,6 +737,9 @@ simCMD_xponder_ident				= find_command("sim/transponder/transponder_ident")
 
 simCMD_nav1_standy_flip				= find_command("sim/radios/nav1_standy_flip")
 simCMD_nav2_standy_flip				= find_command("sim/radios/nav2_standy_flip")
+
+simCMD_adf1_standy_flip				= find_command("sim/radios/adf1_standy_flip")
+simCMD_adf2_standy_flip				= find_command("sim/radios/adf2_standy_flip")
 
 simCMD_dc_volt_left					= find_command("sim/electrical/dc_volt_lft")
 simCMD_dc_volt_center				= find_command("sim/electrical/dc_volt_ctr")
@@ -931,6 +943,19 @@ B738DR_transponder_ident_button = create_dataref("laminar/B738/push_button/trans
 
 B738DR_nav1_freq_flip_button = create_dataref("laminar/B738/push_button/switch_freq_nav1", "number")
 B738DR_nav2_freq_flip_button = create_dataref("laminar/B738/push_button/switch_freq_nav2", "number")
+
+B738DR_adf1_freq_flip_button = create_dataref("laminar/B738/push_button/switch_freq_adf1", "number")
+B738DR_adf2_freq_flip_button = create_dataref("laminar/B738/push_button/switch_freq_adf2", "number")
+
+B738DR_adf1_freq_int		= create_dataref("laminar/B738/radio/adf1_freq_int", "number")
+B738DR_adf1_freq_frac		= create_dataref("laminar/B738/radio/adf1_freq_frac", "number")
+B738DR_adf2_freq_int		= create_dataref("laminar/B738/radio/adf2_freq_int", "number")
+B738DR_adf2_freq_frac		= create_dataref("laminar/B738/radio/adf2_freq_frac", "number")
+
+B738DR_adf1_act_freq_int		= create_dataref("laminar/B738/radio/adf1_act_freq_int", "number")
+B738DR_adf1_act_freq_frac		= create_dataref("laminar/B738/radio/adf1_act_freq_frac", "number")
+B738DR_adf2_act_freq_int		= create_dataref("laminar/B738/radio/adf2_act_freq_int", "number")
+B738DR_adf2_act_freq_frac		= create_dataref("laminar/B738/radio/adf2_act_freq_frac", "number")
 
 B738DR_dc_power_knob_pos	= create_dataref("laminar/B738/knob/dc_power", "number")
 B738DR_ac_power_knob_pos	= create_dataref("laminar/B738/knob/ac_power", "number")
@@ -1409,6 +1434,7 @@ B738DR_terrain_ahead		= create_dataref("laminar/b738/fmodpack/msg_terrain_ahead"
 B738DR_ra_callout			= create_dataref("laminar/b738/fmodpack/msg_alt_callouts", "number")
 --B738DR_approach_minimums	= create_dataref("laminar/b738/fmodpack/appro_mins", "number")
 B738DR_dh_minimum_pilot		= create_dataref("laminar/B738/fmod/dh_minimum_pilot", "number")
+B738DR_dh_minimum_copilot	= create_dataref("laminar/B738/fmod/dh_minimum_copilot", "number")
 
 B738DR_pfd_pull_up			= create_dataref("laminar/b738/alert/pfd_pull_up", "number")
 B738DR_pfd_windshear		= create_dataref("laminar/b738/alert/pfd_windshear", "number")
@@ -1578,12 +1604,21 @@ function B738DR_instrument_brightness_DRhandler() end
 
 function B738DR_flap_lever_stop_pos_DRhandler() end
 
+function B738DR_adf_ant1_DRhandler() end
+function B738DR_off_on1_DRhandler() end
+function B738DR_adf_ant2_DRhandler() end
+function B738DR_off_on2_DRhandler() end
+
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
 
 B738DR_flap_lever_stop_pos		= create_dataref("laminar/B738/handles/flap_lever/stop_pos", "number", B738DR_flap_lever_stop_pos_DRhandler)
 
+B738DR_adf_ant1				= create_dataref("laminar/B738/toggle_switch/adf_ant1", "number", B738DR_adf_ant1_DRhandler)
+B738DR_off_on1				= create_dataref("laminar/B738/toggle_switch/off_on1", "number", B738DR_off_on1_DRhandler)
+B738DR_adf_ant2				= create_dataref("laminar/B738/toggle_switch/adf_ant2", "number", B738DR_adf_ant2_DRhandler)
+B738DR_off_on2				= create_dataref("laminar/B738/toggle_switch/off_on2", "number", B738DR_off_on2_DRhandler)
 
 B738DR_panel_brightness			= create_dataref("laminar/B738/electric/panel_brightness", "array[4]", B738DR_panel_brightness_DRhandler)
 B738DR_instrument_brightness	= create_dataref("laminar/B738/electric/instrument_brightness", "array[16]", B738DR_instrument_brightness_DRhandler)
@@ -2099,6 +2134,26 @@ function B738_nav2_freq_flip_CMDhandler(phase, duration)
 	elseif phase == 2 then
 		B738DR_nav2_freq_flip_button = 0
 		simCMD_nav2_standy_flip:stop()
+	end
+end
+
+function B738_adf1_freq_flip_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_adf1_freq_flip_button = 1
+		simCMD_adf1_standy_flip:start()
+	elseif phase == 2 then
+		B738DR_adf1_freq_flip_button = 0
+		simCMD_adf1_standy_flip:stop()
+	end
+end
+
+function B738_adf2_freq_flip_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_adf2_freq_flip_button = 1
+		simCMD_adf2_standy_flip:start()
+	elseif phase == 2 then
+		B738DR_adf2_freq_flip_button = 0
+		simCMD_adf2_standy_flip:stop()
 	end
 end
 
@@ -3791,9 +3846,54 @@ function B738_flt_door_toggle_CMDhandler(phase, duration)
 	end
 end
 
+function B738_adf_ant1_CMDhandler(phase, duration)
+	if phase == 0 then
+		if B738DR_adf_ant1 == 0 then
+			B738DR_adf_ant1 = 1
+		else
+			B738DR_adf_ant1 = 0
+		end
+	end
+end
+
+function B738_off_on1_CMDhandler(phase, duration)
+	if phase == 0 then
+		if B738DR_off_on1 == 0 then
+			B738DR_off_on1 = 1
+		else
+			B738DR_off_on1 = 0
+		end
+	end
+end
+
+function B738_adf_ant2_CMDhandler(phase, duration)
+	if phase == 0 then
+		if B738DR_adf_ant2 == 0 then
+			B738DR_adf_ant2 = 1
+		else
+			B738DR_adf_ant2 = 0
+		end
+	end
+end
+
+function B738_off_on2_CMDhandler(phase, duration)
+	if phase == 0 then
+		if B738DR_off_on2 == 0 then
+			B738DR_off_on2 = 1
+		else
+			B738DR_off_on2 = 0
+		end
+	end
+end
+
 --*************************************************************************************--
 --** 				              CREATE CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
+
+B738CMD_adf_ant1			= create_command("laminar/B738/toggle_switch/adf_ant1", "ADF1 ADF/ANT", B738_adf_ant1_CMDhandler)
+B738CMD_off_on1				= create_command("laminar/B738/toggle_switch/off_on1", "ADF1 OFF/ON", B738_off_on1_CMDhandler)
+B738CMD_adf_ant2			= create_command("laminar/B738/toggle_switch/adf_ant2", "ADF2 ADF/ANT", B738_adf_ant2_CMDhandler)
+B738CMD_off_on2				= create_command("laminar/B738/toggle_switch/off_on2", "ADF2 OFF/ON", B738_off_on2_CMDhandler)
 
 B738CMD_flt_door_toggle		= create_command("laminar/B738/toggle_switch/flt_dk_door_open", "Cockpit door open/close toggle", B738_flt_door_toggle_CMDhandler)
 
@@ -3909,6 +4009,10 @@ B738CMD_xponder_ident = create_command("laminar/B738/push_button/transponder_ide
 
 B738CMD_nav1_freq_flip = create_command("laminar/B738/push_button/switch_freq_nav1_press", "NAV 1 Frequency Swap", B738_nav1_freq_flip_CMDhandler)
 B738CMD_nav2_freq_flip = create_command("laminar/B738/push_button/switch_freq_nav2_press", "NAV 2 Frequency Swap", B738_nav2_freq_flip_CMDhandler)
+
+B738CMD_adf1_freq_flip = create_command("laminar/B738/push_button/switch_freq_adf1_press", "ADF 1 Frequency Swap", B738_adf1_freq_flip_CMDhandler)
+B738CMD_adf2_freq_flip = create_command("laminar/B738/push_button/switch_freq_adf2_press", "ADF 2 Frequency Swap", B738_adf2_freq_flip_CMDhandler)
+
 
 -- ELECTRICAL PANEL KNOBS
 
@@ -11169,6 +11273,38 @@ function cockpit_door()
 	B738DR_flt_dk_door_ratio = B738_set_anim_value(B738DR_flt_dk_door_ratio, flt_dk_door_tgt, 0, 1, 2)
 	
 end
+function B738_adf()
+	B738DR_adf1_freq_int = math.floor(simDR_adf1_freq / 1000)
+	B738DR_adf1_freq_frac = simDR_adf1_freq - (B738DR_adf1_freq_int * 1000)
+	B738DR_adf2_freq_int = math.floor(simDR_adf2_freq / 1000)
+	B738DR_adf2_freq_frac = simDR_adf2_freq - (B738DR_adf2_freq_int * 1000)
+	
+	B738DR_adf1_act_freq_int = math.floor(simDR_adf1_act_freq / 1000)
+	B738DR_adf1_act_freq_frac = simDR_adf1_act_freq - (B738DR_adf1_act_freq_int * 1000)
+	B738DR_adf2_act_freq_int = math.floor(simDR_adf2_act_freq / 1000)
+	B738DR_adf2_act_freq_frac = simDR_adf2_act_freq - (B738DR_adf2_act_freq_int * 1000)
+	
+	if B738DR_adf_ant1 == 0 then
+		if simDR_adf1_power ~= 2 then
+			simDR_adf1_power = 2
+		end
+	else
+		if simDR_adf1_power ~= 1 then
+			simDR_adf1_power = 1
+		end
+	end
+
+	if B738DR_adf_ant2 == 0 then
+		if simDR_adf2_power ~= 2 then
+			simDR_adf2_power = 2
+		end
+	else
+		if simDR_adf2_power ~= 1 then
+			simDR_adf2_power = 1
+		end
+	end
+	
+end
 
 --*************************************************************************************--
 --** 				               XLUA EVENT CALLBACKS       	        			 **--
@@ -11357,6 +11493,10 @@ B738_init_engineMGMT_fltStart()
 	gpws_long_test_disable = 0
 	flt_dk_door_tgt = 0
 
+	B738DR_adf_ant1 = 0
+	B738DR_adf_ant2 = 0
+	simDR_adf1_power = 2
+	simDR_adf2_power = 2
 	
 end
 
@@ -11420,6 +11560,7 @@ function after_physics()
 		B738_brightness()
 		B738_fmc_source()
 		cockpit_door()
+		B738_adf()
 		if fmod_flap_sound == 1 then
 			fmod_flap_sound = 2
 		elseif fmod_flap_sound == 2 then

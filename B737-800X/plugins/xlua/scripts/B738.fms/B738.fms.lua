@@ -43979,7 +43979,7 @@ function B738_flight_phase3()
 		or simDR_on_ground_2 == 1 then
 			
 			-- reset FMC
-			if reset_fmc_act == 1 and simDR_airspeed_pilot < 80 then
+			if reset_fmc_act == 1 and simDR_airspeed_pilot < 80 and B738DR_flight_phase > 0 then
 				--reset_fmc_act = 0
 				B738_init2()
 				legs_num = 0
@@ -44355,7 +44355,7 @@ function B738_N1_thrust_set()
 		fms_N1_mode = fms_N1_to_mode_sel
 		
 		if simDR_radio_height_pilot_ft > B738DR_accel_alt - 300 then
-			fmc_auto_thrust = fmc_auto_thrust * 0.96	-- 5% thrust reduction
+			fmc_auto_thrust = fmc_auto_thrust * 0.96	-- 4% thrust reduction
 		end
 		
 	-- mode CLIMB
@@ -56817,7 +56817,7 @@ function B738_vnav_pth3()
 	local nd_lon2 = 0
 	local nd_x = 0
 	local nd_y = 0
-	local td_disable = 0
+	local td_enable = 0
 	local rnav_disable = 0
 	
 	local nd_dis = 0
@@ -56839,12 +56839,12 @@ function B738_vnav_pth3()
 	
 	
 	if B738DR_flight_phase < 5 then
-		td_disable = 1
+		td_enable = 1
 		rnav_disable = 1
 	end
 	if B738DR_flight_phase == 8 then
 		if B738DR_speed_mode == 4 or B738DR_speed_mode == 5 or B738DR_speed_mode == 8 then
-			td_disable = 1
+			td_enable = 1
 			rnav_disable = 1
 		end
 	end
@@ -56852,7 +56852,7 @@ function B738_vnav_pth3()
 		gp_disable = 1
 	end
 	if td_idx == 0 then
-		td_disable = 1
+		td_enable = 1
 	end
 	
 	--if crz_alt_num > 0 and legs_num > 0 and offset > 0 and cost_index ~= "***" and ref_icao ~= "----" and des_icao ~= "****" then
@@ -56861,15 +56861,15 @@ function B738_vnav_pth3()
 			offset = legs_num
 		end
 		
-		if td_disable == 0 then
+		if td_enable == 0 then
 			B738DR_vnav_td_dist = 0
 		else
 			if offset == td_idx then
 				vnav_td_dist = simDR_fmc_dist - td_dist
 			else
-				if offset == td_idx then
-					vnav_td_dist = simDR_fmc_dist - td_dist
-				else
+				-- if offset == td_idx then
+					-- vnav_td_dist = simDR_fmc_dist - td_dist
+				-- else
 					for ii = offset, td_idx do
 						if ii == offset then
 								vnav_td_dist = simDR_fmc_dist
@@ -56879,7 +56879,7 @@ function B738_vnav_pth3()
 							vnav_td_dist = vnav_td_dist + legs_data[ii][3] - td_dist
 						end
 					end
-				end
+				-- end
 			end
 			B738DR_vnav_td_dist = vnav_td_dist
 		end
@@ -61272,7 +61272,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.24x"
+	version = "v3.24y"
 
 end
 
