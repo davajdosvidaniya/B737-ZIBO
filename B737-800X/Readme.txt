@@ -81,6 +81,9 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.24z:
+- add RMI
+
 3.24y:
 ------
 - add ADF
