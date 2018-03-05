@@ -158,7 +158,7 @@ P _gear/0/_lonE 0.0
 P _gear/0/_lonN 0.0
 P _gear/0/_lonR 111.0
 P _gear/0/_scon 120760.648437500
-P _gear/0/_stat_def 0.097283855
+P _gear/0/_stat_def 0.097283840
 P _gear/0/_steerdeg_hispeed 6.0
 P _gear/0/_steerdeg_lospeed 63.0
 P _gear/0/_strut_comp 0.0
@@ -192,7 +192,7 @@ P _gear/1/_lonE -4.0
 P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 120760.648437500
-P _gear/1/_stat_def 0.672636509
+P _gear/1/_stat_def 0.672636390
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -226,7 +226,7 @@ P _gear/2/_lonE -4.0
 P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 120760.648437500
-P _gear/2/_stat_def 0.672636509
+P _gear/2/_stat_def 0.672636390
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -264,7 +264,7 @@ P _lite/0/_v10_steers_with_gear 0
 P _lite/0/_width 54.0
 P _lite/count 1
 P _lite_equip/_land_lite_off_on_retract_EQ 0
-P _lite_equip/_taxi_lite_off_on_retract_EQ 0
+P _lite_equip/_taxi_lite_off_on_retract_EQ 1
 P _obja/0/_obj_flags 152
 P _obja/0/_v10_att_file_stl 738fuselage.obj
 P _obja/0/_v10_att_part -1
@@ -386,8 +386,8 @@ P _obja/18/_v10_att_y_acf_prt_ref 0.0
 P _obja/18/_v10_att_z_acf_prt_ref 0.0
 P _obja/18/_v10_is_internal 2
 P _obja/18/_v10_steers_with_gear 0
-P _obja/19/_obj_flags 1
-P _obja/19/_v10_att_file_stl FMS_screens.obj
+P _obja/19/_obj_flags 7
+P _obja/19/_v10_att_file_stl 738_cockpit_glass.obj
 P _obja/19/_v10_att_part -1
 P _obja/19/_v10_att_phi_ref 0.0
 P _obja/19/_v10_att_psi_ref 0.0
@@ -395,7 +395,7 @@ P _obja/19/_v10_att_the_ref 0.0
 P _obja/19/_v10_att_x_acf_prt_ref 0.0
 P _obja/19/_v10_att_y_acf_prt_ref 0.0
 P _obja/19/_v10_att_z_acf_prt_ref 0.0
-P _obja/19/_v10_is_internal 72
+P _obja/19/_v10_is_internal 2
 P _obja/19/_v10_steers_with_gear 0
 P _obja/2/_obj_flags 24
 P _obja/2/_v10_att_file_stl 738wings.obj
@@ -408,8 +408,8 @@ P _obja/2/_v10_att_y_acf_prt_ref 0.0
 P _obja/2/_v10_att_z_acf_prt_ref 0.0
 P _obja/2/_v10_is_internal 0
 P _obja/2/_v10_steers_with_gear 0
-P _obja/20/_obj_flags 7
-P _obja/20/_v10_att_file_stl 738_cockpit_glass.obj
+P _obja/20/_obj_flags 3
+P _obja/20/_v10_att_file_stl 738_screen_dirt.obj
 P _obja/20/_v10_att_part -1
 P _obja/20/_v10_att_phi_ref 0.0
 P _obja/20/_v10_att_psi_ref 0.0
@@ -417,10 +417,10 @@ P _obja/20/_v10_att_the_ref 0.0
 P _obja/20/_v10_att_x_acf_prt_ref 0.0
 P _obja/20/_v10_att_y_acf_prt_ref 0.0
 P _obja/20/_v10_att_z_acf_prt_ref 0.0
-P _obja/20/_v10_is_internal 2
+P _obja/20/_v10_is_internal 16777215
 P _obja/20/_v10_steers_with_gear 0
 P _obja/21/_obj_flags 3
-P _obja/21/_v10_att_file_stl 738_screen_dirt.obj
+P _obja/21/_v10_att_file_stl 738_cockpit_fuzz.obj
 P _obja/21/_v10_att_part -1
 P _obja/21/_v10_att_phi_ref 0.0
 P _obja/21/_v10_att_psi_ref 0.0
@@ -430,8 +430,8 @@ P _obja/21/_v10_att_y_acf_prt_ref 0.0
 P _obja/21/_v10_att_z_acf_prt_ref 0.0
 P _obja/21/_v10_is_internal 16777215
 P _obja/21/_v10_steers_with_gear 0
-P _obja/22/_obj_flags 3
-P _obja/22/_v10_att_file_stl 738_cockpit_fuzz.obj
+P _obja/22/_obj_flags 128
+P _obja/22/_v10_att_file_stl 738alpha.obj
 P _obja/22/_v10_att_part -1
 P _obja/22/_v10_att_phi_ref 0.0
 P _obja/22/_v10_att_psi_ref 0.0
@@ -439,10 +439,10 @@ P _obja/22/_v10_att_the_ref 0.0
 P _obja/22/_v10_att_x_acf_prt_ref 0.0
 P _obja/22/_v10_att_y_acf_prt_ref 0.0
 P _obja/22/_v10_att_z_acf_prt_ref 0.0
-P _obja/22/_v10_is_internal 16777215
+P _obja/22/_v10_is_internal 24590592
 P _obja/22/_v10_steers_with_gear 0
-P _obja/23/_obj_flags 128
-P _obja/23/_v10_att_file_stl 738alpha.obj
+P _obja/23/_obj_flags 2
+P _obja/23/_v10_att_file_stl 738glass.obj
 P _obja/23/_v10_att_part -1
 P _obja/23/_v10_att_phi_ref 0.0
 P _obja/23/_v10_att_psi_ref 0.0
@@ -450,10 +450,10 @@ P _obja/23/_v10_att_the_ref 0.0
 P _obja/23/_v10_att_x_acf_prt_ref 0.0
 P _obja/23/_v10_att_y_acf_prt_ref 0.0
 P _obja/23/_v10_att_z_acf_prt_ref 0.0
-P _obja/23/_v10_is_internal 24590592
+P _obja/23/_v10_is_internal 1467580496
 P _obja/23/_v10_steers_with_gear 0
-P _obja/24/_obj_flags 2
-P _obja/24/_v10_att_file_stl 738glass.obj
+P _obja/24/_obj_flags 289
+P _obja/24/_v10_att_file_stl 737_prefill.obj
 P _obja/24/_v10_att_part -1
 P _obja/24/_v10_att_phi_ref 0.0
 P _obja/24/_v10_att_psi_ref 0.0
@@ -461,10 +461,10 @@ P _obja/24/_v10_att_the_ref 0.0
 P _obja/24/_v10_att_x_acf_prt_ref 0.0
 P _obja/24/_v10_att_y_acf_prt_ref 0.0
 P _obja/24/_v10_att_z_acf_prt_ref 0.0
-P _obja/24/_v10_is_internal 1467580496
+P _obja/24/_v10_is_internal 0
 P _obja/24/_v10_steers_with_gear 0
-P _obja/25/_obj_flags 289
-P _obja/25/_v10_att_file_stl 737_prefill.obj
+P _obja/25/_obj_flags 24
+P _obja/25/_v10_att_file_stl 738cockpit_pilots.obj
 P _obja/25/_v10_att_part -1
 P _obja/25/_v10_att_phi_ref 0.0
 P _obja/25/_v10_att_psi_ref 0.0
@@ -472,10 +472,10 @@ P _obja/25/_v10_att_the_ref 0.0
 P _obja/25/_v10_att_x_acf_prt_ref 0.0
 P _obja/25/_v10_att_y_acf_prt_ref 0.0
 P _obja/25/_v10_att_z_acf_prt_ref 0.0
-P _obja/25/_v10_is_internal 0
+P _obja/25/_v10_is_internal 115
 P _obja/25/_v10_steers_with_gear 0
-P _obja/26/_obj_flags 24
-P _obja/26/_v10_att_file_stl 738cockpit_pilots.obj
+P _obja/26/_obj_flags 25
+P _obja/26/_v10_att_file_stl 738_manual_gear.obj
 P _obja/26/_v10_att_part -1
 P _obja/26/_v10_att_phi_ref 0.0
 P _obja/26/_v10_att_psi_ref 0.0
@@ -485,8 +485,9 @@ P _obja/26/_v10_att_y_acf_prt_ref 0.0
 P _obja/26/_v10_att_z_acf_prt_ref 0.0
 P _obja/26/_v10_is_internal 115
 P _obja/26/_v10_steers_with_gear 0
-P _obja/27/_obj_flags 25
-P _obja/27/_v10_att_file_stl 738_manual_gear.obj
+P _obja/27/_obj_flags 7
+P _obja/27/_obj_hide_dataref laminar/B738/perf/kill_effect
+P _obja/27/_v10_att_file_stl windshield01_in.obj
 P _obja/27/_v10_att_part -1
 P _obja/27/_v10_att_phi_ref 0.0
 P _obja/27/_v10_att_psi_ref 0.0
@@ -494,11 +495,11 @@ P _obja/27/_v10_att_the_ref 0.0
 P _obja/27/_v10_att_x_acf_prt_ref 0.0
 P _obja/27/_v10_att_y_acf_prt_ref 0.0
 P _obja/27/_v10_att_z_acf_prt_ref 0.0
-P _obja/27/_v10_is_internal 115
+P _obja/27/_v10_is_internal 0
 P _obja/27/_v10_steers_with_gear 0
 P _obja/28/_obj_flags 7
-P _obja/28/_obj_hide_dataref laminar/B738/effect/hide_glass
-P _obja/28/_v10_att_file_stl 738_cockpit_glass2.obj
+P _obja/28/_obj_hide_dataref laminar/B738/perf/kill_effect
+P _obja/28/_v10_att_file_stl windshield03_in.obj
 P _obja/28/_v10_att_part -1
 P _obja/28/_v10_att_phi_ref 0.0
 P _obja/28/_v10_att_psi_ref 0.0
@@ -510,7 +511,7 @@ P _obja/28/_v10_is_internal 0
 P _obja/28/_v10_steers_with_gear 0
 P _obja/29/_obj_flags 7
 P _obja/29/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/29/_v10_att_file_stl windshield01_in.obj
+P _obja/29/_v10_att_file_stl windshield_side_in.obj
 P _obja/29/_v10_att_part -1
 P _obja/29/_v10_att_phi_ref 0.0
 P _obja/29/_v10_att_psi_ref 0.0
@@ -533,7 +534,7 @@ P _obja/3/_v10_is_internal 24588032
 P _obja/3/_v10_steers_with_gear 0
 P _obja/30/_obj_flags 7
 P _obja/30/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/30/_v10_att_file_stl windshield03_in.obj
+P _obja/30/_v10_att_file_stl windshield_side02_in.obj
 P _obja/30/_v10_att_part -1
 P _obja/30/_v10_att_phi_ref 0.0
 P _obja/30/_v10_att_psi_ref 0.0
@@ -545,7 +546,7 @@ P _obja/30/_v10_is_internal 0
 P _obja/30/_v10_steers_with_gear 0
 P _obja/31/_obj_flags 7
 P _obja/31/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/31/_v10_att_file_stl windshield_side_in.obj
+P _obja/31/_v10_att_file_stl windshield_a01_in.obj
 P _obja/31/_v10_att_part -1
 P _obja/31/_v10_att_phi_ref 0.0
 P _obja/31/_v10_att_psi_ref 0.0
@@ -557,7 +558,7 @@ P _obja/31/_v10_is_internal 0
 P _obja/31/_v10_steers_with_gear 0
 P _obja/32/_obj_flags 7
 P _obja/32/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/32/_v10_att_file_stl windshield_side02_in.obj
+P _obja/32/_v10_att_file_stl windshield_a02_in.obj
 P _obja/32/_v10_att_part -1
 P _obja/32/_v10_att_phi_ref 0.0
 P _obja/32/_v10_att_psi_ref 0.0
@@ -569,7 +570,7 @@ P _obja/32/_v10_is_internal 0
 P _obja/32/_v10_steers_with_gear 0
 P _obja/33/_obj_flags 7
 P _obja/33/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/33/_v10_att_file_stl windshield_a01_in.obj
+P _obja/33/_v10_att_file_stl windshield_a03_in.obj
 P _obja/33/_v10_att_part -1
 P _obja/33/_v10_att_phi_ref 0.0
 P _obja/33/_v10_att_psi_ref 0.0
@@ -581,7 +582,7 @@ P _obja/33/_v10_is_internal 0
 P _obja/33/_v10_steers_with_gear 0
 P _obja/34/_obj_flags 7
 P _obja/34/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/34/_v10_att_file_stl windshield_a02_in.obj
+P _obja/34/_v10_att_file_stl windshield_a04_in.obj
 P _obja/34/_v10_att_part -1
 P _obja/34/_v10_att_phi_ref 0.0
 P _obja/34/_v10_att_psi_ref 0.0
@@ -593,7 +594,7 @@ P _obja/34/_v10_is_internal 0
 P _obja/34/_v10_steers_with_gear 0
 P _obja/35/_obj_flags 7
 P _obja/35/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/35/_v10_att_file_stl windshield_a03_in.obj
+P _obja/35/_v10_att_file_stl windshield_a05_in.obj
 P _obja/35/_v10_att_part -1
 P _obja/35/_v10_att_phi_ref 0.0
 P _obja/35/_v10_att_psi_ref 0.0
@@ -605,7 +606,7 @@ P _obja/35/_v10_is_internal 0
 P _obja/35/_v10_steers_with_gear 0
 P _obja/36/_obj_flags 7
 P _obja/36/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/36/_v10_att_file_stl windshield_a04_in.obj
+P _obja/36/_v10_att_file_stl windshield_a06_in.obj
 P _obja/36/_v10_att_part -1
 P _obja/36/_v10_att_phi_ref 0.0
 P _obja/36/_v10_att_psi_ref 0.0
@@ -617,7 +618,7 @@ P _obja/36/_v10_is_internal 0
 P _obja/36/_v10_steers_with_gear 0
 P _obja/37/_obj_flags 7
 P _obja/37/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/37/_v10_att_file_stl windshield_a05_in.obj
+P _obja/37/_v10_att_file_stl windshield_a07_in.obj
 P _obja/37/_v10_att_part -1
 P _obja/37/_v10_att_phi_ref 0.0
 P _obja/37/_v10_att_psi_ref 0.0
@@ -629,7 +630,7 @@ P _obja/37/_v10_is_internal 0
 P _obja/37/_v10_steers_with_gear 0
 P _obja/38/_obj_flags 7
 P _obja/38/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/38/_v10_att_file_stl windshield_a06_in.obj
+P _obja/38/_v10_att_file_stl windshield_b01_in.obj
 P _obja/38/_v10_att_part -1
 P _obja/38/_v10_att_phi_ref 0.0
 P _obja/38/_v10_att_psi_ref 0.0
@@ -641,7 +642,7 @@ P _obja/38/_v10_is_internal 0
 P _obja/38/_v10_steers_with_gear 0
 P _obja/39/_obj_flags 7
 P _obja/39/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/39/_v10_att_file_stl windshield_a07_in.obj
+P _obja/39/_v10_att_file_stl windshield_b02_in.obj
 P _obja/39/_v10_att_part -1
 P _obja/39/_v10_att_phi_ref 0.0
 P _obja/39/_v10_att_psi_ref 0.0
@@ -664,7 +665,7 @@ P _obja/4/_v10_is_internal 24593152
 P _obja/4/_v10_steers_with_gear 0
 P _obja/40/_obj_flags 7
 P _obja/40/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/40/_v10_att_file_stl windshield_b01_in.obj
+P _obja/40/_v10_att_file_stl windshield_b03_in.obj
 P _obja/40/_v10_att_part -1
 P _obja/40/_v10_att_phi_ref 0.0
 P _obja/40/_v10_att_psi_ref 0.0
@@ -676,7 +677,7 @@ P _obja/40/_v10_is_internal 0
 P _obja/40/_v10_steers_with_gear 0
 P _obja/41/_obj_flags 7
 P _obja/41/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/41/_v10_att_file_stl windshield_b02_in.obj
+P _obja/41/_v10_att_file_stl windshield_b04_in.obj
 P _obja/41/_v10_att_part -1
 P _obja/41/_v10_att_phi_ref 0.0
 P _obja/41/_v10_att_psi_ref 0.0
@@ -688,7 +689,7 @@ P _obja/41/_v10_is_internal 0
 P _obja/41/_v10_steers_with_gear 0
 P _obja/42/_obj_flags 7
 P _obja/42/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/42/_v10_att_file_stl windshield_b03_in.obj
+P _obja/42/_v10_att_file_stl windshield_b05_in.obj
 P _obja/42/_v10_att_part -1
 P _obja/42/_v10_att_phi_ref 0.0
 P _obja/42/_v10_att_psi_ref 0.0
@@ -700,7 +701,7 @@ P _obja/42/_v10_is_internal 0
 P _obja/42/_v10_steers_with_gear 0
 P _obja/43/_obj_flags 7
 P _obja/43/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/43/_v10_att_file_stl windshield_b04_in.obj
+P _obja/43/_v10_att_file_stl windshield_b06_in.obj
 P _obja/43/_v10_att_part -1
 P _obja/43/_v10_att_phi_ref 0.0
 P _obja/43/_v10_att_psi_ref 0.0
@@ -712,7 +713,7 @@ P _obja/43/_v10_is_internal 0
 P _obja/43/_v10_steers_with_gear 0
 P _obja/44/_obj_flags 7
 P _obja/44/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/44/_v10_att_file_stl windshield_b05_in.obj
+P _obja/44/_v10_att_file_stl windshield_b07_in.obj
 P _obja/44/_v10_att_part -1
 P _obja/44/_v10_att_phi_ref 0.0
 P _obja/44/_v10_att_psi_ref 0.0
@@ -723,8 +724,8 @@ P _obja/44/_v10_att_z_acf_prt_ref 0.0
 P _obja/44/_v10_is_internal 0
 P _obja/44/_v10_steers_with_gear 0
 P _obja/45/_obj_flags 7
-P _obja/45/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/45/_v10_att_file_stl windshield_b06_in.obj
+P _obja/45/_obj_hide_dataref laminar/B738/effect/hide_glass
+P _obja/45/_v10_att_file_stl 738_cockpit_glass2.obj
 P _obja/45/_v10_att_part -1
 P _obja/45/_v10_att_phi_ref 0.0
 P _obja/45/_v10_att_psi_ref 0.0
@@ -734,9 +735,8 @@ P _obja/45/_v10_att_y_acf_prt_ref 0.0
 P _obja/45/_v10_att_z_acf_prt_ref 0.0
 P _obja/45/_v10_is_internal 0
 P _obja/45/_v10_steers_with_gear 0
-P _obja/46/_obj_flags 7
-P _obja/46/_obj_hide_dataref laminar/B738/perf/kill_effect
-P _obja/46/_v10_att_file_stl windshield_b07_in.obj
+P _obja/46/_obj_flags 13
+P _obja/46/_v10_att_file_stl 738_floor.obj
 P _obja/46/_v10_att_part -1
 P _obja/46/_v10_att_phi_ref 0.0
 P _obja/46/_v10_att_psi_ref 0.0
@@ -746,6 +746,39 @@ P _obja/46/_v10_att_y_acf_prt_ref 0.0
 P _obja/46/_v10_att_z_acf_prt_ref 0.0
 P _obja/46/_v10_is_internal 0
 P _obja/46/_v10_steers_with_gear 0
+P _obja/47/_obj_flags 13
+P _obja/47/_v10_att_file_stl 738_cabin.obj
+P _obja/47/_v10_att_part -1
+P _obja/47/_v10_att_phi_ref 0.0
+P _obja/47/_v10_att_psi_ref 0.0
+P _obja/47/_v10_att_the_ref 0.0
+P _obja/47/_v10_att_x_acf_prt_ref 0.0
+P _obja/47/_v10_att_y_acf_prt_ref 0.0
+P _obja/47/_v10_att_z_acf_prt_ref 0.0
+P _obja/47/_v10_is_internal 0
+P _obja/47/_v10_steers_with_gear 0
+P _obja/48/_obj_flags 13
+P _obja/48/_v10_att_file_stl 738_seats.obj
+P _obja/48/_v10_att_part -1
+P _obja/48/_v10_att_phi_ref 0.0
+P _obja/48/_v10_att_psi_ref 0.0
+P _obja/48/_v10_att_the_ref 0.0
+P _obja/48/_v10_att_x_acf_prt_ref 0.0
+P _obja/48/_v10_att_y_acf_prt_ref 0.0
+P _obja/48/_v10_att_z_acf_prt_ref 0.0
+P _obja/48/_v10_is_internal 0
+P _obja/48/_v10_steers_with_gear 0
+P _obja/49/_obj_flags 9
+P _obja/49/_v10_att_file_stl 738_lights.obj
+P _obja/49/_v10_att_part -1
+P _obja/49/_v10_att_phi_ref 0.0
+P _obja/49/_v10_att_psi_ref 0.0
+P _obja/49/_v10_att_the_ref 0.0
+P _obja/49/_v10_att_x_acf_prt_ref 0.0
+P _obja/49/_v10_att_y_acf_prt_ref 0.0
+P _obja/49/_v10_att_z_acf_prt_ref 0.0
+P _obja/49/_v10_is_internal 0
+P _obja/49/_v10_steers_with_gear 0
 P _obja/5/_obj_flags 24
 P _obja/5/_v10_att_file_stl 738cfm56L.obj
 P _obja/5/_v10_att_part -1
@@ -801,7 +834,7 @@ P _obja/9/_v10_att_y_acf_prt_ref 0.0
 P _obja/9/_v10_att_z_acf_prt_ref 0.0
 P _obja/9/_v10_is_internal 2
 P _obja/9/_v10_steers_with_gear 0
-P _obja/count 47
+P _obja/count 50
 P _panel_inst_3d 0
 P _part/0/_aero_x_os 0.0
 P _part/0/_aero_y_os 0.0
@@ -28854,7 +28887,7 @@ P _part/86/_part_specs_invis 1
 P _part/86/_part_tex 0
 P _part/86/_part_the 0.0
 P _part/86/_part_x -9.350000381
-P _part/86/_part_y -8.750799179
+P _part/86/_part_y -8.750800133
 P _part/86/_part_z 64.554344177
 P _part/86/_patt_con 0
 P _part/86/_patt_prt 0
@@ -30331,7 +30364,7 @@ P _part/87/_part_specs_invis 1
 P _part/87/_part_tex 0
 P _part/87/_part_the 0.0
 P _part/87/_part_x 9.350000381
-P _part/87/_part_y -8.750799179
+P _part/87/_part_y -8.750800133
 P _part/87/_part_z 64.554344177
 P _part/87/_patt_con 0
 P _part/87/_patt_prt 0
@@ -36973,7 +37006,7 @@ P acf/_AShi_G_k 0.005000000
 P acf/_AShi_Gdot_k 0.005000000
 P acf/_AShi_alpha_k 0.005000000
 P acf/_AShi_alphadot_k 0.005000000
-P acf/_AShi_beta_k 0.010000000
+P acf/_AShi_beta_k 0.008000000
 P acf/_AShi_betadot_k 0.001000000
 P acf/_AShi_hdng_rat 1.0
 P acf/_AShi_max_G 2.500000000
@@ -36989,14 +37022,14 @@ P acf/_AShi_the_V 450.0
 P acf/_ASlo_hdng_rat 1.0
 P acf/_ASlo_max_phi 0.0
 P acf/_ASlo_max_phidot 0.0
-P acf/_ASlo_max_psidot 0.0
+P acf/_ASlo_max_psidot 5.0
 P acf/_ASlo_max_the 0.0
 P acf/_ASlo_max_thedot 0.0
 P acf/_ASlo_phi_V 0.0
 P acf/_ASlo_phi_k 0.0
 P acf/_ASlo_phidot_k 0.0
-P acf/_ASlo_psi_V 0.0
-P acf/_ASlo_psidot_k 0.001000000
+P acf/_ASlo_psi_V 30.0
+P acf/_ASlo_psidot_k 0.010000000
 P acf/_ASlo_ptch_rat 1.0
 P acf/_ASlo_roll_rat 1.0
 P acf/_ASlo_the_V 30.0
@@ -37057,9 +37090,9 @@ P acf/_ailn1_flaps 0.0
 P acf/_ailn1_pitch 0.0
 P acf/_ailn1_rat1 1.0
 P acf/_ailn1_rat2 0.100000001
-P acf/_ailn1_up 23.0
+P acf/_ailn1_up 22.0
 P acf/_ailn1_v1 140.0
-P acf/_ailn1_v2 480.0
+P acf/_ailn1_v2 440.0
 P acf/_ailn2_cratR 0.259999990
 P acf/_ailn2_cratT 0.259999990
 P acf/_ailn2_dn 20.500000000
@@ -37067,9 +37100,9 @@ P acf/_ailn2_flaps 0.0
 P acf/_ailn2_pitch 0.0
 P acf/_ailn2_rat1 1.0
 P acf/_ailn2_rat2 0.100000001
-P acf/_ailn2_up 23.0
+P acf/_ailn2_up 22.0
 P acf/_ailn2_v1 140.0
-P acf/_ailn2_v2 480.0
+P acf/_ailn2_v2 440.0
 P acf/_ailn_def_time 0.300000012
 P acf/_ailn_dn_trim 5.0
 P acf/_ailn_tab 0.0
@@ -37864,7 +37897,7 @@ P acf/_bouncer_spring_k/9,1 0.0
 P acf/_bouncer_spring_k/9,2 0.0
 P acf/_bouncer_spring_k/i_count 14
 P acf/_bouncer_spring_k/j_count 3
-P acf/_brake_co 0.800000012
+P acf/_brake_co 0.449999988
 P acf/_burner_inc 0.0
 P acf/_bus_bat_is_on/0 0
 P acf/_bus_bat_is_on/1 2
@@ -38711,20 +38744,20 @@ P acf/_elec_fuelP 30.0
 P acf/_elec_regen_eta 0.0
 P acf/_elev1_cratR 0.239999995
 P acf/_elev1_cratT 0.239999995
-P acf/_elev1_dn 18.0
+P acf/_elev1_dn 20.0
 P acf/_elev1_rat1 1.0
 P acf/_elev1_rat2 0.100000001
-P acf/_elev1_up 28.0
-P acf/_elev1_v1 145.0
-P acf/_elev1_v2 400.0
+P acf/_elev1_up 20.0
+P acf/_elev1_v1 165.0
+P acf/_elev1_v2 380.0
 P acf/_elev2_cratR 0.239999995
 P acf/_elev2_cratT 0.239999995
-P acf/_elev2_dn 18.0
+P acf/_elev2_dn 20.0
 P acf/_elev2_rat1 1.0
 P acf/_elev2_rat2 0.100000001
-P acf/_elev2_up 28.0
-P acf/_elev2_v1 145.0
-P acf/_elev2_v2 400.0
+P acf/_elev2_up 20.0
+P acf/_elev2_v1 165.0
+P acf/_elev2_v2 380.0
 P acf/_elev_def_time 0.500000000
 P acf/_elev_dn_trim 0.0
 P acf/_elev_tab 0.0
@@ -39086,9 +39119,9 @@ P acf/_feathered_pitch 0.0
 P acf/_ff_rat_idle_JET 0.0
 P acf/_ff_rat_idle_PRP 0.150000006
 P acf/_file_writer_version 111101
-P acf/_flap1_cd 0.166999996
-P acf/_flap1_cl 1.276999950
-P acf/_flap1_cm -0.321000010
+P acf/_flap1_cd 0.187000006
+P acf/_flap1_cl 1.297000051
+P acf/_flap1_cm -0.800000012
 P acf/_flap1_cratR 0.219999999
 P acf/_flap1_cratT 0.259999990
 P acf/_flap1_dn/0 0.0
@@ -39107,9 +39140,9 @@ P acf/_flap1_ptch_above_50 0
 P acf/_flap1_roll 0.0
 P acf/_flap1_roll_above_50 0
 P acf/_flap1_type 4
-P acf/_flap2_cd 0.157000005
-P acf/_flap2_cl 1.120000005
-P acf/_flap2_cm -0.321999997
+P acf/_flap2_cd 0.167999998
+P acf/_flap2_cl 1.169999957
+P acf/_flap2_cm -0.800000012
 P acf/_flap2_cratR 0.250000000
 P acf/_flap2_cratT 0.250000000
 P acf/_flap2_dn/0 0.0
@@ -39131,7 +39164,7 @@ P acf/_flap2_type 3
 P acf/_flap_EQ 1
 P acf/_flap_arm 0.0
 P acf/_flap_detents 8
-P acf/_flap_ext_time 32.0
+P acf/_flap_ext_time 30.0
 P acf/_flap_extend_protect 0
 P acf/_flap_pumps 30.0
 P acf/_flap_ret_time 30.0
@@ -39444,7 +39477,7 @@ P acf/_num_generators 2
 P acf/_num_inverters 1
 P acf/_num_prop 0
 P acf/_num_xmsn 2
-P acf/_nw_side_k 260.0
+P acf/_nw_side_k 263.0
 P acf/_oilT_is_C 1
 P acf/_ott_asi_kts_off_for_full_def 27.0
 P acf/_ott_asi_sec_into_future 9.0
@@ -39455,7 +39488,7 @@ P acf/_ott_phi_sec_into_future 2.0
 P acf/_ott_phi_sec_to_tune 2.0
 P acf/_ott_roll_rate 7.599999905
 P acf/_ott_roll_response 16.299999237
-P acf/_ott_the_deg_off_for_full_def 36.0
+P acf/_ott_the_deg_off_for_full_def 32.0
 P acf/_ott_the_deg_per_kt 0.300000012
 P acf/_ott_the_sec_into_future 2.0
 P acf/_ott_the_sec_to_tune 2.0
@@ -39641,21 +39674,21 @@ P acf/_rrpm_trim_rpm_slow 0.0
 P acf/_rrpm_trim_time 5.0
 P acf/_rudd1_cratR 0.250000000
 P acf/_rudd1_cratT 0.250000000
-P acf/_rudd1_lf 30.0
+P acf/_rudd1_lf 22.0
 P acf/_rudd1_rat1 1.0
 P acf/_rudd1_rat2 0.100000001
-P acf/_rudd1_rt 30.0
+P acf/_rudd1_rt 22.0
 P acf/_rudd1_v1 60.0
-P acf/_rudd1_v2 400.0
+P acf/_rudd1_v2 380.0
 P acf/_rudd2_cratR 0.239999995
 P acf/_rudd2_cratT 0.239999995
-P acf/_rudd2_lf 30.0
+P acf/_rudd2_lf 22.0
 P acf/_rudd2_rat1 1.0
 P acf/_rudd2_rat2 0.100000001
-P acf/_rudd2_rt 30.0
+P acf/_rudd2_rt 22.0
 P acf/_rudd2_v1 60.0
-P acf/_rudd2_v2 400.0
-P acf/_rudd_def_time 0.500000000
+P acf/_rudd2_v2 380.0
+P acf/_rudd_def_time 0.750000000
 P acf/_rudd_lf_trim 6.500000000
 P acf/_rudd_rt_trim 6.500000000
 P acf/_rudd_tab 0.0
@@ -39665,11 +39698,11 @@ P acf/_rudd_with_fail 0.0
 P acf/_rwy_req_pave 1
 P acf/_sbrk1_cratR 0.170000002
 P acf/_sbrk1_cratT 0.189999998
-P acf/_sbrk1_up_flit 7.0
+P acf/_sbrk1_up_flit 6.0
 P acf/_sbrk1_up_grnd 52.0
 P acf/_sbrk2_cratR 0.189999998
 P acf/_sbrk2_cratT 0.209999993
-P acf/_sbrk2_up_flit 7.0
+P acf/_sbrk2_up_flit 6.0
 P acf/_sbrk2_up_grnd 60.0
 P acf/_sbrk_EQ 1
 P acf/_sbrk_on_td_EQ 1
@@ -39689,7 +39722,7 @@ P acf/_slat1_dn/7 1.0
 P acf/_slat1_dn/8 1.0
 P acf/_slat1_dn/9 1.0
 P acf/_slat1_dn/count 10
-P acf/_slat1_inc 4.0
+P acf/_slat1_inc 6.0
 P acf/_slat1_type 0
 P acf/_slat2_dn/0 0.0
 P acf/_slat2_dn/1 0.500000000
@@ -39702,13 +39735,13 @@ P acf/_slat2_dn/7 1.0
 P acf/_slat2_dn/8 1.0
 P acf/_slat2_dn/9 1.0
 P acf/_slat2_dn/count 10
-P acf/_slat2_inc 6.0
+P acf/_slat2_inc 8.0
 P acf/_slat2_type 1
 P acf/_slat_EQ 1
-P acf/_slat_ext1_time 4.500000000
-P acf/_slat_ext2_time 5.0
-P acf/_slat_ret1_time 5.0
-P acf/_slat_ret2_time 6.0
+P acf/_slat_ext1_time 4.199999809
+P acf/_slat_ext2_time 4.500000000
+P acf/_slat_ret1_time 4.500000000
+P acf/_slat_ret2_time 5.0
 P acf/_slat_with_Vind 0.0
 P acf/_slat_with_stall_EQ 1
 P acf/_slung_len 0.0
@@ -39789,9 +39822,9 @@ P acf/_sster_def_time 1.799999952
 P acf/_stab_hdng 0.0
 P acf/_stab_roll 0.0
 P acf/_stab_trim_dn 9.0
-P acf/_stab_trim_up 10.500000000
-P acf/_stab_with_Vind 0.0
-P acf/_stab_with_flap 0.0
+P acf/_stab_trim_up 10.0
+P acf/_stab_with_Vind 1.0
+P acf/_stab_with_flap -8.500000000
 P acf/_stall_warn_aoa 14.0
 P acf/_stall_warn_is_variable 0
 P acf/_start_on_water 0
@@ -39807,7 +39840,7 @@ P acf/_studio Laminar Research modify by Zibo
 P acf/_sweep_m1 0.0
 P acf/_sweep_m2 0.0
 P acf/_sweep_with_flaps_EQ 0
-P acf/_sweep_with_vect_EQ 1
+P acf/_sweep_with_vect_EQ 0
 P acf/_tail_rot_with_v1_kts 0.0
 P acf/_tail_rot_with_v2_deg 0.0
 P acf/_tail_rot_with_v2_kts 0.0
@@ -40032,7 +40065,6 @@ GROUP EICAS
   LOCKED
   GROUP synoptic
     LOCKED
-    GROUP_OPEN
     gen_pie N1 pie #1
       POS 1102.500000 160.500000
       IMAGE EICAS/EICAS_pie
@@ -40636,13 +40668,12 @@ GROUP EICAS
     GROUP Lower DU - SYS
       SHOW_EQUAL 2.000000 laminar/B738/systems/lowerDU_page
       LOCKED
-      HIDE
+      GROUP_OPEN
       gen_rotary EICAS page2
         POS 1786.000000 2.000000
         IMAGE EICAS/systems
         DATAREF 
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40664,13 +40695,12 @@ GROUP EICAS
         IMAGE EICAS/pointer_left
         DATAREF sim/flightmodel2/wing/aileron1_deg[1]
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
-        KEY_FRAME -19.000000 0.000000 1.000000
+        KEY_FRAME -22.000000 0.000000 1.000000
         KEY_FRAME 0.000000 41.500000 1.000000
-        KEY_FRAME 16.000000 83.000000
+        KEY_FRAME 20.500000 83.000000
         IS_DRAGGABLE 0
         IS_VERTICAL 1
         OFFSET 0.000000
@@ -40680,7 +40710,6 @@ GROUP EICAS
         IMAGE EICAS/pointer_left
         DATAREF sim/flightmodel2/wing/spoiler1_deg[1]
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40695,13 +40724,12 @@ GROUP EICAS
         IMAGE EICAS/pointer_left
         DATAREF sim/flightmodel2/wing/elevator1_deg[1]
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
         KEY_FRAME -20.000000 0.000000 1.000000
         KEY_FRAME 0.000000 41.500000 1.000000
-        KEY_FRAME 22.000000 83.000000
+        KEY_FRAME 20.000000 83.000000
         IS_DRAGGABLE 0
         IS_VERTICAL 1
         OFFSET 0.000000
@@ -40711,13 +40739,12 @@ GROUP EICAS
         IMAGE EICAS/pointer_right
         DATAREF sim/flightmodel2/wing/aileron1_deg[0]
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
-        KEY_FRAME -19.000000 0.000000 1.000000
+        KEY_FRAME -22.000000 0.000000 1.000000
         KEY_FRAME 0.000000 41.500000 1.000000
-        KEY_FRAME 16.000000 83.000000
+        KEY_FRAME 20.500000 83.000000
         IS_DRAGGABLE 0
         IS_VERTICAL 1
         OFFSET 0.000000
@@ -40727,7 +40754,6 @@ GROUP EICAS
         IMAGE EICAS/pointer_right
         DATAREF sim/flightmodel2/wing/spoiler1_deg[0]
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40742,13 +40768,12 @@ GROUP EICAS
         IMAGE EICAS/pointer_right
         DATAREF sim/flightmodel2/wing/elevator1_deg[0]
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
         KEY_FRAME -20.000000 0.000000 1.000000
         KEY_FRAME 0.000000 41.500000 1.000000
-        KEY_FRAME 22.000000 83.000000
+        KEY_FRAME 20.000000 83.000000
         IS_DRAGGABLE 0
         IS_VERTICAL 1
         OFFSET 0.000000
@@ -40758,7 +40783,6 @@ GROUP EICAS
         IMAGE EICAS/pointer_up
         DATAREF sim/flightmodel2/wing/rudder1_deg[0]
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40774,7 +40798,6 @@ GROUP EICAS
         IMAGE TYPE/white_size23_stretched_vert
         DATAREF laminar/B738/hydraulic/B_pressure[1]
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40790,7 +40813,6 @@ GROUP EICAS
         IMAGE TYPE/white_size23_stretched_vert
         DATAREF laminar/B738/hydraulic/A_pressure[0]
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40806,7 +40828,6 @@ GROUP EICAS
         IMAGE TYPE/white_size23_stretched_vert
         DATAREF laminar/B738/hydraulic/hyd_B_qty[1]
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40822,7 +40843,6 @@ GROUP EICAS
         IMAGE TYPE/white_size23_stretched_vert
         DATAREF laminar/B738/hydraulic/hyd_A_qty[0]
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40839,7 +40859,6 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_right_out[1]
         SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_right_out
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40856,7 +40875,6 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_right_in[1]
         SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_right_in
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40873,7 +40891,6 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_left_in[1]
         SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_left_in
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40890,7 +40907,6 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_left_out[1]
         SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_left_out
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40907,7 +40923,6 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_right_out[1]
         SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_right_out
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40924,7 +40939,6 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_right_in[1]
         SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_right_in
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40941,7 +40955,6 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_left_out[1]
         SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_left_out
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40958,7 +40971,6 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_left_in[1]
         SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_left_in
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40974,7 +40986,6 @@ GROUP EICAS
         IMAGE EICAS/brake_white
         DATAREF laminar/B738/systems/brake_temp_left_out
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41000,7 +41011,6 @@ GROUP EICAS
         IMAGE EICAS/brake_white
         DATAREF laminar/B738/systems/brake_temp_left_in
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41026,7 +41036,6 @@ GROUP EICAS
         IMAGE EICAS/brake_white
         DATAREF laminar/B738/systems/brake_temp_right_in
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41052,7 +41061,6 @@ GROUP EICAS
         IMAGE EICAS/brake_white
         DATAREF laminar/B738/systems/brake_temp_right_out
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41078,7 +41086,6 @@ GROUP EICAS
         IMAGE EICAS/brake_amber
         DATAREF laminar/B738/systems/brake_temp_right_out
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41102,7 +41109,6 @@ GROUP EICAS
         IMAGE EICAS/brake_amber
         DATAREF laminar/B738/systems/brake_temp_right_in
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41126,7 +41132,6 @@ GROUP EICAS
         IMAGE EICAS/brake_amber
         DATAREF laminar/B738/systems/brake_temp_left_in
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41150,7 +41155,6 @@ GROUP EICAS
         IMAGE EICAS/brake_amber
         DATAREF laminar/B738/systems/brake_temp_left_out
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41173,12 +41177,14 @@ GROUP EICAS
     GROUP Lower DU - ENG
       SHOW_EQUAL 1.000000 laminar/B738/systems/lowerDU_page
       LOCKED
+      HIDE
       GROUP_OPEN
       gen_pie N2 pie #1
         POS 1709.500000 184.500000
         IMAGE EICAS/EICAS_pie
         DATAREF laminar/B738/engine/indicators/N2_percent_1[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41197,6 +41203,7 @@ GROUP EICAS
         IMAGE EICAS/EICAS_pie
         DATAREF laminar/B738/engine/indicators/N2_percent_2[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41215,6 +41222,7 @@ GROUP EICAS
         IMAGE EICAS/background_eicas2
         DATAREF 
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41236,6 +41244,7 @@ GROUP EICAS
         IMAGE EICAS/EICAS_needle
         DATAREF laminar/B738/engine/indicators/N2_percent_1[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41250,6 +41259,7 @@ GROUP EICAS
         IMAGE EICAS/EICAS_needle
         DATAREF laminar/B738/engine/indicators/N2_percent_2[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41265,6 +41275,7 @@ GROUP EICAS
         DATAREF sim/cockpit2/engine/indicators/oil_pressure_psi[0]
         SHOW_GREATER 0.010000 laminar/B738/engine/indicators/N2_percent_1[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41282,6 +41293,7 @@ GROUP EICAS
         DATAREF sim/cockpit2/engine/indicators/oil_pressure_psi[1]
         SHOW_GREATER 0.010000 laminar/B738/engine/indicators/N2_percent_2[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41298,6 +41310,7 @@ GROUP EICAS
         IMAGE EICAS/pointer_left
         DATAREF sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41314,6 +41327,7 @@ GROUP EICAS
         IMAGE EICAS/pointer_right
         DATAREF sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41331,6 +41345,7 @@ GROUP EICAS
         DATAREF sim/cockpit2/engine/indicators/oil_pressure_psi[0]
         SHOW_GREATER 60.000000 sim/cockpit2/engine/indicators/N2_percent[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41356,6 +41371,7 @@ GROUP EICAS
         DATAREF sim/cockpit2/engine/indicators/oil_pressure_psi[1]
         SHOW_GREATER 60.000000 sim/cockpit2/engine/indicators/N2_percent[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41381,6 +41397,7 @@ GROUP EICAS
         DATAREF sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
         SHOW_GREATER 0.000000 [0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41406,6 +41423,7 @@ GROUP EICAS
         DATAREF sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
         SHOW_GREATER 0.000000 [0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41431,6 +41449,7 @@ GROUP EICAS
         DATAREF sim/cockpit2/engine/indicators/oil_quantity_ratio[0]
         SHOW_GREATER 65.000000 [0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41454,6 +41473,7 @@ GROUP EICAS
         DATAREF sim/cockpit2/engine/indicators/oil_quantity_ratio[1]
         SHOW_GREATER 65.000000 [0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41476,6 +41496,7 @@ GROUP EICAS
         IMAGE EICAS/pointer_left
         DATAREF sim/cockpit2/engine/indicators/N1_percent[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41492,6 +41513,7 @@ GROUP EICAS
         IMAGE EICAS/pointer_right
         DATAREF sim/cockpit2/engine/indicators/N1_percent[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41505,12 +41527,14 @@ GROUP EICAS
 
       GROUP digital
         LOCKED
+        HIDE
         GROUP_OPEN
         gen_LED N2_dig Engine 1
           POS 1739.000000 202.000000
           IMAGE TYPE/white_size23_stretched_vert
           DATAREF laminar/B738/engine/indicators/N2_percent_1[0]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -41526,6 +41550,7 @@ GROUP EICAS
           IMAGE TYPE/white_size23_stretched_vert
           DATAREF laminar/B738/engine/indicators/N2_percent_2[1]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -41539,6 +41564,7 @@ GROUP EICAS
         GROUP FF ENG 1
           SHOW_GREATER 5.700000 laminar/B738/engine/indicators/N2_percent_1
           LOCKED
+          HIDE
           gen_LED FF_dig Eng 1 kg
             POS 1699.000000 98.000000
             IMAGE TYPE/white_size23_stretched_vert_full0
@@ -41546,6 +41572,7 @@ GROUP EICAS
             SHOW_LESS 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[0]
             SHOW_EQUAL 1.000000 laminar/B738/FMS/fmc_units
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -41563,6 +41590,7 @@ GROUP EICAS
             SHOW_EQUAL 1.000000 laminar/B738/FMS/fmc_units
             SHOW_GREATER 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[0]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -41580,6 +41608,7 @@ GROUP EICAS
             SHOW_LESS 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[0]
             SHOW_EQUAL 0.000000 laminar/B738/FMS/fmc_units
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -41597,6 +41626,7 @@ GROUP EICAS
             SHOW_EQUAL 0.000000 laminar/B738/FMS/fmc_units
             SHOW_GREATER 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[0]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -41611,6 +41641,7 @@ GROUP EICAS
         GROUP FF ENG 2
           SHOW_GREATER 5.700000 laminar/B738/engine/indicators/N2_percent_2
           LOCKED
+          HIDE
           gen_LED FF_dig Eng 2 kg
             POS 1845.000000 98.000000
             IMAGE TYPE/white_size23_stretched_vert_full0
@@ -41618,6 +41649,7 @@ GROUP EICAS
             SHOW_LESS 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[1]
             SHOW_EQUAL 1.000000 laminar/B738/FMS/fmc_units
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -41635,6 +41667,7 @@ GROUP EICAS
             SHOW_EQUAL 1.000000 laminar/B738/FMS/fmc_units
             SHOW_GREATER 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[1]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -41652,6 +41685,7 @@ GROUP EICAS
             SHOW_LESS 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[1]
             SHOW_EQUAL 0.000000 laminar/B738/FMS/fmc_units
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -41669,6 +41703,7 @@ GROUP EICAS
             SHOW_EQUAL 0.000000 laminar/B738/FMS/fmc_units
             SHOW_GREATER 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[1]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -41683,11 +41718,13 @@ GROUP EICAS
       END_GROUP
       GROUP VIB
         LOCKED
+        HIDE
         gen_LED VIB
           POS 1712.000000 -179.000000
           IMAGE TYPE/white_size20
           DATAREF sim/cockpit2/engine/indicators/N1_percent[0]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -41705,6 +41742,7 @@ GROUP EICAS
           IMAGE TYPE/white_size20
           DATAREF sim/cockpit2/engine/indicators/N1_percent[1]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -41720,6 +41758,7 @@ GROUP EICAS
       END_GROUP
       GROUP OIL QUANT
         LOCKED
+        HIDE
         gen_LED OQ_dig Engine 1 w
           POS 1719.000000 -113.000000
           IMAGE TYPE/Oil/white_oil_quant
@@ -41727,6 +41766,7 @@ GROUP EICAS
           SHOW_LESS 0.000000 [0]
           SHOW_GREATER 0.190000 sim/cockpit2/engine/indicators/oil_quantity_ratio[0]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -41743,6 +41783,7 @@ GROUP EICAS
           DATAREF sim/cockpit2/engine/indicators/oil_quantity_ratio[1]
           SHOW_GREATER 0.190000 sim/cockpit2/engine/indicators/oil_quantity_ratio[1]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -41760,6 +41801,7 @@ GROUP EICAS
           SHOW_LESS 0.190000 sim/cockpit2/engine/indicators/oil_quantity_ratio[0]
           SHOW_GREATER 0.190000 [0]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -41777,6 +41819,7 @@ GROUP EICAS
           SHOW_LESS 0.190000 sim/cockpit2/engine/indicators/oil_quantity_ratio[1]
           SHOW_GREATER 0.190000 sim/cockpit2/engine/indicators/oil_quantity_ratio[1]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -41790,13 +41833,16 @@ GROUP EICAS
       END_GROUP
       GROUP OIL PRESS
         LOCKED
+        HIDE
         GROUP_OPEN
         GROUP ENGINE1
           SHOW_GREATER 7.100000 laminar/B738/engine/indicators/N2_percent_1[0]
           LOCKED
+          HIDE
           GROUP_OPEN
           GROUP New Group
             SHOW_GREATER 1.000000 laminar/B738/engine/eng1_oil_press
+            HIDE
             GROUP_OPEN
             gen_LED OP_dig Engine 1
               POS 1716.000000 38.000000
@@ -41804,6 +41850,7 @@ GROUP EICAS
               DATAREF laminar/B738/engine/eng1_oil_press[0]
               SHOW_GREATER 0.010000 laminar/B738/engine/indicators/N2_percent_1[0]
               LOCKED
+              HIDE
               LIGHT_MODE GLASS_AUTO
               LIGHT_RHEOSTAT 5
               BUS_SRC 3
@@ -41817,6 +41864,7 @@ GROUP EICAS
             GROUP New Group
               SHOW_GREATER 19.000000 laminar/B738/engine/indicators/N1_percent_1
               LOCKED
+              HIDE
               GROUP_OPEN
               gen_LED OP_dig Engine 1 o
                 POS 1716.000000 38.000000
@@ -41825,6 +41873,7 @@ GROUP EICAS
                 SHOW_LESS 22.000000 laminar/B738/engine/eng1_oil_press[0]
                 SHOW_GREATER 13.000000 laminar/B738/engine/eng1_oil_press[0]
                 LOCKED
+                HIDE
                 LIGHT_MODE GLASS_AUTO
                 LIGHT_RHEOSTAT 5
                 BUS_SRC 3
@@ -41842,6 +41891,7 @@ GROUP EICAS
                 SHOW_LESS 13.000000 laminar/B738/engine/eng1_oil_press[0]
                 SHOW_GREATER 65.000000 [0]
                 LOCKED
+                HIDE
                 LIGHT_MODE GLASS_AUTO
                 LIGHT_RHEOSTAT 5
                 BUS_SRC 3
@@ -41858,9 +41908,11 @@ GROUP EICAS
         GROUP ENGINE2
           SHOW_GREATER 7.100000 laminar/B738/engine/indicators/N2_percent_2[1]
           LOCKED
+          HIDE
           GROUP_OPEN
           GROUP New Group
             SHOW_GREATER 1.000000 laminar/B738/engine/eng2_oil_press
+            HIDE
             GROUP_OPEN
             gen_LED OP_dig Engine 2
               POS 1840.000000 38.000000
@@ -41868,6 +41920,7 @@ GROUP EICAS
               DATAREF laminar/B738/engine/eng2_oil_press[1]
               SHOW_GREATER 0.010000 laminar/B738/engine/indicators/N2_percent_2[1]
               LOCKED
+              HIDE
               LIGHT_MODE GLASS_AUTO
               LIGHT_RHEOSTAT 5
               BUS_SRC 3
@@ -41881,6 +41934,7 @@ GROUP EICAS
             GROUP New Group
               SHOW_GREATER 19.000000 laminar/B738/engine/indicators/N1_percent_2
               LOCKED
+              HIDE
               GROUP_OPEN
               gen_LED OP_dig Engine 2 o
                 POS 1840.000000 38.000000
@@ -41889,6 +41943,7 @@ GROUP EICAS
                 SHOW_LESS 22.000000 laminar/B738/engine/eng2_oil_press[1]
                 SHOW_GREATER 13.000000 laminar/B738/engine/eng2_oil_press[1]
                 LOCKED
+                HIDE
                 LIGHT_MODE GLASS_AUTO
                 LIGHT_RHEOSTAT 5
                 BUS_SRC 3
@@ -41906,6 +41961,7 @@ GROUP EICAS
                 SHOW_LESS 13.000000 laminar/B738/engine/eng2_oil_press[1]
                 SHOW_GREATER 65.000000 [1]
                 LOCKED
+                HIDE
                 LIGHT_MODE GLASS_AUTO
                 LIGHT_RHEOSTAT 5
                 BUS_SRC 3
@@ -41922,9 +41978,11 @@ GROUP EICAS
       END_GROUP
       GROUP OIL TEMP
         LOCKED
+        HIDE
         GROUP ENG 1
           SHOW_GREATER 8.900000 laminar/B738/engine/indicators/N2_percent_1
           LOCKED
+          HIDE
           GROUP_OPEN
           gen_LED OT_dig Engine 1
             POS 1714.000000 -60.000000
@@ -41932,6 +41990,7 @@ GROUP EICAS
             DATAREF sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
             SHOW_LESS 153.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -41949,6 +42008,7 @@ GROUP EICAS
             SHOW_LESS 165.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
             SHOW_GREATER 153.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -41966,6 +42026,7 @@ GROUP EICAS
             SHOW_LESS 165.000000 [0]
             SHOW_GREATER 165.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -41980,12 +42041,14 @@ GROUP EICAS
         GROUP ENG 2
           SHOW_GREATER 8.900000 laminar/B738/engine/indicators/N2_percent_2
           LOCKED
+          HIDE
           gen_LED OT_dig Engine 2
             POS 1838.000000 -60.000000
             IMAGE TYPE/Oil/white_size22_oil_temp
             DATAREF sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
             SHOW_LESS 153.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -42003,6 +42066,7 @@ GROUP EICAS
             SHOW_LESS 165.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
             SHOW_GREATER 153.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -42020,6 +42084,7 @@ GROUP EICAS
             SHOW_LESS 165.000000 [1]
             SHOW_GREATER 165.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -45970,7 +46035,6 @@ END_GROUP
 GROUP MFD CAPT FO
   LOCKED
   HIDE
-  GROUP_OPEN
   GROUP WX Capt
     SHOW_EQUAL 1.000000 laminar/B738/EFIS/EFIS_wx_on
     HIDE
@@ -100418,7 +100482,6 @@ gen_rotary EFIS disagree 2
 
 GROUP PFD First Officer
   LOCKED
-  GROUP_OPEN
   gen_rotary Grey Background 2
     POS 265.000000 551.000000
     IMAGE PFD/grey_background
@@ -102536,7 +102599,6 @@ END_GROUP
 GROUP FO PFD2 2
   LOCKED
   GROUP Indicators
-    GROUP_OPEN
     GROUP FO AOA
       LOCKED
       gen_rotary AOA gauge 2
@@ -105606,49 +105668,48 @@ gen_pointer TRAFFIC RA
   IS_VERTICAL 1
   OFFSET 0.000000
 
+gen_LED MAN Vspeed
+  POS 128.000000 -170.000000
+  IMAGE PFD/green_type
+  DATAREF laminar/B738/pfd/vspeed
+  SHOW_EQUAL 1.000000 laminar/B738/pfd/vspeed_digit_show
+  LOCKED
+  LIGHT_MODE GLASS_AUTO
+  LIGHT_RHEOSTAT 0
+  BUS_SRC 3
+  KEY_FRAME 100.000000 100.000000 1.000000
+  KEY_FRAME 180.000000 180.000000
+  DIGITS 3
+  DECIMALS 0
+  PERIOD_WIDTH 5
+  LED_ROWS 0
+
+gen_rotary MAN Vref
+  POS 150.000000 -150.000000
+  IMAGE PFD/man_vref
+  DATAREF 
+  SHOW_EQUAL 1.000000 laminar/B738/pfd/vspeed_vref_show
+  LOCKED
+  LIGHT_MODE GLASS_AUTO
+  LIGHT_RHEOSTAT 0
+  BUS_SRC 3
+  KEY_FRAME 0.000000 0.000000 1.000000
+  KEY_FRAME 1.000000 6.000000
+  DIGITS 1
+  ROTARY_TYPE NO_CLICK
+  CLICK_RADIUS 10.000000
+  CLICK_RADIUS_DY 0.000000
+  OFFSET 0.000000
+  STEP1 1.000000
+  STEP2 1.000000
+  CURSOR DEFAULT
+  CLICK_DX 0
+  CLICK_DY 0
+
 GROUP MAN VSPD
   SHOW_GREATER 1.000000 laminar/B738/pfd/vspeed_mode
   LOCKED
-  gen_LED MAN Vspeed
-    POS 128.000000 -170.000000
-    IMAGE PFD/green_type
-    DATAREF laminar/B738/pfd/vspeed
-    SHOW_LESS 3.000000 laminar/B738/pfd/vspeed_mode
-    SHOW_EQUAL 1.000000 laminar/B738/pfd/vspeed_show
-    SHOW_GREATER 1.000000 laminar/B738/pfd/vspeed_mode
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 0
-    BUS_SRC 3
-    KEY_FRAME 100.000000 100.000000 1.000000
-    KEY_FRAME 180.000000 180.000000
-    DIGITS 3
-    DECIMALS 0
-    PERIOD_WIDTH 5
-    LED_ROWS 0
-
-  gen_rotary MAN Vref
-    POS 150.000000 -150.000000
-    IMAGE PFD/man_vref
-    DATAREF 
-    SHOW_EQUAL 3.000000 laminar/B738/pfd/vspeed_mode
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 0
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 6.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
+  GROUP_OPEN
   gen_rotary MAN Vr
     POS 150.000000 -150.000000
     IMAGE PFD/man_vr
@@ -105716,49 +105777,48 @@ GROUP MAN VSPD
     CLICK_DY 0
 
 END_GROUP
+gen_LED MAN Vspeed 2
+  POS 128.000000 342.000000
+  IMAGE PFD/green_type
+  DATAREF laminar/B738/pfd/vspeed
+  SHOW_EQUAL 1.000000 laminar/B738/pfd/fo_vspeed_digit_show
+  LOCKED
+  LIGHT_MODE GLASS_AUTO
+  LIGHT_RHEOSTAT 0
+  BUS_SRC 3
+  KEY_FRAME 100.000000 100.000000 1.000000
+  KEY_FRAME 180.000000 180.000000
+  DIGITS 3
+  DECIMALS 0
+  PERIOD_WIDTH 5
+  LED_ROWS 0
+
+gen_rotary MAN Vref 2
+  POS 150.000000 362.000000
+  IMAGE PFD/man_vref
+  DATAREF 
+  SHOW_EQUAL 1.000000 laminar/B738/pfd/fo_vspeed_vref_show
+  LOCKED
+  LIGHT_MODE GLASS_AUTO
+  LIGHT_RHEOSTAT 0
+  BUS_SRC 3
+  KEY_FRAME 0.000000 0.000000 1.000000
+  KEY_FRAME 1.000000 6.000000
+  DIGITS 1
+  ROTARY_TYPE NO_CLICK
+  CLICK_RADIUS 10.000000
+  CLICK_RADIUS_DY 0.000000
+  OFFSET 0.000000
+  STEP1 1.000000
+  STEP2 1.000000
+  CURSOR DEFAULT
+  CLICK_DX 0
+  CLICK_DY 0
+
 GROUP MAN VSPD 2
   SHOW_GREATER 1.000000 laminar/B738/pfd/vspeed_mode
   LOCKED
-  gen_LED MAN Vspeed 2
-    POS 128.000000 342.000000
-    IMAGE PFD/green_type
-    DATAREF laminar/B738/pfd/vspeed
-    SHOW_LESS 3.000000 laminar/B738/pfd/vspeed_mode
-    SHOW_EQUAL 1.000000 laminar/B738/pfd/vspeed_show
-    SHOW_GREATER 1.000000 laminar/B738/pfd/vspeed_mode
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 0
-    BUS_SRC 3
-    KEY_FRAME 100.000000 100.000000 1.000000
-    KEY_FRAME 180.000000 180.000000
-    DIGITS 3
-    DECIMALS 0
-    PERIOD_WIDTH 5
-    LED_ROWS 0
-
-  gen_rotary MAN Vref 2
-    POS 150.000000 362.000000
-    IMAGE PFD/man_vref
-    DATAREF 
-    SHOW_EQUAL 3.000000 laminar/B738/pfd/vspeed_mode
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 0
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 6.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
+  GROUP_OPEN
   gen_rotary MAN Vr 2
     POS 150.000000 362.000000
     IMAGE PFD/man_vr
@@ -106020,7 +106080,6 @@ END_GROUP
 GROUP MAP Range
   LOCKED
   HIDE
-  GROUP_OPEN
   gen_rotary Range Map Mode
     POS 750.000000 32.000000
     IMAGE MFD/range_expanded

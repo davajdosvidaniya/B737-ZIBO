@@ -156,6 +156,9 @@ B738DR_land_lights_ret_right_pos = create_dataref("laminar/B738/switch/land_ligh
 
 B738DR_seatbelt_sign_switch_pos = create_dataref("laminar/B738/toggle_switch/seatbelt_sign_pos", "number")
 
+B738DR_land_ret_left_pos	= create_dataref("laminar/B738/lights/land_ret_left_pos", "number")
+B738DR_land_ret_right_pos	= create_dataref("laminar/B738/lights/land_ret_right_pos", "number")
+
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
 --*************************************************************************************--
@@ -337,7 +340,6 @@ function B738_land_lights_ret_left_dn_CMDhandler(phase, duration)
 		end
 	end
 end
-
 function B738_land_lights_ret_right_up_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_land_lights_ret_right_pos == 1 then
@@ -659,6 +661,17 @@ B738CMD_landing_lights_toggle		= replace_command("sim/lights/landing_lights_togg
 --** 				               XLUA EVENT CALLBACKS       	        			 **--
 --*************************************************************************************--
 
+function B738_set_anim_value(current_value, target, min, max, speed)
+
+    if target >= (max - 0.001) and current_value >= (max - 0.01) then
+        return max
+    elseif target <= (min + 0.001) and current_value <= (min + 0.01) then
+        return min
+    else
+        return current_value + ((target - current_value) * (speed * SIM_PERIOD))
+    end
+
+end
 
 function B738_light_state()
 
@@ -800,13 +813,32 @@ function bus_load()
 
 end
 
+
+function land_ret_anim()
+	
+	local land_ret_left_tgt = 0
+	if B738DR_land_lights_ret_left_pos > 0 then
+		land_ret_left_tgt = 1
+	end
+	
+	B738DR_land_ret_left_pos = B738_set_anim_value(B738DR_land_ret_left_pos, land_ret_left_tgt, 0, 1, 3)
+	
+	local land_ret_right_tgt = 0
+	if B738DR_land_lights_ret_right_pos > 0 then
+		land_ret_right_tgt = 1
+	end
+	B738DR_land_ret_right_pos = B738_set_anim_value(B738DR_land_ret_right_pos, land_ret_right_tgt, 0, 1, 3)
+	
+end
+
+
+
 --function aircraft_load() end
 
 --function aircraft_unload() end
 
 function flight_start()
 
-	--simDR_standby_compass_light_level = 0
 	simDR_compass_brightness_switch = 0
 	fist_time = 0
 	first_time_enable = 1
@@ -820,18 +852,8 @@ end
 --function before_physics() end
 
 function after_physics()
-
-	-- if is_timer_scheduled(first_time_timer) == false 
-	-- and first_time_enable == 1 then
-		-- run_after_time(first_time_timer, 1)
-		-- first_time_enable = 0
-	-- end
-	-- if fist_time == 1 then
-		-- B738_light_state()
-		-- fist_time = 0
-	-- end
 	bus_load()
-
+	land_ret_anim()
 end
 
 --function after_replay() end

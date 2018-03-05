@@ -1,109 +1,102 @@
 --- (C) Zibo, audiobirdxp (AXP) 2017/2018
---- 1713
+--- 1801+
 
 ---------- CREATE REFS -------------------------------------------------------------------------------
 --B738DR_enable_chatter	= create_dataref("laminar/b738/fmodpack/pax_talk", "number")
 --B738DR_enable_pax_boarding	= create_dataref("laminar/b738/fmodpack/pax_board", "number")
 
+B738DR_enable_pax_boarding	= create_dataref("laminar/b738/fmodpack/fmod_pax_boarding_on", "number")
+B738DR_enable_gyro	= create_dataref("laminar/b738/fmodpack/fmod_woodpecker_on", "number")
+B738DR_enable_chatter	= create_dataref("laminar/b738/fmodpack/fmod_chatter_on", "number")
+B738DR_airport_set = create_dataref("laminar/b738/fmodpack/fmod_airport_set", "number")
+B738DR_vol_int_ducker = create_dataref("laminar/b738/fmodpack/fmod_vol_int_ducker", "number")
+B738DR_vol_int_eng = create_dataref("laminar/b738/fmodpack/fmod_vol_int_eng", "number")
+B738DR_vol_int_start = create_dataref("laminar/b738/fmodpack/fmod_vol_int_start", "number")
+B738DR_vol_int_ac = create_dataref("laminar/b738/fmodpack/fmod_vol_int_ac", "number")
+B738DR_vol_int_gyro = create_dataref("laminar/b738/fmodpack/fmod_vol_int_gyro", "number")
+B738DR_vol_int_roll = create_dataref("laminar/b738/fmodpack/fmod_vol_int_roll", "number")
+B738DR_vol_int_bump = create_dataref("laminar/b738/fmodpack/fmod_vol_int_bump", "number")
 
-function B738DR_enable_pax_boarding_DRhandler()end
-function B738DR_enable_gyro_DRhandler()end
-function B738DR_enable_chatter_DRhandler()end
-function B738DR_airport_set_DRhandler()end
-function B738DR_vol_int_ducker_DRhandler()end
-function B738DR_vol_int_eng_DRhandler()end
-function B738DR_vol_int_start_DRhandler()end
-function B738DR_vol_int_ac_DRhandler()end
-function B738DR_vol_int_gyro_DRhandler()end
-function B738DR_vol_int_roll_DRhandler()end
-function B738DR_vol_int_bump_DRhandler()end
-function B738DR_vol_computer_DRhandler()end
-function B738DR_vol_PM_DRhandler()end
-function B738DR_vol_crew_DRhandler()end
-function B738DR_cruise_msg_DRhandler()end
-function B738DR_descent_msg_DRhandler()end
-function B738DR_preland_msg_DRhandler()end
-function B738DR_welcome_msg_DRhandler()end
-function B738DR_turbulence_msg_DRhandler()end
-function B738DR_play_cargo_DRhandler()end
-function B738DR_vol_int_pax_DRhandler()end
-function B738DR_vol_int_pax_appl_DRhandler()end
-function B738DR_vol_int_wind_vol_DRhandler()end
-function B738DR_enable_mutetrim_DRhandler()end
-function B738DR_vol_airport_DRhandler()end
-function B738DR_mute_gpwstest_DRhandler()end
-function B738DR_full_gpws_test_DRhandler()end
-function B738DR_short_gpws_test_DRhandler()end
-function B738DR_fmc_mute_on_DRhandler()end
-function B738DR_announcement_set_DRhandler()end
+-- new AXP 1801
 
-
-B738DR_enable_pax_boarding	= create_dataref("laminar/b738/fmodpack/fmod_pax_boarding_on", "number", B738DR_enable_pax_boarding_DRhandler)
-B738DR_enable_gyro	= create_dataref("laminar/b738/fmodpack/fmod_woodpecker_on", "number", B738DR_enable_gyro_DRhandler)
-B738DR_enable_chatter	= create_dataref("laminar/b738/fmodpack/fmod_chatter_on", "number", B738DR_enable_chatter_DRhandler)
-B738DR_airport_set = create_dataref("laminar/b738/fmodpack/fmod_airport_set", "number", B738DR_airport_set_DRhandler)
-B738DR_vol_int_ducker = create_dataref("laminar/b738/fmodpack/fmod_vol_int_ducker", "number", B738DR_vol_int_ducker_DRhandler)
-B738DR_vol_int_eng = create_dataref("laminar/b738/fmodpack/fmod_vol_int_eng", "number", B738DR_vol_int_eng_DRhandler)
-B738DR_vol_int_start = create_dataref("laminar/b738/fmodpack/fmod_vol_int_start", "number", B738DR_vol_int_start_DRhandler)
-B738DR_vol_int_ac = create_dataref("laminar/b738/fmodpack/fmod_vol_int_ac", "number", B738DR_vol_int_ac_DRhandler)
-B738DR_vol_int_gyro = create_dataref("laminar/b738/fmodpack/fmod_vol_int_gyro", "number", B738DR_vol_int_gyro_DRhandler)
-B738DR_vol_int_roll = create_dataref("laminar/b738/fmodpack/fmod_vol_int_roll", "number", B738DR_vol_int_roll_DRhandler)
-B738DR_vol_int_bump = create_dataref("laminar/b738/fmodpack/fmod_vol_int_bump", "number", B738DR_vol_int_bump_DRhandler)
+B738DR_eng_LEAP1B = create_dataref("laminar/b738/fmodpack/fmod_eng_LEAP1B", "number")
 
 -- new AXP 1713
 
-B738DR_vol_computer = create_dataref("laminar/b738/fmodpack/fmod_vol_computer", "number", B738DR_vol_computer_DRhandler)
+B738DR_vol_computer = create_dataref("laminar/b738/fmodpack/fmod_vol_computer", "number")
 
 -- new AXP 1711
 
-B738DR_vol_PM = create_dataref("laminar/b738/fmodpack/fmod_vol_PM", "number", B738DR_vol_PM_DRhandler)
-B738DR_vol_crew = create_dataref("laminar/b738/fmodpack/fmod_vol_crew", "number", B738DR_vol_crew_DRhandler)
+B738DR_vol_PM = create_dataref("laminar/b738/fmodpack/fmod_vol_PM", "number")
+B738DR_vol_crew = create_dataref("laminar/b738/fmodpack/fmod_vol_crew", "number")
 
-play_cruise_msg = create_dataref("laminar/b738/fmodpack/play_cruise_msg", "number", B738DR_cruise_msg_DRhandler) 
-play_descent_msg = create_dataref("laminar/b738/fmodpack/play_descent_msg", "number", B738DR_descent_msg_DRhandler) 
-play_preland_msg = create_dataref("laminar/b738/fmodpack/play_preland_msg", "number", B738DR_preland_msg_DRhandler)
-play_welcome_msg = create_dataref("laminar/b738/fmodpack/play_welcome_msg", "number", B738DR_welcome_msg_DRhandler) 
+play_cruise_msg = create_dataref("laminar/b738/fmodpack/play_cruise_msg", "number") 
+play_descent_msg = create_dataref("laminar/b738/fmodpack/play_descent_msg", "number") 
+play_preland_msg = create_dataref("laminar/b738/fmodpack/play_preland_msg", "number")
+play_welcome_msg = create_dataref("laminar/b738/fmodpack/play_welcome_msg", "number") 
 
-play_turbulence_msg = create_dataref("laminar/b738/fmodpack/play_turbulence_msg", "number", B738DR_turbulence_msg_DRhandler)
+play_turbulence_msg = create_dataref("laminar/b738/fmodpack/play_turbulence_msg", "number")
 
 -- new AXP 1712
 
-play_cargo = create_dataref("laminar/b738/fmodpack/fmod_play_cargo", "number", B738DR_play_cargo_DRhandler) 
+play_cargo = create_dataref("laminar/b738/fmodpack/fmod_play_cargo", "number") 
 
 -- new AXP 1711
 
-B738DR_vol_int_pax = create_dataref("laminar/b738/fmodpack/fmod_vol_int_pax", "number", B738DR_vol_int_pax_DRhandler)
-B738DR_vol_int_pax_applause = create_dataref("laminar/b738/fmodpack/fmod_pax_applause_on", "number", B738DR_vol_int_pax_appl_DRhandler)
-B738DR_vol_int_wind_vol = create_dataref("laminar/b738/fmodpack/fmod_vol_int_wind", "number", B738DR_vol_int_wind_vol_DRhandler)
+B738DR_vol_int_pax = create_dataref("laminar/b738/fmodpack/fmod_vol_int_pax", "number")
+B738DR_vol_int_pax_applause = create_dataref("laminar/b738/fmodpack/fmod_pax_applause_on", "number")
+B738DR_vol_int_wind_vol = create_dataref("laminar/b738/fmodpack/fmod_vol_int_wind", "number")
 
 -- ********************* NEW audiobirdxp 8-7-2017
 -- to mute the trim wheel when the AP is trimming
-B738DR_enable_mutetrim	= create_dataref("laminar/b738/fmodpack/fmod_mutetrim_on", "number", B738DR_enable_mutetrim_DRhandler)
+B738DR_enable_mutetrim	= create_dataref("laminar/b738/fmodpack/fmod_mutetrim_on", "number")
 -- to set the airport volume (5 = standard)
-B738DR_vol_airport	= create_dataref("laminar/b738/fmodpack/fmod_vol_airport", "number", B738DR_vol_airport_DRhandler)
+B738DR_vol_airport	= create_dataref("laminar/b738/fmodpack/fmod_vol_airport", "number")
 -- to trigger the long GWPS test
-B738DR_mute_gpwstest	= create_dataref("laminar/b738/fmodpack/fmod_mute_gpwstest", "number", B738DR_mute_gpwstest_DRhandler)
+B738DR_mute_gpwstest	= create_dataref("laminar/b738/fmodpack/fmod_mute_gpwstest", "number")
 
 -- provides dataref => this would be better  put into the lua file wherever the switch is programmed
 
-B738DR_full_gpws_test_on = create_dataref("laminar/b738/fmodpack/fmod_gpwstest_long_on","number", B738DR_full_gpws_test_DRhandler)
-B738DR_short_gpws_test_on	= create_dataref("laminar/b738/fmodpack/fmod_gpwstest_short_on", "number", B738DR_short_gpws_test_DRhandler)
+B738DR_full_gpws_test_on = create_dataref("laminar/b738/fmodpack/fmod_gpwstest_long_on","number")
+B738DR_short_gpws_test_on	= create_dataref("laminar/b738/fmodpack/fmod_gpwstest_short_on", "number")
 
 -- future feature turn on or off automatic passengers
 
-B738DR_enable_fmc_mute_on = create_dataref("laminar/b738/fmodpack/fmod_enable_fmc_mute_on", "number", B738DR_fmc_mute_on_DRhandler)
+B738DR_enable_fmc_mute_on = create_dataref("laminar/b738/fmodpack/fmod_enable_fmc_mute_on", "number")
 
 
-B738DR_announcement_set = create_dataref("laminar/b738/fmodpack/fmod_announcement_set", "number", B738DR_announcement_set_DRhandler)
+B738DR_announcement_set = create_dataref("laminar/b738/fmodpack/fmod_announcement_set", "number")
 
+--test
+
+axp_dev_event = create_dataref("axp/dev_event","number")
+
+-- new AXP 1811
+
+B738DR_vol_FAC = create_dataref("laminar/b738/fmodpack/fmod_vol_FAC", "number")
 
 ---------- FIND REFS -------------------------------------------------------------------------------
+
+
+
 
 -- to control overall interior volume (XP11 setting) directly from FMC
 B738DR_vol_int_XP = find_dataref("sim/operation/sound/interior_volume_ratio")
 
 ---------- COMMANDS HANDLER FUNCTIONS -------------------------------------------------------------------------------
 
+--- DEV
+function dev_CMDhandler(phase, duration)
+
+	if phase == 0 then
+		if axp_dev_event  == 0 then
+			axp_dev_event  = 1
+		elseif axp_dev_event  == 1 then
+			axp_dev_event  = 0
+		end
+	end
+end
+--- DEV
 
 function B738_enable_pax_boarding_CMDhandler(phase, duration)
 	if phase == 0 then
@@ -161,6 +154,20 @@ function B738_announcement_set_CMDhandler(phase, duration)
 		elseif B738DR_announcement_set == 2 then
 			B738DR_announcement_set = 3
 		elseif B738DR_announcement_set == 3 then
+			B738DR_announcement_set = 4
+		elseif B738DR_announcement_set == 4 then
+			B738DR_announcement_set = 5
+		elseif B738DR_announcement_set == 5 then
+			B738DR_announcement_set = 6
+		elseif B738DR_announcement_set == 6 then
+			B738DR_announcement_set = 7
+		elseif B738DR_announcement_set == 7 then
+			B738DR_announcement_set = 8
+		elseif B738DR_announcement_set == 8 then
+			B738DR_announcement_set = 9
+		elseif B738DR_announcement_set == 9 then
+			B738DR_announcement_set = 10
+		elseif B738DR_announcement_set == 10 then
 			B738DR_announcement_set = 0
 		end
 	end 
@@ -518,13 +525,47 @@ function B738_vol_computer_CMDhandler(phase, duration)
 	end
 end	
 
+
+-- new AXP 1801
+
+function B738_eng_LEAP1B_CMDhandler(phase, duration)
+	if phase == 0 then
+		if B738DR_eng_LEAP1B == 0 then
+			B738DR_eng_LEAP1B = 1
+		elseif B738DR_eng_LEAP1B == 1 then
+			B738DR_eng_LEAP1B = 0
+		end
+	end
+end
+
+function B738_vol_FAC_CMDhandler(phase, duration)
+
+	if phase == 0 then
+		if B738DR_vol_FAC <= 9 then
+			B738DR_vol_FAC = (B738DR_vol_FAC + 1)
+		elseif B738DR_vol_FAC == 10 then
+			B738DR_vol_FAC = 0
+		end
+	end
+end
+
+
+
+
 ---------- CREATE COMMANDS -------------------------------------------------------------------------------
+
+-- new AXP 1801
+
+B738CMD_eng_LEAP1B 		= create_command("laminar/b738/fmodpack/fmod_eng_LEAP1B", "TBA", B738_eng_LEAP1B_CMDhandler)
+
+
 
 --B738CMD_enable_pax_boarding 		= create_command("laminar/b738/fmodpack/fmod_toggle_pax_boarding", "Play PAX boarding", B738_enable_pax_boarding_CMDhandler)
 B738CMD_enable_pax_boarding 		= create_command("laminar/b738/fmodpack/pax_board", "Play PAX boarding", B738_enable_pax_boarding_CMDhandler)
 
 
 B738CMD_enable_gyro 				= create_command("laminar/b738/fmodpack/fmod_woodpecker_on", "Toggle classic gyro vibrator ON or OFF", B738_enable_gyro_CMDhandler)
+
 --obsolete but kept to maintain compatibility with Zibo's FMC menu
 B738DR_enable_crew					= create_dataref("laminar/b738/fmodpack/fmod_crew_on", "number")
 
@@ -595,6 +636,16 @@ B738CMD_play_cargo 			= create_command("laminar/b738/fmodpack/fmod_play_cargo", 
 -- Please REMOVE from FMC
 B738CMD_enable_crew		= create_command("laminar/b738/fmodpack/fmod_crew_on", "Toggle crew ON or OFF", B738_enable_crew_CMDhandler)
 --obsolete but kept to maintain compatibility with FMC menu
+
+-- test
+
+CMD_axp_dev_event = create_command("axp/dev_event", "For developers only", dev_CMDhandler)
+
+-- new AXP 1801
+
+
+B738CMD_vol_FAC		= create_command("laminar/b738/fmodpack/fmod_vol_FAC", "Change volume of FA in-cockpit events", B738_vol_FAC_CMDhandler)
+
 
 function after_physics() 
 end

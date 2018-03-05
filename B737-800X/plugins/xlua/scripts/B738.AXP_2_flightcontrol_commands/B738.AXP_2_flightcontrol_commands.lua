@@ -2,8 +2,8 @@
 
     -- none
 
---start_leg = 0
---end_leg = 0
+start_leg = 0
+end_leg = 0
 
 -- FINDING REFS -------------------------------------------------------------------------------------------------------
 
@@ -14,11 +14,9 @@
 
 -- control pax presence
 
-function B738DR_start_leg_DRhandler()end
-function B738DR_end_leg_DRhandler()end
 
-start_leg = create_dataref("laminar/b738/fmodpack/fmod_start_leg", "number", B738DR_start_leg_DRhandler)
-end_leg = create_dataref("laminar/b738/fmodpack/fmod_end_leg", "number", B738DR_end_leg_DRhandler)
+start_leg = create_dataref("laminar/b738/fmodpack/fmod_start_leg", "number")
+end_leg = create_dataref("laminar/b738/fmodpack/fmod_end_leg", "number")
 
 
 

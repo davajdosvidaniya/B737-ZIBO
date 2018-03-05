@@ -170,6 +170,11 @@ batt_discharge100 = 0
 
 wing_body_ovht_test = 0
 fdr_test = 0
+
+--enable_cabin_lights = 0
+cabin_lights_tim = 0
+ac_tnsbus1_status_old = 0
+
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
 --*************************************************************************************--
@@ -406,7 +411,7 @@ simDR_tank_selection			= find_dataref("sim/cockpit2/fuel/fuel_tank_selector")
 
 simDR_cabin_alt 				= find_dataref("sim/cockpit2/pressurization/indicators/cabin_altitude_ft")
 simDR_speedbrake_status 		= find_dataref("sim/cockpit2/controls/speedbrake_ratio")
-simDR_GPWS						= find_dataref("sim/cockpit2/annunciators/GPWS")
+--simDR_GPWS						= find_dataref("sim/cockpit2/annunciators/GPWS")
 
 simDR_flaps_ratio_physics		= find_dataref("sim/cockpit2/controls/flap_handle_deploy_ratio")
 
@@ -484,6 +489,10 @@ simDR_transponder_fail			= find_dataref("sim/operation/failures/rel_xpndr")
 
 simDR_gen1_on					= find_dataref("sim/cockpit2/electrical/generator_on[0]")
 simDR_gen2_on					= find_dataref("sim/cockpit2/electrical/generator_on[1]")
+
+simDR_head_x 					= find_dataref("sim/aircraft/view/acf_peX")
+simDR_head_y 					= find_dataref("sim/aircraft/view/acf_peY")
+simDR_head_z 					= find_dataref("sim/aircraft/view/acf_peZ")
 
 --*************************************************************************************--
 --** 				               FIND X-PLANE COMMANDS                   	    	 **--
@@ -632,6 +641,9 @@ B738DR_fdr_pos				= find_dataref("laminar/B738/switches/fdr_pos")
 B738DR_duct_ovht_test_pos	= find_dataref("laminar/B738/push_button/duct_ovht_test_pos")
 
 B738DR_gpws_test_running	= find_dataref("laminar/B738/system/gpws_test_running")
+
+B738DR_batbus_status		= find_dataref("laminar/B738/electric/batbus_status")
+
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
@@ -855,6 +867,7 @@ B738DR_below_gs					= create_dataref("laminar/B738/annunciator/below_gs", "numbe
 B738DR_slats_transit			= create_dataref("laminar/B738/annunciator/slats_transit", "number")
 B738DR_slats_extended			= create_dataref("laminar/B738/annunciator/slats_extend", "number")
 
+
 -- FIRE PANEL ANNUNS
 
 --B738DR_extinguisher_circuit_spill1		= create_dataref("laminar/B738/light/spill/ratio/extinguisher_circuit_spill1", "array[9]")
@@ -868,6 +881,28 @@ B738DR_extinguisher_leveler_spill_apu		= create_dataref("laminar/B738/light/spil
 
 B738DR_master_caution_spill		= create_dataref("laminar/B738/light/spill/ratio/master_caution_spill", "array[9]")
 B738DR_fire_warn_spill			= create_dataref("laminar/B738/light/spill/ratio/fire_warn_spill", "array[9]")
+
+B738DR_cabin_lights				= create_dataref("laminar/B738/light/spill/ratio/cabin_lights_spill", "array[9]")
+B738DR_cabin_emergency_lights	= create_dataref("laminar/B738/light/spill/ratio/cabin_emergency_lights_spill", "array[9]")
+
+B738DR_l_wings_lights			= create_dataref("laminar/B738/light/spill/ratio/l_wings_lights_spill", "array[9]")
+B738DR_r_wings_lights			= create_dataref("laminar/B738/light/spill/ratio/r_wings_lights_spill", "array[9]")
+B738DR_eng1_wings_lights		= create_dataref("laminar/B738/light/spill/ratio/eng1_wings_lights_spill", "array[9]")
+B738DR_eng2_wings_lights		= create_dataref("laminar/B738/light/spill/ratio/eng2_wings_lights_spill", "array[9]")
+
+B738DR_gpu_avail_lights 		= create_dataref("laminar/B738/light/spill/ratio/gpu_avail_lights_spill", "array[9]")
+B738DR_eng1_valve_lights 		= create_dataref("laminar/B738/light/spill/ratio/eng1_valve_lights_spill", "array[9]")
+B738DR_eng2_valve_lights 		= create_dataref("laminar/B738/light/spill/ratio/eng2_valve_lights_spill", "array[9]")
+B738DR_eng1_spar_lights 		= create_dataref("laminar/B738/light/spill/ratio/eng1_spar_lights_spill", "array[9]")
+B738DR_eng2_spar_lights			= create_dataref("laminar/B738/light/spill/ratio/eng2_spar_lights_spill", "array[9]")
+B738DR_ram1_full_lights 		= create_dataref("laminar/B738/light/spill/ratio/ram1_full_lights_spill", "array[9]")
+B738DR_ram2_full_lights 		= create_dataref("laminar/B738/light/spill/ratio/ram2_full_lights_spill", "array[9]")
+
+B738DR_crossfeed_lights 	= create_dataref("laminar/B738/light/spill/ratio/crossfeed_lights_spill", "array[9]")
+B738DR_gen1_avail_lights 	= create_dataref("laminar/B738/light/spill/ratio/gen1_avail_lights_spill", "array[9]")
+B738DR_gen2_avail_lights 	= create_dataref("laminar/B738/light/spill/ratio/gen2_avail_lights_spill", "array[9]")
+B738DR_apu_avail_lights 	= create_dataref("laminar/B738/light/spill/ratio/apu_avail_lights_spill", "array[9]")
+
 
 B738DR_extinguisher_circuit_test_pos	= create_dataref("laminar/B738/toggle_switch/extinguisher_circuit_test", "number")
 --B738DR_extinguisher_circuit_annun1		= create_dataref("laminar/B738/annunciator/extinguisher_circuit_annun1", "number")
@@ -3209,8 +3244,8 @@ local takeoff_config_warn = 0
 		gpws_annun = 1
 	end
 	
-	B738DR_GPWS_annun = simDR_GPWS * brightness_level
-	--B738DR_GPWS_annun = gpws_annun * brightness_level
+	--B738DR_GPWS_annun = simDR_GPWS * brightness_level
+	B738DR_GPWS_annun = gpws_annun * brightness_level
 
 -- SPEEDBRAKE ANNUNS
 
@@ -3222,9 +3257,17 @@ local takeoff_config_warn = 0
 	B738DR_speedbrake_armed = spdbrk_armed * brightness_level
 
 	local spdbrk_extend = 0
+	if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
 		if simDR_speedbrake_status > 0 then
-		spdbrk_extend = 1
+			spdbrk_extend = 1
 		end
+	else
+		if simDR_flaps_ratio_physics > 0.5 or simDR_radio_height_pilot_ft < 800 then
+			if simDR_speedbrake_status > 0 then
+				spdbrk_extend = 1
+			end
+		end
+	end
 
 	B738DR_speedbrake_extend = spdbrk_extend * brightness_level
 
@@ -3711,19 +3754,19 @@ local takeoff_config_warn = 0
 		wing_ice_status_R = 1
 		end
 
-	wing_ice_L_time = B738_set_anim_value(wing_ice_L_time, simDR_wing_left_ice_on, 0.0, 1.0, 1.0)
+	wing_ice_L_time = B738_set_anim_value(wing_ice_L_time, simDR_wing_left_ice_on, 0.0, 1.0, 3.0)
 	if wing_ice_L_time < 0.95 then
 		wing_ice_status_L = 1
 	end
-	wing_ice_R_time = B738_set_anim_value(wing_ice_R_time, simDR_wing_right_ice_on, 0.0, 1.0, 1.0)
+	wing_ice_R_time = B738_set_anim_value(wing_ice_R_time, simDR_wing_right_ice_on, 0.0, 1.0, 3.0)
 	if wing_ice_R_time < 0.95 then
 		wing_ice_status_R = 1
 	end
-	cowl_ice_0_time = B738_set_anim_value(cowl_ice_0_time, simDR_cowl_ice_0_on, 0.0, 1.0, 1.0)
+	cowl_ice_0_time = B738_set_anim_value(cowl_ice_0_time, simDR_cowl_ice_0_on, 0.0, 1.0, 3.0)
 	if cowl_ice_0_time < 0.95 then
 		cowl_ice_status_0 = 1
 	end
-	cowl_ice_1_time = B738_set_anim_value(cowl_ice_1_time, simDR_cowl_ice_1_on, 0.0, 1.0, 1.0)
+	cowl_ice_1_time = B738_set_anim_value(cowl_ice_1_time, simDR_cowl_ice_1_on, 0.0, 1.0, 3.0)
 	if cowl_ice_1_time < 0.95 then
 		cowl_ice_status_1 = 1
 	end
@@ -3881,11 +3924,11 @@ local takeoff_config_warn = 0
 	if simDR_radio_height_pilot_ft < 800 then
 		if B738DR_thrust1_leveler == 0 or B738DR_thrust2_leveler == 0 then
 			if B738DR_gear_handle_pos < 1 then
-				if simDR_nose_gear_status < 1 or simDR_left_gear_status < 1 or simDR_right_gear_status < 1 then
+				--if simDR_nose_gear_status < 1 or simDR_left_gear_status < 1 or simDR_right_gear_status < 1 then
 					nose_gear_transit = 1
 					left_gear_transit = 1
 					right_gear_transit = 1
-				end
+				--end
 			end
 		end
 	end
@@ -4508,6 +4551,7 @@ local takeoff_config_warn = 0
 	end
 end
 
+
 ----- INITIALIZE LIGHTING ---------------------------------------------------------------
 function B738_init_lighting()
 
@@ -4528,7 +4572,6 @@ function B738_init_lighting()
 	local extinguisher_circuit_spill_left = {0.19, 1, 0.5, 0.0, 0.07, 1, 0, 0, 0} 
 	local extinguisher_circuit_spill_right = {0.19, 1, 0.5, 0.0, 0.07, 1, 0, 0, 0} 
 	local extinguisher_circuit_spill_apu = {0.19, 1, 0.5, 0.0, 0.07, 1, 0, 0, 0} 
-	--local extinguisher_circuit_spill1 = {0.19, 1, 0.5, 0.0, 0.07, 1, 0, 0, 0}  
 	local parking_brake_spill = {1.0, 0, 0, 0.0, 0.15, 1, 0, 0, 0}
 	
 	local extinguisher_leveler_spill_eng1 = {1.0, 0.0, 0.0, 0.0, 0.15, 1, 0, 0, 0}
@@ -4538,12 +4581,29 @@ function B738_init_lighting()
 	local master_caution_spill 		= {1.0, 1.0, 0.0, 0.0, 0.15, 1, 0, 0, 0}
 	local fire_warn_spill 			= {1.0, 0.0, 0.0, 0.0, 0.15, 1, 0, 0, 0}
 	
+	local cabin_lights				= {1.0, 1.0, 0.8, 0.0, 3.0, 1, 0, 0, 0}
+	local cabin_emergency_lights	= {1.0, 0.0, 0.0, 0.0, 2.2, 1, 0, 0, 0}
 	
-    local i = 0
+	local l_wings_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local r_wings_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local eng1_wings_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local eng2_wings_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local gpu_avail_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local eng1_valve_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local eng2_valve_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local eng1_spar_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local eng2_spar_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local ram1_full_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local ram2_full_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local crossfeed_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local gen1_avail_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local gen2_avail_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	local apu_avail_lights			= {0.53, 0.86, 0.92, 0.0, 0.03, 1, 0, 0, 0}
+	
+	local i = 0
     
     for i = 0, 8 do
 		B738DR_parking_brake_spill[i] = parking_brake_spill[i+1]
-		--B738DR_extinguisher_circuit_spill1[i] = extinguisher_circuit_spill1[i+1]
 		B738DR_extinguisher_circuit_spill2[i] = extinguisher_circuit_spill2[i+1]
 		B738DR_extinguisher_circuit_spill_left[i] = extinguisher_circuit_spill_left[i+1]
 		B738DR_extinguisher_circuit_spill_right[i] = extinguisher_circuit_spill_right[i+1]
@@ -4554,6 +4614,27 @@ function B738_init_lighting()
 		B738DR_extinguisher_leveler_spill_apu[i] = extinguisher_leveler_spill_apu[i+1]
 		B738DR_master_caution_spill[i] = master_caution_spill[i+1]
 		B738DR_fire_warn_spill[i] = fire_warn_spill[i+1]
+		
+		B738DR_cabin_lights[i] = cabin_lights[i+1]
+		B738DR_cabin_emergency_lights[i] = cabin_emergency_lights[i+1]
+		
+		B738DR_l_wings_lights[i] = l_wings_lights[i+1]
+		B738DR_r_wings_lights[i] = r_wings_lights[i+1]
+		B738DR_eng1_wings_lights[i] = eng1_wings_lights[i+1]
+		B738DR_eng2_wings_lights[i] = eng2_wings_lights[i+1]
+		
+		B738DR_gpu_avail_lights[i] = gpu_avail_lights[i+1]
+		B738DR_eng1_valve_lights[i] = eng1_valve_lights[i+1]
+		B738DR_eng2_valve_lights[i] = eng2_valve_lights[i+1]
+		B738DR_eng1_spar_lights[i] = eng1_spar_lights[i+1]
+		B738DR_eng2_spar_lights[i] = eng2_spar_lights[i+1]
+		B738DR_ram1_full_lights[i] = ram1_full_lights[i+1]
+		B738DR_ram2_full_lights[i] = ram2_full_lights[i+1]
+		
+		B738DR_crossfeed_lights[i] = crossfeed_lights[i+1]
+		B738DR_gen1_avail_lights[i] = gen1_avail_lights[i+1]
+		B738DR_gen2_avail_lights[i] = gen2_avail_lights[i+1]
+		B738DR_apu_avail_lights[i] = apu_avail_lights[i+1]
 	end	
     
 end    
@@ -4563,7 +4644,6 @@ end
 function B738_spill_lights()
 	
 	B738DR_parking_brake_spill[3] = B738DR_parking_brake_annun
-	--B738DR_extinguisher_circuit_spill1[3] = B738DR_extinguisher_circuit_annun1
 	B738DR_extinguisher_circuit_spill2[3] = B738DR_extinguisher_circuit_annun2
 	B738DR_extinguisher_circuit_spill_left[3] = B738DR_extinguisher_circuit_annun_left
 	B738DR_extinguisher_circuit_spill_right[3] = B738DR_extinguisher_circuit_annun_right
@@ -4572,10 +4652,111 @@ function B738_spill_lights()
 	B738DR_extinguisher_leveler_spill_eng1[3] = B738DR_engine1_fire
 	B738DR_extinguisher_leveler_spill_eng2[3] = B738DR_engine2_fire
 	B738DR_extinguisher_leveler_spill_apu[3] = B738DR_apu_fire
+	
 	B738DR_master_caution_spill[3] = B738DR_master_caution_light
 	B738DR_fire_warn_spill[3] = B738DR_fire_bell_annun
+	
+	local ratio_lights = 1
+	if simDR_head_z < -14.50 then
+		ratio_lights = B738DR_flt_dk_door_ratio
+	end
+	
+	local enable_cabin_lights = 1
+	
+	if B738DR_ac_tnsbus1_status == 0 then
+		if ac_tnsbus1_status_old ~= B738DR_ac_tnsbus1_status then
+			cabin_lights_tim = 0
+		end
+		if cabin_lights_tim < 0.3 then
+			enable_cabin_lights = 0
+		elseif cabin_lights_tim < 0.5 then
+			enable_cabin_lights = 1
+		elseif cabin_lights_tim < 0.6 then
+			enable_cabin_lights = 0
+		elseif cabin_lights_tim < 0.8 then
+			enable_cabin_lights = 1
+		elseif cabin_lights_tim < 0.9 then
+			enable_cabin_lights = 0
+		end
+		B738DR_cabin_lights[4] = 1.85 * enable_cabin_lights
+		B738DR_cabin_emergency_lights[3] = B738DR_batbus_status * ratio_lights
+		if cabin_lights_tim < 0.9 then
+			cabin_lights_tim = cabin_lights_tim + SIM_PERIOD
+		end
+	else
+		cabin_lights_tim = 1
+		B738DR_cabin_lights[4] = 3.0
+		B738DR_cabin_emergency_lights[3] = 0
+	end
+	B738DR_cabin_lights[3] = B738DR_batbus_status * ratio_lights
+	ac_tnsbus1_status_old = B738DR_ac_tnsbus1_status
+	
+	local dimmed = 0.35
+	if B738DR_wing_ice_on_L == 1 then
+		dimmed = 1
+	end
+	B738DR_l_wings_lights[3] = B738DR_wing_ice_on_L * dimmed
+	dimmed = 0.35
+	if B738DR_wing_ice_on_R == 1 then
+		dimmed = 1
+	end
+	B738DR_r_wings_lights[3] = B738DR_wing_ice_on_R * dimmed
+	dimmed = 0.35
+	if B738DR_cowl_ice_0_on == 1 then
+		dimmed = 1
+	end
+	B738DR_eng1_wings_lights[3] = B738DR_cowl_ice_0_on * dimmed
+	dimmed = 0.35
+	if B738DR_cowl_ice_1_on == 1 then
+		dimmed = 1
+	end
+	B738DR_eng2_wings_lights[3] = B738DR_cowl_ice_1_on * dimmed
+	dimmed = 0.35
+	if B738DR_ground_power_avail_annun == 1 then
+		dimmed = 1
+	end
+	B738DR_gpu_avail_lights[3] = B738DR_ground_power_avail_annun * dimmed
+	dimmed = 0.35
+	if B738DR_eng1_valve_closed_annun == 1 then
+		dimmed = 1
+	end
+	B738DR_eng1_valve_lights[3] = B738DR_eng1_valve_closed_annun * dimmed
+	dimmed = 0.35
+	if B738DR_eng2_valve_closed_annun == 1 then
+		dimmed = 1
+	end
+	B738DR_eng2_valve_lights[3] = B738DR_eng2_valve_closed_annun * dimmed
+	dimmed = 0.35
+	if B738DR_spar1_valve_closed_annun == 1 then
+		dimmed = 1
+	end
+	B738DR_eng1_spar_lights[3] = B738DR_spar1_valve_closed_annun * dimmed
+	dimmed = 0.35
+	if B738DR_spar2_valve_closed_annun == 1 then
+		dimmed = 1
+	end
+	B738DR_eng2_spar_lights[3] = B738DR_spar2_valve_closed_annun * dimmed
+	dimmed = 0.35
+	if B738DR_ram_door_open1 == 1 then
+		dimmed = 1
+	end
+	B738DR_ram1_full_lights[3] = B738DR_ram_door_open1 * dimmed
+	dimmed = 0.35
+	if B738DR_ram_door_open2 == 1 then
+		dimmed = 1
+	end
+	B738DR_ram2_full_lights[3] = B738DR_ram_door_open2 * dimmed
+	dimmed = 0.35
+	if B738DR_crossfeed == 1 then
+		dimmed = 1
+	end
+	B738DR_crossfeed_lights[3] = B738DR_crossfeed * dimmed
+	
+	B738DR_gen1_avail_lights[3] = B738DR_gen_off_bus1
+	B738DR_gen2_avail_lights[3] = B738DR_gen_off_bus2
+	B738DR_apu_avail_lights[3] = B738DR_apu_gen_off_bus
+	
 end
-
 
 
 --*************************************************************************************--

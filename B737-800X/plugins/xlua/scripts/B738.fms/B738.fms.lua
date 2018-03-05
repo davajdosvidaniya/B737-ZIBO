@@ -1015,11 +1015,11 @@ precalc_done = 0
 mag_dec = {}
 app_str = ""
 
+af_finish_crs = 0
+
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
 --*************************************************************************************--
-
-
 
 	ref_rnw_list = {}
 	ref_rnw_list_num = 0
@@ -1289,6 +1289,7 @@ app_str = ""
 	cg_set_m = 0
 	cg_set_in = 0
 	mac = 0
+	mac_zfw = 0
 	
 	gps_ok = 0
 	menu_tick = 0
@@ -1320,6 +1321,8 @@ app_str = ""
 	fmc_climb_r_alt1 = ""
 	
 	flight_phase_old = 0
+	
+
 	
 --*************************************************************************************--
 --** 				             FIND X-PLANE DATAREFS            			    	 **--
@@ -1465,6 +1468,10 @@ simDR_TAS					= find_dataref("sim/flightmodel/position/true_airspeed")
 simDR_kill_map_fms			= find_dataref("sim/graphics/misc/kill_map_fms_line")
 simDR_fuel_tank_weight_kg 	= find_dataref("sim/flightmodel/weight/m_fuel")
 B738DR_gpu_available		= find_dataref("laminar/B738/gpu_available")
+
+simDR_pitch_nz 				= find_dataref("sim/joystick/joystick_pitch_nullzone")
+simDR_roll_nz 				= find_dataref("sim/joystick/joystick_roll_nullzone")
+simDR_yaw_nz 				= find_dataref("sim/joystick/joystick_heading_nullzone")
 
 --*************************************************************************************--
 --** 				               FIND X-PLANE COMMANDS                   	    	 **--
@@ -1682,6 +1689,8 @@ end_leg 					= find_dataref("laminar/b738/fmodpack/fmod_end_leg")
 play_cargo 					= find_dataref("laminar/b738/fmodpack/fmod_play_cargo")
 B738DR_vol_computer 		= find_dataref("laminar/b738/fmodpack/fmod_vol_computer")
 
+B738DR_vol_FAC 				= find_dataref("laminar/b738/fmodpack/fmod_vol_FAC")
+
 --*************************************************************************************--
 --** 				               FIND CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -1724,6 +1733,8 @@ B738CMD_play_preland		= find_command("laminar/b738/fmodpack/play_preland_msg")
 B738CMD_play_turbulence		= find_command("laminar/b738/fmodpack/play_turbulence_msg")
 B738CMD_enable_fmc_mute_on 	= find_command("laminar/b738/fmodpack/fmod_enable_fmc_mute_on")
 B738CMD_vol_computer		= find_command("laminar/b738/fmodpack/fmod_vol_computer")
+
+B738CMD_vol_FAC				= find_command("laminar/b738/fmodpack/fmod_vol_FAC")
 
 --*************************************************************************************--
 --** 				                X-PLANE DATAREFS            			    	 **--
@@ -18189,6 +18200,7 @@ function B738_default_fmod_config()
 	eq_high = 0
 	play_cargo = 0
 	B738DR_vol_computer = 5
+	B738DR_vol_FAC = 5
 	
 end
 
@@ -18211,6 +18223,9 @@ function B738_default_others_config()
 	B738DR_sync_baro = 0
 	B738DR_kill_effect = 0
 	
+	simDR_pitch_nz = 0
+	simDR_roll_nz = 0
+	simDR_yaw_nz = 0
 end
 
 
@@ -18573,6 +18588,19 @@ function B738_load_config()
 							end
 						end
 					end
+				elseif string.sub(fms_line, 1, 16) == "FA COCKPIT VOL =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							 temp_fmod = roundUpToIncrement(temp_fmod, 1 )
+							if temp_fmod >= 0 and  temp_fmod <= 10 then
+								B738DR_vol_FAC = temp_fmod
+							else
+								B738DR_vol_FAC = 10
+							end
+						end
+					end
 				-- OTHERS
 				elseif string.sub(fms_line, 1, 16) == "UNITS          =" then
 					temp_fmod = string.len(fms_line)
@@ -18761,6 +18789,45 @@ function B738_load_config()
 							end
 						end
 					end
+				elseif string.sub(fms_line, 1, 16) == "PITCH 0 ZONE   =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							 temp_fmod = roundUpToIncrement(temp_fmod, 1 )
+							if temp_fmod >= 0 and  temp_fmod <= 20 then
+								simDR_pitch_nz = temp_fmod / 100
+							else
+								simDR_pitch_nz = 0
+							end
+						end
+					end
+				elseif string.sub(fms_line, 1, 16) == "YAW 0 ZONE     =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							 temp_fmod = roundUpToIncrement(temp_fmod, 1 )
+							if temp_fmod >= 0 and  temp_fmod <= 20 then
+								simDR_yaw_nz = temp_fmod / 100
+							else
+								simDR_yaw_nz = 0
+							end
+						end
+					end
+				elseif string.sub(fms_line, 1, 16) == "ROLL 0 ZONE    =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							 temp_fmod = roundUpToIncrement(temp_fmod, 1 )
+							if temp_fmod >= 0 and  temp_fmod <= 20 then
+								simDR_roll_nz = temp_fmod / 100
+							else
+								simDR_roll_nz = 0
+							end
+						end
+					end
 				-- elseif string.sub(fms_line, 1, 16) == "LAST POS LAT   =" then
 					-- temp_fmod = string.len(fms_line)
 					-- if temp_fmod > 16 then
@@ -18846,7 +18913,7 @@ function B738_load_fmod_config()
 		fmod_preset[temp_fmod][26] = 0		-- ADD HIGHS
 		fmod_preset[temp_fmod][27] = 0		-- START CARGO
 		fmod_preset[temp_fmod][28] = 5		-- COMPUTER VOLUME
-		fmod_preset[temp_fmod][29] = 0		-- NOT USED
+		fmod_preset[temp_fmod][29] = 0		-- FA IN COCKPIT
 		fmod_preset[temp_fmod][30] = 0		-- NOT USED
 	end
 	
@@ -19272,6 +19339,7 @@ function B738_set_fmod_config(fmod_nr)
 	eq_high 						= fmod_preset[ff][26]
 	play_cargo 						= fmod_preset[ff][27]
 	B738DR_vol_computer 			= fmod_preset[ff][28]
+	B738DR_vol_FAC					= fmod_preset[ff][29]
 	
 end
 
@@ -19306,6 +19374,7 @@ function B738_mod_fmod_config(fmod_nr)
 	fmod_preset[ff][26] 	= eq_high
 	fmod_preset[ff][27] 	= play_cargo
 	fmod_preset[ff][28] 	= B738DR_vol_computer
+	fmod_preset[ff][29] 	= B738DR_vol_FAC
 	
 end
 
@@ -19352,6 +19421,12 @@ function B738_save_config()
 		fms_line = "SYNC BARO      = " .. string.format("%2d", B738DR_sync_baro) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "WINDSH.EFFECTS = " .. string.format("%2d", B738DR_kill_effect) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "PITCH 0 ZONE   = " .. string.format("%2d", simDR_pitch_nz * 100) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "ROLL 0 ZONE    = " .. string.format("%2d", simDR_roll_nz * 100) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "YAW 0 ZONE     = " .. string.format("%2d", simDR_yaw_nz * 100) .. "\n"
 		file_navdata:write(fms_line)
 		-- FMOD
 		fms_line = "\n*** FMOD by AudioBird XP ***\n"
@@ -19409,6 +19484,8 @@ function B738_save_config()
 		fms_line = "START CARGO    = " .. string.format("%2d", play_cargo) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "COMPUTER VOLUME= " .. string.format("%2d", B738DR_vol_computer) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "FA COCKPIT VOL = " .. string.format("%2d", B738DR_vol_FAC) .. "\n"
 		file_navdata:write(fms_line)
 		
 		file_navdata:close()
@@ -21426,75 +21503,75 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 			-- entry flaps
 			if entry == "1" then
 				flaps = " 1"
-				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-					entry = ""
-				else
-					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+				if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+						entry = ""
+					else
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+						entry = ""
+					end
 				end
-				v1_set = "---"
-				vr_set = "---"
-				v2_set = "---"
 				B738DR_calc_vspd = 1
 				B738DR_calc_trim = 1
 			elseif entry == "5" then
 				flaps = " 5"
-				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-					entry = ""
-				else
-					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+				if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+						entry = ""
+					else
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+						entry = ""
+					end
 				end
-				v1_set = "---"
-				vr_set = "---"
-				v2_set = "---"
 				B738DR_calc_vspd = 1
 				B738DR_calc_trim = 1
 			elseif entry == "10" then
 				flaps = "10"
-				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-					entry = ""
-				else
-					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+				if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+						entry = ""
+					else
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+						entry = ""
+					end
 				end
-				v1_set = "---"
-				vr_set = "---"
-				v2_set = "---"
 				B738DR_calc_vspd = 1
 				B738DR_calc_trim = 1
 			elseif entry == "15" then
 				flaps = "15"
-				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-					entry = ""
-				else
-					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+				if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+						entry = ""
+					else
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+						entry = ""
+					end
 				end
-				v1_set = "---"
-				vr_set = "---"
-				v2_set = "---"
 				B738DR_calc_vspd = 1
 				B738DR_calc_trim = 1
 			elseif entry == "25" then
 				flaps = "25"
-				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-					entry = ""
-				else
-					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+				if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+						entry = ""
+					else
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+						entry = ""
+					end
 				end
-				v1_set = "---"
-				vr_set = "---"
-				v2_set = "---"
 				B738DR_calc_vspd = 1
 				B738DR_calc_trim = 1
 			else
 				if entry == ">DELETE" then
 					flaps = "**"
-					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-						entry = ""
-					else
-						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+					if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+						if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+							entry = ""
+						else
+							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+							entry = ""
+						end
 					end
-					v1_set = "---"
-					vr_set = "---"
-					v2_set = "---"
 					B738DR_calc_vspd = 1
 					B738DR_calc_trim = 1
 				else
@@ -21543,20 +21620,16 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					zfw = "***.*"
 					zfw_kgs = zfw
 					zfw_lbs = zfw
-					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-						entry = ""
-					else
-						if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+					if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+						if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+							entry = ""
+						else
 							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+							entry = ""
 						end
 					end
 					B738DR_calc_vspd = 1
 					B738DR_calc_trim = 1
-					if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
-						v1_set = "---"
-						vr_set = "---"
-						v2_set = "---"
-					end
 				else
 					if n == nil then
 						entry = INVALID_INPUT
@@ -21584,20 +21657,16 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 								zfw_kgs = string.format("%5.1f", (tonumber(zfw_lbs) / 2.204))	-- to kgs
 								zfw = zfw_kgs
 							end
-							if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-								entry = ""
-							else
-								if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+							if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+								if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+									entry = ""
+								else
 									add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+									entry = ""
 								end
 							end
 							B738DR_calc_vspd = 1
 							B738DR_calc_trim = 1
-							if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
-								v1_set = "---"
-								vr_set = "---"
-								v2_set = "---"
-							end
 						end
 					end
 				end
@@ -21746,14 +21815,14 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				if entry == ">DELETE" then
 					rw_wind_dir = "---"
 					rw_wind_spd = "---"
-					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-						entry = ""
-					else
-						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+					if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+						if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+							entry = ""
+						else
+							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+							entry = ""
+						end
 					end
-					v1_set = "---"
-					vr_set = "---"
-					v2_set = "---"
 					B738DR_calc_vspd = 1
 				else
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
@@ -21774,14 +21843,14 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 									else
 										rw_wind_dir = wind_dir
 										rw_wind_spd = string.format("%03d", n)
-										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-											entry = ""
-										else
-											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+										if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+											if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+												entry = ""
+											else
+												add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+												entry = ""
+											end
 										end
-										v1_set = "---"
-										vr_set = "---"
-										v2_set = "---"
 										B738DR_calc_vspd = 1
 									end
 								end
@@ -22130,14 +22199,14 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						sel_temp_f = "----"
 						oat_f = "****"
 						oat_unit = "`C"
-						if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-							entry = ""
-						else
-							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+						if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+							if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+								entry = ""
+							else
+								add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+								entry = ""
+							end
 						end
-						v1_set = "---"
-						vr_set = "---"
-						v2_set = "---"
 						B738DR_calc_vspd = 1
 					else
 						if strlen > 0 and strlen < 6 then
@@ -22183,14 +22252,14 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 											n = (n * 9 / 5) + 32
 											oat_f = string.format("%4d", n)
 										end
-										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-											entry = ""
-										else
-											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+										if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+											if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+												entry = ""
+											else
+												add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+												entry = ""
+											end
 										end
-										v1_set = "---"
-										vr_set = "---"
-										v2_set = "---"
 										B738DR_calc_vspd = 1
 									end
 								end
@@ -22228,14 +22297,14 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 												end
 											end
 										end
-										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-											entry = ""
-										else
-											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+										if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+											if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+												entry = ""
+											else
+												add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+												entry = ""
+											end
 										end
-										v1_set = "---"
-										vr_set = "---"
-										v2_set = "---"
 										B738DR_calc_vspd = 1
 									end
 								end
@@ -22273,14 +22342,14 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 											n = (n * 9 / 5) + 32
 											oat_f = string.format("%4d", n)
 										end
-										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-											entry = ""
-										else
-											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+										if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+											if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+												entry = ""
+											else
+												add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+												entry = ""
+											end
 										end
-										v1_set = "---"
-										vr_set = "---"
-										v2_set = "---"
 										B738DR_calc_vspd = 1
 									end
 								end
@@ -22357,79 +22426,13 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 			else
 				B738DR_fpln_format = 0
 			end
-		elseif page_xtras_fuel == 1 then
-			-- entry fuel
-			local kk = 0
-			local ll = 0
-			if string.len(entry) == 0 then
-				kk = simDR_fuel_tank_weight_kg[0] + simDR_fuel_tank_weight_kg[1] + simDR_fuel_tank_weight_kg[2]
-				kk = kk / 1000
-				if units == 0 then
-					kk = kk * 2.204
-				end
-				entry = string.format("%4.1f", kk)
+		elseif page_xtras_others == 4 then
+			if simDR_pitch_nz <= 0 then
+				simDR_pitch_nz = 0.30
 			else
-				if entry == ">DELETE" then
-					entry = INVALID_DELETE
-				else
-					kk = tonumber(entry)
-					if kk == nil then
-						entry = INVALID_INPUT
-					else
-						if units == 0 then
-							ll = ((simDR_payload_weight / 1000) * 2.204) + kk + 91.3
-							if kk >= 1 and kk <= 45.1 and ll <= 174.2 then
-								if kk > 17.2 then
-									simDR_fuel_tank_weight_kg[0] = 3900
-									simDR_fuel_tank_weight_kg[2] = 3900
-									simDR_fuel_tank_weight_kg[1] = (kk - 17.2) / 2.204 * 1000
-								else
-									-- if kk > 1.8 then
-										-- kk = kk - 1.8
-									-- end
-									simDR_fuel_tank_weight_kg[0] = (kk / 2) / 2.204 * 1000
-									simDR_fuel_tank_weight_kg[2] = (kk / 2) / 2.204 * 1000
-									simDR_fuel_tank_weight_kg[1] = 0 --1800 / 2.204
-								end
-								mac = calc_mac(simDR_cg)
-								entry = ""
-								gpu_test_enable = 1
-								if is_timer_scheduled(gpu_test_reset) == false then
-									run_after_time(gpu_test_reset, 1.5)
-								end
-							else
-								entry = INVALID_INPUT
-							end
-						else
-							ll = (simDR_payload_weight / 1000) + kk + 41.4
-							if kk >= 1 and kk <= 20.5 and ll <= 79 then
-								if kk > 7.8 then
-									simDR_fuel_tank_weight_kg[0] = 3900
-									simDR_fuel_tank_weight_kg[2] = 3900
-									simDR_fuel_tank_weight_kg[1] = (kk - 7.8) * 1000
-								else
-									-- if kk > 0.8 then
-										-- kk = kk - 0.8
-									-- end
-									simDR_fuel_tank_weight_kg[0] = (kk / 2) * 1000
-									simDR_fuel_tank_weight_kg[2] = (kk / 2) * 1000
-									simDR_fuel_tank_weight_kg[1] = 0 --800
-								end
-								mac = calc_mac(simDR_cg)
-								gpu_test_enable = 1
-								if is_timer_scheduled(gpu_test_reset) == false then
-									run_after_time(gpu_test_reset, 1.5)
-								end
-								entry = ""
-							else
-								entry = INVALID_INPUT
-							end
-						end
-					end
-				end
+				simDR_pitch_nz = simDR_pitch_nz - 0.01
 			end
 		end
-		
 	elseif phase == 2 then
 		B738DR_fms_key = 0
 	end
@@ -23239,14 +23242,14 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					clb_1 = "     "
 					clb_2 = "     "
 				end
-				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-					entry = ""
-				else
-					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+				if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+						entry = ""
+					else
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+						entry = ""
+					end
 				end
-				v1_set = "---"
-				vr_set = "---"
-				v2_set = "---"
 				B738DR_calc_vspd = 1
 			else
 				-- select GA
@@ -23263,14 +23266,14 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 				if entry == ">DELETE" then
 					rw_slope = "--.-"
 					rw_hdg = "---"
-					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-						entry = ""
-					else
-						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+					if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+						if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+							entry = ""
+						else
+							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+							entry = ""
+						end
 					end
-					v1_set = "---"
-					vr_set = "---"
-					v2_set = "---"
 					B738DR_calc_vspd = 1
 				else
 					if strlen == 4 then
@@ -23283,14 +23286,14 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 									entry = INVALID_INPUT
 								else
 									rw_hdg = string.format("%03d", n)
-									if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-										entry = ""
-									else
-										add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+									if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+											entry = ""
+										else
+											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+											entry = ""
+										end
 									end
-									v1_set = "---"
-									vr_set = "---"
-									v2_set = "---"
 									B738DR_calc_vspd = 1
 								end
 							end
@@ -23302,14 +23305,14 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 									entry = INVALID_INPUT
 								else
 									rw_slope = up_down .. string.format("%03.1f", n)
-									if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-										entry = ""
-									else
-										add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+									if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+											entry = ""
+										else
+											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+											entry = ""
+										end
 									end
-									v1_set = "---"
-									vr_set = "---"
-									v2_set = "---"
 									B738DR_calc_vspd = 1
 								end
 							else
@@ -23859,6 +23862,12 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					entry = INVALID_INPUT
 				end
 			end
+		elseif page_xtras_others == 4 then
+			if simDR_roll_nz <= 0 then
+				simDR_roll_nz = 0.30
+			else
+				simDR_roll_nz = simDR_roll_nz - 0.01
+			end
 		end
 		
 	elseif phase == 2 then
@@ -24108,6 +24117,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 			cg_set_m = simDR_cg
 			cg_set_in = cg_set_m * 39.37
 			mac = calc_mac(simDR_cg)
+			mac_zfw = calc_zfw_mac(cg_set_m)
 		-- elseif page_xtras_fmod == 1 then
 			-- -- FMOD Crew
 			-- B738CMD_enable_crew:once()
@@ -24464,29 +24474,27 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					entry = INVALID_INPUT
 				else
 					cg = string.format("%4.1f", n)
-					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-						entry = ""
-					else
-						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+					if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+						if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+							entry = ""
+						else
+							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+							entry = ""
+						end
 					end
-					v1_set = "---"
-					vr_set = "---"
-					v2_set = "---"
-					--B738DR_calc_vspd = 1
 					B738DR_calc_trim = 1
 				end
 			else
 				if entry == ">DELETE" then
 					cg = "--.-"
-					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-						entry = ""
-					else
-						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+					if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+						if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+							entry = ""
+						else
+							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+							entry = ""
+						end
 					end
-					v1_set = "---"
-					vr_set = "---"
-					v2_set = "---"
-					--B738DR_calc_vspd = 1
 					B738DR_calc_trim = 1
 				else
 					if n == nil then
@@ -24496,15 +24504,14 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							entry = INVALID_INPUT
 						else
 							cg = string.format("%4.1f", n)
-							if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-								entry = ""
-							else
-								add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+							if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+								if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+									entry = ""
+								else
+									add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+									entry = ""
+								end
 							end
-							v1_set = "---"
-							vr_set = "---"
-							v2_set = "---"
-							--B738DR_calc_vspd = 1
 							B738DR_calc_trim = 1
 						end
 					end
@@ -24562,14 +24569,14 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					zfw = "***.*"
 					zfw_lbs = zfw
 					zfw_kgs = zfw
-					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-						entry = ""
-					else
-						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+					if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+						if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+							entry = ""
+						else
+							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+							entry = ""
+						end
 					end
-					v1_set = "---"
-					vr_set = "---"
-					v2_set = "---"
 					B738DR_calc_vspd = 1
 					B738DR_calc_trim = 1
 				else
@@ -24587,14 +24594,14 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 								zfw_kgs = zfw
 								zfw_lbs = string.format("%5.1f", (tonumber(zfw) * 2.204))
 							end
-							if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-								entry = ""
-							else
-								add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+							if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+								if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+									entry = ""
+								else
+									add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+									entry = ""
+								end
 							end
-							v1_set = "---"
-							vr_set = "---"
-							v2_set = "---"
 							B738DR_calc_vspd = 1
 							B738DR_calc_trim = 1
 						end
@@ -24628,14 +24635,14 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						-- clb_2 = "<SEL>"
 					-- end
 				end
-				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-					entry = ""
-				else
-					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+				if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+						entry = ""
+					else
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+						entry = ""
+					end
 				end
-				v1_set = "---"
-				vr_set = "---"
-				v2_set = "---"
 				B738DR_calc_vspd = 1
 			else
 				-- select CON
@@ -24939,6 +24946,12 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 			else
 				entry = INVALID_INPUT
 			end
+		elseif page_xtras_others == 4 then
+			if simDR_yaw_nz <= 0 then
+				simDR_yaw_nz = 0.30
+			else
+				simDR_yaw_nz = simDR_yaw_nz - 0.01
+			end
 		end
 		
 	elseif phase == 2 then
@@ -25163,55 +25176,6 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 				B738DR_kill_effect = 2
 			else
 				B738DR_kill_effect = 0
-			end
-		elseif page_xtras_fuel == 1 then
-			-- entry fuel
-			local kk = 0
-			local ll = 0
-			if string.len(entry) == 0 then
-				kk = simDR_payload_weight
-				kk = kk / 1000
-				if units == 0 then
-					kk = kk * 2.204
-				end
-				entry = string.format("%4.1f", kk)
-			else
-				if entry == ">DELETE" then
-					entry = INVALID_DELETE
-				else
-					kk = tonumber(entry)
-					if kk == nil then
-						entry = INVALID_INPUT
-					else
-						if units == 0 then
-							ll = ((simDR_fuel_weight / 1000) * 2.204) + kk + 91.3
-							if kk >=0 and ll <= 174.2 then
-								simDR_payload_weight = kk / 2.204 * 1000
-								mac = calc_mac(simDR_cg)
-								entry = ""
-								gpu_test_enable = 1
-								if is_timer_scheduled(gpu_test_reset) == false then
-									run_after_time(gpu_test_reset, 1.5)
-								end
-							else
-								entry = INVALID_INPUT
-							end
-						else
-							ll = (simDR_fuel_weight / 1000) + kk + 41.4
-							if kk >= 0 and ll <= 79 then
-								simDR_payload_weight = kk * 1000
-								mac = calc_mac(simDR_cg)
-								entry = ""
-								gpu_test_enable = 1
-								if is_timer_scheduled(gpu_test_reset) == false then
-									run_after_time(gpu_test_reset, 1.5)
-								end
-							else
-								entry = INVALID_INPUT
-							end
-						end
-					end
-				end
 			end
 		elseif page_arr == 1 then
 			if des_star2 == "------" then
@@ -25632,14 +25596,14 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 					clb_1 = "     "
 					clb_2 = "<SEL>"
 				end
-				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-					entry = ""
-				else
-					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+				if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+						entry = ""
+					else
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+						entry = ""
+					end
 				end
-				v1_set = "---"
-				vr_set = "---"
-				v2_set = "---"
 				B738DR_calc_vspd = 1
 			else
 				-- select CLB
@@ -25660,14 +25624,14 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						sel_temp_f = "----"
 						oat_f = "****"
 						oat_unit = "`C"
-						if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-							entry = ""
-						else
-							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+						if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+							if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+								entry = ""
+							else
+								add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+								entry = ""
+							end
 						end
-						v1_set = "---"
-						vr_set = "---"
-						v2_set = "---"
 						B738DR_calc_vspd = 1
 					else
 						if strlen > 0 and strlen < 6 then
@@ -25713,14 +25677,14 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 											n = (n * 9 / 5) + 32
 											oat_f = string.format("%4d", n)
 										end
-										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-											entry = ""
-										else
-											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+										if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+											if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+												entry = ""
+											else
+												add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+												entry = ""
+											end
 										end
-										v1_set = "---"
-										vr_set = "---"
-										v2_set = "---"
 										B738DR_calc_vspd = 1
 									end
 								end
@@ -25758,14 +25722,14 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 												end
 											end
 										end
-										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-											entry = ""
-										else
-											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+										if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+											if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+												entry = ""
+											else
+												add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+												entry = ""
+											end
 										end
-										v1_set = "---"
-										vr_set = "---"
-										v2_set = "---"
 										B738DR_calc_vspd = 1
 									end
 								end
@@ -25803,14 +25767,14 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 											n = (n * 9 / 5) + 32
 											oat_f = string.format("%4d", n)
 										end
-										if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-											entry = ""
-										else
-											add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+										if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+											if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+												entry = ""
+											else
+												add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+												entry = ""
+											end
 										end
-										v1_set = "---"
-										vr_set = "---"
-										v2_set = "---"
 										B738DR_calc_vspd = 1
 									end
 								end
@@ -26193,40 +26157,6 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 				B738DR_nosewheel = 2
 			else
 				B738DR_nosewheel = 0
-			end
-		elseif page_xtras_fuel == 1 then
-			-- entry cg
-			local kk = 0
-			local ll = 0
-			if string.len(entry) ~= 0 then
-				if entry == ">DELETE" then
-					entry = INVALID_DELETE
-				else
-					kk = tonumber(entry)
-					if kk == nil then
-						entry = INVALID_INPUT
-					else
-						if units == 0 then
-							ll = kk * 2.54
-						else
-							ll = kk
-							kk = kk * 0.3937
-						end
-						if ll < -130 or ll > 266.6 then
-							entry = INVALID_INPUT
-						else
-							cg_set_m = ll / 100
-							cg_set_in = kk
-							simDR_cg = cg_set_m
-							mac = calc_mac(simDR_cg)
-							entry = ""
-							gpu_test_enable = 1
-							if is_timer_scheduled(gpu_test_reset) == false then
-								run_after_time(gpu_test_reset, 1.5)
-							end
-						end
-					end
-				end
 			end
 		elseif page_arr == 1 then
 			if des_star2 == "------" then
@@ -27101,6 +27031,41 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 			copy_to_legsdata_3()
 			copy_to_legsdata2()
 			create_fpln()
+		elseif page_xtras_fuel == 1 then
+			-- entry cg
+			local kk = 0
+			local ll = 0
+			if string.len(entry) ~= 0 then
+				if entry == ">DELETE" then
+					entry = INVALID_DELETE
+				else
+					kk = tonumber(entry)
+					if kk == nil then
+						entry = INVALID_INPUT
+					else
+						if units == 0 then
+							ll = kk * 2.54
+						else
+							ll = kk
+							kk = kk * 0.3937
+						end
+						if ll < -130 or ll > 266.6 then
+							entry = INVALID_INPUT
+						else
+							cg_set_m = ll / 100
+							cg_set_in = kk
+							simDR_cg = cg_set_m
+							mac = calc_mac(simDR_cg)
+							mac_zfw = calc_zfw_mac(cg_set_m)
+							entry = ""
+							gpu_test_enable = 1
+							if is_timer_scheduled(gpu_test_reset) == false then
+								run_after_time(gpu_test_reset, 1.5)
+							end
+						end
+					end
+				end
+			end
 		end
 		
 	elseif phase == 2 then
@@ -27728,15 +27693,14 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 			else
 				rw_cond = rw_cond + 1
 			end
-			if v1_set == "---" and vr_set == "---" and v2_set == "---" then
-				entry = ""
-			else
-				add_fmc_msg(VERIFY_TO_SPEEDS, 1)
-				B738DR_fmc_message_warn = 1
+			if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+				if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+					entry = ""
+				else
+					add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+					entry = ""
+				end
 			end
-			v1_set = "---"
-			vr_set = "---"
-			v2_set = "---"
 			B738DR_calc_vspd = 1
 		-- elseif page_menu == 1 then
 			--B738_init2()
@@ -27893,6 +27857,63 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 			entry = last_pos
 		elseif page_xtras_fmod > 0 then
 			fmc_fmod_main(0,1)
+		elseif page_xtras_fuel == 1 then
+			-- entry fuel
+			local kk = 0
+			local ll = 0
+			if string.len(entry) == 0 then
+				kk = simDR_payload_weight
+				kk = kk / 1000
+				if units == 0 then
+					kk = kk * 2.204
+				end
+				entry = string.format("%4.1f", kk)
+			else
+				if entry == ">DELETE" then
+					entry = INVALID_DELETE
+				else
+					kk = tonumber(entry)
+					if kk == nil then
+						entry = INVALID_INPUT
+					else
+						if units == 0 then
+							ll = ((simDR_fuel_weight / 1000) * 2.204) + kk + 91.3
+							if kk >=0 and ll <= 174.2 then
+								simDR_payload_weight = kk / 2.204 * 1000
+								mac = calc_mac(simDR_cg)
+								mac_zfw = calc_zfw_mac(cg_set_m)
+								entry = ""
+								gpu_test_enable = 1
+								if is_timer_scheduled(gpu_test_reset) == false then
+									run_after_time(gpu_test_reset, 1.5)
+								end
+							else
+								entry = INVALID_INPUT
+							end
+						else
+							ll = (simDR_fuel_weight / 1000) + kk + 41.4
+							if kk >= 0 and ll <= 79 then
+								simDR_payload_weight = kk * 1000
+								mac = calc_mac(simDR_cg)
+								mac_zfw = calc_zfw_mac(cg_set_m)
+								entry = ""
+								gpu_test_enable = 1
+								if is_timer_scheduled(gpu_test_reset) == false then
+									run_after_time(gpu_test_reset, 1.5)
+								end
+							else
+								entry = INVALID_INPUT
+							end
+						end
+					end
+				end
+			end
+		elseif page_xtras_others == 4 then
+			if simDR_pitch_nz < 0.30 then
+				simDR_pitch_nz = simDR_pitch_nz + 0.01
+			else
+				simDR_pitch_nz = 0
+			end
 		end
 		
 	elseif phase == 2 then
@@ -28351,6 +28372,12 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 			end
 		elseif page_xtras_fmod > 0 then
 			fmc_fmod_main(0,2)
+		elseif page_xtras_others == 4 then
+			if simDR_roll_nz < 0.30 then
+				simDR_roll_nz = simDR_roll_nz + 0.01
+			else
+				simDR_roll_nz = 0
+			end
 		end
 		
 	elseif phase == 2 then
@@ -28885,6 +28912,85 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 		----------
 		elseif page_xtras_fmod > 0 then
 			fmc_fmod_main(0,3)
+		elseif page_xtras_fuel == 1 then
+			-- entry fuel
+			local kk = 0
+			local ll = 0
+			if string.len(entry) == 0 then
+				kk = simDR_fuel_tank_weight_kg[0] + simDR_fuel_tank_weight_kg[1] + simDR_fuel_tank_weight_kg[2]
+				kk = kk / 1000
+				if units == 0 then
+					kk = kk * 2.204
+				end
+				entry = string.format("%4.1f", kk)
+			else
+				if entry == ">DELETE" then
+					entry = INVALID_DELETE
+				else
+					kk = tonumber(entry)
+					if kk == nil then
+						entry = INVALID_INPUT
+					else
+						if units == 0 then
+							ll = ((simDR_payload_weight / 1000) * 2.204) + kk + 91.3
+							if kk >= 1 and kk <= 45.1 and ll <= 174.2 then
+								if kk > 17.2 then
+									simDR_fuel_tank_weight_kg[0] = 3900
+									simDR_fuel_tank_weight_kg[2] = 3900
+									simDR_fuel_tank_weight_kg[1] = (kk - 17.2) / 2.204 * 1000
+								else
+									-- if kk > 1.8 then
+										-- kk = kk - 1.8
+									-- end
+									simDR_fuel_tank_weight_kg[0] = (kk / 2) / 2.204 * 1000
+									simDR_fuel_tank_weight_kg[2] = (kk / 2) / 2.204 * 1000
+									simDR_fuel_tank_weight_kg[1] = 0 --1800 / 2.204
+								end
+								mac = calc_mac(simDR_cg)
+								mac_zfw = calc_zfw_mac(cg_set_m)
+								entry = ""
+								gpu_test_enable = 1
+								if is_timer_scheduled(gpu_test_reset) == false then
+									run_after_time(gpu_test_reset, 1.5)
+								end
+							else
+								entry = INVALID_INPUT
+							end
+						else
+							ll = (simDR_payload_weight / 1000) + kk + 41.4
+							if kk >= 1 and kk <= 20.5 and ll <= 79 then
+								if kk > 7.8 then
+									simDR_fuel_tank_weight_kg[0] = 3900
+									simDR_fuel_tank_weight_kg[2] = 3900
+									simDR_fuel_tank_weight_kg[1] = (kk - 7.8) * 1000
+								else
+									-- if kk > 0.8 then
+										-- kk = kk - 0.8
+									-- end
+									simDR_fuel_tank_weight_kg[0] = (kk / 2) * 1000
+									simDR_fuel_tank_weight_kg[2] = (kk / 2) * 1000
+									simDR_fuel_tank_weight_kg[1] = 0 --800
+								end
+								mac = calc_mac(simDR_cg)
+								mac_zfw = calc_zfw_mac(cg_set_m)
+								gpu_test_enable = 1
+								if is_timer_scheduled(gpu_test_reset) == false then
+									run_after_time(gpu_test_reset, 1.5)
+								end
+								entry = ""
+							else
+								entry = INVALID_INPUT
+							end
+						end
+					end
+				end
+			end
+		elseif page_xtras_others == 4 then
+			if simDR_yaw_nz < 0.30 then
+				simDR_yaw_nz = simDR_yaw_nz + 0.01
+			else
+				simDR_yaw_nz = 0
+			end
 		end
 		
 	elseif phase == 2 then
@@ -30064,6 +30170,11 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 		elseif page_xtras_others > 0 then
 			-- go to BACK
 			page_xtras_others = 0
+			page_xtras = 1
+			act_page = 1
+		elseif page_xtras_fuel == 1 then
+			-- go to BACK
+			page_xtras_fuel = 0
 			page_xtras = 1
 			act_page = 1
 		elseif page_ref_nav_data == 1 then
@@ -34676,14 +34787,14 @@ function B738_fmc_menu()
 		line1_l = "<FMC            " .. units_str_l
 		line1_s = "                " .. units_str_s
 		-- line2_x = "                        "
-		line2_l = "<ACARS            XTRAS>"
+		line2_l = "<ACARS         ADVANCED>"
 		-- line2_s = "                        "
 		---------------------------------------------------------
 		-- line4_x = "                        "
 		line4_l = "  Z I B O               "
 		line4_s = "           M O D  " .. version
 		if menu_tick < 5 then
-			line5_x = "FLIGHT MODEL 4.1 TWKSTER"
+			line5_x = "FLIGHT MODEL 4.3 TWKSTER"
 			line5_l = "         A   S  D  G    "
 			line5_s = "      BY  ERO IM EV ROUP"
 			line6_x = "SOUND PACK "
@@ -34991,16 +35102,16 @@ function B738_fmc_xtras()
 		act_page = 1
 		max_page = 1
 		
-		line0_l = "       XTRAS MENU       "
+		line0_l = "    ADVANCED MENU       "
 		line0_s = "                    1/1 "
 		-- line1_x = "                        "
-		line1_l = "<FMOD SETTINGS          "
+		line1_l = "<SOUND                  "
 		-- line1_s = "                        "
 		-- line2_x = "                        "
 		line2_l = "<OTHERS                 "
 		-- line2_s = "                        "
 		-- line3_x = "                        "
-		line3_l = "<FUEL AND ...           "
+		line3_l = "<FUEL AND CG            "
 		-- line3_s = "                        "
 		-- line4_x = "                        "
 		-- line4_l = "                        "
@@ -35014,7 +35125,7 @@ function B738_fmc_xtras()
 	end
 end
 
-function B738_fmc_fuel()
+function B738_fmc_fuel_old()
 	if page_xtras_fuel == 1 then
 		act_page = 1
 		max_page = 1
@@ -35031,7 +35142,7 @@ function B738_fmc_fuel()
 			-- total_fuel = total_fuel  * 2.204
 		-- end
 		
-		line0_l = "       FUEL AND ...     "
+		line0_l = "       FUEL AND CG      "
 		line0_s = "                    1/1 "
 		if units == 0 then
 			left_fuel = left_fuel * 2.204
@@ -35078,10 +35189,58 @@ function B738_fmc_fuel()
 			line5_g = line5_g .. "             " .. string.format("%2d", mac) .. "%"
 		end
 		-- line6_x = "                        "
-		-- line6_l = "                        "
+		line6_l = "                   BACK>"
 		-- line6_s = "                        "
 	end
 end
+
+function B738_fmc_fuel()
+	if page_xtras_fuel == 1 then
+		act_page = 1
+		max_page = 1
+		
+		local left_fuel = simDR_fuel_tank_weight_kg[0] / 1000
+		local center_fuel = simDR_fuel_tank_weight_kg[1] / 1000
+		local right_fuel = simDR_fuel_tank_weight_kg[2] / 1000
+		
+		local total_fuel = left_fuel + center_fuel + right_fuel
+		local payload_wgt = simDR_payload_weight / 1000
+		local total_wgt = simDR_total_weight / 1000
+		local zfw_wgt = 41.41 + payload_wgt
+		local cg_str = ""
+		local cg_shift = ""
+		
+		line0_l = "       FUEL AND CG      "
+		line0_s = "                    1/1 "
+		
+		if units == 0 then
+			total_fuel = total_fuel * 2.204
+			payload_wgt = payload_wgt * 2.204
+			total_wgt = total_wgt * 2.204
+			zfw_wgt = zfw_wgt * 2.204
+			cg_str = string.format("%5.1f", cg_set_in)
+			cg_shift = "IN"
+		else
+			cg_str = string.format("%5.1f", (cg_set_m * 100))
+			cg_shift = "CM"
+		end
+		
+		line1_l = " PAYLOAD               >"
+		line1_g = "                   " .. string.format("%4.1f", payload_wgt)
+		line2_l = " ZFW              " .. string.format("%5.1f", zfw_wgt)
+		line3_l = " FUEL                  >"
+		line3_g = "                   " .. string.format("%4.1f", total_fuel)
+		line4_l = " TOW              " .. string.format("%5.1f", total_wgt)
+		line5_x = "------------------------"
+		line5_l = " ZFW CG       TO CG    "
+		line5_g = "        " .. string.format("%2d", mac_zfw) .. "%"
+		line5_g = line5_g .. "         " .. string.format("%2d", mac) .. "%"
+		line6_l = "<CG SHIFT          BACK>"
+		line6_g = "          " .. cg_str
+		line6_s = "               " .. cg_shift
+	end
+end
+
 
 function B738_fmc_fmod_main()
 
@@ -35089,7 +35248,7 @@ function B738_fmc_fmod_main()
 		act_page = 1
 		max_page = 2
 		
-		line0_l = " FMOD SETTINGS          "
+		line0_l = " SOUND MENU             "
 		line0_s = "                    1/2 "
 		line1_l = "<FEATURES               "
 		line2_l = "<VOLUMES                "
@@ -35101,7 +35260,7 @@ function B738_fmc_fmod_main()
 		act_page = 2
 		max_page = 2
 		
-		line0_l = " FMOD PRESETS           "
+		line0_l = " SOUND PRESETS          "
 		line0_s = "                    2/2 "
 		line1_x = " LOAD              SAVE "
 		line1_l = "<----   " .. spaces_after(fmod_preset[1][1], 8) .. "   ---->"
@@ -35259,12 +35418,13 @@ function B738_fmc_fmod_dspl()
 		line1_l = "<     /0-10/"
 		line2_x = " ANNOUNC.SET NR         "
 		line2_g = "  " .. string.format("%2d", (B738DR_announcement_set+1))
-		line2_l = "<     /1-4/"
-		line3_x = " CAPT WELCOME           "
-		line3_l = "< PLAY MESSAGE          "
-		line4_x = " CAPT CRUISE            "
+		line2_l = "<     /1-16/"
+		line3_x = " FA IN COCKPIT          "
+		line3_g = "  " .. string.format("%2d", B738DR_vol_FAC)
+		line3_l = "<     /0-10/"
+		line4_x = " CAPT WELCOME           "
 		line4_l = "< PLAY MESSAGE          "
-		line5_x = " CAPT DESCENT           "
+		line5_x = " CAPT CRUISE            "
 		line5_l = "< PLAY MESSAGE          "
 		line6_l = "<DEFAULT           BACK>"
 	elseif page_fmod_announ == 2 then
@@ -35272,10 +35432,12 @@ function B738_fmc_fmod_dspl()
 		max_page = 2
 		line0_l = " FMOD ANNOUNCEMENTS     "
 		line0_s = "                    2/2 "
-		line1_x = " CAPT PRELAND           "
+		line1_x = " CAPT DESCENT           "
 		line1_l = "< PLAY MESSAGE          "
-		line2_x = " TURBULENCE             "
+		line2_x = " CAPT PRELAND           "
 		line2_l = "< PLAY MESSAGE          "
+		line3_x = " TURBULENCE             "
+		line3_l = "< PLAY MESSAGE          "
 		line6_l = "<DEFAULT           BACK>"
 	
 	-- EQ
@@ -35471,20 +35633,23 @@ function fmc_fmod_announ(fmod_butt)
 			-- FLIGHT ATTEND SET
 			B738CMD_announcement_set:once()
 		elseif fmod_butt == 3 then
+			-- FA IN COCKPIT
+			B738CMD_vol_FAC:once()
+		elseif fmod_butt == 4 then
 			-- WELCOME
 			B738CMD_play_welcome:once()
-		elseif fmod_butt == 4 then
+		elseif fmod_butt == 5 then
 			-- LEVEL OFF
 			B738CMD_play_cruise:once()
-		elseif fmod_butt == 5 then
-			-- DESCENT
-			B738CMD_play_descent:once()
 		end
 	elseif page_fmod_announ == 2 then
 		if fmod_butt == 1 then
+			-- DESCENT
+			B738CMD_play_descent:once()
+		elseif fmod_butt == 2 then
 			-- BEFORE LANDING
 			B738CMD_play_preland:once()
-		elseif fmod_butt == 2 then
+		elseif fmod_butt == 3 then
 			-- TURBULENCE WARNING
 			B738CMD_play_turbulence:once()
 		end
@@ -35531,10 +35696,10 @@ function B738_fmc_xtras_others()
 
 	if page_xtras_others == 1 then
 		act_page = 1
-		max_page = 3
+		max_page = 4
 		
 		line0_l = "       OTHERS           "
-		line0_s = "                    1/3 "
+		line0_s = "                    1/4 "
 		line1_x = " ALIGN TIME             "
 		if B738DR_align_time == 0 then
 			line1_l = "<    /    /             "
@@ -35594,10 +35759,10 @@ function B738_fmc_xtras_others()
 		-- line6_s = "                        "
 	elseif page_xtras_others == 2 then
 		act_page = 2
-		max_page = 3
+		max_page = 4
 		
 		line0_l = "       OTHERS           "
-		line0_s = "                    2/3 "
+		line0_s = "                    2/4 "
 		line1_x = " ENGINE NO RUNNING STATE"
 		if B738DR_engine_no_running_state == 0 then
 			line1_l = "<         /             "
@@ -35655,10 +35820,10 @@ function B738_fmc_xtras_others()
 		-- line6_s = "                        "
 	elseif page_xtras_others == 3 then
 		act_page = 3
-		max_page = 3
+		max_page = 4
 		
 		line0_l = "       OTHERS           "
-		line0_s = "                    3/3 "
+		line0_s = "                    3/4 "
 		line1_x = " FLIGHTPLAN SAVE FORMAT "
 		if B738DR_fpln_format == 0 then
 			line1_l = "<   /                   "
@@ -35703,6 +35868,22 @@ function B738_fmc_xtras_others()
 			line4_g = "       OFF              "
 			line4_s = " ON XE                  "
 		end
+		line6_l = "<DEFAULT           BACK>"
+	elseif page_xtras_others == 4 then
+		act_page = 4
+		max_page = 4
+		
+		line0_l = "       OTHERS           "
+		line0_s = "                    4/4 "
+		line1_x = " PITCH NULL ZONE        "
+		line1_g = "      " .. string.format("%2d", simDR_pitch_nz * 100)
+		line1_l = "<           /0-30/     >"
+		line2_x = " ROLL NULL ZONE         "
+		line2_g = "      " .. string.format("%2d", simDR_roll_nz * 100)
+		line2_l = "<           /0-30/     >"
+		line3_x = " YAW NULL ZONE          "
+		line3_g = "      " .. string.format("%2d", simDR_yaw_nz * 100)
+		line3_l = "<           /0-30/     >"
 		line6_l = "<DEFAULT           BACK>"
 	end
 end
@@ -44006,23 +44187,29 @@ function B738_flight_phase3()
 		
 		else
 		
+			if B738DR_flight_phase == 0 then
+				-- flight phase CLIMB
+				alt_temp = clb_alt_num - 150
+				if simDR_radio_height_pilot_ft > alt_temp and climb_enable == 1 then
+					takeoff_enable = 0
+					B738DR_flight_phase = 1
+				end
+			end
+			
 			if td_idx == 0 then
-				if B738DR_flight_phase == 0 then
-					-- flight phase CLIMB
-					alt_temp = clb_alt_num - 150
-					if simDR_radio_height_pilot_ft > alt_temp and climb_enable == 1 then
-						takeoff_enable = 0
-						-- switch_fmc_page(1)
-						B738DR_flight_phase = 1
-					end
-				elseif B738DR_flight_phase == 1 then
+				-- if B738DR_flight_phase == 0 then
+					-- -- flight phase CLIMB
+					-- alt_temp = clb_alt_num - 150
+					-- if simDR_radio_height_pilot_ft > alt_temp and climb_enable == 1 then
+						-- takeoff_enable = 0
+						-- B738DR_flight_phase = 1
+					-- end
+				if B738DR_flight_phase == 1 then
 					if crz_alt_num > 0 and simDR_altitude_pilot >= crz_alt_num then
 						B738DR_flight_phase = 2
-						-- switch_fmc_page(2)
 						altitude_last = simDR_altitude_pilot
 					elseif descent_active == 1 then
 						B738DR_fms_descent_now = 3
-						-- switch_fmc_page(3)
 						B738DR_flight_phase = 5
 						takeoff_enable = 0
 						climb_enable = 0
@@ -44031,7 +44218,6 @@ function B738_flight_phase3()
 					if descent_active == 1 and B738DR_flight_phase < 5 then
 						B738DR_flight_phase = 5
 						B738DR_fms_descent_now = 3
-						-- switch_fmc_page(3)
 						takeoff_enable = 0
 						climb_enable = 0
 						--descent_enable = 1
@@ -44058,16 +44244,15 @@ function B738_flight_phase3()
 										altitude_last = simDR_altitude_pilot
 									end
 								end
-							else
-								alt_temp = clb_alt_num - 150
-								if simDR_radio_height_pilot_ft > alt_temp and B738DR_flight_phase == 0 then
-									-- flight phase CLIMB
-									takeoff_enable = 0
-									if B738DR_flight_phase < 1 then
-										B738DR_flight_phase = 1
-										-- switch_fmc_page(1)
-									end
-								end
+							-- else
+								-- alt_temp = clb_alt_num - 150
+								-- if simDR_radio_height_pilot_ft > alt_temp and B738DR_flight_phase == 0 then
+									-- -- flight phase CLIMB
+									-- takeoff_enable = 0
+									-- if B738DR_flight_phase < 1 then
+										-- B738DR_flight_phase = 1
+									-- end
+								-- end
 							end
 						end
 						if descent_active == 1 and B738DR_flight_phase < 5 then
@@ -44082,14 +44267,14 @@ function B738_flight_phase3()
 						end
 					else
 						ii = 0
-						if crz_alt_num > 0 and simDR_altitude_pilot > (crz_alt_num - 100) and B738DR_fms_descent_now ~= 2 then
+						if crz_alt_num > 0 and simDR_altitude_pilot > (crz_alt_num - 200) and B738DR_fms_descent_now ~= 2 then
 							if B738DR_flight_phase ~= 2 and B738DR_flight_phase ~= 3 and B738DR_flight_phase ~= 4 then
 								B738DR_fms_descent_now = 0
 								B738DR_flight_phase = 2
 								altitude_last = simDR_altitude_pilot
 								descent_active = 0
-								ii = 1
 							end
+							ii = 1
 						end
 						if ii == 0 and B738DR_flight_phase < 5 then
 							-- flight phase DESCENT
@@ -44353,11 +44538,10 @@ function B738_N1_thrust_set()
 			end
 		end
 		fms_N1_mode = fms_N1_to_mode_sel
-		
 		if simDR_radio_height_pilot_ft > B738DR_accel_alt - 300 then
 			fmc_auto_thrust = fmc_auto_thrust * 0.96	-- 4% thrust reduction
 		end
-		
+	
 	-- mode CLIMB
 	elseif B738DR_flight_phase == 1 then
 		
@@ -56852,7 +57036,8 @@ function B738_vnav_pth3()
 		gp_disable = 1
 	end
 	if td_idx == 0 then
-		td_enable = 1
+		--td_enable = 1
+		td_enable = 0
 	end
 	
 	--if crz_alt_num > 0 and legs_num > 0 and offset > 0 and cost_index ~= "***" and ref_icao ~= "----" and des_icao ~= "****" then
@@ -56872,7 +57057,7 @@ function B738_vnav_pth3()
 				-- else
 					for ii = offset, td_idx do
 						if ii == offset then
-								vnav_td_dist = simDR_fmc_dist
+							vnav_td_dist = simDR_fmc_dist
 						elseif ii < td_idx then
 							vnav_td_dist = vnav_td_dist + legs_data[ii][3]
 						else
@@ -57493,11 +57678,45 @@ function B738_fmc_calc()
 		legs_num_old = legs_num
 		-----------------------------
 		
-		if offset > 0 and offset <= legs_num then
-			
-			
-			--if legs_num > 0 then
-			if legs_num > 0 and legs_num2 > 1 and rte_exec == 0 then
+		-- if offset > 0 and offset <= legs_num then
+			-- if legs_num > 0 and legs_num2 > 1 and rte_exec == 0 then
+				-- B738DR_fpln_active = 1
+				-- B738DR_fpln_active_fo = 1
+				-- if nav_mode == 1 then
+					-- temp_txt = des_icao
+				-- else
+					-- temp_txt = legs_data[offset][1]
+				-- end
+				-- if string.len(temp_txt) > 5 then
+					-- temp_txt = string.sub(temp_txt, 1, 5)
+				-- end
+				-- B738DR_fpln_nav_id = temp_txt
+			-- else
+				-- B738DR_fpln_active = 0
+				-- B738DR_fpln_active_fo = 0
+				-- B738DR_fpln_nav_id = ""
+			-- end
+			-- time_zulu = legs_data[offset][13]
+			-- if time_zulu > 0 then
+				-- tmp_wpt_eta2 = math.floor(time_zulu)
+				-- tmp_wpt_eta3 = ((time_zulu - tmp_wpt_eta2) * 60) % 60
+				-- tmp_wpt_eta2 = tmp_wpt_eta2 + (tmp_wpt_eta3/100)
+			-- else
+				-- time_zulu = simDR_zulu_hours + (simDR_zulu_minutes/60) + (simDR_zulu_seconds/3600)
+				-- tmp_wpt_eta2 = math.floor(time_zulu)
+				-- tmp_wpt_eta3 = ((time_zulu - tmp_wpt_eta2) * 60) % 60
+				-- tmp_wpt_eta2 = tmp_wpt_eta2 + (tmp_wpt_eta3/100)
+			-- end
+			-- B738DR_fms_id_eta = tmp_wpt_eta2
+		-- else
+			-- B738DR_fpln_nav_id = ""
+			-- B738DR_fms_id_eta = 0
+			-- B738DR_fpln_active = 0
+			-- B738DR_fpln_active_fo = 0
+		-- end
+		
+		if offset > 0 and offset <= legs_num + 1 then
+			if legs_num > 1 and legs_num2 > 1 then --and rte_exec == 0 then
 				B738DR_fpln_active = 1
 				B738DR_fpln_active_fo = 1
 				if nav_mode == 1 then
@@ -57514,7 +57733,12 @@ function B738_fmc_calc()
 				B738DR_fpln_active_fo = 0
 				B738DR_fpln_nav_id = ""
 			end
-			time_zulu = legs_data[offset][13]
+			
+			if legs_num > 0 then
+				time_zulu = legs_data[offset][13]
+			else
+				time_zulu = 0
+			end
 			if time_zulu > 0 then
 				tmp_wpt_eta2 = math.floor(time_zulu)
 				tmp_wpt_eta3 = ((time_zulu - tmp_wpt_eta2) * 60) % 60
@@ -57532,6 +57756,9 @@ function B738_fmc_calc()
 			B738DR_fpln_active = 0
 			B738DR_fpln_active_fo = 0
 		end
+		
+		
+		
 	end
 	
 	
@@ -57606,15 +57833,6 @@ function B738_fmc_calc()
 			
 			elseif offset <= legs_num then
 				B738DR_fms_test1 = 100
-				-- if legs_data[offset][1] == "VECTOR" then
-					-- if B738DR_heading_mode ~= 4 then 
-						-- offset = offset + 1
-						-- nav_mode = 0
-						-- legs_intdir_act = 0
-						-- B738DR_hold_phase = 0
-						-- hold_term = 0
-					-- end
-				-- else
 					nd_lat2 = math.rad(legs_data[offset][7])
 					nd_lon2 = math.rad(legs_data[offset][8])
 					
@@ -57629,34 +57847,9 @@ function B738_fmc_calc()
 							else
 								act_crs = legs_intdir_crs - simDR_mag_variation
 							end
-						-- elseif legs_data[offset][31] == "DF" then
-							-- act_crs = simDR_fmc_crs - simDR_mag_variation
-						-- elseif legs_data[offset][31] == "AF" then
-							-- act_crs = nd_calc_brg(legs_data[offset][23], legs_data[offset][24], legs_data[offset][7], legs_data[offset][8])
-							-- if af_turn == 2 then
-								-- -- left
-								-- act_crs = (act_crs + 270) % 360
-							-- else
-								-- -- right
-								-- act_crs = (act_crs + 90) % 360
-							-- end
-						-- elseif legs_data[offset][31] == "RF" then
-							-- act_crs = nd_calc_brg(legs_data[offset][23], legs_data[offset][24], legs_data[offset][7], legs_data[offset][8])
-							-- if legs_data[offset][21] == 2 then
-								-- -- left
-								-- act_crs = (act_crs + 270) % 360
-							-- else
-								-- -- right
-								-- act_crs = (act_crs + 90) % 360
-							-- end
-						-- else
-							-- act_crs = math.deg(legs_data[offset][2])
-						-- end
-						
 						else
 							act_crs = simDR_fmc_crs - simDR_mag_variation
 						end
-						-- act_crs = simDR_mag_hdg - simDR_mag_variation
 						
 						if legs_data[offset+1][31] == "AF" then
 							next_crs = nd_calc_brg(legs_data[offset+1][23], legs_data[offset+1][24], legs_data[offset][7], legs_data[offset][8])
@@ -57705,8 +57898,6 @@ function B738_fmc_calc()
 							next_crs = math.deg(legs_data[offset+1][2])
 						end
 						
-						-- act_crs = math.deg(legs_data[offset][2])
-						-- next_crs = math.deg(legs_data[offset+1][2])
 						next_rel_brg = ((next_crs - act_crs) + 360 ) % 360
 						
 						if B738DR_heading_mode == 4 and (legs_data[offset+1][31] == "HA" or legs_data[offset+1][31] == "HF") then
@@ -58891,9 +59082,9 @@ function B738_fmc_calc()
 			-- calculate AF distance
 			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), af_lat, af_lon)
 			if legs_data[offset][21] == 2 then
-				B738DR_xtrack = nd_dis - af_dist  --(af_dist - 0.3)
+				B738DR_xtrack = nd_dis - af_dist
 			else
-				B738DR_xtrack = af_dist - nd_dis  --(af_dist - 0.3) - nd_dis
+				B738DR_xtrack = af_dist - nd_dis
 			end
 			if B738DR_xtrack > 99 then
 				B738DR_xtrack = 999
@@ -58948,6 +59139,77 @@ function B738_fmc_calc()
 			simDR_fmc_dist = nd_dis
 			simDR_fmc_dist2 = nd_dis + dist_corr
 		
+			relative_brg = (simDR_fmc_crs - simDR_mag_hdg + 360) % 360
+			if relative_brg > 180 then
+				relative_brg = relative_brg - 360
+			end
+			
+			if B738DR_wpt_path == "RF" then
+				if legs_data[offset][21] == 2 then
+					-- left
+					if relative_brg >= -9 then
+						nav_mode = 6
+						nd_hdg = nd_calc_brg(legs_data[offset][7], legs_data[offset][8], af_lat, af_lon)
+						af_finish_crs = (nd_hdg + 90) % 360
+					end
+				else
+					-- right
+					if relative_brg <= 9 then
+						nav_mode = 6
+						nd_hdg = nd_calc_brg(legs_data[offset][7], legs_data[offset][8], af_lat, af_lon)
+						af_finish_crs = (nd_hdg + 270) % 360
+					end
+				end
+			end
+			
+		elseif nav_mode == 6 then
+			-- finish RF
+			
+			B738DR_radii_turn_act = 0
+			simDR_fmc_trk_turn = -1
+			B738DR_wpt_path = "CF"
+			simDR_fmc_trk = af_finish_crs
+			
+			
+			nd_lat2 = math.rad(legs_data[offset][7])
+			nd_lon2 = math.rad(legs_data[offset][8])
+			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+			
+			nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+			nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+			nd_hdg = math.atan2(nd_y, nd_x)
+			nd_hdg = math.deg(nd_hdg)
+			nd_hdg = (nd_hdg + 360) % 360
+			
+			true_brg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
+			true_hdg = simDR_mag_hdg
+			
+			simDR_fmc_crs = (nd_hdg + simDR_mag_variation + 360) % 360
+			
+			-- calculate xtrack
+			relative_brg = (true_brg - simDR_fmc_crs + 360) % 360
+			if relative_brg > 180 then
+				relative_brg = relative_brg - 360
+			end
+			if relative_brg < 0 then
+				if relative_brg > -90 then
+					relative_brg = -relative_brg
+					B738DR_xtrack = -nd_dis * math.sin(math.rad(relative_brg))
+				else
+					B738DR_xtrack = -999
+				end
+			else
+				if relative_brg < 90 then
+					B738DR_xtrack = nd_dis * math.sin(math.rad(relative_brg))
+				else
+					B738DR_xtrack = 999
+				end
+			end
+			
+			simDR_fmc_dist = nd_dis
+			simDR_fmc_dist2 = nd_dis
+		
+			
 		elseif nav_mode == 5 then
 		
 			-- calculate Radii distance
@@ -59055,12 +59317,12 @@ function B738_fmc_calc()
 			end
 			if radii_turn_dir == 2 then
 				-- left
-				if relative_brg >= -5 then
+				if relative_brg >= -9 then
 					nav_mode = 0
 				end
 			else
 				-- right
-				if relative_brg <= 5 then
+				if relative_brg <= 9 then
 					nav_mode = 0
 				end
 			end
@@ -59185,59 +59447,6 @@ function B738_fmc_calc()
 					end
 					speed_temp1 = speed_temp1 - wc_speed
 					
-					-- calc T/C distance and time
-					if tc_idx ~= 0 and B738DR_flight_phase < 2 then
-						if n <= tc_idx then
-							dist_tc = dist_tc + dist_temp
-							if n == tc_idx then
-								dist_tc = dist_tc - tc_dist
-								time_temp = ((legs_data[n][3] - tc_dist) * 1852) / (speed_temp1 * 0.51444)	-- seconds
-								time_temp = time_temp / 3600	-- hours
-								if n == offset or n == 1 then
-									time_temp = (time_zulu + time_temp) % 24
-								else
-									time_temp = (legs_data[n-1][13] + time_temp) % 24
-								end
-								time_tc = time_temp
-							end
-						end
-					end
-					
-					-- calc T/D distance and time
-					if td_idx ~= 0 and B738DR_flight_phase < 5 and offset <= td_idx then
-						if n <= td_idx then
-							dist_td = dist_td + dist_temp
-							if n == td_idx then
-								dist_td = dist_td - td_dist
-								time_temp = ((legs_data[n][3] - td_dist) * 1852) / (speed_temp1 * 0.51444)	-- seconds
-								time_temp = time_temp / 3600	-- hours
-								if n == offset or n == 1 then
-									time_temp = (time_zulu + time_temp) % 24
-								else
-									time_temp = (legs_data[n-1][13] + time_temp) % 24
-								end
-								time_td = time_temp
-							end
-						end
-					end
-					
-					-- calc E/D distance and time
-					if ed_found ~= 0 and B738DR_flight_phase > 4 and B738DR_flight_phase < 8 and offset <= ed_found then
-						if n <= ed_found then
-							dist_ed = dist_ed + dist_temp
-							if n == ed_found then
-								time_temp = (legs_data[n][3] * 1852) / (speed_temp1 * 0.51444)	-- seconds
-								time_temp = time_temp / 3600	-- hours
-								if n == offset or n == 1 then
-									time_temp = (time_zulu + time_temp) % 24
-								else
-									time_temp = (legs_data[n-1][13] + time_temp) % 24
-								end
-								time_ed = time_temp
-							end
-						end
-					end
-					
 					time_temp = (dist_temp * 1852) / (speed_temp1 * 0.51444)	-- seconds
 					time_temp = time_temp / 3600	-- hours
 					if n == offset or n == 1 then
@@ -59251,13 +59460,58 @@ function B738_fmc_calc()
 						if des_app == "------" then
 							legs_data[n][13] = time_temp
 						else
-							if rnav_idx_last > 0 and rnav_idx_last < legs_num then
+							if rnav_idx_last > 0 and rnav_idx_last <= legs_num then
 								legs_data[n][13] = (legs_data[rnav_idx_last][13] + 0.033) % 24
 							else
 								legs_data[n][13] = time_temp
 							end
 						end
 					end
+					
+					-- calc E/D distance and time
+					if ed_found ~= 0 and B738DR_flight_phase > 4 and B738DR_flight_phase < 8 and offset <= ed_found then
+						if n <= ed_found then
+							dist_ed = dist_ed + dist_temp
+							if n == ed_found then
+								time_ed = time_temp
+							end
+						end
+					end
+					
+					-- calc T/C distance and time
+					if tc_idx ~= 0 and B738DR_flight_phase < 2 then
+						if n <= tc_idx then
+							dist_tc = dist_tc + dist_temp
+							if n == tc_idx then
+								dist_tc = dist_tc - tc_dist
+								time_temp = (tc_dist * 1852) / (speed_temp1 * 0.51444)	-- seconds
+								time_temp = time_temp / 3600	-- hours
+								time_temp = legs_data[n][13] - time_temp
+								if time_temp < 0 then
+									time_temp = time_temp + 24
+								end
+								time_tc = time_temp
+							end
+						end
+					end
+					
+					-- calc T/D distance and time
+					if td_idx ~= 0 and B738DR_flight_phase < 5 and offset <= td_idx then
+						if n <= td_idx then
+							dist_td = dist_td + dist_temp
+							if n == td_idx then
+								dist_td = dist_td - td_dist
+								time_temp = (td_dist * 1852) / (speed_temp1 * 0.51444)	-- seconds
+								time_temp = time_temp / 3600	-- hours
+								time_temp = legs_data[n][13] - time_temp
+								if time_temp < 0 then
+									time_temp = time_temp + 24
+								end
+								time_td = time_temp
+							end
+						end
+					end
+					
 				end
 			end
 			
@@ -59947,18 +60201,31 @@ function calc_mac(cg_input)
 	local basic_arm = DEFAULT_ARM + cg_input		-- basic arm in meters
 	local moment_empty = 41412.98 * basic_arm	--kgm
 	local moment_payload = simDR_payload_weight * basic_arm	-- kgm
-	-- local moment_main_tank = (simDR_fuel_tank_weight_kg[0] + simDR_fuel_tank_weight_kg[2]) * 16.9164 -- kgm
-	-- local moment_center_tank = simDR_fuel_tank_weight_kg[1] * 15.3924		--kgm
 	local moment_main_tank = (simDR_fuel_tank_weight_kg[0] + simDR_fuel_tank_weight_kg[2]) * MAIN_TANK_ARM -- kgm
 	local moment_center_tank = simDR_fuel_tank_weight_kg[1] * CENTER_TANK_ARM		--kgm
 	local cg_in_m = moment_empty + moment_payload + moment_main_tank + moment_center_tank
-	local tow = 41412.98 + simDR_payload_weight + simDR_fuel_tank_weight_kg[0] + simDR_fuel_tank_weight_kg[1] +simDR_fuel_tank_weight_kg[2]
+	local tow = 41412.98 + simDR_payload_weight + simDR_fuel_tank_weight_kg[0] + simDR_fuel_tank_weight_kg[1] + simDR_fuel_tank_weight_kg[2]
 	cg_in_m = cg_in_m / tow
 	local n = ((cg_in_m - 15.92834) / 3.95732) * 100
 	if n < 6 or n > 36 then
 		n = 0
 	end
-	--B738DR_fms_test3 = tow
+	return n
+	
+end
+
+function calc_zfw_mac(cg_input)
+	
+	local basic_arm = DEFAULT_ARM + cg_input		-- basic arm in meters
+	local moment_empty = 41412.98 * basic_arm	--kgm
+	local moment_payload = simDR_payload_weight * basic_arm	-- kgm
+	local cg_in_m = moment_empty + moment_payload
+	local tow = 41412.98 + simDR_payload_weight
+	cg_in_m = cg_in_m / tow
+	local n = ((cg_in_m - 15.92834) / 3.95732) * 100
+	if n < 6 or n > 36 then
+		n = 0
+	end
 	return n
 	
 end
@@ -61240,6 +61507,7 @@ temp_ils4 = ""
 	cg_set_m = 0
 	cg_set_in = 0
 	mac = calc_mac(cg_set_m)
+	mac_zfw = calc_zfw_mac(cg_set_m)
 	menu_tick = 0
 	align_anp = 0
 	align_anp_min = 0
@@ -61272,7 +61540,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.24z"
+	version = "v3.25a"
 
 end
 

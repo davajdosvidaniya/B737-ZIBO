@@ -21,13 +21,9 @@ use_eq = create_dataref("laminar/b738/fmodpack/fmod_eq_use", "number")
 -- EQ values
 
 
-function B738DR_eq_high_DRhandler()end
-function B738DR_eq_mid_DRhandler()end
-function B738DR_eq_low_DRhandler()end
-
-eq_high = create_dataref("laminar/b738/fmodpack/fmod_eq_high","number", B738DR_eq_high_DRhandler)
-eq_mid = create_dataref("laminar/b738/fmodpack/fmod_eq_mid","number", B738DR_eq_mid_DRhandler)
-eq_low = create_dataref("laminar/b738/fmodpack/fmod_eq_low","number", B738DR_eq_low_DRhandler)
+eq_high = create_dataref("laminar/b738/fmodpack/fmod_eq_high","number")
+eq_mid = create_dataref("laminar/b738/fmodpack/fmod_eq_mid","number")
+eq_low = create_dataref("laminar/b738/fmodpack/fmod_eq_low","number")
 
 -- CREATING EQ FUNCTIONS -----------------------------------------------------------
 

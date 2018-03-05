@@ -67,11 +67,7 @@ OTHERS:
 - improved autobrakes and RTO brake forces
 - improved landing and taxi lights brightness
 
-SOUNDS:
-- roll on ground and runway (from MD80)
-- skid dry (from MD80)
-- flaps (from B747)
-- gear (from B747)
+FMOD SOUNDS by AudioBirdXP
 
 SIM COCKPIT BUILDER
 - list of custom commands (B738_Commands.txt)
@@ -81,6 +77,28 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25:
+-----
+- add GPWS system with 5 modes and submodes
+- add landing gear warning system (aural and visual)
+- add 3D lights to cockpit and cabin
+- add left and right wing passenger seats (VR - teleport hotspot)
+- add manipulator for flightdeck door
+- changed manipulator for Speedbrake
+- finished RMI instrument
+- improved LNAV code
+- improved TAXI code
+- tuned and tweaked AP
+- tuned and tweaked flight model by Twkster
+- small graphics and animation improvements (cockpit, cabin, flightdeckdoor, landing lights ...)
+- renamed some MENU options, changed Fuel and CG page, add settings for null zone - pitch, roll, yaw
+- fixed FMC EXEC lights
+- fixed magnetic variation on ND for VOR selected
+- fixed acceleration on the ground
+- fixed handles above windshield - captain and f/o
+- fixed bugs (time calculation T/C, T/D, E/D,.....)
+- tested with xplane 11.11 and 11.20vr6
+
 3.24z:
 - add RMI
 

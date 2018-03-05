@@ -1117,9 +1117,9 @@ ANIM_begin
 ANIM_trans 0.000000 0.000000 0.000000 0.000000 -0.000600 -0.001900 0.000000 1.000000 laminar/B738/autopilot/n1_pos
 TRIS 1152 6
 ANIM_end
+ATTR_light_level laminar/B738/brightness_level2
 ANIM_begin
 ANIM_hide 0.000000 0.050000 laminar/B738/indicators/fmc_exec_lights
-ATTR_light_level_reset
 TRIS 1158 18
 ANIM_end
 ANIM_begin

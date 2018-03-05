@@ -1,0 +1,196 @@
+I
+800
+OBJ
+
+TEXTURE 
+POINT_COUNTS 0 0 0 0
+
+LIGHT_SPILL_CUSTOM -0.258816 0.933214 2.405548 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/crossfeed_lights_spill
+LIGHT_SPILL_CUSTOM -0.158126 0.916694 2.368697 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/gen1_avail_lights_spill
+LIGHT_SPILL_CUSTOM -0.059614 0.916694 2.368697 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/gen2_avail_lights_spill
+LIGHT_SPILL_CUSTOM -0.109232 0.916694 2.368697 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/apu_avail_lights_spill
+
+LIGHT_SPILL_CUSTOM -0.109075 0.956448 2.456354 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/gpu_avail_lights_spill
+LIGHT_SPILL_CUSTOM -0.214983 0.956882 2.455992 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/eng2_valve_lights_spill
+LIGHT_SPILL_CUSTOM -0.300931 0.956882 2.455992 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/eng1_valve_lights_spill
+LIGHT_SPILL_CUSTOM -0.300931 0.951978 2.444361 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/eng1_spar_lights_spill
+LIGHT_SPILL_CUSTOM -0.214946 0.951978 2.444361 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/eng2_spar_lights_spill
+LIGHT_SPILL_CUSTOM 0.246243 1.029356 2.615492 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/ram1_full_lights_spill
+LIGHT_SPILL_CUSTOM 0.297544 1.029356 2.615492 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/ram2_full_lights_spill
+
+LIGHT_SPILL_CUSTOM 0.063656 1.035137 2.629122 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/l_wings_lights_spill
+LIGHT_SPILL_CUSTOM 0.090547 1.035137 2.629122 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/r_wings_lights_spill
+LIGHT_SPILL_CUSTOM 0.124886 1.035137 2.629122 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/eng1_wings_lights_spill
+LIGHT_SPILL_CUSTOM 0.150198 1.035137 2.629122 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/eng2_wings_lights_spill
+
+LIGHT_SPILL_CUSTOM 0.014248 1.535656 22.929502 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
+LIGHT_SPILL_CUSTOM 0.011240 1.531876 21.875664 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
+LIGHT_SPILL_CUSTOM -0.821318 1.404268 4.251311 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
+LIGHT_SPILL_CUSTOM -0.064900 1.526739 5.687743 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
+LIGHT_SPILL_CUSTOM 0.547853 0.958111 5.661731 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
+LIGHT_SPILL_CUSTOM -0.650832 0.957214 5.664572 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
+LIGHT_SPILL_CUSTOM 0.056367 1.533035 28.961632 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
+LIGHT_SPILL_CUSTOM -0.034410 1.528793 32.733063 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
+LIGHT_SPILL_CUSTOM 1.176461 1.084173 4.466309 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
+
+LIGHT_SPILL_CUSTOM -0.070764 1.411925 4.560870 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.467860 32.306725 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.467860 29.698317 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.467860 26.790583 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.467860 23.877003 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 20.879980 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 17.965294 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 15.083541 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 12.193554 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 9.303566 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 6.372412 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 31.142406 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 28.235954 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 25.345968 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 22.397678 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 19.438797 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 16.515453 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 13.592109 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 10.729246 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+LIGHT_SPILL_CUSTOM -0.083949 1.476093 7.846222 1.00 1.00 0.80 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_lights_spill
+
+LIGHT_SPILL_CUSTOM	  -0.0507    0.0539    2.3886 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/parking_brake
+LIGHT_SPILL_CUSTOM	   0.1089   -0.0612    2.4716 0.19 1.0 0.5 0.0 0.07 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_circuit_spill_left
+LIGHT_SPILL_CUSTOM	  -0.0536   -0.0398    2.5185 0.19 1.0 0.5 0.0 0.07 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_circuit_spill2
+LIGHT_SPILL_CUSTOM	  -0.0400   -0.0398    2.5185 0.19 1.0 0.5 0.0 0.07 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_circuit_spill2
+LIGHT_SPILL_CUSTOM	   0.1160   -0.0612    2.4834 0.19 1.0 0.5 0.0 0.07 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_circuit_spill_apu
+LIGHT_SPILL_CUSTOM	   0.1232   -0.0612    2.4716 0.19 1.0 0.5 0.0 0.07 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_circuit_spill_right
+
+# eng1
+LIGHT_SPILL_CUSTOM      -0.079   -0.016    2.455 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_leveler_spill_eng1
+LIGHT_SPILL_CUSTOM      -0.079   -0.016    2.465 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_leveler_spill_eng1
+LIGHT_SPILL_CUSTOM      -0.079   -0.016    2.475 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_leveler_spill_eng1
+LIGHT_SPILL_CUSTOM      -0.079   -0.016    2.485 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_leveler_spill_eng1
+# eng2
+LIGHT_SPILL_CUSTOM       0.074   -0.016    2.455 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_leveler_spill_eng2
+LIGHT_SPILL_CUSTOM       0.074   -0.016    2.465 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_leveler_spill_eng2
+LIGHT_SPILL_CUSTOM       0.074   -0.016    2.475 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_leveler_spill_eng2
+LIGHT_SPILL_CUSTOM       0.074   -0.016    2.485 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_leveler_spill_eng2
+# apu
+LIGHT_SPILL_CUSTOM      -0.002   -0.016    2.455 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_leveler_spill_apu
+LIGHT_SPILL_CUSTOM      -0.002   -0.016    2.465 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_leveler_spill_apu
+LIGHT_SPILL_CUSTOM      -0.002   -0.016    2.475 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_leveler_spill_apu
+LIGHT_SPILL_CUSTOM      -0.002   -0.016    2.485 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/extinguisher_leveler_spill_apu
+
+LIGHT_SPILL_CUSTOM      -0.480539   0.583969    2.141900 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/fire_warn_spill
+LIGHT_SPILL_CUSTOM      0.480539   0.583969    2.141900 1 0 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/fire_warn_spill
+LIGHT_SPILL_CUSTOM      -0.450688   0.583969    2.141900 1 1 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/master_caution_spill
+LIGHT_SPILL_CUSTOM      0.450688   0.583969    2.141900 1 1 0 0 0.15 0 0 0 1 laminar/B738/light/spill/ratio/master_caution_spill
+
+
+ANIM_begin
+	ANIM_trans	   0.0000    1.1084    2.7470	   0.0000    1.1084    2.7470	0 0	no_ref
+	ANIM_rotate	  -1.0000   -0.0000    0.0000	 90.00  90.00	0 1	none
+	LIGHT_PARAM	airplane_generic_sp	  -0.0000    0.0000   -0.0000 1 0.92 0.75 8 1.5 0.86
+ANIM_end
+ANIM_begin
+	ANIM_trans	   0.3859    1.2115    3.2055	   0.3859    1.2115    3.2055	0 0	no_ref
+	LIGHT_PARAM	airplane_generic_sp	   0.0000    0.0000   -0.0000 1 0.92 0.75 9 2.25 0.01
+ANIM_end
+ANIM_begin
+	ANIM_trans	  -0.4151    1.2026    3.5769	  -0.4151    1.2026    3.5769	0 0	no_ref
+	ANIM_rotate	  -0.6545   -0.7458   -0.1242	 32.60  32.60	0 1	none
+	LIGHT_PARAM	airplane_generic_sp	  -0.0000    0.0000    0.0000 1 0.92 0.75 9 2.25 0.5
+ANIM_end
+ANIM_begin
+	ANIM_trans	   0.3918    1.0035    2.4507	   0.3918    1.0035    2.4507	0 0	no_ref
+	ANIM_rotate_begin	   0.9050   -0.3868    0.1770	laminar/B738/adjust/fo/map_light/y_pos
+		ANIM_rotate_key	-60.0	 60.00
+		ANIM_rotate_key	0.0	  0.00
+		ANIM_rotate_key	60.0	-60.00
+	ANIM_rotate_end
+	ANIM_begin
+		ANIM_trans	   0.0412   -0.0328   -0.0187	   0.0412   -0.0328   -0.0187	0 0	no_ref
+		ANIM_rotate_begin	   0.2578    0.1678   -0.9515	laminar/B738/adjust/fo/map_light/x_pos
+			ANIM_rotate_key	-50.0	 50.00
+			ANIM_rotate_key	0.0	  0.00
+			ANIM_rotate_key	50.0	-50.00
+		ANIM_rotate_end
+		ANIM_begin
+			ANIM_trans	  -0.0004   -0.0471    0.0157	  -0.0004   -0.0471    0.0157	0 0	no_ref
+			ANIM_rotate	  -0.6847    0.4284    0.5896	108.56 108.56	0 1	none
+			LIGHT_PARAM	airplane_generic_sp	   0.0000   -0.0000    0.0001 1 0.92 0.75 11 1.35 0.92
+		ANIM_end
+	ANIM_end
+ANIM_end
+ANIM_begin
+	ANIM_trans	  -0.3918    1.0035    2.4507	  -0.3918    1.0035    2.4507	0 0	no_ref
+	ANIM_rotate_begin	   0.9050    0.3868   -0.1770	laminar/B738/adjust/capt/map_light/y_pos
+		ANIM_rotate_key	-60.0	 60.00
+		ANIM_rotate_key	0.0	  0.00
+		ANIM_rotate_key	60.0	-60.00
+	ANIM_rotate_end
+	ANIM_begin
+		ANIM_trans	  -0.0412   -0.0328   -0.0187	  -0.0412   -0.0328   -0.0187	0 0	no_ref
+		ANIM_rotate_begin	  -0.2578    0.1678   -0.9515	laminar/B738/adjust/capt/map_light/x_pos
+			ANIM_rotate_key	-50.0	 50.00
+			ANIM_rotate_key	0.0	  0.00
+			ANIM_rotate_key	50.0	-50.00
+		ANIM_rotate_end
+		ANIM_begin
+			ANIM_trans	   0.0004   -0.0471    0.0157	   0.0004   -0.0471    0.0157	0 0	no_ref
+			ANIM_rotate	  -0.9833    0.1735    0.0546	 82.09  82.09	0 1	none
+			LIGHT_PARAM	airplane_generic_sp	  -0.0000    0.0000    0.0001 1 0.92 0.75 10 1.35 0.92
+		ANIM_end
+	ANIM_end
+ANIM_end
+ANIM_begin
+	ANIM_trans	   0.0000    0.6252    2.0885	   0.0000    0.6252    2.0885	0 0	no_ref
+	ANIM_rotate	  -1.0000   -0.0000    0.0000	105.00 105.00	0 1	none
+	LIGHT_PARAM	airplane_generic_sp	   0.2982    0.0000   -0.0000 1 0.65 0.25 7 0.4 0.01
+	LIGHT_PARAM	airplane_generic_sp	  -0.2985    0.0000   -0.0000 1 0.65 0.25 7 0.4 0.01
+	LIGHT_PARAM	airplane_generic_sp	  -0.0797    0.0000   -0.0000 1 0.65 0.25 7 0.4 0.01
+	LIGHT_PARAM	airplane_generic_sp	   0.0808    0.0000   -0.0000 1 0.65 0.25 7 0.4 0.01
+	LIGHT_PARAM	airplane_generic_sp	   0.2238    0.0000   -0.0000 1 0.65 0.25 7 0.4 0.01
+	LIGHT_PARAM	airplane_generic_sp	  -0.2225    0.0000   -0.0000 1 0.65 0.25 7 0.4 0.01
+ANIM_end
+ANIM_begin
+	ANIM_trans	  -0.3166    0.4840    1.8709	  -0.3166    0.4840    1.8709	0 0	no_ref
+	ANIM_rotate	  -1.0000   -0.0000    0.0000	105.00 105.00	0 1	none
+	LIGHT_PARAM	airplane_generic_sp	  -0.0000    0.0000   -0.0000 1 0.65 0.25 6 0.6 0.12
+	LIGHT_PARAM	airplane_generic_sp	   0.1282    0.0000   -0.0000 1 0.65 0.25 6 0.6 0.12
+	LIGHT_PARAM	airplane_generic_sp	   0.2566    0.0000   -0.0000 1 0.65 0.25 6 0.6 0.12
+	LIGHT_PARAM	airplane_generic_sp	   0.3775    0.0000   -0.0000 1 0.65 0.25 6 0.6 0.12
+	LIGHT_PARAM	airplane_generic_sp	   0.5056    0.0000   -0.0000 1 0.65 0.25 6 0.6 0.12
+	LIGHT_PARAM	airplane_generic_sp	   0.6337    0.0000   -0.0000 1 0.65 0.25 6 0.6 0.12
+ANIM_end
+ANIM_begin
+	ANIM_trans	  -0.5186    0.5278    1.9421	  -0.5186    0.5278    1.9421	0 0	no_ref
+	ANIM_rotate	  -0.9631    0.1638    0.2135	107.07 107.07	0 1	none
+	LIGHT_PARAM	airplane_generic_sp	   0.0001    0.0000   -0.0000 1 0.65 0.25 6 0.6 0.5
+ANIM_end
+ANIM_begin
+	ANIM_trans	  -0.6252    0.5280    1.9913	  -0.6252    0.5280    1.9913	0 0	no_ref
+	ANIM_rotate	  -0.9631    0.1638    0.2135	107.07 107.07	0 1	none
+	LIGHT_PARAM	airplane_generic_sp	   0.0000    0.0001   -0.0000 1 0.65 0.25 6 0.6 0.5
+ANIM_end
+ANIM_begin
+	ANIM_trans	  -0.4107    0.5282    1.8928	  -0.4107    0.5282    1.8928	0 0	no_ref
+	ANIM_rotate	  -0.9631    0.1638    0.2135	107.07 107.07	0 1	none
+	LIGHT_PARAM	airplane_generic_sp	  -0.0000   -0.0000   -0.0000 1 0.65 0.25 6 0.6 0.5
+ANIM_end
+ANIM_begin
+	ANIM_trans	   0.5186    0.5278    1.9421	   0.5186    0.5278    1.9421	0 0	no_ref
+	ANIM_rotate	  -0.9631   -0.1638   -0.2135	107.07 107.07	0 1	none
+	LIGHT_PARAM	airplane_generic_sp	  -0.0001    0.0000   -0.0000 1 0.65 0.25 6 0.6 0.5
+ANIM_end
+ANIM_begin
+	ANIM_trans	   0.6252    0.5280    1.9913	   0.6252    0.5280    1.9913	0 0	no_ref
+	ANIM_rotate	  -0.9631   -0.1638   -0.2135	107.07 107.07	0 1	none
+	LIGHT_PARAM	airplane_generic_sp	  -0.0000    0.0001   -0.0000 1 0.65 0.25 6 0.6 0.5
+ANIM_end
+ANIM_begin
+	ANIM_trans	   0.4107    0.5282    1.8928	   0.4107    0.5282    1.8928	0 0	no_ref
+	ANIM_rotate	  -0.9631   -0.1638   -0.2135	107.07 107.07	0 1	none
+	LIGHT_PARAM	airplane_generic_sp	   0.0000   -0.0000   -0.0000 1 0.65 0.25 6 0.6 0.5
+ANIM_end
+ANIM_begin
+	ANIM_trans	   0.4143    1.1351    2.8174	   0.4143    1.1351    2.8174	0 0	no_ref
+	ANIM_rotate	  -0.9864    0.0521    0.1556	143.47 143.47	0 1	none
+	LIGHT_PARAM	airplane_generic_sp	  -0.0000    0.0000    0.0000 1 0.92 0.75 12 2 0.8
+ANIM_end

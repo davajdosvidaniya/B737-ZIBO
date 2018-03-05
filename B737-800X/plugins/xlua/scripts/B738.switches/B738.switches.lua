@@ -344,13 +344,13 @@ function flight_start()
 	B738DR_eyeball_vent_jump_x_pos = math.random(-35,35)
 	B738DR_eyeball_vent_jump_y_pos = math.random(-35,35)
 	
-	B738DR_map_light_capt_x_pos = math.random(-10,10)
-	B738DR_map_light_capt_y_pos = math.random(-10,10)
-	B738DR_map_light_fo_x_pos = math.random(-10,10)
-	B738DR_map_light_fo_y_pos = math.random(-10,10)
+	-- B738DR_map_light_capt_x_pos = math.random(-10,10)
+	-- B738DR_map_light_capt_y_pos = math.random(-10,10)
+	-- B738DR_map_light_fo_x_pos = math.random(-10,10)
+	-- B738DR_map_light_fo_y_pos = math.random(-10,10)
 
-	B738DR_handle_capt_pos = math.random(0,90)
-	B738DR_handle_fo_pos = math.random(0,90)
+	-- B738DR_handle_capt_pos = math.random(0,90)
+	-- B738DR_handle_fo_pos = math.random(0,90)
 
 end
 

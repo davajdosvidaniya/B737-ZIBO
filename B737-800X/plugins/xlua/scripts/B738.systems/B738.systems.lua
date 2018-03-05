@@ -342,8 +342,6 @@ dump_all = 0
 
 lost_inertial = 0
 
-gear_handle_aret = 0
-gear_handle_pos_old = 0
 gear_lock = 0
 
 gpws_playing_sound = 0
@@ -358,8 +356,19 @@ gpws_warning = 0
 gpws_aural_phase = 0
 gpws_short_test_disable = 0
 gpws_long_test_disable = 0
+gpws_minimum = 0
 
 flt_dk_door_tgt = 0
+arrow1_no_available_tgt = 0
+arrow2_no_available_tgt = 0
+
+door_locked = 0
+door_locked_old = 0
+
+left_adf_old = 0
+change_adf_nav1 = 0
+right_adf_old = 0
+change_adf_nav2 = 0
 
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
@@ -372,6 +381,9 @@ local pax_oxy = 0
 local ground_timer = 0
 
 local dual_bleed = 0
+
+local B738_speedbrake_stop = 0
+local austin_speedbrake_handle = 0
 
 --*************************************************************************************--
 --** 				             FIND X-PLANE DATAREFS            			    	 **--
@@ -505,6 +517,7 @@ simDR_reverse2_deploy			= find_dataref("sim/flightmodel2/engines/thrust_reverser
 simDR_throttle_override			= find_dataref("sim/operation/override/override_throttles")
 
 simDR_airspeed_pilot			= find_dataref("sim/cockpit2/gauges/indicators/airspeed_kts_pilot")
+simDR_airspeed_copilot			= find_dataref("sim/cockpit2/gauges/indicators/airspeed_kts_copilot")
 
 simDR_ground_speed				= find_dataref("sim/flightmodel/position/groundspeed")
 
@@ -706,6 +719,12 @@ simDR_adf2_act_freq			= find_dataref("sim/cockpit2/radios/actuators/adf2_frequen
 simDR_adf1_power			= find_dataref("sim/cockpit2/radios/actuators/adf1_power")
 simDR_adf2_power			= find_dataref("sim/cockpit2/radios/actuators/adf2_power")
 
+simDR_nav1_dspl_horiz		= find_dataref("sim/cockpit2/radios/indicators/nav1_display_horizontal")
+simDR_nav2_dspl_horiz		= find_dataref("sim/cockpit2/radios/indicators/nav2_display_horizontal")
+simDR_nav1_type				= find_dataref("sim/cockpit2/radios/indicators/nav1_type")
+simDR_nav2_type				= find_dataref("sim/cockpit2/radios/indicators/nav2_type")
+
+B738DR_fms_vref				= find_dataref("laminar/B738/FMS/vref")
 
 --*************************************************************************************--
 --** 				               FIND X-PLANE COMMANDS                   	    	 **--
@@ -787,6 +806,7 @@ simDR_bus_battery1		= find_dataref("sim/cockpit2/electrical/battery_voltage_actu
 simDR_bus_battery2		= find_dataref("sim/cockpit2/electrical/battery_voltage_actual_volts[1]")
 simDR_bus_battery1_on	= find_dataref("sim/cockpit2/electrical/battery_on[0]")
 simDR_bus_battery2_on	= find_dataref("sim/cockpit2/electrical/battery_on[1]")
+simDR_avionics_on		= find_dataref("sim/cockpit/electrical/avionics_on")
 
 simDR_bus_transfer_on 		= find_dataref("sim/cockpit2/electrical/cross_tie")
 
@@ -795,7 +815,7 @@ simDR_starter_max_rpm 	= find_dataref("sim/aircraft/engine/acf_starter_max_rpm_r
 
 simDR_roll_elec_deg_pilot	= find_dataref("sim/cockpit2/gauges/indicators/roll_electric_deg_pilot")
 
-simDR_gpws_annun			= find_dataref("sim/cockpit2/annunciators/GPWS")
+--simDR_gpws_annun			= find_dataref("sim/cockpit2/annunciators/GPWS")
 
 simDR_gs_flag					= find_dataref("sim/cockpit2/radios/indicators/nav1_flag_glideslope")
 simDR_nav1_vdef_dots			= find_dataref("sim/cockpit2/radios/indicators/nav1_vdef_dots_pilot")
@@ -902,6 +922,21 @@ B738DR_dh_minimum_copilot2		= find_dataref("laminar/B738/fmod/dh_minimum_copilot
 
 simDR_ra_min					= find_dataref("sim/cockpit/misc/radio_altimeter_minimum")
 simDR_fpm 						= find_dataref("sim/flightmodel/position/vh_ind_fpm")
+
+simDR_left_adf 					= find_dataref("sim/cockpit2/radios/actuators/RMI_left_use_adf_pilot")
+simDR_right_adf 				= find_dataref("sim/cockpit2/radios/actuators/RMI_right_use_adf_pilot")
+
+simDR_nav1_id 					= find_dataref("sim/cockpit2/radios/indicators/nav1_nav_id")
+simDR_nav2_id 					= find_dataref("sim/cockpit2/radios/indicators/nav2_nav_id")
+simDR_adf1_id 					= find_dataref("sim/cockpit2/radios/indicators/adf1_nav_id")
+simDR_adf2_id 					= find_dataref("sim/cockpit2/radios/indicators/adf2_nav_id")
+
+simDR_nav1_brg 					= find_dataref("sim/cockpit2/radios/indicators/nav1_relative_bearing_deg")
+simDR_nav2_brg					= find_dataref("sim/cockpit2/radios/indicators/nav2_relative_bearing_deg")
+simDR_adf1_brg					= find_dataref("sim/cockpit2/radios/indicators/adf1_relative_bearing_deg")
+simDR_adf2_brg					= find_dataref("sim/cockpit2/radios/indicators/adf2_relative_bearing_deg")
+
+simDR_throttle_used_ratio		= find_dataref("sim/flightmodel2/engines/throttle_used_ratio")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
@@ -1301,6 +1336,12 @@ B738DR_man_vspd				= create_dataref("laminar/B738/pfd/vspeed", "number")
 B738DR_man_vspeed_mode		= create_dataref("laminar/B738/pfd/vspeed_mode", "number")
 B738DR_man_vspd_show		= create_dataref("laminar/B738/pfd/vspeed_show", "number")
 
+B738DR_man_vspd_digit_show		= create_dataref("laminar/B738/pfd/vspeed_digit_show", "number")
+B738DR_man_vspd_vref_show		= create_dataref("laminar/B738/pfd/vspeed_vref_show", "number")
+B738DR_man_vspd_digit_show_fo	= create_dataref("laminar/B738/pfd/vspeed_digit_show_fo", "number")
+B738DR_man_vspd_vref_show_fo	= create_dataref("laminar/B738/pfd/vspeed_vref_show_fo", "number")
+
+
 B738DR_man_v1				= create_dataref("laminar/B738/pfd/vspeed_man_v1", "number")
 B738DR_man_vr				= create_dataref("laminar/B738/pfd/vspeed_man_vr", "number")
 B738DR_man_vref				= create_dataref("laminar/B738/pfd/vspeed_man_vref", "number")
@@ -1432,7 +1473,7 @@ B738DR_obstacle_ahead_pull	= create_dataref("laminar/b738/fmodpack/msg_obstacle_
 B738DR_gpws_inop			= create_dataref("laminar/b738/fmodpack/msg_gpws_inop", "number")
 B738DR_terrain_ahead		= create_dataref("laminar/b738/fmodpack/msg_terrain_ahead", "number")
 B738DR_ra_callout			= create_dataref("laminar/b738/fmodpack/msg_alt_callouts", "number")
---B738DR_approach_minimums	= create_dataref("laminar/b738/fmodpack/appro_mins", "number")
+B738DR_approach_minimums	= create_dataref("laminar/b738/fmodpack/appro_mins", "number")
 B738DR_dh_minimum_pilot		= create_dataref("laminar/B738/fmod/dh_minimum_pilot", "number")
 B738DR_dh_minimum_copilot	= create_dataref("laminar/B738/fmod/dh_minimum_copilot", "number")
 
@@ -1465,7 +1506,12 @@ fmod_flap_sound				= create_dataref("laminar/B738/fmod/flap_sound", "number")
 
 B738DR_flt_dk_door_knob		= create_dataref("laminar/B738/door/flt_dk_door_knob_pos", "number")
 B738DR_flt_dk_door_ratio	= create_dataref("laminar/B738/door/flt_dk_door_ratio", "number")
+B738DR_fmod_lock_door		= create_dataref("laminar/b738/fmodpack/flt_dk_door_lock", "number")
 
+B738DR_arrow1_no_available		= create_dataref("laminar/B738/radio/arrow1_no_available", "number")
+B738DR_arrow2_no_available		= create_dataref("laminar/B738/radio/arrow2_no_available", "number")
+B738DR_arrow1					= create_dataref("laminar/B738/radio/arrow1", "number")
+B738DR_arrow2					= create_dataref("laminar/B738/radio/arrow2", "number")
 
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
@@ -1501,9 +1547,42 @@ function B738DR_fuel_pos_ctr1_DRhandler()end
 function B738DR_fuel_pos_ctr2_DRhandler()end
 function B738DR_fuel_pos_rgt1_DRhandler()end
 function B738DR_fuel_pos_rgt2_DRhandler()end
-function B738DR_gear_handle_pos_DRhandler()end
+
+function B738DR_gear_handle_pos_DRhandler()
+
+	local min_tgt_gear = 0
+	
+	if B738DR_gear_lock_override_pos == 1 then
+		gear_lock = 0
+		min_tgt_gear = 0
+	elseif simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+		gear_lock = 1
+		min_tgt_gear = 0.5
+	else
+		gear_lock = 0
+		min_tgt_gear = 0
+	end
+	
+	if B738DR_gear_handle_pos < min_tgt_gear then
+		B738DR_gear_handle_pos = min_tgt_gear
+	end
+	
+	if B738DR_gear_handle_pos < 0.1 then
+		B738DR_gear_handle_pos = 0
+		B738CMD_gear_up:once()
+	elseif B738DR_gear_handle_pos > 0.45 and B738DR_gear_handle_pos < 0.55 then
+		B738DR_gear_handle_pos = 0.5
+		B738CMD_gear_off:once()
+	elseif B738DR_gear_handle_pos > 0.95 then
+		B738DR_gear_handle_pos = 1.0
+		B738CMD_gear_down:once()
+	end
+	
+
+end
+
 function B738DR_gear_lock_over_pos_DRhandler()end
-function B738DR_gear_handle_act_DRhandler()end
+--function B738DR_gear_handle_act_DRhandler()end
 
 function B738DR_l_pack_pos_DRhandler()end
 function B738DR_r_pack_pos_DRhandler()end
@@ -1592,7 +1671,7 @@ function B738_win_l_DRhandler() end
 
 function B738_parking_brake_pos_DRhandler() end
 
-function B738_landgear_time_DRhandler() end
+--function B738_landgear_time_DRhandler() end
 
 function B738_sys_test_DRhandler() end
 function B738_sys_test2_DRhandler() end
@@ -1609,11 +1688,69 @@ function B738DR_off_on1_DRhandler() end
 function B738DR_adf_ant2_DRhandler() end
 function B738DR_off_on2_DRhandler() end
 
+
+----- SPEEDBRAKE LEVER ------------------------------------------------------------------
+function B738_speedbrake_lever_DRhandler()
+	
+
+
+	if B738_speedbrake_stop == 1 then
+
+		if B738DR_speedbrake_lever < 0.15 then
+			if B738DR_speedbrake_lever < 0.07 then
+				simDR_speedbrake_ratio = 0.0
+			elseif B738DR_speedbrake_lever < 0.11 and B738DR_speedbrake_lever > 0.06 then
+				B738DR_speedbrake_lever = 0.0889
+		    	simDR_speedbrake_ratio = -0.5
+		    elseif B738DR_speedbrake_lever > 0.11 then
+		    	simDR_speedbrake_ratio = 0.0
+			end
+		elseif B738DR_speedbrake_lever > 0.15 then
+			B738DR_speedbrake_lever = math.min(0.667, B738DR_speedbrake_lever)
+			local spdbrake_lever_stopped = B738_rescale(0.15, 0, 0.667, 0.9899999, B738DR_speedbrake_lever)
+		
+			simDR_speedbrake_ratio = spdbrake_lever_stopped
+		end
+
+	elseif B738_speedbrake_stop == 0 then
+
+		if B738DR_speedbrake_lever < 0.15 then
+			if B738DR_speedbrake_lever < 0.07 then
+				simDR_speedbrake_ratio = 0.0
+			elseif B738DR_speedbrake_lever < 0.11 and B738DR_speedbrake_lever > 0.07 then
+				B738DR_speedbrake_lever = 0.0889
+		    	simDR_speedbrake_ratio = -0.5
+		    elseif B738DR_speedbrake_lever > 0.11 then
+		    	simDR_speedbrake_ratio = 0.0
+			end
+		elseif B738DR_speedbrake_lever > 0.15 and B738DR_speedbrake_lever <= 0.667 then
+			local spdbrake_lever_open = B738_rescale(0.15, 0, 0.667, 0.9899999, B738DR_speedbrake_lever)
+
+			simDR_speedbrake_ratio = spdbrake_lever_open
+
+		elseif B738DR_speedbrake_lever > 0.667 then
+			local spdbrake_lever_open_ground = B738_rescale(0.667, 0.99, 1, 1, B738DR_speedbrake_lever)
+
+			simDR_speedbrake_ratio = spdbrake_lever_open_ground
+
+		end
+
+	end
+
+end
+
+function B738_speedbrake_stop_pos_DRhandler()end
+
+
+
+
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
 
 B738DR_flap_lever_stop_pos		= create_dataref("laminar/B738/handles/flap_lever/stop_pos", "number", B738DR_flap_lever_stop_pos_DRhandler)
+B738DR_speedbrake_lever			= create_dataref("laminar/B738/flt_ctrls/speedbrake_lever", "number", B738_speedbrake_lever_DRhandler)
+B738DR_speedbrake_stop_pos		= create_dataref("laminar/B738/flt_ctrls/speedbrake_lever_stop", "number", B738_speedbrake_stop_pos_DRhandler)
 
 B738DR_adf_ant1				= create_dataref("laminar/B738/toggle_switch/adf_ant1", "number", B738DR_adf_ant1_DRhandler)
 B738DR_off_on1				= create_dataref("laminar/B738/toggle_switch/off_on1", "number", B738DR_off_on1_DRhandler)
@@ -1630,7 +1767,7 @@ B738DR_kill_systems	= create_dataref("laminar/B738/perf/kill_systems", "number",
 DR_sys_test = create_dataref("laminar/B738/system_test", "number", B738_sys_test_DRhandler)
 DR_sys_test2 = create_dataref("laminar/B738/system_test2", "number", B738_sys_test2_DRhandler)
 
-DR_landgear_time			= create_dataref("laminar/B738/landgear_time", "number", B738_landgear_time_DRhandler)
+--DR_landgear_time			= create_dataref("laminar/B738/landgear_time", "number", B738_landgear_time_DRhandler)
 
 B738DR_parking_brake_pos	= create_dataref("laminar/B738/parking_brake_pos", "number", B738_parking_brake_pos_DRhandler)
 
@@ -1707,7 +1844,6 @@ B738DR_fuel_tank_pos_rgt2		= create_dataref("laminar/B738/fuel/fuel_tank_pos_rgt
 
 B738DR_gear_handle_pos			= create_dataref("laminar/B738/controls/gear_handle_down", "number", B738DR_gear_handle_pos_DRhandler)
 B738DR_gear_lock_override_pos	= create_dataref("laminar/B738/gear_lock_ovrd/position", "number", B738DR_gear_lock_over_pos_DRhandler)
-B738DR_gear_handle_act			= create_dataref("laminar/B738/controls/gear_handle_act", "number", B738DR_gear_handle_act_DRhandler)
 
 B738DR_bleed_air_1_switch_position = create_dataref("laminar/B738/toggle_switch/bleed_air_1_pos", "number", B738DR_bleed_air_1_pos_DRhandler)
 B738DR_bleed_air_2_switch_position = create_dataref("laminar/B738/toggle_switch/bleed_air_2_pos", "number", B738DR_bleed_air_2_pos_DRhandler)
@@ -2322,24 +2458,20 @@ function B738_gear_toggle_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_gear_handle_pos == 0 then			-- UP -> OFF
 			B738DR_gear_handle_pos = 0.5
-			B738DR_gear_handle_act = 0.5
 			B738_landing_gear = 1	--off
 		elseif B738DR_gear_handle_pos == 0.5 then	-- OFF -> DOWN
 			B738DR_gear_handle_pos = 1
-			B738DR_gear_handle_act = 1
 			B738_landing_gear = 2	--down
 			landing_gear_target = 1
 		elseif B738DR_gear_handle_pos == 1 then		-- DOWN -> UP
 			if gear_lock == 0 then		-- DOWN -> UP
 				B738DR_gear_handle_pos = 0
-				B738DR_gear_handle_act = 0
 				B738_landing_gear = 0	--up
 				if B738DR_landgear_pos < 0.9 and B738DR_landgear_cover_pos < 0.9 then
 					landing_gear_target = 0
 				end
 			else
 				B738DR_gear_handle_pos = 0.5
-				B738DR_gear_handle_act = 0.5
 				B738_landing_gear = 1	--off
 			end
 		end
@@ -2350,11 +2482,9 @@ function B738_def_gear_down_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_gear_handle_pos == 0 then			-- UP -> OFF
 			B738DR_gear_handle_pos = 0.5
-			B738DR_gear_handle_act = 0.5
 			B738_landing_gear = 1	--off
 		elseif B738DR_gear_handle_pos == 0.5 then	-- OFF -> DOWN
 			B738DR_gear_handle_pos = 1
-			B738DR_gear_handle_act = 1
 			B738_landing_gear = 2	--down
 			landing_gear_target = 1
 		end
@@ -2366,14 +2496,12 @@ function B738_def_gear_up_CMDhandler(phase, duration)
 		if B738DR_gear_handle_pos == 1 then		-- DOWN -> UP
 			if gear_lock == 0 then		-- DOWN -> UP
 				B738DR_gear_handle_pos = 0
-				B738DR_gear_handle_act = 0
 				B738_landing_gear = 0	--up
 				if B738DR_landgear_pos < 0.9 and B738DR_landgear_cover_pos < 0.9 then
 					landing_gear_target = 0
 				end
 			else
 				B738DR_gear_handle_pos = 0.5
-				B738DR_gear_handle_act = 0.5
 				B738_landing_gear = 1	--off
 			end
 		end
@@ -2653,7 +2781,6 @@ end
 function B738CMD_gear_down_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_gear_handle_pos = 1
-		B738DR_gear_handle_act = 1
 		B738_landing_gear = 2	--down
 		landing_gear_target = 1
 	end
@@ -2663,7 +2790,6 @@ function B738CMD_gear_up_CMDhandler(phase, duration)
 	if phase == 0 then
 		if gear_lock == 0 then
 			B738DR_gear_handle_pos = 0
-			B738DR_gear_handle_act = 0
 			B738_landing_gear = 0	--up
 			if B738DR_landgear_pos < 0.9 and B738DR_landgear_cover_pos < 0.9 then
 				landing_gear_target = 0
@@ -2675,7 +2801,6 @@ end
 function B738CMD_gear_off_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_gear_handle_pos = 0.5
-		B738DR_gear_handle_act = 0.5
 		B738_landing_gear = 1	--off
 	end
 end
@@ -2684,11 +2809,9 @@ function B738CMD_gear_down_one_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_gear_handle_pos == 0 then
 			B738DR_gear_handle_pos = 0.5
-			B738DR_gear_handle_act = 0.5
 			B738_landing_gear = 1	--off
 		elseif B738DR_gear_handle_pos == 0.5 then
 			B738DR_gear_handle_pos = 1
-			B738DR_gear_handle_act = 1
 			B738_landing_gear = 2	--down
 			landing_gear_target = 1
 		end
@@ -2700,14 +2823,12 @@ function B738CMD_gear_up_one_CMDhandler(phase, duration)
 		if B738DR_gear_handle_pos == 1 then
 			if gear_lock == 0 then
 				B738DR_gear_handle_pos = 0
-				B738DR_gear_handle_act = 0
 				B738_landing_gear = 0	--up
 				if B738DR_landgear_pos < 0.9 and B738DR_landgear_cover_pos < 0.9 then
 					landing_gear_target = 0
 				end
 			else
 				B738DR_gear_handle_pos = 0.5
-				B738DR_gear_handle_act = 0.5
 				B738_landing_gear = 1	--off
 			end
 		end
@@ -2987,21 +3108,19 @@ end
 -- FLIGHT DECK DOOR SWITCH
 function B738_flt_dk_door_left_CMDhandler(phase, duration)
 	if phase == 0 then
-		if B738DR_flt_dk_door == 0 then
-			B738DR_flt_dk_door = -1
-		elseif B738DR_flt_dk_door == 1 then
-			B738DR_flt_dk_door = 0
-		end
+		B738DR_flt_dk_door = -1
+	elseif phase == 1 and duration > 2 then
+		flt_dk_door_tgt = 0.2
+	elseif phase == 2 then
+		B738DR_flt_dk_door = 0
 	end
 end
 
 function B738_flt_dk_door_right_CMDhandler(phase, duration)
 	if phase == 0 then
-		if B738DR_flt_dk_door == -1 then
-			B738DR_flt_dk_door = 0
-		elseif B738DR_flt_dk_door == 0 then
-			B738DR_flt_dk_door = 1
-		end
+		B738DR_flt_dk_door = 1
+	elseif phase == 2 then
+		B738DR_flt_dk_door = 0
 	end
 end
 
@@ -3438,57 +3557,33 @@ function B738_toe_brake_both_handl(phase, duration)
 end
 
 
--- function B738_gpws_test_CMDhandler(phase, duration)
-	-- if phase == 0 then
-		-- B738DR_gpws_test_pos = 1
-		-- gpws_test_timer = 0
-	-- elseif phase == 1 then
-		-- if B738DR_gpws_test_running == 0 and gpws_long_test_disable == 0 then
-			-- gpws_test_timer = gpws_test_timer + SIM_PERIOD
-			-- if gpws_test_timer > 2.5 then
-				-- gpws_test_timer = 2.5
-			-- elseif gpws_test_timer > 2 then
-				-- B738DR_enable_gpwstest_long = 1
-				-- B738DR_gpws_test_running = 1
-				-- gpws_test_phase = 1
-			-- end
-		-- end
-	-- elseif phase == 2 then
-		-- B738DR_gpws_test_pos = 0
-		-- if gpws_test_timer < 2 and B738DR_gpws_test_running == 0 and gpws_short_test_disable == 0 then
-			-- if simDR_radio_height_pilot_ft > 1000 then
-				-- if simDR_flaps_ratio2 <= 0.625 then	-- flaps 15 or less
-					-- B738DR_enable_gpwstest_short = 2	-- visual only
-				-- end
-			-- else
-				-- B738DR_enable_gpwstest_short = 1
-			-- end
-			-- gpws_test_phase = 1
-			-- B738DR_gpws_test_running = 1
-		-- end
-	-- end
--- end
-
-
 function B738_gpws_test_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_gpws_test_pos = 1
 		gpws_test_timer = 0
 	elseif phase == 1 then
-		gpws_test_timer = gpws_test_timer + SIM_PERIOD
-		if gpws_test_timer > 2.5 then
-			gpws_test_timer = 2.5
-		elseif gpws_test_timer > 2 then
-			B738DR_enable_gpwstest_long = 1
-			gpws_playing_sound = 77
-			B738DR_gpws_test_running = 1
+		if B738DR_gpws_test_running == 0 and gpws_long_test_disable == 0 then
+			gpws_test_timer = gpws_test_timer + SIM_PERIOD
+			if gpws_test_timer > 2.5 then
+				gpws_test_timer = 2.5
+			elseif gpws_test_timer > 2 then
+				B738DR_enable_gpwstest_long = 1
+				B738DR_gpws_test_running = 1
+				gpws_test_phase = 1
+			end
 		end
 	elseif phase == 2 then
 		B738DR_gpws_test_pos = 0
-		if gpws_test_timer < 2 then
-			B738DR_enable_gpwstest_short = 1
-				gpws_playing_sound = 19
-				B738DR_gpws_test_running = 1
+		if gpws_test_timer < 2 and B738DR_gpws_test_running == 0 and gpws_short_test_disable == 0 then
+			if simDR_radio_height_pilot_ft > 1000 then
+				if simDR_flaps_ratio2 <= 0.625 then	-- flaps 15 or less
+					B738DR_enable_gpwstest_short = 2	-- visual only
+				end
+			else
+				B738DR_enable_gpwstest_short = 1
+			end
+			gpws_test_phase = 1
+			B738DR_gpws_test_running = 1
 		end
 	end
 end
@@ -3832,15 +3927,29 @@ end
 function B738_flt_door_toggle_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_flt_dk_door_knob = 1
-		if B738DR_flt_dk_door_ratio == 0 then
-			-- closed door
-			if B738DR_flt_dk_door == -1 then
-				flt_dk_door_tgt = 1		-- open door
-			end
+		if flt_dk_door_tgt <= 0.2 then
+			flt_dk_door_tgt = 1
 		else
-			-- opened door
-			flt_dk_door_tgt = 0			-- close door
+			flt_dk_door_tgt = 0
 		end
+	elseif phase == 2 then
+		B738DR_flt_dk_door_knob = 0
+	end
+end
+
+function B738_flt_door_open_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_flt_dk_door_knob = 1
+		flt_dk_door_tgt = 1
+	elseif phase == 2 then
+		B738DR_flt_dk_door_knob = 0
+	end
+end
+
+function B738_flt_door_close_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_flt_dk_door_knob = 1
+		flt_dk_door_tgt = 0
 	elseif phase == 2 then
 		B738DR_flt_dk_door_knob = 0
 	end
@@ -3886,6 +3995,93 @@ function B738_off_on2_CMDhandler(phase, duration)
 	end
 end
 
+-- SPEEDBRAKE LEVER
+function sim_speedbrake_lever_extend_one_CMDhandler(phase, duration)
+    if phase == 0 then
+
+	    -- MOVE FROM DOWN TO ARM
+		if B738DR_speedbrake_lever < 0.06 then
+	   		B738DR_speedbrake_lever = 0.0889
+	    
+	    -- MOVE FROM ARM TO FLIGHT DETENT
+	    elseif B738DR_speedbrake_lever > 0.06 and B738DR_speedbrake_lever < 0.12 then
+		    B738DR_speedbrake_lever = 0.667
+
+		-- MOVE FROM ANY DEGREE TO FLIGHT DETENT
+		elseif B738DR_speedbrake_lever >= 0.12 and B738DR_speedbrake_lever < 0.666 then
+			B738DR_speedbrake_lever = 0.667
+	    
+	    -- MOVE FROM FLIGHT DETENT TO UP
+	    elseif B738DR_speedbrake_lever >= 0.666 and B738DR_speedbrake_lever < 1.0 then
+	    	B738DR_speedbrake_lever = 1.0
+	    end
+	    B738_speedbrake_lever_DRhandler()
+
+    end
+end
+
+function sim_speedbrake_lever_retract_one_CMDhandler(phase, duration)
+    if phase == 0 then
+	    
+	    -- MOVE FROM UP TO FLIGHT DETENT
+		if B738DR_speedbrake_lever > 0.667 then
+	   		B738DR_speedbrake_lever = 0.667
+	    
+	    -- MOVE FROM FLIGHT DETENT TO ARM 
+	    elseif B738DR_speedbrake_lever > 0.12 and B738DR_speedbrake_lever <= 0.667 then
+		    B738DR_speedbrake_lever = 0.0889
+	    
+	    -- MOVE FROM ARM DETENT TO DOWN
+	    elseif B738DR_speedbrake_lever > 0.06 and B738DR_speedbrake_lever < 0.12 then
+	    	B738DR_speedbrake_lever = 0.0
+	    end
+	    B738_speedbrake_lever_DRhandler()
+	    
+    end
+end
+
+
+
+
+function sim_speedbrake_lever_up_CMDhandler(phase, duration)
+    if phase == 0 then
+        B738DR_speedbrake_lever = 1.0
+        B738_speedbrake_lever_DRhandler()
+    end
+end
+
+function sim_speedbrake_lever_dn_CMDhandler(phase, duration)
+    if phase == 0 then
+        B738DR_speedbrake_lever = 0.0
+        B738_speedbrake_lever_DRhandler()
+    end
+end
+
+
+
+
+function sim_toggle_speedbrakes_CMDhandler(phase, duration)
+	if phase == 0 then
+		if B738_speedbrake_stop == 1 then
+			if B738DR_speedbrake_lever < 0.666 then 
+				B738DR_speedbrake_lever = 1.0
+			elseif B738DR_speedbrake_lever >= 0.666 then 
+		    	B738DR_speedbrake_lever = 0.0
+	    	end	
+		    B738_speedbrake_lever_DRhandler()
+		elseif B738_speedbrake_stop == 0 then
+			if B738DR_speedbrake_lever < 0.667 then 
+				B738DR_speedbrake_lever = 1.0
+			else
+		    	B738DR_speedbrake_lever = 0.0
+		    end	
+		    B738_speedbrake_lever_DRhandler()
+		end
+	end    
+end
+
+
+
 --*************************************************************************************--
 --** 				              CREATE CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -3896,6 +4092,8 @@ B738CMD_adf_ant2			= create_command("laminar/B738/toggle_switch/adf_ant2", "ADF2
 B738CMD_off_on2				= create_command("laminar/B738/toggle_switch/off_on2", "ADF2 OFF/ON", B738_off_on2_CMDhandler)
 
 B738CMD_flt_door_toggle		= create_command("laminar/B738/toggle_switch/flt_dk_door_open", "Cockpit door open/close toggle", B738_flt_door_toggle_CMDhandler)
+B738CMD_flt_door_open		= create_command("laminar/B738/push_button/flt_dk_door_open", "Cockpit door open", B738_flt_door_open_CMDhandler)
+B738CMD_flt_door_close		= create_command("laminar/B738/push_button/flt_dk_door_close", "Cockpit door close", B738_flt_door_close_CMDhandler)
 
 B738CMD_tat_test			= create_command("laminar/B738/push_button/tat_test", "TAT test", B738_tat_test_CMDhandler)
 B738CMD_grd_call			= create_command("laminar/B738/push_button/grd_call", "GROUND CALL", B738_grd_call_CMDhandler)
@@ -4142,14 +4340,23 @@ B738CMD_gear_lock_override 		= create_command("laminar/B738/gear_lock/override",
 --** 				             REPLACE X-PLANE COMMANDS                  	    	 **--
 --*************************************************************************************--
 
-B738CMD_def_gear_toggle		= replace_command("sim/flight_controls/landing_gear_toggle", B738_gear_toggle_CMDhandler)
-B738CMD_def_gear_down		= replace_command("sim/flight_controls/landing_gear_down", B738_def_gear_down_CMDhandler)
-B738CMD_def_gear_up			= replace_command("sim/flight_controls/landing_gear_up", B738_def_gear_up_CMDhandler)
+-- GEAR
+B738CMD_def_gear_toggle			= replace_command("sim/flight_controls/landing_gear_toggle", B738_gear_toggle_CMDhandler)
+B738CMD_def_gear_down			= replace_command("sim/flight_controls/landing_gear_down", B738_def_gear_down_CMDhandler)
+B738CMD_def_gear_up				= replace_command("sim/flight_controls/landing_gear_up", B738_def_gear_up_CMDhandler)
 
+-- PARK BRAKE
 B738CMD_park_brake_toggle		= replace_command("sim/flight_controls/brakes_toggle_max", B738_park_brake_toggle_CMDhandler)
 B738CMD_park_brake_reg_toggle	= replace_command("sim/flight_controls/brakes_toggle_regular", B738_park_brake_reg_toggle_CMDhandler)
 B738CMD_park_brake				= replace_command("sim/flight_controls/brakes_max", B738_park_brake_CMDhandler)
 B738CMD_park_brake_reg			= replace_command("sim/flight_controls/brakes_regular", B738_park_brake_reg_CMDhandler)
+
+-- SPEEDBRAKES
+simCMD_speedbrakes_extend_one 	= replace_command("sim/flight_controls/speed_brakes_down_one", sim_speedbrake_lever_extend_one_CMDhandler)
+simCMD_speedbrakes_retract_one 	= replace_command("sim/flight_controls/speed_brakes_up_one", sim_speedbrake_lever_retract_one_CMDhandler)
+simCMD_speedbrakes_extend_full 	= replace_command("sim/flight_controls/speed_brakes_down_all", sim_speedbrake_lever_up_CMDhandler)
+simCMD_speedbrakes_retract_full = replace_command("sim/flight_controls/speed_brakes_up_all", sim_speedbrake_lever_dn_CMDhandler)
+simCMD_speedbrakes_toggle 		= replace_command("sim/flight_controls/speed_brakes_toggle", sim_toggle_speedbrakes_CMDhandler)
 
 --*************************************************************************************--
 --** 				              WRAP X-PLANE COMMANDS                  	    	 **--
@@ -6176,14 +6383,10 @@ function B738_init_engineMGMT_fltStart()
 --		apu_start_active = 0
 		if simDR_gear_handle_status == 0 then
 			B738DR_gear_handle_pos = 0.5
-			B738DR_gear_handle_act = 0.5
 		else
 			B738DR_gear_handle_pos = 1
-			B738DR_gear_handle_act = 1
 		end
-		gear_handle_pos_old = B738DR_gear_handle_pos
 		gear_lock = 0
-		gear_handle_aret = 0
 		B738DR_l_recirc_fan_pos = 1
 		B738DR_r_recirc_fan_pos = 1
 		B738DR_trim_air_pos = 0
@@ -6204,6 +6407,9 @@ function B738_init_engineMGMT_fltStart()
 		first_generators2 = 1
 		
 		B738DR_mach_test_enable = 0
+		
+		flt_dk_door_tgt = 1
+		B738DR_flt_dk_door_ratio = 1
 		
 		-- ENGINES RUNNING ------------------------------------------------------------------
     elseif simDR_startup_running == 1 then
@@ -6260,13 +6466,9 @@ function B738_init_engineMGMT_fltStart()
 --		apu_start_active = 0
 		if simDR_gear_handle_status == 0 then
 			B738DR_gear_handle_pos = 0.5
-			B738DR_gear_handle_act = 0.5
 		else
 			B738DR_gear_handle_pos = 1
-			B738DR_gear_handle_act = 1
 		end
-		gear_handle_pos_old = B738DR_gear_handle_pos
-		gear_handle_aret = 0
 		B738_tank_l_status = 1
 		B738_tank_c_status = 1
 		B738_tank_r_status = 1
@@ -6283,6 +6485,9 @@ function B738_init_engineMGMT_fltStart()
 		-- B738DR_parking_brake_pos = simDR_brake
 		--DR_sys_test = 2
 		B738DR_mach_test_enable = 1
+		
+		flt_dk_door_tgt = 0
+		B738DR_flt_dk_door_ratio = 0
 
     end
 	irs_left_old = B738DR_irs_left
@@ -8702,84 +8907,60 @@ function B738_apu_gen()
 	end
 end
 
--- function B738_slats()
-
-	-- local flaps_deg = simDR_flap_deg
-	
-	-- if flaps_deg <= 8 then
-		-- B738DR_slat2_deg = B738_rescale(0, 0, 8, 0.5, flaps_deg)
-	-- elseif flaps_deg > 8 and flaps_deg <= 14 then
-		-- B738DR_slat2_deg = 0.5
-	-- elseif flaps_deg > 14 and flaps_deg <= 19 then
-		-- B738DR_slat2_deg = B738_rescale(14, 0.5, 19, 1.0, flaps_deg)
-	-- else
-		-- B738DR_slat2_deg = 1.0
-	-- end
-
--- end
-
 function B738_alt_horn_cut()
 	if B738DR_cabin_alt_wrn == 0 then
 		B738DR_alt_horn_cut_disable = 0
 	end
 end
 
--- function B738_gear_horn_cut()
+function B738_gear_horn_cut()
 	
-	-- -- local cabin_gear_wrn = 0
-	
-	-- -- if B738DR_gear_handle_pos ~= 1 then
-		-- -- if simDR_flaps_ratio >= 0.625 and B738DR_flight_phase > 4 and B738DR_flight_phase < 8 then
-			-- -- cabin_gear_wrn = 1
-		-- -- end
-	-- -- end
-	-- -- B738DR_cabin_gear_wrn = cabin_gear_wrn
+	local cabin_gear_wrn = 0
+	cut_horn_gear_disable = 0
 
-	-- local cabin_gear_wrn = 0
-	-- cut_horn_gear_disable = 0
-
-	-- if simDR_radio_height_pilot_ft < 2500 then
-		-- if B738DR_gear_handle_pos < 1 or simDR_gear_deploy_0 < 1 or simDR_gear_deploy_1 < 1 or simDR_gear_deploy_2 < 1 then
-			-- if simDR_flaps_ratio <= 0.5 then
-				-- -- flaps UP to 10
-				-- if simDR_radio_height_pilot_ft < 800 then
-					-- if B738DR_thrust1_leveler == 0 and B738DR_thrust2_leveler < 0.68 then
-						-- cabin_gear_wrn = 1
-					-- elseif B738DR_thrust2_leveler == 0 and B738DR_thrust1_leveler < 0.68 then
-						-- cabin_gear_wrn = 1
-					-- elseif B738DR_thrust1_leveler < 0.4 and B738DR_thrust2_leveler < 0.4 then
-						-- cabin_gear_wrn = 1
-					-- end
-					-- if simDR_radio_height_pilot_ft < 200 then
-						-- cut_horn_gear_disable = 1
-					-- end
-				-- end
-			-- elseif simDR_flaps_ratio <= 0.75 then
-				-- -- flaps 15 to 25
-				-- if B738DR_thrust1_leveler == 0 and B738DR_thrust2_leveler < 0.68 then
-					-- cabin_gear_wrn = 1
-				-- elseif B738DR_thrust2_leveler == 0 and B738DR_thrust1_leveler < 0.68 then
-					-- cabin_gear_wrn = 1
-				-- elseif B738DR_thrust1_leveler < 0.4 and B738DR_thrust2_leveler < 0.4 then
-					-- cabin_gear_wrn = 1
-				-- end
-				-- cut_horn_gear_disable = 1
-			-- else
-				-- -- flaps 30 to 40
-				-- cabin_gear_wrn = 1
-				-- cut_horn_gear_disable = 1
-			-- end
-		-- end
-	-- end
-	-- B738DR_cabin_gear_wrn = cabin_gear_wrn
+	if simDR_radio_height_pilot_ft < 2500 then
+		--if B738DR_gear_handle_pos < 1 or simDR_gear_deploy_0 < 1 or simDR_gear_deploy_1 < 1 or simDR_gear_deploy_2 < 1 then
+		if B738DR_gear_handle_pos < 1 then
+			if simDR_flaps_ratio <= 0.5 then
+				-- flaps UP to 10
+				if simDR_radio_height_pilot_ft < 800 then
+					if B738DR_thrust1_leveler == 0 and B738DR_thrust2_leveler < 0.68 then
+						cabin_gear_wrn = 1
+					elseif B738DR_thrust2_leveler == 0 and B738DR_thrust1_leveler < 0.68 then
+						cabin_gear_wrn = 1
+					elseif B738DR_thrust1_leveler < 0.4 and B738DR_thrust2_leveler < 0.4 then
+						cabin_gear_wrn = 1
+					end
+					if simDR_radio_height_pilot_ft < 200 then
+						cut_horn_gear_disable = 1
+					end
+				end
+			elseif simDR_flaps_ratio <= 0.75 then
+				-- flaps 15 to 25
+				if B738DR_thrust1_leveler == 0 and B738DR_thrust2_leveler < 0.68 then
+					cabin_gear_wrn = 1
+				elseif B738DR_thrust2_leveler == 0 and B738DR_thrust1_leveler < 0.68 then
+					cabin_gear_wrn = 1
+				elseif B738DR_thrust1_leveler < 0.4 and B738DR_thrust2_leveler < 0.4 then
+					cabin_gear_wrn = 1
+				end
+				cut_horn_gear_disable = 1
+			else
+				-- flaps 30 to 40
+				cabin_gear_wrn = 1
+				cut_horn_gear_disable = 1
+			end
+		end
+	end
+	B738DR_cabin_gear_wrn = cabin_gear_wrn
 	
-	-- if B738DR_cabin_gear_wrn == 0 then
-		-- B738DR_gear_horn_cut_disable = 0
-	-- else
-		-- B738DR_gear_horn_cut_disable = 1
-	-- end
+	if B738DR_cabin_gear_wrn == 0 then
+		B738DR_gear_horn_cut_disable = 0
+	else
+		B738DR_gear_horn_cut_disable = 1
+	end
 	
--- end
+end
 
 function B738_below_gs_disable()
 	if B738DR_below_gs == 0 then
@@ -8801,9 +8982,14 @@ function B738_nose_steer()
 	local gs_limit2 =  math.min(simDR_ground_speed, 51)
 	local roll_co_max = 0
 	
-	local brake_max = 0.15	--0.25
-	local brake_min = 0.08	--0.15
+	local brake_max = 1.0	--0.15/0.25
+	local brake_min = 0.15	--0.25/0.08/0.15
 	local steer_limit = 0
+	local steer_spd = 0
+	local brake_max2 = 0
+	
+	local throttle_used = math.max(simDR_throttle_used_ratio[0], simDR_throttle_used_ratio[1])
+	throttle_used = math.min(throttle_used, 0.5)
 	
 	-- deactivate Parking brake
 	if simDR_left_brake > 0.9 and simDR_right_brake > 0.9 then
@@ -8832,7 +9018,7 @@ function B738_nose_steer()
 			if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1
 			or simDR_on_ground_2 == 1 then
 				
-				steer_limit = B738_rescale(0, 78, 51, 10, gs_limit2)
+				steer_limit = B738_rescale(0, 78, 51, 7, gs_limit2)
 				
 				simDR_toe_brakes_ovr = 1
 				if B738DR_nosewheel == 0 then
@@ -8843,69 +9029,58 @@ function B738_nose_steer()
 					nose_steer_deg_trg = B738_rescale(-1, -steer_limit, 1, steer_limit, simDR_yoke_roll2_ratio)
 				end
 				
-				-- simDR_toe_brakes_ovr = 1
-				-- if B738DR_nosewheel == 0 then
-					-- nose_steer_deg_trg = simDR_steer_cmd
-				-- elseif B738DR_nosewheel == 1 then
-					-- nose_steer_deg_trg = B738_rescale(-1, -78, 1, 78, simDR_yoke_hdg_ratio)
-				-- else
-					-- nose_steer_deg_trg = B738_rescale(-1, -78, 1, 78, simDR_yoke_roll2_ratio)
-				-- end
-				
-				if nose_steer_deg_trg < 0 then
-					steer_right_brake = 0
-					-- if simDR_ground_speed < 5 then
-						-- steer_left_brake = -B738_rescale(steer_pos_min, -0.25, steer_pos_max, 0.25, nose_steer_deg_trg)
-						-- steer_left_brake = B738_rescale(0, 0, 5, steer_left_brake, simDR_ground_speed)
-					-- else
-						-- steer_left_brake = -B738_rescale(steer_pos_min, -0.25, steer_pos_max, 0.25, nose_steer_deg_trg)
-						-- steer_left_brake = B738_rescale(5, steer_left_brake, 51, 0.15, gs_limit2)
-						-- if nose_steer_deg_trg < -7 and simDR_ground_speed > 23 then
-							-- nose_steer_deg_trg = -7
-						-- end
-					-- end
-					if simDR_ground_speed < 5 then
-						steer_left_brake = -B738_rescale(steer_pos_min, -brake_max, steer_pos_max, brake_max, nose_steer_deg_trg)
-						steer_left_brake = B738_rescale(0, 0, 5, steer_left_brake, simDR_ground_speed)
-					else
-						steer_left_brake = -B738_rescale(steer_pos_min, -brake_max, steer_pos_max, brake_max, nose_steer_deg_trg)
-						steer_left_brake = B738_rescale(5, steer_left_brake, 51, brake_min, gs_limit2)
-						if nose_steer_deg_trg < -7 and simDR_ground_speed > 23 then
-							nose_steer_deg_trg = -7
-						end
+				if simDR_ground_speed > 23 then
+					if nose_steer_deg_trg < -7 then
+						nose_steer_deg_trg = -7
 					end
-				else
-					steer_left_brake = 0
-					-- if simDR_ground_speed < 5 then
-						-- steer_right_brake = B738_rescale(steer_pos_min, -0.25, steer_pos_max, 0.25, nose_steer_deg_trg)
-						-- steer_right_brake = B738_rescale(0, 0, 5, steer_right_brake, simDR_ground_speed)
-					-- else
-						-- steer_right_brake = B738_rescale(steer_pos_min, -0.25, steer_pos_max, 0.25, nose_steer_deg_trg)
-						-- steer_right_brake = B738_rescale(5, steer_right_brake, 51, 0.15, gs_limit2)
-						-- if nose_steer_deg_trg > 7 and simDR_ground_speed > 23 then
-							-- nose_steer_deg_trg = 7
-						-- end
-					-- end
-					if simDR_ground_speed < 5 then
-						steer_right_brake = B738_rescale(steer_pos_min, -brake_max, steer_pos_max, brake_max, nose_steer_deg_trg)
-						steer_right_brake = B738_rescale(0, 0, 5, steer_right_brake, simDR_ground_speed)
-					else
-						steer_right_brake = B738_rescale(steer_pos_min, -brake_max, steer_pos_max, brake_max, nose_steer_deg_trg)
-						steer_right_brake = B738_rescale(5, steer_right_brake, 51, brake_min, gs_limit2)
-						if nose_steer_deg_trg > 7 and simDR_ground_speed > 23 then
-							nose_steer_deg_trg = 7
-						end
+					if nose_steer_deg_trg > 7 then
+						nose_steer_deg_trg = 7
 					end
 				end
+				
 				if B738DR_nosewheel > 0 then
 					simDR_steer_ovr = 1
 					simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, 0.028)
 				else
 					simDR_steer_ovr = 0
 				end
+				
+				if simDR_steer_cmd < 0 then
+					steer_right_brake = 0
+					steer_left_brake = -B738_rescale(steer_pos_min, -brake_max, steer_pos_max, brake_max, simDR_steer_cmd)
+					steer_left_brake = steer_left_brake * steer_left_brake
+					brake_max2 = B738_rescale(0, brake_max, 51, brake_min, gs_limit2)
+					if steer_left_brake > brake_max2 then
+						steer_left_brake = brake_max2
+					end
+					if simDR_ground_speed < 8 then
+						brake_max = steer_left_brake * 0.5
+						steer_right_brake = -B738_rescale(steer_pos_min, -brake_max, steer_pos_max, brake_max, simDR_steer_cmd)
+						steer_right_brake = B738_rescale(0, 0, 64, steer_right_brake, simDR_ground_speed * simDR_ground_speed)
+						steer_left_brake = B738_rescale(0, 0, 64, steer_left_brake, simDR_ground_speed * simDR_ground_speed)
+					end
+				else
+					steer_left_brake = 0
+					steer_right_brake = B738_rescale(steer_pos_min, -brake_max, steer_pos_max, brake_max, simDR_steer_cmd)
+					steer_right_brake = steer_right_brake * steer_right_brake
+					brake_max2 = B738_rescale(0, brake_max, 51, brake_min, gs_limit2)
+					if steer_right_brake > brake_max2 then
+						steer_right_brake = brake_max2
+					end
+					brake_max = steer_right_brake * 0.5
+					if simDR_ground_speed < 8 then
+						steer_left_brake = B738_rescale(steer_pos_min, -brake_max, steer_pos_max, brake_max, simDR_steer_cmd)
+						steer_left_brake = B738_rescale(0, 0, 64, steer_left_brake, simDR_ground_speed * simDR_ground_speed)
+						steer_right_brake = B738_rescale(0, 0, 64, steer_right_brake, simDR_ground_speed * simDR_ground_speed)
+					end
+				end
 				simDR_left_brake = math.max(left_brake, steer_left_brake, autobrake_ratio)
 				simDR_right_brake = math.max(right_brake, steer_right_brake, autobrake_ratio)
 			else
+				if simDR_gear_deploy_1 < 1 or simDR_gear_deploy_2 < 1 then
+					left_brake = 0.02
+					right_brake = 0.02
+				end
 				simDR_steer_ovr = 0
 				if left_brake > 0 or right_brake > 0 then
 					simDR_toe_brakes_ovr = 1
@@ -8920,37 +9095,118 @@ function B738_nose_steer()
 			
 		end
 		
-		--roll_co_max = B738_rescale(0, 0.030, 15, 0.060, gs_limit)
-		roll_co_max = B738_rescale(0, 0.030, 15, 0.160, gs_limit)
-		if simDR_steer_cmd < 0 then
-			simDR_roll_co = B738_rescale(-78, roll_co_max, 0, 0.025, simDR_steer_cmd)
+		if autobrake_ratio == 0 then
+			roll_co_max = B738_rescale(0, 0.040, 225, 0.200, gs_limit * gs_limit)
+			if simDR_steer_cmd < 0 then
+				simDR_roll_co = B738_rescale(-78, roll_co_max, 0, 0.025, simDR_steer_cmd)
+				steer_spd = B738_rescale(-78, 1.5, 0, 1, simDR_steer_cmd)
+			else
+				simDR_roll_co = B738_rescale(0, 0.025, 78, roll_co_max, simDR_steer_cmd)
+				steer_spd = B738_rescale(0, 1, 78, 1.5, simDR_steer_cmd)
+			end
 		else
-			simDR_roll_co = B738_rescale(0, 0.025, 78, roll_co_max, simDR_steer_cmd)
+			simDR_roll_co = 0.025
+			steer_spd = 1
 		end
 		
-		-- local nosewheel_skid = math.min(simDR_nosewheel_skid, 0.3)
-		-- nosewheel_skid = math.max(nosewheel_skid, 0)
-		-- simDR_roll_brake = B738_rescale(0, 0.8, 0.3, 1.5, nosewheel_skid)
-		simDR_roll_brake = 1.5
 	else
 		simDR_steer_ovr = 1
-		simDR_roll_brake = 1.5
+		steer_spd = 1
 	end
+	gs_limit2 = math.min(gs_limit2, 5)
+	brake_max2 = B738_rescale(0, 0.8, 5, 1.5, gs_limit2)
+	if simDR_ground_speed < 4 then
+		steer_spd = 1
+	end
+	simDR_roll_brake = B738_rescale(0, brake_max2, 0.5, 0.8, throttle_used) * steer_spd
 	
 end
 
 
 function B738_manual_vspeed()
 
+	local delta_vref = 0
+	
 	-- auto
 	if B738DR_spd_ref == 0 then
 		B738DR_man_vspd_show = 0
 		B738DR_man_vspeed_mode = 0
-	
+		if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1
+		or simDR_on_ground_2 == 1 then
+			B738DR_man_vspd_digit_show = 0
+			B738DR_man_vspd_vref_show = 0
+			B738DR_man_vspd_digit_show_fo = 0
+			B738DR_man_vspd_vref_show_fo = 0
+		else
+			if B738DR_fms_vref > 0 then
+				B738DR_man_vspd = B738DR_fms_vref
+				B738DR_man_vref = B738DR_man_vspd
+				
+				-- captain
+				delta_vref = simDR_airspeed_pilot - 60
+				if B738DR_fms_vref < delta_vref then
+					B738DR_man_vspd_digit_show = 1
+					B738DR_man_vspd_vref_show = 1
+				end
+				if B738DR_fms_vref > delta_vref + 5 then
+					B738DR_man_vspd_digit_show = 0
+					B738DR_man_vspd_vref_show = 0
+				end
+				
+				-- fo
+				delta_vref = simDR_airspeed_copilot - 60
+				if B738DR_fms_vref < delta_vref then
+					B738DR_man_vspd_digit_show_fo = 1
+					B738DR_man_vspd_vref_show_fo = 1
+				end
+				if B738DR_fms_vref > delta_vref + 5 then
+					B738DR_man_vspd_digit_show_fo = 0
+					B738DR_man_vspd_vref_show_fo = 0
+				end
+				
+			else
+				B738DR_man_vspd_digit_show = 0
+				B738DR_man_vspd_vref_show = 0
+				B738DR_man_vspd_digit_show_fo = 0
+				B738DR_man_vspd_vref_show_fo = 0
+			end
+		end
+		
 	-- set
 	elseif B738DR_spd_ref == 6 then
 		B738DR_man_vspd_show = 0
 		B738DR_man_vspeed_mode = 0
+		
+		if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1
+		or simDR_on_ground_2 == 1 then
+			B738DR_man_vspd_digit_show = 0
+			B738DR_man_vspd_vref_show = 0
+			B738DR_man_vspd_digit_show_fo = 0
+			B738DR_man_vspd_vref_show_fo = 0
+		else
+			
+			-- captain
+			delta_vref = simDR_airspeed_pilot - 60
+			if B738DR_man_vref < delta_vref then
+				B738DR_man_vspd_digit_show = 1
+				B738DR_man_vspd_vref_show = 1
+			end
+			if B738DR_man_vref > delta_vref + 5 then
+				B738DR_man_vspd_digit_show = 0
+				B738DR_man_vspd_vref_show = 0
+			end
+			
+			-- fo
+			delta_vref = simDR_airspeed_copilot - 60
+			if B738DR_man_vref < delta_vref then
+				B738DR_man_vspd_digit_show_fo = 1
+				B738DR_man_vspd_vref_show_fo = 1
+			end
+			if B738DR_man_vref > delta_vref + 5 then
+				B738DR_man_vspd_digit_show_fo = 0
+				B738DR_man_vspd_vref_show_fo = 0
+			end
+		end
 	
 	else
 		-- on the ground
@@ -8963,6 +9219,10 @@ function B738_manual_vspeed()
 				B738DR_man_vspeed_mode = 1
 				B738DR_man_v1 = B738DR_spd_ref_adjust
 				B738DR_man_vspd = B738DR_man_v1
+				B738DR_man_vspd_digit_show = 1
+				B738DR_man_vspd_vref_show = 0
+				B738DR_man_vspd_digit_show_fo = 1
+				B738DR_man_vspd_vref_show_fo = 0
 				
 			-- Vr
 			elseif B738DR_spd_ref == 2 then
@@ -8970,14 +9230,26 @@ function B738_manual_vspeed()
 				B738DR_man_vspeed_mode = 2
 				B738DR_man_vr = B738DR_spd_ref_adjust
 				B738DR_man_vspd = B738DR_man_vr
+				B738DR_man_vspd_digit_show = 1
+				B738DR_man_vspd_vref_show = 0
+				B738DR_man_vspd_digit_show_fo = 1
+				B738DR_man_vspd_vref_show_fo = 0
 			
 			-- Vref
 			elseif B738DR_spd_ref == 4 then
 				B738DR_man_vspd_show = 0
 				B738DR_man_vspeed_mode = 4
+				B738DR_man_vspd_digit_show = 0
+				B738DR_man_vspd_vref_show = 0
+				B738DR_man_vspd_digit_show_fo = 0
+				B738DR_man_vspd_vref_show_fo = 0
 			else
 				B738DR_man_vspd_show = 0
 				B738DR_man_vspeed_mode = 0
+				B738DR_man_vspd_digit_show = 0
+				B738DR_man_vspd_vref_show = 0
+				B738DR_man_vspd_digit_show_fo = 0
+				B738DR_man_vspd_vref_show_fo = 0
 			end
 		
 		-- in air
@@ -8986,11 +9258,19 @@ function B738_manual_vspeed()
 			if B738DR_spd_ref == 1 then
 				B738DR_man_vspd_show = 0
 				B738DR_man_vspeed_mode = 4
+				B738DR_man_vspd_digit_show = 0
+				B738DR_man_vspd_vref_show = 0
+				B738DR_man_vspd_digit_show_fo = 0
+				B738DR_man_vspd_vref_show_fo = 0
 			
 			-- Vr
 			elseif B738DR_spd_ref == 2 then
 				B738DR_man_vspd_show = 0
 				B738DR_man_vspeed_mode = 4
+				B738DR_man_vspd_digit_show = 0
+				B738DR_man_vspd_vref_show = 0
+				B738DR_man_vspd_digit_show_fo = 0
+				B738DR_man_vspd_vref_show_fo = 0
 			
 			-- Vref
 			elseif B738DR_spd_ref == 4 then
@@ -8998,9 +9278,17 @@ function B738_manual_vspeed()
 				B738DR_man_vspeed_mode = 3
 				B738DR_man_vref = B738DR_spd_ref_adjust
 				B738DR_man_vspd = B738DR_man_vref
+				B738DR_man_vspd_digit_show = 1
+				B738DR_man_vspd_vref_show = 1
+				B738DR_man_vspd_digit_show_fo = 1
+				B738DR_man_vspd_vref_show_fo = 1
 			else
 				B738DR_man_vspd_show = 0
 				B738DR_man_vspeed_mode = 0
+				B738DR_man_vspd_digit_show = 0
+				B738DR_man_vspd_vref_show = 0
+				B738DR_man_vspd_digit_show_fo = 0
+				B738DR_man_vspd_vref_show_fo = 0
 			end
 		end
 	end
@@ -9158,30 +9446,31 @@ function gpws_blank_sound(gpws_time_delay)
 	
 end
 
--- function clear_gpws_flag()
+function clear_gpws_flag()
 	
-	-- B738DR_bank_angle = 0
-	-- B738DR_pull_up = 0
-	-- B738DR_windshear = 0
-	-- B738DR_terrain = 0
-	-- B738DR_caution_terrain = 0
-	-- B738DR_too_low_terrain = 0
-	-- B738DR_too_low_flaps = 0
-	-- B738DR_too_low_gear = 0
-	-- B738DR_dont_sink = 0
-	-- B738DR_sink_rate = 0
-	-- B738DR_glide_slope = 0
-	-- B738DR_airspeed_low = 0
-	-- B738DR_obstacle = 0
-	-- B738DR_two_tones = 0
-	-- B738DR_obstacle_ahead_pull = 0
-	-- B738DR_gpws_inop = 0
-	-- B738DR_terrain_ahead = 0
-	-- B738DR_ra_callout = 0
-	-- B738DR_approach_minimums = 0
-	-- B738DR_dh_minimum_pilot = 0
+	B738DR_bank_angle = 0
+	B738DR_pull_up = 0
+	B738DR_windshear = 0
+	B738DR_terrain = 0
+	B738DR_caution_terrain = 0
+	B738DR_too_low_terrain = 0
+	B738DR_too_low_flaps = 0
+	B738DR_too_low_gear = 0
+	B738DR_dont_sink = 0
+	B738DR_sink_rate = 0
+	B738DR_glide_slope = 0
+	B738DR_airspeed_low = 0
+	B738DR_obstacle = 0
+	B738DR_two_tones = 0
+	B738DR_obstacle_ahead_pull = 0
+	B738DR_gpws_inop = 0
+	B738DR_terrain_ahead = 0
+	B738DR_ra_callout = 0
+	B738DR_approach_minimums = 0
+	B738DR_dh_minimum_pilot = 0
+	B738DR_dh_minimum_copilot = 0
 	
--- end
+end
 
 function B738_gpws()
 	
@@ -9201,282 +9490,276 @@ function B738_gpws()
 	end
 	
 	
+	local gpws_mode = 0
+	local gpws_calc_vvi = 0
+	local gpws_calc_fpm = 0
+	local pull_up_vvi = 0
+	local gpws_calc_alt_fpm = 0
 	
-	if B738DR_gpws_test_pos == 0 and gpws_test_timer > 0 then
-		if gpws_test_timer > 2 then
-			B738DR_enable_gpwstest_long = 0
-			gpws_test_timer = 0
-		else	--if  gpws_test_timer > 0 then
-			gpws_test_timer = gpws_test_timer - 0.05
-			if gpws_test_timer <= 0 then
-				B738DR_enable_gpwstest_short = 0
-				gpws_test_timer = 0
+	local gpws_disable = 0
+	--local gpws_aural = 0
+	
+	if B738DR_batbus_status == 1 then
+	
+		if B738DR_flight_phase == 0 and simDR_radio_height_pilot_ft > 30 and simDR_radio_height_pilot_ft < 1000 then
+			gpws_short_test_disable = 1
+			gpws_long_test_disable = 1
+		else
+			if simDR_on_ground_1 == 1 and simDR_on_ground_1 == 1 and simDR_on_ground_2 == 1 and simDR_flaps_ratio2 == 0 then
+				gpws_long_test_disable = 0
+			else
+				gpws_long_test_disable = 1
 			end
+			gpws_short_test_disable = 0
 		end
-	end
-
-	
-	B738DR_pfd_pull_up = simDR_gpws_annun
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	-- local gpws_mode = 0
-	-- local gpws_calc_vvi = 0
-	-- local gpws_calc_fpm = 0
-	-- local pull_up_vvi = 0
-	-- local gpws_calc_alt_fpm = 0
-	
-	-- local gpws_disable = 0
-	-- --local gpws_aural = 0
-	
-	-- if B738DR_batbus_status == 1 then
-	
-		-- if B738DR_flight_phase == 0 and simDR_radio_height_pilot_ft > 30 and simDR_radio_height_pilot_ft < 1000 then
-			-- gpws_short_test_disable = 1
-			-- gpws_long_test_disable = 1
-		-- else
-			-- if simDR_on_ground_1 == 1 and simDR_on_ground_1 == 1 and simDR_on_ground_2 == 1 and simDR_flaps_ratio2 == 0 then
-				-- gpws_long_test_disable = 0
-			-- else
-				-- gpws_long_test_disable = 1
-			-- end
-			-- gpws_short_test_disable = 0
-		-- end
 		
-		-- if simDR_radio_height_pilot_ft < 30 or simDR_radio_height_pilot_ft > 2450 then
-			-- gpws_disable = 1
-		-- end
+		if simDR_radio_height_pilot_ft < 30 or simDR_radio_height_pilot_ft > 2450 then
+			gpws_disable = 1
+		end
 		
-		-- if B738DR_enable_gpwstest_long == 1 then
-			-- -- long test
-			-- B738DR_glide_slope_annun = 0
-			-- if gpws_test_phase == 1 then
-				-- -- GLIDESLOPE
-				-- gpws_warning = GLIDE_SLOPE
-				-- B738DR_below_gs_disable = 0
-				-- B738DR_glide_slope_annun = 1
-			-- elseif gpws_test_phase == 2 then
-				-- -- PULL UP
-				-- gpws_warning = PULL_UP
-			-- elseif gpws_test_phase == 3 then
-				-- -- WINDSHEAR
-				-- gpws_warning = WINDSHEAR
-			-- elseif gpws_test_phase == 4 then
-				-- -- GPWS INOP
-				-- gpws_warning = GPWS_INOP
-			-- elseif gpws_test_phase == 5 then
-				-- -- SINK RATE
-				-- gpws_warning = SINK_RATE
-			-- elseif gpws_test_phase == 6 then
-				-- -- TERRAIN, TERRAIN, PULL UP
-				-- gpws_warning = TERRAIN
-			-- elseif gpws_test_phase == 7 then
-				-- -- DONT SINK, DONT SINK
-				-- gpws_warning = DONT_SINK
-			-- elseif gpws_test_phase == 8 then
-				-- -- TOO LOW TERRAIN
-				-- gpws_warning = TOO_LOW_TERRAIN
-			-- elseif gpws_test_phase == 9 then
-				-- -- TOO LOW GEAR
-				-- gpws_warning = TOO_LOW_GEAR
-			-- elseif gpws_test_phase == 10 then
-				-- -- TOO LOW FLAPS
-				-- gpws_warning = TOO_LOW_FLAPS
-			-- elseif gpws_test_phase == 11 then
-				-- -- TOO LOW TERRAIN
-				-- gpws_warning = TOO_LOW_TERRAIN
-			-- elseif gpws_test_phase == 12 then
-				-- -- GLIDESLOPE visual
-				-- gpws_warning = GLIDE_SLOPE
-			-- elseif gpws_test_phase == 13 then
-				-- -- BANK ANGLE
-				-- gpws_warning = BANK_LIMIT
-			-- elseif gpws_test_phase == 14 then
-				-- -- APPROACHING MINIMUMS
-				-- gpws_warning = APP_MINIMUMS
-			-- elseif gpws_test_phase == 15 then
-				-- -- BANK ANGLE
-				-- gpws_warning = MINIMUMS
-			-- elseif gpws_test_phase == 16 then
-				-- -- RA CALLOUT
-				-- gpws_warning = RA_CALLOUT
-			-- elseif gpws_test_phase == 17 then
-				-- -- WINDSHEAR
-				-- gpws_warning = WINDSHEAR_T
-			-- elseif gpws_test_phase == 18 then
-				-- -- TOO LOW TERRAIN
-				-- gpws_warning = TOO_LOW_TERRAIN
-			-- elseif gpws_test_phase == 19 then
-				-- -- TERRAIN AHEAD
-				-- gpws_warning = TERRAIN_AHEAD
-			-- elseif gpws_test_phase == 20 then
-				-- -- OBSTACLE, OBSTACLE, PULL UP visaual
-				-- gpws_warning = OBSTACLE2
-			-- else
-				-- -- END TEST
-				-- gpws_test_phase = 0
-				-- B738DR_gpws_test_running = 0
-				-- B738DR_enable_gpwstest_long = 0
-				-- gpws_warning = 0
-			-- end
+		if B738DR_enable_gpwstest_long == 1 then
+			-- long test
+			B738DR_glide_slope_annun = 0
+			if gpws_test_phase == 1 then
+				-- GLIDESLOPE
+				gpws_warning = GLIDE_SLOPE
+				B738DR_below_gs_disable = 0
+				B738DR_glide_slope_annun = 1
+			elseif gpws_test_phase == 2 then
+				-- PULL UP
+				gpws_warning = PULL_UP
+			elseif gpws_test_phase == 3 then
+				-- WINDSHEAR
+				gpws_warning = WINDSHEAR
+			elseif gpws_test_phase == 4 then
+				-- GPWS INOP
+				gpws_warning = GPWS_INOP
+			elseif gpws_test_phase == 5 then
+				-- SINK RATE
+				gpws_warning = SINK_RATE
+			elseif gpws_test_phase == 6 then
+				-- TERRAIN, TERRAIN, PULL UP
+				gpws_warning = TERRAIN
+			elseif gpws_test_phase == 7 then
+				-- DONT SINK, DONT SINK
+				gpws_warning = DONT_SINK
+			elseif gpws_test_phase == 8 then
+				-- TOO LOW TERRAIN
+				gpws_warning = TOO_LOW_TERRAIN
+			elseif gpws_test_phase == 9 then
+				-- TOO LOW GEAR
+				gpws_warning = TOO_LOW_GEAR
+			elseif gpws_test_phase == 10 then
+				-- TOO LOW FLAPS
+				gpws_warning = TOO_LOW_FLAPS
+			elseif gpws_test_phase == 11 then
+				-- TOO LOW TERRAIN
+				gpws_warning = TOO_LOW_TERRAIN
+			elseif gpws_test_phase == 12 then
+				-- GLIDESLOPE visual
+				gpws_warning = GLIDE_SLOPE
+			elseif gpws_test_phase == 13 then
+				-- BANK ANGLE
+				gpws_warning = BANK_LIMIT
+			elseif gpws_test_phase == 14 then
+				-- APPROACHING MINIMUMS
+				gpws_warning = APP_MINIMUMS
+			elseif gpws_test_phase == 15 then
+				-- BANK ANGLE
+				gpws_warning = MINIMUMS
+			elseif gpws_test_phase == 16 then
+				-- RA CALLOUT
+				gpws_warning = RA_CALLOUT
+			elseif gpws_test_phase == 17 then
+				-- WINDSHEAR
+				gpws_warning = WINDSHEAR_T
+			elseif gpws_test_phase == 18 then
+				-- TOO LOW TERRAIN
+				gpws_warning = TOO_LOW_TERRAIN
+			elseif gpws_test_phase == 19 then
+				-- TERRAIN AHEAD
+				gpws_warning = TERRAIN_AHEAD
+			elseif gpws_test_phase == 20 then
+				-- OBSTACLE, OBSTACLE, PULL UP visaual
+				gpws_warning = OBSTACLE2
+			else
+				-- END TEST
+				gpws_test_phase = 0
+				B738DR_gpws_test_running = 0
+				B738DR_enable_gpwstest_long = 0
+				gpws_warning = 0
+			end
 		
-		-- elseif B738DR_enable_gpwstest_short == 1 then
-			-- -- short test
-			-- B738DR_glide_slope_annun = 0
-			-- if gpws_test_phase == 1 then
-				-- -- GLIDESLOPE
-				-- gpws_warning = GLIDE_SLOPE
-				-- B738DR_below_gs_disable = 0
-				-- B738DR_glide_slope_annun = 1
-			-- elseif gpws_test_phase == 2 then
-				-- -- PULL UP
-				-- gpws_warning = PULL_UP
-			-- elseif gpws_test_phase == 3 then
-				-- -- WINDSHEAR
-				-- gpws_warning = WINDSHEAR
-			-- elseif gpws_test_phase == 4 then
-				-- -- TERRAIN, TERRAIN, PULL UP
-				-- gpws_warning = TERRAIN
-			-- elseif gpws_test_phase == 5 then
-				-- -- OBSTACLE, OBSTACLE, PULL UP
-				-- gpws_warning = OBSTACLE
-			-- elseif gpws_test_phase == 6 then
-				-- -- AIRSPEED LOW
-				-- gpws_warning = AIRSPEED_LOW
-			-- else
-				-- -- END TEST
-				-- gpws_test_phase = 0
-				-- B738DR_gpws_test_running = 0
-				-- B738DR_enable_gpwstest_short = 0
-				-- gpws_warning = 0
-			-- end
+		elseif B738DR_enable_gpwstest_short == 1 then
+			-- short test
+			B738DR_glide_slope_annun = 0
+			if gpws_test_phase == 1 then
+				-- GLIDESLOPE
+				gpws_warning = GLIDE_SLOPE
+				B738DR_below_gs_disable = 0
+				B738DR_glide_slope_annun = 1
+			elseif gpws_test_phase == 2 then
+				-- PULL UP
+				gpws_warning = PULL_UP
+			elseif gpws_test_phase == 3 then
+				-- WINDSHEAR
+				gpws_warning = WINDSHEAR
+			elseif gpws_test_phase == 4 then
+				-- TERRAIN, TERRAIN, PULL UP
+				gpws_warning = TERRAIN
+			elseif gpws_test_phase == 5 then
+				-- OBSTACLE, OBSTACLE, PULL UP
+				gpws_warning = OBSTACLE
+			elseif gpws_test_phase == 6 then
+				-- AIRSPEED LOW
+				gpws_warning = AIRSPEED_LOW
+			else
+				-- END TEST
+				gpws_test_phase = 0
+				B738DR_gpws_test_running = 0
+				B738DR_enable_gpwstest_short = 0
+				gpws_warning = 0
+			end
 		
-		-- elseif B738DR_enable_gpwstest_short == 2 then
-			-- -- short test visual only
-			-- B738DR_glide_slope_annun = 0
-			-- if gpws_test_phase == 1 then
-				-- -- GLIDESLOPE
-				-- gpws_warning = GLIDE_SLOPE_V
-				-- B738DR_glide_slope_annun = 1
-			-- elseif gpws_test_phase == 2 then
-				-- -- PULL UP
-				-- gpws_warning = PULL_UP_V
-			-- elseif gpws_test_phase == 3 then
-				-- -- WINDSHEAR
-				-- gpws_warning = WINDSHEAR_V
-			-- elseif gpws_test_phase == 4 then
-				-- -- TERRAIN, TERRAIN, PULL UP
-				-- gpws_warning = TERRAIN_V
-			-- elseif gpws_test_phase == 5 then
-				-- -- OBSTACLE, OBSTACLE, PULL UP
-				-- gpws_warning = OBSTACLE_V
-			-- else
-				-- -- END TEST
-				-- gpws_test_phase = 0
-				-- B738DR_gpws_test_running = 0
-				-- B738DR_enable_gpwstest_short = 0
-				-- gpws_warning = 0
-			-- end
+		elseif B738DR_enable_gpwstest_short == 2 then
+			-- short test visual only
+			B738DR_glide_slope_annun = 0
+			if gpws_test_phase == 1 then
+				-- GLIDESLOPE
+				gpws_warning = GLIDE_SLOPE_V
+				B738DR_glide_slope_annun = 1
+			elseif gpws_test_phase == 2 then
+				-- PULL UP
+				gpws_warning = PULL_UP_V
+			elseif gpws_test_phase == 3 then
+				-- WINDSHEAR
+				gpws_warning = WINDSHEAR_V
+			elseif gpws_test_phase == 4 then
+				-- TERRAIN, TERRAIN, PULL UP
+				gpws_warning = TERRAIN_V
+			elseif gpws_test_phase == 5 then
+				-- OBSTACLE, OBSTACLE, PULL UP
+				gpws_warning = OBSTACLE_V
+			else
+				-- END TEST
+				gpws_test_phase = 0
+				B738DR_gpws_test_running = 0
+				B738DR_enable_gpwstest_short = 0
+				gpws_warning = 0
+			end
 		
-		-- elseif gpws_disable == 0 and gpws_warning == 0 then
+		elseif gpws_disable == 0 and gpws_warning == 0 then
 			
-			-- -- BANK ANGLE
-			-- if simDR_roll_elec_deg_pilot > 35 then
-				-- gpws_bank_angle1 = 1
-			-- end
-			-- if simDR_roll_elec_deg_pilot < 30 then
-				-- gpws_bank_angle1 = 0
-			-- end
-			-- if simDR_roll_elec_deg_pilot < -35 then
-				-- gpws_bank_angle2 = 1
-			-- end
-			-- if simDR_roll_elec_deg_pilot > -30 then
-				-- gpws_bank_angle2 = 0
-			-- end
-			-- if gpws_bank_angle1 == 1 or gpws_bank_angle2 == 1 then
-				-- gpws_warning = BANK_LIMIT
-			-- else
-				-- if gpws_warning == BANK_LIMIT then
-					-- gpws_warning = 0
-				-- end
-			-- end
+			-- BANK ANGLE
+			if simDR_roll_elec_deg_pilot > 35 then
+				gpws_bank_angle1 = 1
+			end
+			if simDR_roll_elec_deg_pilot < 30 then
+				gpws_bank_angle1 = 0
+			end
+			if simDR_roll_elec_deg_pilot < -35 then
+				gpws_bank_angle2 = 1
+			end
+			if simDR_roll_elec_deg_pilot > -30 then
+				gpws_bank_angle2 = 0
+			end
+			if gpws_bank_angle1 == 1 or gpws_bank_angle2 == 1 then
+				gpws_warning = BANK_LIMIT
+			else
+				if gpws_warning == BANK_LIMIT then
+					gpws_warning = 0
+				end
+			end
 			
-			-- -- ***** GPWS SYSTEM *****
-			-- gpws_calc_fpm = B738DR_radio_height_ratio * 60
-			-- gpws_calc_alt_fpm = B738DR_altitude_pilot_ratio * 60
+			-- ***** GPWS SYSTEM *****
+			gpws_calc_fpm = B738DR_radio_height_ratio * 60
+			gpws_calc_alt_fpm = B738DR_altitude_pilot_ratio * 60
 			
-			-- local landing_config = 0
-			-- if simDR_flaps_ratio2 >= 0.625 and simDR_gear_deploy_0 == 1.0 and simDR_gear_deploy_1 == 1.0 and simDR_gear_deploy_2 == 1.0 then
-				-- landing_config = 1
-			-- end
+			local landing_config = 0
+			if simDR_flaps_ratio2 >= 0.625 and simDR_gear_deploy_0 == 1.0 and simDR_gear_deploy_1 == 1.0 and simDR_gear_deploy_2 == 1.0 then
+				landing_config = 1
+			end
 			
-			-- -- MODE 5 (lower priority than modes 1 to 4)
-			-- -- Glide slope deviation alert
-			-- if simDR_fpm < 0 then
-				-- if simDR_nav1_vert_signal == 1 and simDR_nav1_vdef_dots ~= nil and simDR_gs_flag == 0 then
-					-- if simDR_radio_height_pilot_ft < 1000 and simDR_nav1_vdef_dots < -1.3 then
-						-- if simDR_radio_height_pilot_ft > 150 then
-							-- gpws_mode = 5
-							-- gpws_warning = GLIDE_SLOPE
-						-- else
-							-- gpws_calc_vvi = B738_rescale(30, 2.7, 150, 1.3, simDR_radio_height_pilot_ft)
-							-- if simDR_nav1_vdef_dots < -gpws_calc_vvi then
-								-- gpws_mode = 5
-								-- gpws_warning = GLIDE_SLOPE
-							-- end
-						-- end
-					-- end
-				-- end
-			-- end
-			-- if gpws_warning == GLIDE_SLOPE then
-				-- B738DR_glide_slope_annun = 1
-			-- else
-				-- B738DR_glide_slope_annun = 0
-			-- end
+			-- MODE 5 (lower priority than modes 1 to 4)
+			-- Glide slope deviation alert
+			if simDR_fpm < 0 then
+				if simDR_nav1_vert_signal == 1 and simDR_nav1_vdef_dots ~= nil and simDR_gs_flag == 0 then
+					if simDR_radio_height_pilot_ft < 1000 and simDR_nav1_vdef_dots < -1.3 then
+						if simDR_radio_height_pilot_ft > 150 then
+							gpws_mode = 5
+							gpws_warning = GLIDE_SLOPE
+						else
+							gpws_calc_vvi = B738_rescale(30, 2.7, 150, 1.3, simDR_radio_height_pilot_ft)
+							if simDR_nav1_vdef_dots < -gpws_calc_vvi then
+								gpws_mode = 5
+								gpws_warning = GLIDE_SLOPE
+							end
+						end
+					end
+				end
+			end
+			if gpws_warning == GLIDE_SLOPE then
+				B738DR_glide_slope_annun = 1
+			else
+				B738DR_glide_slope_annun = 0
+			end
 			
-			-- -- Approaching minimums
-			-- if simDR_radio_height_pilot_ft < simDR_ra_min + 105 and simDR_radio_height_pilot_ft > simDR_ra_min + 100 and simDR_fpm < 0 and simDR_ra_min > 0 then
-				-- gpws_warning = APP_MINIMUMS
-			-- else
-				-- if gpws_warning == APP_MINIMUMS then
-					-- gpws_warning = 0
-				-- end
-			-- end
+			-- Approaching minimums
+			if simDR_radio_height_pilot_ft < simDR_ra_min + 105 and simDR_radio_height_pilot_ft > simDR_ra_min + 100 and simDR_fpm < 0 and simDR_ra_min > 0 then
+				gpws_warning = APP_MINIMUMS
+			else
+				if gpws_warning == APP_MINIMUMS then
+					gpws_warning = 0
+				end
+			end
 			
-			-- -- Minimums
-			-- if B738DR_dh_minimum_pilot2 > 0 or B738DR_dh_minimum_copilot2 > 0 then
-				-- gpws_warning = MINIMUMS
-			-- else
-				-- if gpws_warning == MINIMUMS then
-					-- gpws_warning = 0
-				-- end
-			-- end
+			-- Minimums
+			if B738DR_dh_minimum_pilot2 > 0 or B738DR_dh_minimum_copilot2 > 0 then
+				if gpws_minimum == 0 then
+					gpws_warning = MINIMUMS
+					gpws_minimum = 1
+				end
+			else
+				if gpws_warning == MINIMUMS then
+					gpws_warning = 0
+				end
+				if B738DR_dh_minimum_pilot2 == 0 and B738DR_dh_minimum_copilot2 == 0 then
+					gpws_minimum = 0
+				end
+			end
 			
 				
-			-- -- MODE 3
-			-- if B738DR_flight_phase > 7 then
-				-- if B738DR_thrust1_leveler > 0.5 or B738DR_thrust2_leveler > 0.5 then
-					-- gpws_goaround = 1	-- activated Go around
-				-- end
-			-- else
-				-- gpws_goaround = 0
-			-- end
-			-- if B738DR_flight_phase == 0 or gpws_goaround == 1 then
-				-- if simDR_radio_height_pilot_ft < 1330 then
-					-- gpws_mode = 3
-					-- gpws_calc_vvi = B738_rescale(30, 8, 1500, 120, simDR_radio_height_pilot_ft)
-					-- if simDR_altitude_pilot < (gpws_last_peak_altitude - gpws_calc_vvi) then
-						-- -- DON'T SINK
-						-- -- PFD -> PULL UP
-						-- gpws_warning = DONT_SINK
-					-- end
+			-- MODE 3
+			if B738DR_flight_phase > 7 then
+				if B738DR_thrust1_leveler > 0.5 or B738DR_thrust2_leveler > 0.5 then
+					gpws_goaround = 1	-- activated Go around
+				end
+			else
+				gpws_goaround = 0
+			end
+			if B738DR_flight_phase == 0 or gpws_goaround == 1 then
+				if simDR_radio_height_pilot_ft < 1330 then
+					gpws_mode = 3
+					gpws_calc_vvi = B738_rescale(30, 8, 1500, 120, simDR_radio_height_pilot_ft)
+					if simDR_altitude_pilot < (gpws_last_peak_altitude - gpws_calc_vvi) then
+						-- DON'T SINK
+						-- PFD -> PULL UP
+						gpws_warning = DONT_SINK
+					end
+					if simDR_airspeed_pilot < 190 then
+						if gpws_goaround == 1 and simDR_radio_height_pilot_ft < 700 then
+							gpws_mode = 4
+						end
+					else
+						if B738DR_flight_phase == 0 and simDR_radio_height_pilot_ft > 1330 then
+							gpws_mode = 4
+						end
+					end
+				end
+				if gpws_last_peak_altitude < simDR_altitude_pilot then
+					gpws_last_peak_altitude = simDR_altitude_pilot
+				end
+				-- if gpws_mode == 3 then
 					-- if simDR_airspeed_pilot < 190 then
 						-- if gpws_goaround == 1 and simDR_radio_height_pilot_ft < 700 then
 							-- gpws_mode = 4
@@ -9486,533 +9769,527 @@ function B738_gpws()
 							-- gpws_mode = 4
 						-- end
 					-- end
+				-- else
+					-- gpws_mode = 4
 				-- end
-				-- if gpws_last_peak_altitude < simDR_altitude_pilot then
-					-- gpws_last_peak_altitude = simDR_altitude_pilot
-				-- end
-				-- -- if gpws_mode == 3 then
-					-- -- if simDR_airspeed_pilot < 190 then
-						-- -- if gpws_goaround == 1 and simDR_radio_height_pilot_ft < 700 then
-							-- -- gpws_mode = 4
-						-- -- end
-					-- -- else
-						-- -- if B738DR_flight_phase == 0 and simDR_radio_height_pilot_ft > 1330 then
-							-- -- gpws_mode = 4
-						-- -- end
-					-- -- end
-				-- -- else
-					-- -- gpws_mode = 4
-				-- -- end
-			-- else
-				-- gpws_last_peak_altitude = simDR_altitude_pilot
-			-- end
-			-- if gpws_mode == 4 then
-				-- -- MODE 4
-				-- if simDR_radio_height_pilot_ft < 1000 then
-					-- if simDR_gear_deploy_0 < 1.0 or simDR_gear_deploy_1 < 1.0 or simDR_gear_deploy_2 < 1.0 then
-						-- -- gear not down
-						-- if simDR_airspeed_pilot < 190 and simDR_radio_height_pilot_ft < 500 and B738DR_gpws_gear_pos == 0 then
-							-- gpws_mode = 4
-							-- -- TOO LOW GEAR
-							-- -- PFD -> PULL UP
-							-- gpws_warning = TOO_LOW_GEAR
-						-- else
-							-- if simDR_airspeed_pilot > 190 and B738DR_gpws_terr_pos == 0 then
-								-- if simDR_radio_height_pilot_ft < 500 then
-									-- gpws_calc_vvi = 190
-								-- else
-									-- gpws_calc_vvi = B738_rescale(500, 190, 1000, 250, simDR_radio_height_pilot_ft)
-								-- end
-								-- if simDR_airspeed_pilot > gpws_calc_vvi then
-									-- gpws_mode = 4
-									-- -- TOO LOW TERRAIN
-									-- -- PFD -> PULL UP
-									-- gpws_warning = TOO_LOW_TERRAIN
-								-- end
-							-- end
-						-- end
-					-- elseif simDR_flaps_ratio2 < 0.625 then
-						-- -- gear down, flaps not in landing config
-						-- if simDR_airspeed_pilot < 159 and simDR_radio_height_pilot_ft < 245 and B738DR_gpws_flap_pos == 0 then
-							-- gpws_mode = 4
-							-- -- TOO LOW FLAPS
-							-- -- PFD -> PULL UP
-							-- gpws_warning = TOO_LOW_FLAPS
-						-- else
-							-- if simDR_airspeed_pilot > 159 and B738DR_gpws_terr_pos == 0 then
-								-- if simDR_radio_height_pilot_ft < 245 then
-									-- gpws_calc_vvi = 159
-								-- else
-									-- gpws_calc_vvi = B738_rescale(500, 159, 1000, 250, simDR_radio_height_pilot_ft)
-								-- end
-								-- if simDR_airspeed_pilot > gpws_calc_vvi then
-									-- gpws_mode = 4
-									-- -- TOO LOW TERRAIN
-									-- -- PFD -> PULL UP
-									-- gpws_warning = TOO_LOW_TERRAIN
-								-- end
-							-- end
-						-- end
-					-- end
-				-- end
-			-- end
+			else
+				gpws_last_peak_altitude = simDR_altitude_pilot
+			end
+			if gpws_mode == 4 then
+				-- MODE 4
+				if simDR_radio_height_pilot_ft < 1000 then
+					if simDR_gear_deploy_0 < 1.0 or simDR_gear_deploy_1 < 1.0 or simDR_gear_deploy_2 < 1.0 then
+						-- gear not down
+						if simDR_airspeed_pilot < 190 and simDR_radio_height_pilot_ft < 500 and B738DR_gpws_gear_pos == 0 then
+							gpws_mode = 4
+							-- TOO LOW GEAR
+							-- PFD -> PULL UP
+							gpws_warning = TOO_LOW_GEAR
+						else
+							if simDR_airspeed_pilot > 190 and B738DR_gpws_terr_pos == 0 then
+								if simDR_radio_height_pilot_ft < 500 then
+									gpws_calc_vvi = 190
+								else
+									gpws_calc_vvi = B738_rescale(500, 190, 1000, 250, simDR_radio_height_pilot_ft)
+								end
+								if simDR_airspeed_pilot > gpws_calc_vvi then
+									gpws_mode = 4
+									-- TOO LOW TERRAIN
+									-- PFD -> PULL UP
+									gpws_warning = TOO_LOW_TERRAIN
+								end
+							end
+						end
+					elseif simDR_flaps_ratio2 < 0.625 then
+						-- gear down, flaps not in landing config
+						if simDR_airspeed_pilot < 159 and simDR_radio_height_pilot_ft < 245 and B738DR_gpws_flap_pos == 0 then
+							gpws_mode = 4
+							-- TOO LOW FLAPS
+							-- PFD -> PULL UP
+							gpws_warning = TOO_LOW_FLAPS
+						else
+							if simDR_airspeed_pilot > 159 and B738DR_gpws_terr_pos == 0 then
+								if simDR_radio_height_pilot_ft < 245 then
+									gpws_calc_vvi = 159
+								else
+									gpws_calc_vvi = B738_rescale(500, 159, 1000, 250, simDR_radio_height_pilot_ft)
+								end
+								if simDR_airspeed_pilot > gpws_calc_vvi then
+									gpws_mode = 4
+									-- TOO LOW TERRAIN
+									-- PFD -> PULL UP
+									gpws_warning = TOO_LOW_TERRAIN
+								end
+							end
+						end
+					end
+				end
+			end
 			
 			
-			-- -- MODE 2
-			-- if simDR_airspeed_pilot < 220 then
-				-- if simDR_radio_height_pilot_ft < 1250 then
-					-- gpws_calc_vvi = B738_rescale(0, 2100, 1250, 3300, simDR_radio_height_pilot_ft)
-					-- if landing_config == 1  and simDR_radio_height_pilot_ft > 200 and simDR_radio_height_pilot_ft < 780 then
-						-- -- Mode 2B
-						-- gpws_mode = 2
-						-- if gpws_calc_fpm < -gpws_calc_vvi then
-							-- -- TERRAIN TERRAIN
-							-- -- PFD -> PULL UP
-							-- gpws_warning = TERRAIN
-						-- end
-					-- else
-						-- -- Mode 2A
-						-- gpws_mode = 2
-						-- if gpws_calc_fpm < -gpws_calc_vvi then
-							-- -- WHOOP WHOOP PULL UP
-							-- -- PFD -> PULL UP
-							-- gpws_warning = PULL_UP
-						-- end
-					-- end
-				-- elseif simDR_radio_height_pilot_ft < 1650 then
-					-- -- Mode 2A
-					-- gpws_mode = 2
-					-- gpws_calc_vvi = B738_rescale(1250, 3300, 2450, 9600, simDR_radio_height_pilot_ft)
-					-- if gpws_calc_fpm < -gpws_calc_vvi then
-						-- -- WHOOP WHOOP PULL UP
-						-- -- PFD -> PULL UP
-						-- gpws_warning = PULL_UP
-					-- end
-				-- end
-			-- elseif simDR_airspeed_pilot < 310 then
-				-- -- Mode 2A
-				-- gpws_mode = 2
-				-- gpws_calc_vvi = B738_rescale(1250, 3300, 2450, 9600, simDR_radio_height_pilot_ft)
-				-- if gpws_calc_fpm < -gpws_calc_vvi then
-					-- -- TERRAIN TERRAIN
-					-- gpws_warning = TERRAIN
-				-- end
+			-- MODE 2
+			if simDR_airspeed_pilot < 220 then
+				if simDR_radio_height_pilot_ft < 1250 then
+					gpws_calc_vvi = B738_rescale(0, 2100, 1250, 3300, simDR_radio_height_pilot_ft)
+					if landing_config == 1  and simDR_radio_height_pilot_ft > 200 and simDR_radio_height_pilot_ft < 780 then
+						-- Mode 2B
+						gpws_mode = 2
+						if gpws_calc_fpm < -gpws_calc_vvi then
+							-- TERRAIN TERRAIN
+							-- PFD -> PULL UP
+							gpws_warning = TERRAIN
+						end
+					else
+						-- Mode 2A
+						gpws_mode = 2
+						if gpws_calc_fpm < -gpws_calc_vvi then
+							-- WHOOP WHOOP PULL UP
+							-- PFD -> PULL UP
+							gpws_warning = PULL_UP
+						end
+					end
+				elseif simDR_radio_height_pilot_ft < 1650 then
+					-- Mode 2A
+					gpws_mode = 2
+					gpws_calc_vvi = B738_rescale(1250, 3300, 2450, 9600, simDR_radio_height_pilot_ft)
+					if gpws_calc_fpm < -gpws_calc_vvi then
+						-- WHOOP WHOOP PULL UP
+						-- PFD -> PULL UP
+						gpws_warning = PULL_UP
+					end
+				end
+			elseif simDR_airspeed_pilot < 310 then
+				-- Mode 2A
+				gpws_mode = 2
+				gpws_calc_vvi = B738_rescale(1250, 3300, 2450, 9600, simDR_radio_height_pilot_ft)
+				if gpws_calc_fpm < -gpws_calc_vvi then
+					-- TERRAIN TERRAIN
+					gpws_warning = TERRAIN
+				end
 				
-			-- end
+			end
 			
-			-- -- MODE 1
-			-- gpws_mode = 1
+			-- MODE 1
+			gpws_mode = 1
 			
-			-- local air_on_acf_ratio = B738DR_air_on_acf_ratio
-			-- if air_on_acf_ratio < 0 then
-				-- air_on_acf_ratio = -air_on_acf_ratio
-			-- end
-			-- if air_on_acf_ratio > 3.0 then
-				-- gpws_warning = WINDSHEAR
-			-- else
-				-- if gpws_warning == WINDSHEAR then
-					-- gpws_warning = 0
-				-- end
-			-- end
+			local air_on_acf_ratio = B738DR_air_on_acf_ratio
+			if air_on_acf_ratio < 0 then
+				air_on_acf_ratio = -air_on_acf_ratio
+			end
+			if air_on_acf_ratio > 4.1 then
+				gpws_warning = WINDSHEAR
+			else
+				if gpws_warning == WINDSHEAR then
+					gpws_warning = 0
+				end
+			end
 			
-			-- gpws_calc_vvi = B738_rescale(30, 1100, 2450, 5000, simDR_radio_height_pilot_ft)
-			-- if simDR_radio_height_pilot_ft < 270 then
-				-- pull_up_vvi = B738_rescale(30, 1500, 270, 1600, simDR_radio_height_pilot_ft)
-			-- else
-				-- pull_up_vvi = B738_rescale(270, 1600, 2450, 6800, simDR_radio_height_pilot_ft)
-			-- end
+			gpws_calc_vvi = B738_rescale(30, 1100, 2450, 5000, simDR_radio_height_pilot_ft)
+			if simDR_radio_height_pilot_ft < 270 then
+				pull_up_vvi = B738_rescale(30, 1500, 270, 1600, simDR_radio_height_pilot_ft)
+			else
+				pull_up_vvi = B738_rescale(270, 1600, 2450, 6800, simDR_radio_height_pilot_ft)
+			end
 			
-			-- if simDR_vvi_fpm_pilot < -pull_up_vvi then
-				-- -- WHOOP WHOOP PULL UP
-				-- -- PFD -> PULL UP
-				-- gpws_warning = PULL_UP
-			-- elseif simDR_vvi_fpm_pilot < -gpws_calc_vvi then
-				-- -- SINK RATE
-				-- -- PFD -> PULL UP
-				-- gpws_warning = SINK_RATE
-			-- end
-		-- end
+			if simDR_vvi_fpm_pilot < -pull_up_vvi then
+				-- WHOOP WHOOP PULL UP
+				-- PFD -> PULL UP
+				gpws_warning = PULL_UP
+			elseif simDR_vvi_fpm_pilot < -gpws_calc_vvi then
+				-- SINK RATE
+				-- PFD -> PULL UP
+				gpws_warning = SINK_RATE
+			end
+		end
 		
 		
-		-- -- GPWS WARNING MESSAGES - AURAL AND VISUAL
+		-- GPWS WARNING MESSAGES - AURAL AND VISUAL
 		
-		-- if gpws_warning == 0 then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- gpws_aural = 0
-			-- gpws_aural_phase = 0
-		-- elseif gpws_warning == PULL_UP then
-			-- gpws_aural = PULL_UP
-			-- gpws_aural_phase = 0
-			-- B738DR_pfd_pull_up = 1
-			-- B738DR_pfd_windshear = 0
-		-- elseif gpws_warning == WINDSHEAR then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 1
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 5
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_blank_sound(0.5)		-- pause 1 second
-				-- B738DR_pfd_pull_up = 0
-				-- B738DR_pfd_windshear = 0
-			-- elseif gpws_aural_phase == 2 then
-				-- gpws_aural = WINDSHEAR
-			-- elseif gpws_aural_phase == 3 then
-				-- gpws_aural = WINDSHEAR
-			-- elseif gpws_aural_phase == 4 then
-				-- gpws_aural = WINDSHEAR
-			-- elseif gpws_aural_phase == 5 then
-				-- gpws_aural = TWO_TONES
-			-- end
-		-- elseif gpws_warning == TERRAIN then
-			-- B738DR_pfd_pull_up = 1
-			-- B738DR_pfd_windshear = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 4
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_blank_sound(0.5)		-- pause 1 second
-				-- B738DR_pfd_pull_up = 0
-				-- B738DR_pfd_windshear = 0
-			-- elseif gpws_aural_phase == 2 then
-				-- gpws_aural = PULL_UP
-			-- elseif gpws_aural_phase == 3 then
-				-- gpws_aural = TERRAIN
-			-- elseif gpws_aural_phase == 4 then
-				-- gpws_aural = TERRAIN
-			-- end
-		-- elseif gpws_warning == TOO_LOW_TERRAIN then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- gpws_aural = TOO_LOW_TERRAIN
-			-- gpws_aural_phase = 0
-		-- elseif gpws_warning == TOO_LOW_TERRAIN2 then
-			-- B738DR_pfd_pull_up = 1
-			-- B738DR_pfd_windshear = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 2
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_aural = PULL_UP
-			-- elseif gpws_aural_phase == 2 then
-				-- gpws_aural = TOO_LOW_TERRAIN
-			-- end
-		-- elseif gpws_warning == TOO_LOW_FLAPS then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- gpws_aural = TOO_LOW_FLAPS
-			-- gpws_aural_phase = 0
-		-- elseif gpws_warning == TOO_LOW_GEAR then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- gpws_aural = TOO_LOW_GEAR
-			-- gpws_aural_phase = 0
-		-- elseif gpws_warning == DONT_SINK then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 2
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_aural = DONT_SINK
-			-- elseif gpws_aural_phase == 2 then
-				-- gpws_aural = DONT_SINK
-			-- end
-		-- elseif gpws_warning == SINK_RATE then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 2
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_aural = SINK_RATE
-			-- elseif gpws_aural_phase == 2 then
-				-- gpws_aural = SINK_RATE
-			-- end
-		-- elseif gpws_warning == GLIDE_SLOPE then
-			-- gpws_aural = GLIDE_SLOPE
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- gpws_aural_phase = 0
-		-- elseif gpws_warning == BANK_LIMIT then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 2
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_aural = BANK_LIMIT
-			-- elseif gpws_aural_phase == 2 then
-				-- gpws_aural = BANK_LIMIT
-			-- end
-		-- elseif gpws_warning == AIRSPEED_LOW then
-			-- gpws_aural = AIRSPEED_LOW
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- gpws_aural_phase = 0
-		-- elseif gpws_warning == OBSTACLE then
-			-- B738DR_pfd_pull_up = 1
-			-- B738DR_pfd_windshear = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 3
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_aural = PULL_UP
-			-- elseif gpws_aural_phase == 2 then
-				-- gpws_aural = OBSTACLE
-			-- elseif gpws_aural_phase == 3 then
-				-- gpws_aural = OBSTACLE
-			-- end
-		-- elseif gpws_warning == OBSTACLE2 then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 3
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_aural = OBSTACLE2	-- Obstacle Pull up
-			-- elseif gpws_aural_phase == 2 then
-				-- gpws_aural = OBSTACLE
-			-- elseif gpws_aural_phase == 3 then
-				-- gpws_aural = OBSTACLE
-			-- end
-		-- elseif gpws_warning == GPWS_INOP then
-			-- gpws_aural = GPWS_INOP
-			-- gpws_aural_phase = 0
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-		-- elseif gpws_warning == TERRAIN_AHEAD then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 5
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_blank_sound(1)		-- pause 1 second
-				-- B738DR_pfd_pull_up = 0
-				-- B738DR_pfd_windshear = 0
-			-- elseif gpws_aural_phase == 2 then
-				-- gpws_aural = PULL_UP
-			-- elseif gpws_aural_phase == 3 then
-				-- gpws_aural = TERRAIN_AHEAD
-			-- elseif gpws_aural_phase == 4 then
-				-- gpws_aural = TERRAIN_AHEAD
-			-- elseif gpws_aural_phase == 5 then
-				-- gpws_aural = TERRAIN_AHEAD
-			-- end
-		-- elseif gpws_warning == PULL_UP_T then
-			-- gpws_aural = PULL_UP
-			-- gpws_aural_phase = 0
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-		-- elseif gpws_warning == WINDSHEAR_T then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 5
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_blank_sound(1)		-- pause 1 second
-				-- B738DR_pfd_pull_up = 0
-				-- B738DR_pfd_windshear = 0
-			-- elseif gpws_aural_phase == 2 then
-				-- gpws_aural = WINDSHEAR
-			-- elseif gpws_aural_phase == 3 then
-				-- gpws_aural = WINDSHEAR
-			-- elseif gpws_aural_phase == 4 then
-				-- gpws_aural = WINDSHEAR
-			-- elseif gpws_aural_phase == 5 then
-				-- gpws_aural = TWO_TONES
-			-- end
-		-- elseif gpws_warning == TERRAIN_T then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 4
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_blank_sound(0.5)		-- pause 1 second
-				-- B738DR_pfd_pull_up = 0
-				-- B738DR_pfd_windshear = 0
-			-- elseif gpws_aural_phase == 2 then
-				-- gpws_aural = PULL_UP
-			-- elseif gpws_aural_phase == 3 then
-				-- gpws_aural = TERRAIN
-			-- elseif gpws_aural_phase == 4 then
-				-- gpws_aural = TERRAIN
-			-- end
-		-- elseif gpws_warning == OBSTACLE_T then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 3
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_aural = PULL_UP
-			-- elseif gpws_aural_phase == 2 then
-				-- gpws_aural = OBSTACLE
-			-- elseif gpws_aural_phase == 3 then
-				-- gpws_aural = OBSTACLE
-			-- end
-		-- elseif gpws_warning == PULL_UP_V then
-			-- B738DR_pfd_pull_up = 1
-			-- B738DR_pfd_windshear = 0
-			-- gpws_aural = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 1
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_blank_sound(1.5)		-- pause 1 second
-				-- B738DR_pfd_pull_up = 1
-				-- B738DR_pfd_windshear = 0
-			-- end
-		-- elseif gpws_warning == WINDSHEAR_V then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 1
-			-- gpws_aural = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 1
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_blank_sound(1.5)		-- pause 1 second
-				-- B738DR_pfd_pull_up = 0
-				-- B738DR_pfd_windshear = 1
-			-- end
-		-- elseif gpws_warning == TERRAIN_V then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- gpws_aural = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 1
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_blank_sound(1.5)		-- pause 1 second
-				-- B738DR_pfd_pull_up = 1
-				-- B738DR_pfd_windshear = 0
-			-- end
-		-- elseif gpws_warning == OBSTACLE_V then
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- gpws_aural = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 1
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_blank_sound(1.5)		-- pause 1 second
-				-- B738DR_pfd_pull_up = 1
-				-- B738DR_pfd_windshear = 0
-			-- end
-		-- elseif gpws_warning == GLIDE_SLOPE_V then
-			-- gpws_aural = 0
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-			-- if gpws_aural_phase == 0 then
-				-- gpws_aural_phase = 1
-			-- elseif gpws_aural_phase == 1 then
-				-- gpws_blank_sound(1.5)		-- pause 1 second
-				-- B738DR_pfd_pull_up = 0
-				-- B738DR_pfd_windshear = 0
-			-- end
-		-- elseif gpws_warning == RA_CALLOUT then
-			-- gpws_aural = RA_CALLOUT
-			-- gpws_aural_phase = 0
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-		-- elseif gpws_warning == APP_MINIMUMS then
-			-- gpws_aural = APP_MINIMUMS
-			-- gpws_aural_phase = 0
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-		-- elseif gpws_warning == MINIMUMS then
-			-- gpws_aural = MINIMUMS
-			-- gpws_aural_phase = 0
-			-- B738DR_pfd_pull_up = 0
-			-- B738DR_pfd_windshear = 0
-		-- end
+		if gpws_warning == 0 then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			gpws_aural = 0
+			gpws_aural_phase = 0
+			B738DR_glide_slope_annun = 0
+		elseif gpws_warning == PULL_UP then
+			gpws_aural = PULL_UP
+			gpws_aural_phase = 0
+			B738DR_pfd_pull_up = 1
+			B738DR_pfd_windshear = 0
+		elseif gpws_warning == WINDSHEAR then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 1
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 5
+			elseif gpws_aural_phase == 1 then
+				gpws_blank_sound(0.5)		-- pause 1 second
+				B738DR_pfd_pull_up = 0
+				B738DR_pfd_windshear = 0
+			elseif gpws_aural_phase == 2 then
+				gpws_aural = WINDSHEAR
+			elseif gpws_aural_phase == 3 then
+				gpws_aural = WINDSHEAR
+			elseif gpws_aural_phase == 4 then
+				gpws_aural = WINDSHEAR
+			elseif gpws_aural_phase == 5 then
+				gpws_aural = TWO_TONES
+			end
+		elseif gpws_warning == TERRAIN then
+			B738DR_pfd_pull_up = 1
+			B738DR_pfd_windshear = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 4
+			elseif gpws_aural_phase == 1 then
+				gpws_blank_sound(0.5)		-- pause 1 second
+				B738DR_pfd_pull_up = 0
+				B738DR_pfd_windshear = 0
+			elseif gpws_aural_phase == 2 then
+				gpws_aural = PULL_UP
+			elseif gpws_aural_phase == 3 then
+				gpws_aural = TERRAIN
+			elseif gpws_aural_phase == 4 then
+				gpws_aural = TERRAIN
+			end
+		elseif gpws_warning == TOO_LOW_TERRAIN then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			gpws_aural = TOO_LOW_TERRAIN
+			gpws_aural_phase = 0
+		elseif gpws_warning == TOO_LOW_TERRAIN2 then
+			B738DR_pfd_pull_up = 1
+			B738DR_pfd_windshear = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 2
+			elseif gpws_aural_phase == 1 then
+				gpws_aural = PULL_UP
+			elseif gpws_aural_phase == 2 then
+				gpws_aural = TOO_LOW_TERRAIN
+			end
+		elseif gpws_warning == TOO_LOW_FLAPS then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			gpws_aural = TOO_LOW_FLAPS
+			gpws_aural_phase = 0
+		elseif gpws_warning == TOO_LOW_GEAR then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			gpws_aural = TOO_LOW_GEAR
+			gpws_aural_phase = 0
+		elseif gpws_warning == DONT_SINK then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 2
+			elseif gpws_aural_phase == 1 then
+				gpws_aural = DONT_SINK
+			elseif gpws_aural_phase == 2 then
+				gpws_aural = DONT_SINK
+			end
+		elseif gpws_warning == SINK_RATE then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 2
+			elseif gpws_aural_phase == 1 then
+				gpws_aural = SINK_RATE
+			elseif gpws_aural_phase == 2 then
+				gpws_aural = SINK_RATE
+			end
+		elseif gpws_warning == GLIDE_SLOPE then
+			gpws_aural = GLIDE_SLOPE
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			gpws_aural_phase = 0
+		elseif gpws_warning == BANK_LIMIT then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 2
+			elseif gpws_aural_phase == 1 then
+				gpws_aural = BANK_LIMIT
+			elseif gpws_aural_phase == 2 then
+				gpws_aural = BANK_LIMIT
+			end
+		elseif gpws_warning == AIRSPEED_LOW then
+			gpws_aural = AIRSPEED_LOW
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			gpws_aural_phase = 0
+		elseif gpws_warning == OBSTACLE then
+			B738DR_pfd_pull_up = 1
+			B738DR_pfd_windshear = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 3
+			elseif gpws_aural_phase == 1 then
+				gpws_aural = PULL_UP
+			elseif gpws_aural_phase == 2 then
+				gpws_aural = OBSTACLE
+			elseif gpws_aural_phase == 3 then
+				gpws_aural = OBSTACLE
+			end
+		elseif gpws_warning == OBSTACLE2 then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 3
+			elseif gpws_aural_phase == 1 then
+				gpws_aural = OBSTACLE2	-- Obstacle Pull up
+			elseif gpws_aural_phase == 2 then
+				gpws_aural = OBSTACLE
+			elseif gpws_aural_phase == 3 then
+				gpws_aural = OBSTACLE
+			end
+		elseif gpws_warning == GPWS_INOP then
+			gpws_aural = GPWS_INOP
+			gpws_aural_phase = 0
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+		elseif gpws_warning == TERRAIN_AHEAD then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 5
+			elseif gpws_aural_phase == 1 then
+				gpws_blank_sound(1)		-- pause 1 second
+				B738DR_pfd_pull_up = 0
+				B738DR_pfd_windshear = 0
+			elseif gpws_aural_phase == 2 then
+				gpws_aural = PULL_UP
+			elseif gpws_aural_phase == 3 then
+				gpws_aural = TERRAIN_AHEAD
+			elseif gpws_aural_phase == 4 then
+				gpws_aural = TERRAIN_AHEAD
+			elseif gpws_aural_phase == 5 then
+				gpws_aural = TERRAIN_AHEAD
+			end
+		elseif gpws_warning == PULL_UP_T then
+			gpws_aural = PULL_UP
+			gpws_aural_phase = 0
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+		elseif gpws_warning == WINDSHEAR_T then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 5
+			elseif gpws_aural_phase == 1 then
+				gpws_blank_sound(1)		-- pause 1 second
+				B738DR_pfd_pull_up = 0
+				B738DR_pfd_windshear = 0
+			elseif gpws_aural_phase == 2 then
+				gpws_aural = WINDSHEAR
+			elseif gpws_aural_phase == 3 then
+				gpws_aural = WINDSHEAR
+			elseif gpws_aural_phase == 4 then
+				gpws_aural = WINDSHEAR
+			elseif gpws_aural_phase == 5 then
+				gpws_aural = TWO_TONES
+			end
+		elseif gpws_warning == TERRAIN_T then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 4
+			elseif gpws_aural_phase == 1 then
+				gpws_blank_sound(0.5)		-- pause 1 second
+				B738DR_pfd_pull_up = 0
+				B738DR_pfd_windshear = 0
+			elseif gpws_aural_phase == 2 then
+				gpws_aural = PULL_UP
+			elseif gpws_aural_phase == 3 then
+				gpws_aural = TERRAIN
+			elseif gpws_aural_phase == 4 then
+				gpws_aural = TERRAIN
+			end
+		elseif gpws_warning == OBSTACLE_T then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 3
+			elseif gpws_aural_phase == 1 then
+				gpws_aural = PULL_UP
+			elseif gpws_aural_phase == 2 then
+				gpws_aural = OBSTACLE
+			elseif gpws_aural_phase == 3 then
+				gpws_aural = OBSTACLE
+			end
+		elseif gpws_warning == PULL_UP_V then
+			B738DR_pfd_pull_up = 1
+			B738DR_pfd_windshear = 0
+			gpws_aural = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 1
+			elseif gpws_aural_phase == 1 then
+				gpws_blank_sound(1.5)		-- pause 1 second
+				B738DR_pfd_pull_up = 1
+				B738DR_pfd_windshear = 0
+			end
+		elseif gpws_warning == WINDSHEAR_V then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 1
+			gpws_aural = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 1
+			elseif gpws_aural_phase == 1 then
+				gpws_blank_sound(1.5)		-- pause 1 second
+				B738DR_pfd_pull_up = 0
+				B738DR_pfd_windshear = 1
+			end
+		elseif gpws_warning == TERRAIN_V then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			gpws_aural = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 1
+			elseif gpws_aural_phase == 1 then
+				gpws_blank_sound(1.5)		-- pause 1 second
+				B738DR_pfd_pull_up = 1
+				B738DR_pfd_windshear = 0
+			end
+		elseif gpws_warning == OBSTACLE_V then
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			gpws_aural = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 1
+			elseif gpws_aural_phase == 1 then
+				gpws_blank_sound(1.5)		-- pause 1 second
+				B738DR_pfd_pull_up = 1
+				B738DR_pfd_windshear = 0
+			end
+		elseif gpws_warning == GLIDE_SLOPE_V then
+			gpws_aural = 0
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+			if gpws_aural_phase == 0 then
+				gpws_aural_phase = 1
+			elseif gpws_aural_phase == 1 then
+				gpws_blank_sound(1.5)		-- pause 1 second
+				B738DR_pfd_pull_up = 0
+				B738DR_pfd_windshear = 0
+			end
+		elseif gpws_warning == RA_CALLOUT then
+			gpws_aural = RA_CALLOUT
+			gpws_aural_phase = 0
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+		elseif gpws_warning == APP_MINIMUMS then
+			gpws_aural = APP_MINIMUMS
+			gpws_aural_phase = 0
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+		elseif gpws_warning == MINIMUMS then
+			gpws_aural = MINIMUMS
+			gpws_aural_phase = 0
+			B738DR_pfd_pull_up = 0
+			B738DR_pfd_windshear = 0
+		end
 		
-		-- -- GPWS PLAY ALERT - SOUND SAMPLE
-		-- if gpws_playing_sound == 0 then
-			-- if gpws_aural == 0 then
-				-- --none
-				-- gpws_aural = 0
-			-- elseif gpws_aural == PULL_UP then
-				-- B738DR_pull_up = 1
-				-- gpws_playing_sound = PULL_UP_TIME
-			-- elseif gpws_aural == WINDSHEAR then
-				-- B738DR_windshear = 1
-				-- gpws_playing_sound = WINDSHEAR_TIME
-			-- elseif gpws_aural == TERRAIN then
-				-- B738DR_terrain = 1
-				-- gpws_playing_sound = TERRAIN_TIME
-			-- elseif gpws_aural == TOO_LOW_TERRAIN then
-				-- B738DR_too_low_terrain = 1
-				-- gpws_playing_sound = TOO_LOW_TERRAIN_TIME
-			-- elseif gpws_aural == TOO_LOW_FLAPS then
-				-- B738DR_too_low_flaps = 1
-				-- gpws_playing_sound = TOO_LOW_FLAPS_TIME
-			-- elseif gpws_aural == TOO_LOW_GEAR then
-				-- B738DR_too_low_gear = 1
-				-- gpws_playing_sound = TOO_LOW_GEAR_TIME
-			-- elseif gpws_aural == DONT_SINK then
-				-- B738DR_dont_sink = 1
-				-- gpws_playing_sound = DONT_SINK_TIME
-			-- elseif gpws_aural == SINK_RATE then
-				-- B738DR_sink_rate = 1
-				-- gpws_playing_sound = SINK_RATE_TIME
-			-- elseif gpws_aural == GLIDE_SLOPE then
-				-- B738DR_glide_slope = 1
-				-- gpws_playing_sound = GLIDE_SLOPE_TIME
-			-- elseif gpws_aural == BANK_LIMIT then
-				-- B738DR_bank_angle = 1
-				-- gpws_playing_sound = BANK_LIMIT_TIME
-			-- elseif gpws_aural == AIRSPEED_LOW then
-				-- B738DR_airspeed_low = 1
-				-- gpws_playing_sound = AIRSPEED_LOW_TIME
-			-- elseif gpws_aural == OBSTACLE then
-				-- B738DR_obstacle = 1
-				-- gpws_playing_sound = OBSTACLE_TIME
-			-- elseif gpws_aural == TWO_TONES then
-				-- B738DR_two_tones = 1
-				-- gpws_playing_sound = TWO_TONES_TIME
-			-- elseif gpws_aural == OBSTACLE2 then
-				-- B738DR_obstacle_ahead_pull = 1
-				-- gpws_playing_sound = OBSTACLE2_TIME
-			-- elseif gpws_aural == GPWS_INOP then
-				-- B738DR_gpws_inop = 1
-				-- gpws_playing_sound = GPWS_INOP_TIME
-			-- elseif gpws_aural == TERRAIN_AHEAD then
-				-- B738DR_terrain_ahead = 1
-				-- gpws_playing_sound = TERRAIN_AHEAD_TIME
-			-- elseif gpws_aural == RA_CALLOUT then
-				-- B738DR_ra_callout = 1
-				-- gpws_playing_sound = RA_CALLOUT_TIME
-			-- elseif gpws_aural == APP_MINIMUMS then
-				-- B738DR_approach_minimums = 1
-				-- gpws_playing_sound = APP_MINIMUMS_TIME
-			-- elseif gpws_aural == MINIMUMS then
-				-- B738DR_dh_minimum_pilot = 1
-				-- gpws_playing_sound = MINIMUMS_TIME
-			-- end
+		-- GPWS PLAY ALERT - SOUND SAMPLE
+		if gpws_playing_sound == 0 then
+			if gpws_aural == 0 then
+				--none
+				B738DR_pfd_pull_up = 0
+				B738DR_pfd_windshear = 0
+				B738DR_glide_slope_annun = 0
+			elseif gpws_aural == PULL_UP then
+				B738DR_pull_up = 1
+				gpws_playing_sound = PULL_UP_TIME
+			elseif gpws_aural == WINDSHEAR then
+				B738DR_windshear = 1
+				gpws_playing_sound = WINDSHEAR_TIME
+			elseif gpws_aural == TERRAIN then
+				B738DR_terrain = 1
+				gpws_playing_sound = TERRAIN_TIME
+			elseif gpws_aural == TOO_LOW_TERRAIN then
+				B738DR_too_low_terrain = 1
+				gpws_playing_sound = TOO_LOW_TERRAIN_TIME
+			elseif gpws_aural == TOO_LOW_FLAPS then
+				B738DR_too_low_flaps = 1
+				gpws_playing_sound = TOO_LOW_FLAPS_TIME
+			elseif gpws_aural == TOO_LOW_GEAR then
+				B738DR_too_low_gear = 1
+				gpws_playing_sound = TOO_LOW_GEAR_TIME
+			elseif gpws_aural == DONT_SINK then
+				B738DR_dont_sink = 1
+				gpws_playing_sound = DONT_SINK_TIME
+			elseif gpws_aural == SINK_RATE then
+				B738DR_sink_rate = 1
+				gpws_playing_sound = SINK_RATE_TIME
+			elseif gpws_aural == GLIDE_SLOPE then
+				B738DR_glide_slope = 1
+				gpws_playing_sound = GLIDE_SLOPE_TIME
+			elseif gpws_aural == BANK_LIMIT then
+				B738DR_bank_angle = 1
+				gpws_playing_sound = BANK_LIMIT_TIME
+			elseif gpws_aural == AIRSPEED_LOW then
+				B738DR_airspeed_low = 1
+				gpws_playing_sound = AIRSPEED_LOW_TIME
+			elseif gpws_aural == OBSTACLE then
+				B738DR_obstacle = 1
+				gpws_playing_sound = OBSTACLE_TIME
+			elseif gpws_aural == TWO_TONES then
+				B738DR_two_tones = 1
+				gpws_playing_sound = TWO_TONES_TIME
+			elseif gpws_aural == OBSTACLE2 then
+				B738DR_obstacle_ahead_pull = 1
+				gpws_playing_sound = OBSTACLE2_TIME
+			elseif gpws_aural == GPWS_INOP then
+				B738DR_gpws_inop = 1
+				gpws_playing_sound = GPWS_INOP_TIME
+			elseif gpws_aural == TERRAIN_AHEAD then
+				B738DR_terrain_ahead = 1
+				gpws_playing_sound = TERRAIN_AHEAD_TIME
+			elseif gpws_aural == RA_CALLOUT then
+				B738DR_ra_callout = 1
+				gpws_playing_sound = RA_CALLOUT_TIME
+			elseif gpws_aural == APP_MINIMUMS then
+				B738DR_approach_minimums = 1
+				gpws_playing_sound = APP_MINIMUMS_TIME
+			elseif gpws_aural == MINIMUMS then
+				if B738DR_dh_minimum_pilot2 > 0 then
+					B738DR_dh_minimum_pilot = 1
+				end
+				if B738DR_dh_minimum_copilot2 > 0 then
+					B738DR_dh_minimum_copilot = 1
+				end
+				gpws_playing_sound = MINIMUMS_TIME
+			end
 
-		-- else
-			-- gpws_playing_sound = gpws_playing_sound - SIM_PERIOD
-			-- if gpws_playing_sound < 0 then
-				-- gpws_playing_sound = 0
-				-- clear_gpws_flag()
-				-- gpws_aural = 0
-				-- gpws_aural_phase = gpws_aural_phase - 1
-				-- if gpws_aural_phase <= 0 then
-					-- gpws_aural_phase = 0
-					-- if B738DR_gpws_test_running == 1 then
-						-- gpws_test_phase = gpws_test_phase + 1
-					-- end
-					-- gpws_warning = 0
+		else
+			gpws_playing_sound = gpws_playing_sound - SIM_PERIOD
+			if gpws_playing_sound < 0 then
+				gpws_playing_sound = 0
+				clear_gpws_flag()
+				gpws_aural = 0
+				gpws_aural_phase = gpws_aural_phase - 1
+				if gpws_aural_phase <= 0 then
+					gpws_aural_phase = 0
+					if B738DR_gpws_test_running == 1 then
+						gpws_test_phase = gpws_test_phase + 1
+					end
+					gpws_warning = 0
+				end
+				-- if B738DR_enable_gpwstest_long == 1 then
+					-- B738DR_enable_gpwstest_long = 0
+					-- B738DR_gpws_test_running = 0
 				-- end
-				-- -- if B738DR_enable_gpwstest_long == 1 then
-					-- -- B738DR_enable_gpwstest_long = 0
-					-- -- B738DR_gpws_test_running = 0
-				-- -- end
-			-- end
-		-- end
+			end
+		end
 		
-	-- else
-		-- gpws_playing_sound = 0
-		-- clear_gpws_flag()
-		-- B738DR_pfd_pull_up = 0
-		-- B738DR_pfd_windshear = 0
-		-- B738DR_glide_slope_annun = 0
-		-- gpws_last_peak_altitude = simDR_altitude_pilot
-		-- B738DR_gpws_test_running = 0
-		-- gpws_aural = 0
-		-- gpws_aural_phase = 0
-		-- gpws_test_phase = 0
-		-- gpws_warning = 0
-	-- end
+	else
+		gpws_playing_sound = 0
+		clear_gpws_flag()
+		B738DR_pfd_pull_up = 0
+		B738DR_pfd_windshear = 0
+		B738DR_glide_slope_annun = 0
+		gpws_last_peak_altitude = simDR_altitude_pilot
+		B738DR_gpws_test_running = 0
+		gpws_aural = 0
+		gpws_aural_phase = 0
+		gpws_test_phase = 0
+		gpws_warning = 0
+	end
 	
 	-- FLIGHT RECORDER
 	B738DR_fdr_cover_pos = B738_set_anim_value(B738DR_fdr_cover_pos, fdr_cover_target, 0.0, 1.0, 10.0)
@@ -10022,62 +10299,6 @@ function B738_gpws()
 		end
 	end
 	
-	
-	
-end
-
-function gear_handle_timer()
-	gear_handle_aret = 1
-end
-
-function B738_gear_handle()
-	
-	local min_tgt_gear = 0
-  if B738DR_gear_lock_override_pos == 1 then
-		gear_lock = 0
-		min_tgt_gear = 0
-	elseif simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
-		gear_lock = 1
-		min_tgt_gear = 0.5
-	else
-		gear_lock = 0
-		min_tgt_gear = 0
-	end
-	
-	if B738DR_gear_handle_pos < 0.5 then
-		B738DR_gear_handle_pos = B738DR_gear_handle_act
-	else
-		B738DR_gear_handle_pos = math.max(B738DR_gear_handle_act, min_tgt_gear)
-	end
-	
-	if B738DR_gear_handle_pos ~= gear_handle_pos_old then
-		if is_timer_scheduled(gear_handle_timer) == true then
-			stop_timer(gear_handle_timer)
-		end
-		gear_handle_aret = 0
-	else
-		if is_timer_scheduled(gear_handle_timer) == false then
-			run_after_time(gear_handle_timer, 0.6)
-		end
-	end
-	gear_handle_pos_old = B738DR_gear_handle_pos
-	
-	if gear_handle_aret == 1 then
-		if B738DR_gear_handle_pos > 0.85 then
-			B738DR_gear_handle_pos = 1
-			B738DR_gear_handle_act = 1
-			B738CMD_gear_down:once()
-		elseif B738DR_gear_handle_pos < 0.15 then
-			B738DR_gear_handle_pos = 0
-			B738DR_gear_handle_act = 0
-			B738CMD_gear_up:once()
-		elseif B738DR_gear_handle_pos > 0.35 and B738DR_gear_handle_pos < 0.70 then
-			B738DR_gear_handle_pos = 0.5
-			B738DR_gear_handle_act = 0.5
-			B738CMD_gear_off:once()
-		end
-		gear_handle_aret = 0
-	end
 	
 	
 end
@@ -10962,23 +11183,6 @@ function B738_air_cond()
 	
 end
 
-function speedbrake_aret_timer()
-	simDR_speedbrake_ratio = 0
-end
-
-function B738_speedbrake_aret()
-	if simDR_speedbrake_ratio > -0.4 and simDR_speedbrake_ratio < 0 then
-		if is_timer_scheduled(speedbrake_aret_timer) == false then
-			run_after_time(speedbrake_aret_timer, 2)	-- 2 seconds
-		end
-	else
-		if is_timer_scheduled(speedbrake_aret_timer) == true then
-			stop_timer(speedbrake_aret_timer)
-		end
-	end
-end
-
-
 function ff_used_timer_off()
 	B738DR_fuel_flow_used_show = 0
 end
@@ -11190,6 +11394,12 @@ function B738_electric_bus()
 			B738DR_mach_test_enable = 0
 		end
 	end
+	
+	if battery_bus == 0 then
+		simDR_avionics_on = 0
+	else
+		simDR_avionics_on = 1
+	end
 
 end
 
@@ -11272,7 +11482,27 @@ function cockpit_door()
 	
 	B738DR_flt_dk_door_ratio = B738_set_anim_value(B738DR_flt_dk_door_ratio, flt_dk_door_tgt, 0, 1, 2)
 	
+	-- fmod sound
+	if B738DR_flt_dk_door == -1 then	-- unlocked
+		if door_locked == 1 then
+			door_locked = 0
+		end
+	else	-- locked
+		if door_locked == 0 and B738DR_flt_dk_door_ratio == 0 then
+			door_locked = 1
+		end
+	end
+	
+	if door_locked_old ~= door_locked then
+		B738DR_fmod_lock_door = 1
+	else
+		B738DR_fmod_lock_door = 0
+	end
+	
+	door_locked_old = door_locked
+	
 end
+
 function B738_adf()
 	B738DR_adf1_freq_int = math.floor(simDR_adf1_freq / 1000)
 	B738DR_adf1_freq_frac = simDR_adf1_freq - (B738DR_adf1_freq_int * 1000)
@@ -11304,6 +11534,189 @@ function B738_adf()
 		end
 	end
 	
+	local arrow1_tgt = 0
+	local arrow2_tgt = 0
+	
+	if simDR_left_adf == 0 then		-- VOR 1
+		if simDR_nav1_id == nil then
+			arrow1_no_available_tgt = 1
+		elseif simDR_nav1_type ~= 4 then
+			arrow1_no_available_tgt = 1
+		elseif simDR_nav1_dspl_horiz == 0 then
+			arrow1_no_available_tgt = 1
+		else
+			if string.len(simDR_nav1_id) == 0 then
+				arrow1_no_available_tgt = 1
+			else
+				arrow1_no_available_tgt = 0
+			end
+		end
+		arrow1_tgt = simDR_nav1_brg
+	else	-- ADF 1
+		if simDR_adf1_id == nil then
+			arrow1_no_available_tgt = 1
+		else
+			if string.len(simDR_adf1_id) == 0 then
+				arrow1_no_available_tgt = 1
+			else
+				arrow1_no_available_tgt = 0
+			end
+		end
+		arrow1_tgt = simDR_adf1_brg
+	end
+	
+	if simDR_right_adf == 0 then		-- VOR 2
+		if simDR_nav2_id == nil then
+			arrow2_no_available_tgt = 1
+		elseif simDR_nav2_type ~= 4 then
+			arrow2_no_available_tgt = 1
+		elseif simDR_nav2_dspl_horiz == 0 then
+			arrow2_no_available_tgt = 1
+		else
+			if string.len(simDR_nav2_id) == 0 then
+				arrow2_no_available_tgt = 1
+			else
+				arrow2_no_available_tgt = 0
+			end
+		end
+		arrow2_tgt = simDR_nav2_brg
+	else	-- ADF 2
+		if simDR_adf2_id == nil then
+			arrow2_no_available_tgt = 1
+		else
+			if string.len(simDR_adf2_id) == 0 then
+				arrow2_no_available_tgt = 1
+			else
+				arrow2_no_available_tgt = 0
+			end
+		end
+		arrow2_tgt = simDR_adf2_brg
+	end
+	
+	B738DR_arrow1_no_available = B738_set_animation_rate(B738DR_arrow1_no_available, arrow1_no_available_tgt, 0.0, 1.0, 0.08)
+	B738DR_arrow2_no_available = B738_set_animation_rate(B738DR_arrow2_no_available, arrow2_no_available_tgt, 0.0, 1.0, 0.08)
+	
+	if simDR_left_adf ~= left_adf_old then
+		change_adf_nav1 = 1
+	end
+	left_adf_old = simDR_left_adf
+	
+	if simDR_right_adf ~= right_adf_old then
+		change_adf_nav2 = 1
+	end
+	right_adf_old = simDR_right_adf
+	
+	local arrow = 0
+	local delta = 0
+	
+	if change_adf_nav1 == 0 then
+		B738DR_arrow1 = arrow1_tgt
+	else
+		arrow = B738_set_anim_value(B738DR_arrow1, arrow1_tgt, -360.0, 360.0, 6.0)
+		delta = arrow - arrow1_tgt
+		if delta > -0.5 and delta < 0.5 then
+			change_adf_nav1 = 0
+			B738DR_arrow1 = arrow1_tgt
+		else
+			B738DR_arrow1 = arrow
+		end
+	end
+	
+	if change_adf_nav2 == 0 then
+		B738DR_arrow2 = arrow2_tgt
+	else
+		arrow = B738_set_anim_value(B738DR_arrow2, arrow2_tgt, -360.0, 360.0, 6.0)
+		delta = arrow - arrow2_tgt
+		if delta > -0.5 and delta < 0.5 then
+			change_adf_nav2 = 0
+			B738DR_arrow2 = arrow2_tgt
+		else
+			B738DR_arrow2 = arrow
+		end
+	end
+	
+end
+
+----- SPEEDBRAKE LEVER STOP -------------------------------------------------------------
+function B738_speedbrake_lever_stop()
+
+    B738_speedbrake_stop = 0
+    if simDR_aircraft_on_ground < 1 then
+        B738_speedbrake_stop = 1
+    end
+
+end
+
+----- SPEEDBRAKE DISAGREE MONITOR -------------------------------------------------------
+
+function B738_speedbrake_disagree_monitor()
+
+
+	if simDR_speedbrake_ratio >= 0 then
+		austin_speedbrake_handle = simDR_speedbrake_ratio
+	elseif simDR_speedbrake_ratio < 0 then
+		austin_speedbrake_handle = 0
+	end
+	
+end
+
+
+function B738_speedbrake_handle_animation()
+
+
+	----- WHAT MY LEVER IS DOING MAPPED AS AUSTINS LEVER -----
+
+	if B738_speedbrake_stop == 1 then
+		if B738DR_speedbrake_lever >= 0.15 then
+			local alex_speedbrake_handle = B738_rescale(0.15, 0, 0.667, 0.99, B738DR_speedbrake_lever)
+		elseif B738DR_speedbrake_lever < 0.15 then
+			alex_speedbrake_handle = 0
+		end
+	
+	elseif B738_speedbrake_stop == 0 then
+
+		if B738DR_speedbrake_lever >= 0.15 then	
+			if B738DR_speedbrake_lever < 0.667 then
+				alex_speedbrake_handle = B738_rescale(0.15, 0, 0.667, 0.99, B738DR_speedbrake_lever)
+			elseif B738DR_speedbrake_lever >= 0.667 then
+				alex_speedbrake_handle = B738_rescale(0.667, 0.99, 1, 1, B738DR_speedbrake_lever)
+			end
+		elseif B738DR_speedbrake_lever < 0.15 then
+			alex_speedbrake_handle = 0
+		end
+		
+	end
+
+
+	----- MAPPING MY LEVER DATAREF TO AUSTINS LEVER IF DISAGREE -----
+
+	if B738DR_speedbrake_lever >= 0.15 then
+	
+		if austin_speedbrake_handle == alex_speedbrake_handle then
+		
+		elseif austin_speedbrake_handle ~= alex_speedbrake_handle then
+			if B738_speedbrake_stop == 1 then
+				B738DR_speedbrake_lever = B738_rescale(0, 0.15, 0.99, 0.667, austin_speedbrake_handle)
+			elseif B738_speedbrake_stop == 0 then
+				if austin_speedbrake_handle < 0.99 then
+					B738DR_speedbrake_lever = B738_rescale(0, 0.15, 0.99, 0.667, austin_speedbrake_handle)
+				elseif austin_speedbrake_handle >= 0.99 then
+					B738DR_speedbrake_lever = B738_rescale(0.99, 0.667, 1, 1, austin_speedbrake_handle)
+				end
+			end
+		end
+	
+	elseif B738DR_speedbrake_lever < 0.15 then
+		
+		if austin_speedbrake_handle > 0 then
+			B738DR_speedbrake_lever = 0.15
+		end
+
+	end
+
+	if simDR_speedbrake_ratio == -0.5 then
+	B738DR_speedbrake_lever = 0.0889
+	end
 end
 
 --*************************************************************************************--
@@ -11482,7 +11895,7 @@ B738_init_engineMGMT_fltStart()
 	gpws_playing_sound = 0
 	gpws_bank_angle1 = 0
 	gpws_bank_angle2 = 0
-	--clear_gpws_flag()
+	clear_gpws_flag()
 	B738DR_pfd_pull_up = 0
 	gpws_last_peak_altitude = simDR_altitude_pilot
 	gpws_goaround = 0
@@ -11491,8 +11904,13 @@ B738_init_engineMGMT_fltStart()
 	gpws_warning = 0
 	gpws_short_test_disable = 0
 	gpws_long_test_disable = 0
-	flt_dk_door_tgt = 0
-
+	door_locked = 0
+	door_locked_old = 0
+	left_adf_old = 0
+	change_adf_nav1 = 0
+	right_adf_old = 0
+	change_adf_nav2 = 0
+	
 	B738DR_adf_ant1 = 0
 	B738DR_adf_ant2 = 0
 	simDR_adf1_power = 2
@@ -11537,15 +11955,13 @@ function after_physics()
 		B738_probes_antiice()
 		B738_apu_gen()
 		B738_yaw_damp()
-		--B738_slats()
 		B738_alt_horn_cut()
-		--B738_gear_horn_cut()
+		B738_gear_horn_cut()
 		B738_below_gs_disable()
 		B738_nose_steer()
 		B738_manual_vspeed()
 		B738_fuel_tank_status()
 		B738_gpws()
-		B738_gear_handle()
 		B738_man_land_gear()
 		B738_hydraulic_sys()
 		B738_wipers()
@@ -11553,7 +11969,6 @@ function after_physics()
 		B738_pressurization()
 		B738_air_cond()
 		turn_around_state()
-		B738_speedbrake_aret()
 		B738_ff_used_displ()
 		B738_generators()
 		B738_electric_bus()
@@ -11561,6 +11976,10 @@ function after_physics()
 		B738_fmc_source()
 		cockpit_door()
 		B738_adf()
+		B738_speedbrake_lever_stop()
+		B738_speedbrake_handle_animation()
+		B738_speedbrake_disagree_monitor()
+		
 		if fmod_flap_sound == 1 then
 			fmod_flap_sound = 2
 		elseif fmod_flap_sound == 2 then

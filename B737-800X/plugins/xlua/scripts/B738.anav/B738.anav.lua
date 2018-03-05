@@ -692,14 +692,14 @@ function after_physics()
 		else
 			precip_acf_ratio = math.max(XE_DR_rain, XE_DR_snow)
 		end
-		B738DR_hide_glass = 1
+		--B738DR_hide_glass = 1
 		rain_triger()
 		window_ratio()
 		if timer_rain > rain_ratio then
 			timer_rain = 0
 		end
 	else
-		B738DR_hide_glass = 0
+		--B738DR_hide_glass = 0
 		left_out_window_ratio = 0
 		right_out_window_ratio = 0
 		left_side_window_ratio = 0

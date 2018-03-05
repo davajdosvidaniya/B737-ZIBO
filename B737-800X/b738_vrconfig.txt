@@ -22,6 +22,22 @@ BEGIN_TELEPORT_HOTSPOT SITTING CoPilot's Seat
 	PRESET_PHI 0.0
 END_TELEPORT_HOTSPOT
 
+BEGIN_TELEPORT_HOTSPOT SITTING Left Wing Seat
+	AABB -1.8 0.0 -1.65 -0.5 2.0 0.35
+	PRESET_XYZ -1.280 1.47 -0.65
+	PRESET_PSI 0.0
+	PRESET_THE 0.0
+	PRESET_PHI 0.0
+END_TELEPORT_HOTSPOT
+
+BEGIN_TELEPORT_HOTSPOT SITTING Right Wing Seat
+	AABB 0.5 0.0 -1.65 1.8 2.0 0.35
+	PRESET_XYZ 1.280 1.47 -0.65
+	PRESET_PSI 0.0
+	PRESET_THE 0.0
+	PRESET_PHI 0.0
+END_TELEPORT_HOTSPOT
+
 BEGIN_MANIP manip_2_axis sim/cockpit2/controls/yoke_roll_ratio	sim/cockpit2/controls/yoke_pitch_ratio
 	#YOKE_MANIP_ROTATE <ptch cent x> <ptch cent y> <ptch cent z> <ptch axis x> <ptch axis y> <ptch axis z> <ptch min ang> <ptch max ang> <roll cent x> <roll cent y> <roll cent z> <roll axis x> <roll axis y> <roll axis z> <roll min ang> <roll max ang>
 	YOKE_MANIP_ROTATE -0.5075 -0.4866 2.1775 -1 0.0 0.0 10.0 -10.0 -0.5075 0.3174 2.1764 -0.0000 -0.0872 -0.9962 -107.5 107.5
@@ -218,10 +234,6 @@ BEGIN_MANIP manip_cmnd_knob laminar/B738/toggle_switch/crossfeed_valve_on lamina
 	DRAG_GAIN 60
 END_MANIP
 
-BEGIN_MANIP manip_cmnd_knob laminar/B738/toggle_switch/flt_dk_door_right laminar/B738/toggle_switch/flt_dk_door_left
-	DRAG_GAIN 25
-END_MANIP
-
 BEGIN_MANIP manip_cmnd_knob laminar/B738/toggle_switch/dspl_source_right laminar/B738/toggle_switch/dspl_source_left
 	DRAG_GAIN 25
 END_MANIP
@@ -262,5 +274,20 @@ BEGIN_MANIP manip_cmnd_switch_ud laminar/B738/toggle_switch/ap_disconnect_test1_
 	HOLD_MANIP
 END_MANIP
 BEGIN_MANIP manip_cmnd_switch_ud laminar/B738/toggle_switch/ap_disconnect_test2_up laminar/B738/toggle_switch/ap_disconnect_test2_dn
+	HOLD_MANIP
+END_MANIP
+
+BEGIN_MANIP manip_cmnd_switch_lr laminar/B738/toggle_switch/flt_dk_door_right laminar/B738/toggle_switch/flt_dk_door_left
+	DRAG_GAIN 25
+	HOLD_MANIP
+END_MANIP
+
+BEGIN_MANIP manip_cmnd_switch_lr sim/flight_controls/aileron_trim_right sim/flight_controls/aileron_trim_left
+	DRAG_GAIN 25
+	HOLD_MANIP
+END_MANIP
+
+BEGIN_MANIP manip_cmnd_switch_lr sim/flight_controls/rudder_trim_right sim/flight_controls/rudder_trim_left
+	DRAG_GAIN 25
 	HOLD_MANIP
 END_MANIP

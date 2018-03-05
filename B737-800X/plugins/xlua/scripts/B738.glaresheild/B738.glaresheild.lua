@@ -1151,6 +1151,7 @@ B738DR_adf1_arrow 				= create_dataref("laminar/B738/pfd/adf1_arrow", "number")
 B738DR_adf2_arrow 				= create_dataref("laminar/B738/pfd/adf2_arrow", "number")
 B738DR_adf1_arrow_fo 			= create_dataref("laminar/B738/pfd/adf1_arrow_fo", "number")
 B738DR_adf2_arrow_fo 			= create_dataref("laminar/B738/pfd/adf2_arrow_fo", "number")
+
 B738DR_dh_pilot				= create_dataref("laminar/B738/pfd/dh_pilot", "number")
 B738DR_dh_copilot			= create_dataref("laminar/B738/pfd/dh_copilot", "number")
 
@@ -1260,32 +1261,9 @@ simDR_nav2_course_copilot	= find_dataref("sim/cockpit2/radios/actuators/nav2_cou
 simDR_nav2_type				= find_dataref("sim/cockpit2/radios/indicators/nav2_type")
 simDR_nav2_freq				= find_dataref("sim/cockpit2/radios/actuators/nav2_frequency_hz")
 
---simDR_nav1 						= find_dataref("sim/cockpit2/radios/actuators/nav1_frequency_hz")
---simDR_nav2 						= find_dataref("sim/cockpit2/radios/actuators/nav2_frequency_hz")
---simDR_vor1_id					= find_dataref("sim/cockpit2/radios/indicators/nav1_nav_id")
---simDR_nav1_dme					= find_dataref("sim/cockpit2/radios/indicators/nav1_dme_distance_nm")
---simDR_nav1_has_dme				= find_dataref("sim/cockpit2/radios/indicators/nav1_has_dme")
---simDR_nav1_type					= find_dataref("sim/cockpit2/radios/indicators/nav1_type")
-
---simDR_vor2_id					= find_dataref("sim/cockpit2/radios/indicators/nav2_nav_id")
---simDR_nav2_dme					= find_dataref("sim/cockpit2/radios/indicators/nav2_dme_distance_nm")
---simDR_nav2_has_dme				= find_dataref("sim/cockpit2/radios/indicators/nav2_has_dme")
---simDR_nav2_type					= find_dataref("sim/cockpit2/radios/indicators/nav2_type")
---simDR_nav1_bearing				= find_dataref("sim/cockpit2/radios/indicators/nav1_bearing_deg_mag")
---simDR_nav2_bearing				= find_dataref("sim/cockpit2/radios/indicators/nav2_bearing_deg_mag")
---simDR_nav1_course_pilot			= find_dataref("sim/cockpit2/radios/actuators/nav1_course_deg_mag_pilot")
---simDR_nav2_course_pilot			= find_dataref("sim/cockpit2/radios/actuators/nav2_course_deg_mag_pilot")
---simDR_nav1_course_copilot		= find_dataref("sim/cockpit2/radios/actuators/nav1_course_deg_mag_copilot")
---simDR_nav2_course_copilot		= find_dataref("sim/cockpit2/radios/actuators/nav2_course_deg_mag_copilot")
-
-
-
 -- ADF
-																					
 simDR_adf1_bearing			= find_dataref("sim/cockpit2/radios/indicators/adf1_bearing_deg_mag")
-																						  
 simDR_adf2_bearing			= find_dataref("sim/cockpit2/radios/indicators/adf2_bearing_deg_mag")
-
 
 
 -- PILOT
@@ -6101,15 +6079,19 @@ function autopilot_system_lights2()
 		elseif ap_pitch_mode == 6 and ap_pitch_mode_eng == 6 then
 			B738DR_pfd_alt_mode = PFD_ALT_ALT_ACQ
 		end
+		
+		-- LNAV -> APP
+		if ap_roll_mode == 6 and ap_roll_mode_eng == 6 then
+			B738DR_pfd_alt_mode_arm = PFD_ALT_GS_ARM
+		elseif ap_roll_mode == 3 and ap_roll_mode_eng == 3 then
+			-- APP
+			B738DR_pfd_alt_mode_arm = PFD_ALT_GS_ARM
+		end
 		if simDR_glideslope_status == 2 then
 			B738DR_pfd_alt_mode = PFD_ALT_GS
 			if B738DR_pfd_alt_mode_arm == PFD_ALT_GS_ARM then
 				B738DR_pfd_alt_mode_arm = 0
 			end
-		end
-		-- LNAV -> APP
-		if ap_roll_mode == 6 and ap_roll_mode_eng == 6 then
-			B738DR_pfd_alt_mode_arm = PFD_ALT_GS_ARM
 		end
 		-- if ap_pitch_mode == 7 and ap_pitch_mode_eng == 7
 			-- B738DR_pfd_alt_mode = PFD_ALT_GP
@@ -6314,58 +6296,7 @@ function autopilot_system_lights2()
 	else
 		B738DR_show_ias = 1
 	end
-	
-	-- if B738DR_autopilot_vnav_status == 0 then
-		-- B738DR_show_ias = 1
-	-- else
-		-- -- VNAV on
-		-- if B738DR_ap_spd_interv_status == 0 then
-			-- B738DR_show_ias = 0
-		-- else
-			-- B738DR_show_ias = 1
-		-- end
-	-- end
 
-end
-
-
-
-
-
-
-
-
-
-function B738_lnav()
-
-	if ap_roll_mode_eng == 4 and ap_roll_mode == 4 then
-		
-		-- if simDR_radio_height_pilot_ft > 50 then
-			-- lnav_engaged = 1
-		-- end
-		
-		if lnav_engaged == 1 then
-			if simDR_approach_status > 0 then
-				simCMD_autopilot_app:once()
-			end
-			if autopilot_fms_nav_status == 0 then
-				if simDR_nav_status > 0 then			-- if VOR LOC Arm or Captured
-					simCMD_autopilot_lnav:once()			-- VOR LOC off
-				end
-			end
-			autopilot_fms_nav_status = 1
-			simDR_autopilot_source = 2
-			simDR_autopilot_fo_source = 2
-			lnav_vorloc = 0
-			lnav_app = 0
-			if simDR_nav_status == 0 then
-				simCMD_autopilot_lnav:once()			-- LNAV on
-			end
-			lnav_engaged = 2
-		end
-	else
-		lnav_engaged = 0
-	end
 end
 
 
@@ -6442,10 +6373,21 @@ function B738_lnav2()
 			lnav_engaged = 0
 		end
 	elseif ap_roll_mode == 6 and ap_roll_mode_eng == 6 then		-- LNAV/APP arm (G/S)
-		if simDR_approach_status > 1 then
-			ap_roll_mode = 3	-- APP
+		-- if simDR_approach_status > 1 then
+			-- ap_roll_mode = 3	-- APP
+			-- ap_roll_mode_eng = 3
+			-- lnav_engaged = 0
+		-- end
+		if simDR_nav_status == 2 and simDR_approach_status == 0 then
+			simCMD_autopilot_app:once()
+			ap_roll_mode = 3
 			ap_roll_mode_eng = 3
 			lnav_engaged = 0
+		end
+		if simDR_approach_status == 2 then
+			if ap_pitch_mode_eng ~= 4 and simDR_glideslope_status == 2 then 	-- G/S engaged
+				ap_pitch_mode = 4
+			end
 		end
 	elseif ap_roll_mode == 12 and ap_roll_mode_eng == 12 then		-- HDG/VOR LOC arm GP
 		if simDR_nav_status > 1 then
@@ -6492,6 +6434,7 @@ function B738_lnav2()
 			if relative_brg > 180 then
 				relative_brg = relative_brg - 360
 			end
+			B738DR_test_test = relative_brg
 			
 			relative_brg2 = (simDR_fmc_crs - simDR_ahars_mag_hdg + 360) % 360
 			if relative_brg2 > 180 then
@@ -6598,29 +6541,37 @@ function B738_lnav2()
 					if simDR_fmc_trk_turn == -1 then
 						if simDR_fmc_trk_turn2 == 2 then
 							-- left
-							idx_dist = B738DR_xtrack + B738_rescale(71, 0.27, 236, 0.33, gnd_spd)
+							idx_dist = B738DR_xtrack + B738_rescale(71, 0.40, 236, 0.47, gnd_spd)	--0.27 / 0.33 ** 0.33 / 0.39 ** 0.39/0.45
 						else
 							-- right
-							idx_dist = B738DR_xtrack - B738_rescale(71, 0.27, 236, 0.33, gnd_spd)
+							idx_dist = B738DR_xtrack - B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
 						end
 					elseif simDR_fmc_trk_turn == 2 then
 						-- left
-						idx_dist = B738DR_xtrack + B738_rescale(71, 0.27, 236, 0.33, gnd_spd)
+						idx_dist = B738DR_xtrack + B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
 					else
 						-- right
-						idx_dist = B738DR_xtrack - B738_rescale(71, 0.27, 236, 0.33, gnd_spd)
+						idx_dist = B738DR_xtrack - B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
 					end
 					if idx_dist < 0 then
-						idx_dist = -idx_dist
-						if idx_dist > 1 then
-							idx_dist = 1
+						if relative_brg > 15 then
+							idx_corr = 45
+						else
+							idx_dist = -idx_dist
+							if idx_dist > 1 then
+								idx_dist = 1
+							end
+							idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
 						end
-						idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
 					else
-						if idx_dist > 1 then
-							idx_dist = 1
+						if relative_brg < -15 then
+							idx_corr = -45
+						else
+							if idx_dist > 1 then
+								idx_dist = 1
+							end
+							idx_corr = -B738_rescale(0, 0, 1, 45, idx_dist)
 						end
-						idx_corr = -B738_rescale(0, 0, 1, 45, idx_dist)
 					end
 					ap_hdg = (mag_trk + idx_corr + 360) % 360
 				elseif nav_mode == 5 then
@@ -6629,22 +6580,30 @@ function B738_lnav2()
 					gnd_spd = math.max(gnd_spd, 71)
 					if simDR_fmc_trk_turn2 == 2 then
 						-- left
-						idx_dist = B738DR_xtrack + B738_rescale(71, 0.27, 236, 0.33, gnd_spd)
+						idx_dist = B738DR_xtrack + B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
 					else
 						-- right
-						idx_dist = B738DR_xtrack - B738_rescale(71, 0.27, 236, 0.33, gnd_spd)
+						idx_dist = B738DR_xtrack - B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
 					end
 					if idx_dist < 0 then
-						idx_dist = -idx_dist
-						if idx_dist > 1 then
-							idx_dist = 1
+						if relative_brg > 15 then
+							idx_corr = 45
+						else
+							idx_dist = -idx_dist
+							if idx_dist > 1 then
+								idx_dist = 1
+							end
+							idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
 						end
-						idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
 					else
-						if idx_dist > 1 then
-							idx_dist = 1
+						if relative_brg < -15 then
+							idx_corr = -45
+						else
+							if idx_dist > 1 then
+								idx_dist = 1
+							end
+							idx_corr = -B738_rescale(0, 0, 1, 45, idx_dist)
 						end
-						idx_corr = -B738_rescale(0, 0, 1, 45, idx_dist)
 					end
 					ap_hdg = (mag_trk + idx_corr + 360) % 360
 				else
@@ -6652,17 +6611,25 @@ function B738_lnav2()
 					gnd_spd = math.max(gnd_spd, 70)
 					idx_rnp = B738_rescale(70, 1.5, 230, 3.2, gnd_spd)
 					if B738DR_xtrack < 0 then
-						idx_dist = -B738DR_xtrack
-						if idx_dist > idx_rnp then
-							idx_dist = idx_rnp
+						if relative_brg > 15 then
+							idx_corr = 45
+						else
+							idx_dist = -B738DR_xtrack
+							if idx_dist > idx_rnp then
+								idx_dist = idx_rnp
+							end
+							idx_corr = B738_rescale(0, 0, idx_rnp, 45, idx_dist)
 						end
-						idx_corr = B738_rescale(0, 0, idx_rnp, 45, idx_dist)
 					else
-						idx_dist = B738DR_xtrack
-						if idx_dist > idx_rnp then
-							idx_dist = idx_rnp
+						if relative_brg < -15 then
+							idx_corr = -45
+						else
+							idx_dist = B738DR_xtrack
+							if idx_dist > idx_rnp then
+								idx_dist = idx_rnp
+							end
+							idx_corr = -B738_rescale(0, 0, idx_rnp, 45, idx_dist)
 						end
-						idx_corr = -B738_rescale(0, 0, idx_rnp, 45, idx_dist)
 					end
 					ap_hdg = (mag_trk + idx_corr + 360) % 360
 				end
@@ -8158,7 +8125,6 @@ function B738_vnav6()
 										-- fmc_vvi_cur = simDR_vvi_fpm_pilot
 										-- simCMD_autopilot_vs_sel:once()
 										--simDR_ap_vvi_dial = lvl_chg_fpm
-										--vvi_trg = simDR_ap_vvi_dial
 										vvi_trg = lvl_chg_fpm
 										fmc_vvi_cur = simDR_vvi_fpm_pilot
 										simCMD_autopilot_vs_sel:once()
@@ -8330,7 +8296,6 @@ function B738_lvl_chg()
 									
 									if simDR_autopilot_altitude_mode ~= 4 then
 										--simDR_ap_vvi_dial = lvl_chg_fpm
-										--lvl_vvi_trg = simDR_ap_vvi_dial
 										lvl_vvi_trg = lvl_chg_fpm
 										fmc_vvi_cur = simDR_vvi_fpm_pilot
 										simCMD_autopilot_vs_sel:once()
@@ -8338,7 +8303,7 @@ function B738_lvl_chg()
 									lvl_chg_vs = 1
 								end
 								if simDR_autopilot_altitude_mode == 4 then
-									fmc_vvi_cur = B738_set_anim_value(fmc_vvi_cur, lvl_vvi_trg, 50, 8000, 0.15)	-- 0.15
+									fmc_vvi_cur = B738_set_anim_value(fmc_vvi_cur, lvl_vvi_trg, 50, 8000, 0.15)
 									simDR_ap_vvi_dial = fmc_vvi_cur
 									if B738DR_autopilot_autothr_arm_pos == 1 then
 										at_mode = 7		-- N1 thrust
@@ -8381,7 +8346,6 @@ end
 function B738_alt_hld()
 
 	local alt_x = 0
-	local gs_arm_tmp = simDR_glideslope_status
 	
 	if B738DR_autopilot_vnav_status == 0 then
 		if ap_pitch_mode_eng == 3 and ap_pitch_mode == 3 then
@@ -8407,12 +8371,6 @@ function B738_alt_hld()
 									at_mode = 2		-- SPEED on
 								end
 							end
-							-- if gs_arm_tmp > 0 then
-								-- simCMD_autopilot_app:once()
-								-- if simDR_approach_status == 0 then
-									-- simCMD_autopilot_app:once()
-								-- end
-							-- end
 						end
 					else
 						if B738DR_pfd_alt_mode_arm == PFD_ALT_VS_ARM then
@@ -8433,12 +8391,6 @@ function B738_alt_hld()
 					end
 					simDR_ap_vvi_dial = 0
 					null_vvi = 0
-					if gs_arm_tmp > 0 then
-						simCMD_autopilot_app:once()
-						if simDR_approach_status == 0 then
-							simCMD_autopilot_app:once()
-						end
-					end
 				end
 			end
 			if at_on_old ~= B738DR_autopilot_autothr_arm_pos and B738DR_autopilot_autothr_arm_pos == 1 then
@@ -8460,28 +8412,28 @@ function B738_alt_acq()	--ALT ACQ mode
 	local alt_y = 0
 	local alt_acq_disable = 0
 	local climb_descent = 0
-	local gs_arm_tmp = simDR_glideslope_status
 	
 		if B738DR_autopilot_vnav_status == 1 and ap_pitch_mode == 5 and ap_pitch_mode_eng == 5 then
 			alt_acq_disable = 1
-			if B738DR_flight_phase > 4 then
+			if B738DR_flight_phase > 4 and B738DR_flight_phase < 8 then
 				alt_x = simDR_altitude_pilot - ed_alt
-				if B738DR_rest_wpt_alt == ed_alt and B738DR_mcp_alt_dial >= ed_alt and alt_x < 700 then	-- stop VNAV on E/D
+				--if B738DR_rest_wpt_alt == ed_alt and B738DR_mcp_alt_dial >= ed_alt and alt_x < 700 and ed_alt > 0 then	-- stop VNAV on E/D
+				if B738DR_mcp_alt_dial >= ed_alt and alt_x < 700 then	-- stop VNAV on E/D
 					alt_acq_disable = 0
 				end
 			end
 			
-			if ap_roll_mode_eng == 4 and ap_roll_mode == 4		-- LNAV
-			and ap_pitch_mode_eng == 5 and ap_pitch_mode == 5 	-- VNAV
-			and B738DR_gp_active > 0 and B738DR_pfd_vert_path == 1 then	-- (G/P) -> LNAV/VNAV
-				alt_acq_disable = 1
-			end
+			-- if ap_roll_mode_eng == 4 and ap_roll_mode == 4		-- LNAV
+			-- and ap_pitch_mode_eng == 5 and ap_pitch_mode == 5 	-- VNAV
+			-- and B738DR_gp_active > 0 and B738DR_pfd_vert_path == 1 then	-- (G/P) -> LNAV/VNAV
+				-- alt_acq_disable = 1
+			-- end
 			
-			if ap_roll_mode_eng == 2 and ap_roll_mode == 2		-- VOR LOC
-			and ap_pitch_mode_eng == 5 and ap_pitch_mode == 5 	-- VNAV
-			and B738DR_gp_active > 0 and B738DR_pfd_vert_path == 1 then	-- (G/P) -> LOC/VNAV
-				alt_acq_disable = 1
-			end
+			-- if ap_roll_mode_eng == 2 and ap_roll_mode == 2		-- VOR LOC
+			-- and ap_pitch_mode_eng == 5 and ap_pitch_mode == 5 	-- VNAV
+			-- and B738DR_gp_active > 0 and B738DR_pfd_vert_path == 1 then	-- (G/P) -> LOC/VNAV
+				-- alt_acq_disable = 1
+			-- end
 			
 			if vnav_init2 == 0 then
 				vnav_init2 = 1
@@ -8513,12 +8465,6 @@ function B738_alt_acq()	--ALT ACQ mode
 								if simDR_autopilot_altitude_mode ~= 4 then
 									simCMD_autopilot_vs:once()
 									simDR_ap_vvi_dial = roundUpToIncrement(simDR_ap_vvi_dial, 100 )
-									if gs_arm_tmp > 0 then
-										simCMD_autopilot_app:once()
-										if simDR_approach_status == 0 then
-											simCMD_autopilot_app:once()
-										end
-									end
 								end
 							end
 							if B738DR_autopilot_autothr_arm_pos == 1 then
@@ -8537,12 +8483,6 @@ function B738_alt_acq()	--ALT ACQ mode
 								if simDR_autopilot_altitude_mode ~= 4 then
 									simCMD_autopilot_vs:once()
 									vert_spd_corr()
-									if gs_arm_tmp > 0 then
-										simCMD_autopilot_app:once()
-										if simDR_approach_status == 0 then
-											simCMD_autopilot_app:once()
-										end
-									end
 								end
 							end
 							if B738DR_autopilot_autothr_arm_pos == 1 then
@@ -8564,12 +8504,6 @@ function B738_alt_acq()	--ALT ACQ mode
 					if simDR_autopilot_altitude_mode ~= 4 then
 						simCMD_autopilot_vs:once()
 						vert_spd_corr()
-						if gs_arm_tmp > 0 then
-							simCMD_autopilot_app:once()
-							if simDR_approach_status == 0 then
-								simCMD_autopilot_app:once()
-							end
-						end
 					end
 					ap_pitch_mode = 1
 					ap_pitch_mode_eng = 1
@@ -8612,8 +8546,6 @@ end
 
 function B738_vs()
 
-	local gs_arm_tmp = simDR_glideslope_status
-	
 	if B738DR_autopilot_vnav_status == 0 then
 		if ap_pitch_mode_eng == 1 and ap_pitch_mode == 1 then
 			if simDR_autopilot_altitude_mode ~= 4 then
@@ -8621,12 +8553,6 @@ function B738_vs()
 					simCMD_autopilot_vs:once()
 				else
 					simCMD_autopilot_vs_sel:once()
-				end
-				if gs_arm_tmp > 0 then
-					simCMD_autopilot_app:once()
-					if simDR_approach_status == 0 then
-						simCMD_autopilot_app:once()
-					end
 				end
 			end
 			if vs_first == 0 then
@@ -8662,36 +8588,32 @@ function B738_app()
 		ap_app_block_800 = 0
 	end
 	
-	if ap_roll_mode == 3 and ap_roll_mode_eng == 3 and B738DR_autoland_status == 0 then
-		B738DR_ap_ils_active = 1
-		
-		if simDR_approach_status == 0 then --and B738DR_autoland_status == 0 then
-			simCMD_autopilot_app:once()
-		elseif simDR_approach_status == 2 then
-			if approach_status_old ~= simDR_approach_status then
+	if B738DR_autoland_status == 0 then
+		if ap_roll_mode == 3 and ap_roll_mode_eng == 3 then --and B738DR_autoland_status == 0 then
+			B738DR_ap_ils_active = 1
+			
+			if simDR_nav_status == 2 and simDR_approach_status == 0 then
+				simCMD_autopilot_app:once()
+				ap_roll_mode = 3
+				ap_roll_mode_eng = 3
+				lnav_engaged = 0
+			end
+			if simDR_approach_status == 2 then
+				if ap_pitch_mode_eng ~= 4 and simDR_glideslope_status == 2 then 	-- G/S engaged
+					ap_pitch_mode = 4
+				end
+			end
+			if simDR_glideslope_status == 2 and glideslope_status_old ~= simDR_glideslope_status then
 				if B738DR_autopilot_autothr_arm_pos == 1 then
 					at_mode = 2
 				end
 			end
-			if simDR_glideslope_status == 2 then
-				ap_pitch_mode = 4
-			-- elseif ap_pitch_mode ~= 3 and ap_pitch_mode ~= 0 then	-- not ALT HOLD
-				-- simCMD_autopilot_app:once()
-				-- simCMD_autopilot_app:once()
-			end
-			if glideslope_status_old ~= simDR_glideslope_status then
-				if B738DR_autopilot_autothr_arm_pos == 1 then
-					at_mode = 2
-				end
-			end
-		end
-		if ap_roll_mode_old ~= ap_roll_mode_eng or at_on_old ~= B738DR_autopilot_autothr_arm_pos then
-			if B738DR_autopilot_autothr_arm_pos == 1 then
-				at_mode = 2
-			end
+			
+		else
+			B738DR_ap_ils_active = 0
 		end
 	else
-		B738DR_ap_ils_active = 0
+		B738DR_ap_ils_active = 1
 	end
 	
 end
@@ -8773,25 +8695,10 @@ function B738_fac()
 			end
 		end
 	else
-		-- -- disengage GP
-		-- if ap_pitch_mode == 7 then
-			-- ap_pitch_mode = 0
-		-- end
 		fac_engaged = 0
 	end
 		
 	if fac_engaged == 1 then
-		
-		-- IAN -> LNAV/VNAV mode G/P
-		-- if ap_roll_mode_eng ~= 8 then
-			-- ap_roll_mode_eng = 8
-			-- lnav_vorloc = 0
-			-- lnav_app = 0
-			
-			-- if simDR_approach_status > 0 then
-				-- simCMD_autopilot_app:once()
-			-- end
-		-- end
 		
 		if simDR_autopilot_heading_mode ~= 1 then
 			simCMD_autopilot_hdg:once()
@@ -8805,23 +8712,6 @@ function B738_fac()
 		
 		mag_trk = (B738DR_fac_trk + simDR_mag_variation + 360) % 360
 		
-		-- idx_rnp = B738DR_rnp * 1.25
-		-- gnd_spd = math.min(simDR_ground_spd, 200)
-		-- gnd_spd = math.max(gnd_spd, 80)
-		-- idx_rnp = idx_rnp + B738_rescale(60, 0.0, 200, 0.4, gnd_spd)
-		-- if idx_rnp > 2.5 then
-			-- idx_rnp = 2.5
-		-- end
-		
-		-- idx_rnp = B738DR_rnp + 0.7 --* 1.25
-		-- gnd_spd = math.min(simDR_ground_spd, 200)
-		-- gnd_spd = math.max(gnd_spd, 80)
-		-- --idx_rnp = idx_rnp + B738_rescale(60, 0.0, 200, 0.5, gnd_spd)
-		-- idx_rnp = idx_rnp + B738_rescale(60, 0.3, 200, 0.5, gnd_spd)
-		-- if idx_rnp > 2.4 then
-			-- idx_rnp = 2.4
-		-- end
-		
 		gnd_spd = math.min(simDR_ground_spd, 230)
 		gnd_spd = math.max(gnd_spd, 70)
 		idx_rnp = math.min(idx_rnp, 2.0)
@@ -8830,27 +8720,35 @@ function B738_fac()
 		
 		
 		if B738DR_fac_xtrack < 0 then
-			idx_dist = -B738DR_fac_xtrack
-			if idx_dist > idx_rnp then
-				idx_dist = idx_rnp
-			end
-			pom1 = idx_rnp / 4
-			if idx_dist < pom1 then
-				idx_corr = B738_rescale(0, 0, pom1, 15, idx_dist)
+			if relative_brg > 15 then
+				idx_corr = 45
 			else
-				idx_corr = B738_rescale(pom1, 15, idx_rnp, 45, idx_dist)
+				idx_dist = -B738DR_fac_xtrack
+				if idx_dist > idx_rnp then
+					idx_dist = idx_rnp
+				end
+				pom1 = idx_rnp / 4
+				if idx_dist < pom1 then
+					idx_corr = B738_rescale(0, 0, pom1, 15, idx_dist)
+				else
+					idx_corr = B738_rescale(pom1, 15, idx_rnp, 45, idx_dist)
+				end
 			end
 			ap_hdg = (mag_trk + idx_corr + 360) % 360
 		else
-			idx_dist = B738DR_fac_xtrack
-			if idx_dist > idx_rnp then
-				idx_dist = idx_rnp
-			end
-			pom1 = idx_rnp / 4
-			if idx_dist < pom1 then
-				idx_corr = B738_rescale(0, 0, pom1, 19, idx_dist)
+			if relative_brg < -15 then
+				idx_corr = 45
 			else
-				idx_corr = B738_rescale(pom1, 19, idx_rnp, 45, idx_dist)
+				idx_dist = B738DR_fac_xtrack
+				if idx_dist > idx_rnp then
+					idx_dist = idx_rnp
+				end
+				pom1 = idx_rnp / 4
+				if idx_dist < pom1 then
+					idx_corr = B738_rescale(0, 0, pom1, 19, idx_dist)
+				else
+					idx_corr = B738_rescale(pom1, 19, idx_rnp, 45, idx_dist)
+				end
 			end
 			ap_hdg = (mag_trk - idx_corr + 360) % 360
 		end
@@ -9171,8 +9069,8 @@ function B738_ap_autoland()
 			fd_cur = simDR_fdir_pitch
 			--vvi = simDR_vvi_fpm_pilot
 			throttle = eng1_N1_thrust_cur
-			simDR_autothrottle_enable = 0
-			if B738DR_autopilot_autothr_arm_pos == 1 then
+			if B738DR_autopilot_autothr_arm_pos == 1 and at_mode ~= 0 then
+				simDR_autothrottle_enable = 0
 				at_mode = 6
 				at_mode_eng = 6
 				eng1_N1_thrust_trg = throttle
@@ -9671,8 +9569,14 @@ function B738_ap_logic()
 		elseif ap_roll_mode == 3 then
 			
 			if B738DR_fms_ils_disable == 0 then
-				if simDR_approach_status == 0 then
+				-- if simDR_approach_status == 0 then
+					-- simCMD_autopilot_app:once()
+				-- end
+				if simDR_approach_status > 0 then
 					simCMD_autopilot_app:once()
+				end
+				if simDR_nav_status == 0 then
+					simCMD_autopilot_lnav:once()			-- VOR LOC on
 				end
 				if ap_roll_mode_eng == 4 then
 					ap_roll_mode = 6
@@ -9808,19 +9712,35 @@ function B738_ap_logic()
 		end
 	end
 	
-	
-	
-	
 	if B738DR_autoland_status == 0 then
-		if ap_roll_mode_eng == 3 then	-- APP
+		-- --if ap_roll_mode_eng == 3 then	-- APP
+		-- if simDR_approach_status == 2 then
+			-- if ap_pitch_mode_eng ~= 4 and simDR_glideslope_status == 2 then 	-- G/S engaged
+				-- ap_roll_mode = 3
+				-- ap_roll_mode_eng = 3
+				-- ap_pitch_mode = 4
+				-- lnav_engaged = 0
+			-- end
+		-- -- else
+			-- -- if ap_roll_mode_eng ~= 6 and simDR_glideslope_status > 0 then	-- LNAV/APP
+				-- -- ap_pitch_mode = 0
+			-- -- end
+		-- end
+		
+		if ap_roll_mode_eng == 3 or ap_roll_mode_eng == 6 then
+			if simDR_nav_status == 2 and simDR_approach_status == 0 then
+				simCMD_autopilot_app:once()
+				ap_roll_mode = 3
+				ap_roll_mode_eng = 3
+				lnav_engaged = 0
+			end
+		end
+		if simDR_approach_status == 2 then
 			if ap_pitch_mode_eng ~= 4 and simDR_glideslope_status == 2 then 	-- G/S engaged
 				ap_pitch_mode = 4
 			end
-		else
-			if ap_roll_mode_eng ~= 6 and simDR_glideslope_status > 0 then
-				ap_pitch_mode = 0
-			end
 		end
+		
 	end
 	
 	if ap_pitch_mode ~= ap_pitch_mode_eng then
@@ -9849,22 +9769,12 @@ function B738_ap_logic()
 				ap_roll_mode = 0
 			end
 			if simDR_autopilot_altitude_mode ~= 4 then
-				alt_x = 0
-				if simDR_glideslope_status > 0 then
-					alt_x = 1
-				end
 				if simDR_ap_vvi_dial ~= 0 then
 					simCMD_autopilot_vs_sel:once()
 					vert_spd_corr()
 				else
 					simCMD_autopilot_vs:once()
 					vert_spd_corr()
-				end
-				if alt_x == 1 then
-					simCMD_autopilot_app:once()
-					if simDR_approach_status == 0 then
-						simCMD_autopilot_app:once()
-					end
 				end
 			else
 				--simDR_ap_vvi_dial = roundDownToIncrement(simDR_ap_vvi_dial, 100 )
@@ -12788,7 +12698,7 @@ function B738_vor_sel()
 					-- vor_hdg = simDR_mag_hdg 	-- + 4.49		-- adjust
 				-- end
 				if B738DR_track_up == 0 then
-					vor_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
+					vor_hdg = simDR_ahars_mag_hdg -- simDR_mag_variation
 				else
 					if B738DR_track_up_active == 0 then
 						vor_hdg = simDR_ahars_mag_hdg
@@ -12957,7 +12867,7 @@ function B738_vor_sel()
 					-- vor_hdg = simDR_mag_hdg 	-- + 4.49		-- adjust
 				-- end
 				if B738DR_track_up == 0 then
-					vor_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
+					vor_hdg = simDR_ahars_mag_hdg -- simDR_mag_variation
 				else
 					if B738DR_track_up_active == 0 then
 						vor_hdg = simDR_ahars_mag_hdg
@@ -13083,7 +12993,7 @@ function B738_vor_sel()
 		vor_hdg =  simDR_ahars_mag_hdg
 	elseif B738DR_capt_map_mode == 2 then
 		if B738DR_track_up == 0 then
-			vor_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
+			vor_hdg = simDR_ahars_mag_hdg -- simDR_mag_variation
 		else
 			if B738DR_track_up_active == 0 then
 				vor_hdg = simDR_ahars_mag_hdg
@@ -13157,7 +13067,7 @@ function B738_vor_sel()
 				end
 				
 				if B738DR_track_up == 0 then
-					vor_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
+					vor_hdg = simDR_ahars_mag_hdg -- simDR_mag_variation
 				else
 					if B738DR_track_up_active == 0 then
 						vor_hdg = simDR_ahars_mag_hdg
@@ -13318,7 +13228,7 @@ function B738_vor_sel()
 				end
 				
 				if B738DR_track_up == 0 then
-					vor_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
+					vor_hdg = simDR_ahars_mag_hdg -- simDR_mag_variation
 				else
 					if B738DR_track_up_active == 0 then
 						vor_hdg = simDR_ahars_mag_hdg
@@ -13444,7 +13354,7 @@ function B738_vor_sel()
 		vor_hdg = simDR_ahars_mag_hdg
 	elseif B738DR_fo_map_mode == 2 then
 		if B738DR_track_up == 0 then
-			vor_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
+			vor_hdg = simDR_ahars_mag_hdg -- simDR_mag_variation
 		else
 			if B738DR_track_up_active == 0 then
 				vor_hdg = simDR_ahars_mag_hdg
@@ -13985,7 +13895,9 @@ function B738_hyd_sys()
 	end
 	
 	-- -- A/T disarm
-	if eng1_N1_thrust == 0 or eng2_N1_thrust == 0 or B738DR_fms_N1_mode == 13 then
+	local on_the_ground = simDR_on_ground_0 + simDR_on_ground_1 + simDR_on_ground_2
+	on_the_ground = math.min(on_the_ground, 1)
+	if eng1_N1_thrust == 0 or eng2_N1_thrust == 0 or (B738DR_fms_N1_mode == 13 and on_the_ground == 1)then
 		if B738DR_autopilot_autothr_arm_pos == 1 and autothr_arm_pos == 0 then
 			B738DR_autopilot_autothr_arm_pos = 0
 			B738DR_autopilot_autothrottle_status = 0
@@ -14720,8 +14632,8 @@ hide_hdg_line_fo = 0
 
 airspeed_dial_kts_old = 0
 
-B738DR_test_test = 1.0
-B738DR_test_test2 = 2.0
+--B738DR_test_test = 1.0
+--B738DR_test_test2 = 2.0
 
 
 end
@@ -14754,7 +14666,6 @@ function after_physics()
 		B738_ap_goaround()
 		B738_ap_autoland()
 		B738_ap_system()
-		--B738_lnav()
 		B738_lnav2()
 		--B738_gs()
 		B738_vnav6()

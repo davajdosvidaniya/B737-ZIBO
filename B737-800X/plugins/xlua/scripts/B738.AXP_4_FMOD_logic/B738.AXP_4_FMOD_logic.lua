@@ -1,28 +1,28 @@
--- LAST CHANGE: 2-12-2017 by AXP
--- 1712
+-- LAST CHANGE: 03-03-2018 by AXP
+
 -------------------------------------------- DEFINING VARIABLES  ---------------------------------------------------------------------------------------
 -------------------------- new flight phase and passenger control 1709A +
 
---leg_started = 0
---leg_ended = 0
+leg_started = 0
+leg_ended = 0
 
---start_leg_commanded = 0
---end_leg_commanded = 0
-
-
---play_belts = 0 
---belts_fastened = 0
-
---play_arrival_crosscheck = 0
-
---play_80 = 0
+start_leg_commanded = 0
+end_leg_commanded = 0
 
 
---is_hotstart = 0
+play_belts = 0 
+belts_fastened = 0
+
+play_arrival_crosscheck = 0
+
+play_80 = 0
+
+
+is_hotstart = 0
 -- passengers_leave = create_dataref("laminar/b738/fmodpack/flightphase_pax_leave", "number") 
---passengers_talk = 0
+passengers_talk = 0
 -- passengers_board
---passengers_board = 0
+passengers_board = 0
 
 
 -- is_trip_reset = 0 
@@ -50,24 +50,23 @@ flightphase_taxi = 0
 flightphase_descent = 0
 flightphase_cruise = 0
 flightphase_pre_takeoff = 0
---PAX_premastervolume = 0
+PAX_premastervolume = 10
 
 flight_leg_finished = 0 
 -- 1-8-2017 "1000 to go" callouts have not yet been played (descent and climb)
 --togo_climb_played = 0
 --togo_des_played = 0
-
---after_takeoff_played = 0
---positive_rate_played = 0 
---alert_fo_400_played = 0
---alert_fo_1000_played = 0
---cruise_msg_played = 0
---play_welcome_msg = 0
---welcome_msg_played = 0
---gate_departure_played = 0 
---gate_departure_initialized = 0
---gate_arrival_initialized = 0
---cabindoor_closed = 0 
+after_takeoff_played = 0
+positive_rate_played = 0 
+alert_fo_400_played = 0
+alert_fo_1000_played = 0
+cruise_msg_played = 0
+play_welcome_msg = 0
+welcome_msg_played = 0
+gate_departure_played = 0 
+gate_departure_initialized = 0
+gate_arrival_initialized = 0
+cabindoor_closed = 0 
 
 
 descent_msg_played = 0 
@@ -88,19 +87,55 @@ play_dta = 0
 
 -- 1-8-2017 AXP fire test variables
 
---play_firebells = 0 
+play_firebells = 0 
 
---play_positive_rate = 0
+play_positive_rate = 0
 
 climb_to_alt = 0 
 descend_to_alt = 0
 
---play_seatbelt = 0
---play_seatbelt_10k = 0
+play_seatbelt = 0
+play_seatbelt_10k = 0
 
 passengers_leave = 0
 passengers_talk = 0
+
+-----------------------------------
+-- load state
+
+load_effect = 0
+N1_current = 0
+N1_factor = 0
+sink_factor = 0
+
+-----------------------------------
+
+fire_handles_lights = 0
+
+--------------------------------------
+
+-- FA in cockpit
+
+FA_departure_time = 0
+FA_leo_time = 0
+FA_max_time = 300
+
+-- laminar/B738/push_button/flt_dk_door_close
+
+-------------------------------------------- FINDING COMMANDS ---------------------------------------------------------------------------------------
+
+close_fdd = find_command("laminar/B738/push_button/flt_dk_door_close")
+
 -------------------------------------------- FINDING DATAREFS ---------------------------------------------------------------------------------------
+
+--- DEV
+
+is_dev_event = find_dataref("axp/dev_event")
+
+
+--- DEV
+
+FAC_volume = find_dataref("laminar/b738/fmodpack/fmod_vol_FAC")
 
 -- new menu controls
 start_leg_commanded = find_dataref("laminar/b738/fmodpack/fmod_start_leg")
@@ -116,7 +151,7 @@ apu_gen        = find_dataref("sim/cockpit/electrical/generator_apu_on")
 gpu_on        = find_dataref("sim/cockpit/electrical/gpu_on")
 apu_temp      = find_dataref("laminar/B738/electrical/apu_temp")
 standbypwr    = find_dataref("sim/cockpit2/electrical/battery_on[1]")
-minimums    = find_dataref("sim/cockpit/misc/radio_altimeter_minimum")
+-- minimums    = find_dataref("sim/cockpit/misc/radio_altimeter_minimum")
 ft_agl   = find_dataref("sim/cockpit2/gauges/indicators/radio_altimeter_height_ft_pilot")
 fpm  = find_dataref("sim/flightmodel/position/vh_ind_fpm")
 
@@ -180,7 +215,7 @@ fms_v1			= find_dataref("laminar/B738/FMS/v1")
 simDR_airspeed_pilot	= find_dataref("sim/cockpit2/gauges/indicators/airspeed_kts_pilot")
 v1r_bugs		= find_dataref("laminar/B738/FMS/v1r_bugs")
 
--- NEW 1-8-2017 AXP for rotate callout
+-- NEW 1-8-2017 AXP  for rotate callout
 fms_vr = find_dataref("laminar/B738/FMS/vr")
 
 -- NEW 1-8-2017 AXP for 400 and 1000 call-outs at takeoff
@@ -262,8 +297,33 @@ tcas_ra = find_dataref("laminar/B738/TCAS/traffic_ra")
 
 trip_reset = find_dataref("laminar/B738/toggle_switch/emer_exit_lights")
 
+-- 1801S load state
+
+N1_eng_0 = find_dataref("sim/flightmodel/engine/ENGN_N1_[0]")
+N1_eng_1 = find_dataref("sim/flightmodel/engine/ENGN_N1_[1]")
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------- CREATING DATAREFS ---------------------------------------------------------------------------------------
+--- FA in cockpit
+
+FA_departure_time = create_dataref("laminar/b738/fmodpack/axp_FA_dep_timer", "number")
+FA_leo_time = create_dataref("laminar/b738/fmodpack/axp_FA_leo_timer", "number")
+
+--------------- fire test details
+
+fire_handles_lights = create_dataref("laminar/b738/fmodpack/axp_fire_handles_lights", "number")
+
+
+------------ load state
+
+load_effect = create_dataref("laminar/b738/fmodpack/axp_load_effect", "number")
+N1_current = create_dataref("laminar/b738/fmodpack/axp_N1_current", "number")
+N1_factor = create_dataref("laminar/b738/fmodpack/axp_N1_factor", "number")
+sink_factor = create_dataref("laminar/b738/fmodpack/axp_sink_factor", "number")
+--onground = create_dataref("sim/flightmodel/failures/onground_all", "number")
+
+
+
 ----------- arrival cross check msg
 
 play_arrival_crosscheck = create_dataref("laminar/b738/fmodpack/play_arrival_crosscheck", "number") 
@@ -277,7 +337,7 @@ belts_fastened = create_dataref("laminar/b738/fmodpack/belts_fastened", "number"
 
 ------- new mixer control
 
-muffle_amount = create_dataref("laminar/b738/fmodpack/muffle_amount", "number")
+-- muffle_amount = create_dataref("laminar/b738/fmodpack/muffle_amount", "number")
 
 -- NEW 4-8-2017 AXP TCAS system
 
@@ -287,7 +347,7 @@ true_tcas_alert = create_dataref("laminar/b738/fmodpack/play_tcas_alert", "numbe
 -- dataref to show if AC power is established (gyro, fans,...)
 ac_is_established   = create_dataref("laminar/b738/fmodpack/ac_established", "number")
 -- APP minimums callout
-appromins    = create_dataref("laminar/b738/fmodpack/appro_mins", "number")
+-- appromins    = create_dataref("laminar/b738/fmodpack/appro_mins", "number")
 -- datarefs for pack operation
 packsLon   = create_dataref("laminar/b738/fmodpack/packs_L", "number")
 packsRon   = create_dataref("laminar/b738/fmodpack/packs_R", "number")
@@ -394,7 +454,7 @@ play_fuelpumps = create_dataref("laminar/b738/fmodpack/fmod_playfuelpumps", "num
 
 -- ********************** ref to play  gear warning audiobirdxp
 
-play_gearwarn = create_dataref("laminar/b738/fmodpack/fmod_playgearwarn", "number")
+--play_gearwarn = create_dataref("laminar/b738/fmodpack/fmod_playgearwarn", "number")
 
 -- ********************** NEW refs 7-8-2017 to play pre landing announcement
 
@@ -419,8 +479,6 @@ passengers_board = create_dataref("laminar/b738/fmodpack/pax_board", "number")
 -------------------------- new flight phase and passenger control 1709A +
 
 
-
-
 -- wheels on the ground
 simDR_on_ground_0				= find_dataref("sim/flightmodel2/gear/on_ground[0]")
 simDR_on_ground_1				= find_dataref("sim/flightmodel2/gear/on_ground[1]")
@@ -429,18 +487,16 @@ simDR_radio_height_pilot_ft		= find_dataref("sim/cockpit2/gauges/indicators/radi
 
 is_hotstart = create_dataref("laminar/b738/fmodpack/hotstart", "number") 
 
-
-
 -- TOO LOW , GEAR warning if attempting to land with landing gears up
 -- maybe rather take annunciators going green instead of actual landing gear deployment?
 
-function gear_warn()
-	if ft_agl < 500 and ias < 178 and fpm < 0 and (gear_nose + gear_main1 + gear_main2) < 3 then
-	play_gearwarn = 1
-	else
-	play_gearwarn = 0
-	end
-end
+-- function gear_warn()
+	-- if ft_agl < 500 and ias < 178 and fpm < 0 and (gear_nose + gear_main1 + gear_main2) < 3 then
+	-- play_gearwarn = 1
+	-- else
+	-- play_gearwarn = 0
+	-- end
+-- end
 
 function detect_fuel_pumps()
 	if simDR_bus_volts1 > 10 or simDR_bus_volts2 > 10 then
@@ -595,14 +651,14 @@ function pack_play_R()
 end
 
 
-function appromins_func()
-	if ft_agl < minimums + 105 and ft_agl > minimums + 100 and fpm < 0 and minimums > 0 then
-		appromins = 1
-	else
-		appromins = 0
-	end
+--function appromins_func()
+--	if ft_agl < minimums + 105 and ft_agl > minimums + 100 and fpm < 0 and minimums > 0 then
+--		appromins = 1
+--	else
+--		appromins = 0
+--	end
    
-end
+--end
 
 -- VVI DIAL ---------------------------------------------
 
@@ -779,32 +835,37 @@ end
 function detect_landed()
 
 	if touch_down == 1 and flight_time > 40 then  -- prevent touch down setting landing to 1  at reload
-		flightphase_landed = 1
-		passengers_talk = 1
-		flightphase_climb = 0		-- end airborne flight phases upon landing
-		flightphase_descent = 0		-- end airborne flight phases upon landing
-		flightphase_boarding = 0	-- no boarding sounds before engine shutdown
-		after_takeoff_played = 0	-- reset all played indicators for next leg of the flight
-		--togo_des_played = 0		-- reset all played indicators for next leg of the flight
-		--togo_climb_played = 0		-- reset all played indicators for next leg of the flight
-		positive_rate_played = 0	-- reset all played indicators for next leg of the flight
-		alert_fo_400_played = 0		-- reset all played indicators for next leg of the flight
-		alert_fo_1000_played = 0	-- reset all played indicators for next leg of the flight
-		cruise_msg_played = 0		-- reset all played indicators for next leg of the flight
-		descent_msg_played = 0		-- reset all played indicators for next leg of the flight
-		-- welcome_msg_played = 0		-- not reset by landed,  must be reset by leg_ended
-		PAX_premastervolume = 10
-		is_hotstart = 0	
-		gate_departure_initialized = 0
-		cabindoor_closed = 1
-		if taxi_to_gate_played == 0 then		-- check if taxi to gate announcements / applause have been played. If not, play them and set played to 1
-			play_taxi_to_gate = 1
-			taxi_to_gate_played = 1
-		end
+
+			flightphase_landed = 1
+			passengers_talk = 1
+			flightphase_climb = 0		-- end airborne flight phases upon landing
+			flightphase_descent = 0		-- end airborne flight phases upon landing
+			flightphase_boarding = 0	-- no boarding sounds before engine shutdown
+			after_takeoff_played = 0	-- reset all played indicators for next leg of the flight
+			--togo_des_played = 0		-- reset all played indicators for next leg of the flight
+			--togo_climb_played = 0		-- reset all played indicators for next leg of the flight
+			positive_rate_played = 0	-- reset all played indicators for next leg of the flight
+			alert_fo_400_played = 0		-- reset all played indicators for next leg of the flight
+			alert_fo_1000_played = 0	-- reset all played indicators for next leg of the flight
+			cruise_msg_played = 0		-- reset all played indicators for next leg of the flight
+			descent_msg_played = 0		-- reset all played indicators for next leg of the flight
+			-- welcome_msg_played = 0		-- not reset by landed,  must be reset by leg_ended
+			PAX_premastervolume = 10
+			is_hotstart = 0	
+			gate_departure_initialized = 0
+			--cabindoor_closed = 1
+
+			if taxi_to_gate_played == 0 then		-- check if taxi to gate announcements / applause have been played. If not, play them and set played to 1
+				play_taxi_to_gate = 1
+				taxi_to_gate_played = 1
+			end
+
 	elseif touch_down == 1 and flight_time < 40 then
-		flightphase_landed = 0
-		play_taxi_to_gate = 0
+			flightphase_landed = 0
+			play_taxi_to_gate = 0
+	
 	end
+
 end
 
 
@@ -812,9 +873,9 @@ function detect_boarding()		--
 
 	if on_the_ground == 1 and is_taxi == 0 and is_anticollision_on == 0 and fuel_cutoff1 == 0 and fuel_cutoff2 == 0 then  -- engines shut down after landing or before new flight and AC established and not taxiing
 		flightphase_boarding = 1
-		if gate_departure_initialized == 0 and flightphase_landed == 0 and flightphase_taxi == 0 and flightphase_pre_takeoff == 0 and is_hotstart == 0 then 
-			cabindoor_closed = 0				-- as long as boarding is active and plane has not just landed, assume cabin door open
-		end
+		--if gate_departure_initialized == 0 and flightphase_landed == 0 and flightphase_taxi == 0 and flightphase_pre_takeoff == 0 and is_hotstart == 0 then 
+		--	cabindoor_closed = 0				-- as long as boarding is active and plane has not just landed, assume cabin door open
+		--end
 		PAX_premastervolume = 10			-- max PAX volume
 	else
 		flightphase_boarding = 0
@@ -845,7 +906,14 @@ end
 
 function detect_gate_arrival()
 
-	if flightphase_landed == 1 and flightphase_boarding == 1 and is_hotstart == 0 then
+
+	if is_dev_event == 1 and on_the_ground == 1 then
+
+		gate_arrival_initialized = 1
+		play_arrival_crosscheck = 1
+
+	elseif is_dev_event == 0 and flightphase_landed == 1 and flightphase_boarding == 1 and is_hotstart == 0 then
+
 		gate_arrival_initialized = 1
 		play_arrival_crosscheck = 1
 	end
@@ -854,28 +922,28 @@ end
 
 -- added hotstart exclusion
 function departure_timer()
-	if cabindoor_closed == 0 and departure_time < 18 then
+	if cabindoor_closed == 0 and departure_time < 5 then
 			departure_time = departure_time + 1
-	elseif departure_time == 18 then
-		cabindoor_closed = 1
-		departure_time = 0					-- if 18 secs have passed since gate_departure was initiated, play cabin door closing sound
+	elseif departure_time == 5 then
+		--cabindoor_closed = 1
+		departure_time = 0					-- if 5 secs have passed since gate_departure was initiated, play cabin door closing sound
 	elseif gate_departure_initialized == 0 and is_hotstart == 0 then
 		departure_time = 0
-		cabindoor_closed = 0
-	elseif is_hotstart == 1 then
-		cabindoor_closed = 1
+		--cabindoor_closed = 0
+	--elseif is_hotstart == 1 then
+	--	cabindoor_closed = 1
 	end
 end
 
 function arrival_timer()
-	if cabindoor_closed == 1 and arrival_time < 25 then
+	if cabindoor_closed == 1 and arrival_time < 5 then
 			arrival_time = arrival_time + 1
-	elseif arrival_time == 25 and hotstart == 0 then
-		cabindoor_closed = 0
-		arrival_time = 0					-- if 30 secs have passed since gate_arrival was initiated, play cabin door opens
+	elseif arrival_time == 5 and is_hotstart == 0 then
+		--cabindoor_closed = 0
+		arrival_time = 0					-- if 25 secs have passed since gate_arrival was initiated, play cabin door opens
 	elseif gate_arrival_initialized == 0 then
 		arrival_time = 0
-		cabindoor_closed = 1
+		--cabindoor_closed = 1
 	end
 end
 
@@ -905,7 +973,7 @@ function detect_taxi()			-- not super necessary now but maybe in future
 		flightphase_taxi = 1
 		passengers_talk = 1
 		PAX_premastervolume = 9.5	
-		cabindoor_closed = 1
+		--cabindoor_closed = 1
 	else
 		flightphase_taxi = 0
 	end
@@ -918,7 +986,7 @@ function detect_pre_takeoff()			-- quietens PAX before take off
 		flightphase_pre_takeoff = 1
 		passengers_talk = 1
 		PAX_premastervolume = 8	
-		cabindoor_closed = 1
+		--cabindoor_closed = 1
 	else
 		flightphase_pre_takeoff = 0
 	end
@@ -933,7 +1001,7 @@ function play_taxi_announcements()
 
 	if flightphase_taxi == 1 and flightphase_landed == 0 then
 		play_dta = 1
-		PAX_premastervolume = 9.1	
+		PAX_premastervolume = 9.8
 	else
 		play_dta = 0
 	end	
@@ -994,7 +1062,6 @@ function detect_climb()
 		end
 	else									--... we are not airborne or vertical speed is 0 or negative (or both)
 		flightphase_climb = 0
-		PAX_premastervolume = 9.5	
 	end
 end
 
@@ -1027,63 +1094,8 @@ function detect_cruise()
 		PAX_premastervolume = 10
 	else
 		flightphase_cruise = 0
-		PAX_premastervolume = 9.5
 	end
 end
-
---function alert_cruise_msg()
-
---	if PA_mic_on == 1 and flightphase_cruise == 1 and cruise_msg_played == 0 then			-- upon using PA / cruising / not played yet 
---		play_cruise_msg = 1
---		cruise_msg_played = 1
---	else
---		play_cruise_msg = 0
---	end
--- end
-
---function alert_welcome_msg()
-
---	if PA_mic_on == 1 and on_the_ground == 1 and welcome_msg_played == 0 and flightphase_landed == 0 and leg_started == 1 then			-- upon using PA / not flying / not played yet 
---		play_welcome_msg = 1
---		welcome_msg_played = 1
---	else
---		play_welcome_msg = 0
---	end
---end
-
--- auto play disabled for testing / evaluation
-
---function alert_descent_msg()
-
---	if offset == ed_found then
---		if ed_found > B738_legs_num then
-			-- E/D is Destination airport
---			if simDR_fmc_dist2 <= 70 and flightphase_descent == 1 and descent_msg_played == 0 then 	-- 70 miles and descending
---				play_descent_msg = 1 
---				descent_msg_played = 1
---			end
---		else
-			-- E/D is waypoint before Destination airport 
---			if simDR_fmc_dist2 <= 65 and flightphase_descent == 1 and descent_msg_played == 0 then 	-- 65 miles and descending
---				play_descent_msg = 1 
---				descent_msg_played = 1
---			end
---		end
---	else
---		play_descent_msg = 0 	--- YOUR TRIGGER ---
---	end
---end
-
-
---function alert_descent_msg()
-
---	if PA_mic_on == 1 and descent_msg_played == 0 and flightphase_descent == 1 then			-- upon using PA / in descent phase / not played yet
---		play_descent_msg = 1
---		descent_msg_played = 1
---	else
---		play_descent_msg = 0 
---	end
--- end
 
 
 
@@ -1155,21 +1167,6 @@ end
 
 -- 1-8-2017 AXP new function to decide if firebells are to be played
 
-function detect_firebells()
-
-	if is_apu_fire > 0 or is_cargo_fire > 0 or is_eng1_fire > 0 or is_eng2_fire > 0 then -- is any announciator showing fire
-		if is_light_test == 0 then -- if it is no light test
-			play_firebells = 1
-		elseif is_light_test == 1 then -- if it is a light test
-			play_firebells = 0
-		end
-	else
-		play_firebells = 0
-	end
-
-end
-
-
 -- 4-8-2017 AXP detect if TCAS is performing test to suppress false alerts playing during test (normal alert dataref is set to 1 during TCAS self test)
 
 function detect_true_TCAS()
@@ -1188,31 +1185,6 @@ function detect_true_TCAS()
 	end
 
 end
-
---is_light_test = find_dataref("laminar/B738/toggle_switch/bright_test")
---is_apu_fire = find_dataref("laminar/B738/annunciator/apu_fire")
---is_cargo_fire = find_dataref("laminar/B738/annunciator/cargo_fire")
---is_eng1_fire = find_dataref("laminar/B738/annunciator/engine1_fire")
---is_eng2_fire = find_dataref("laminar/B738/annunciator/engine2_fire")
-
-
---function detect_takeoff()
---	if air_time > 30 t hen	-- 30sec in the air
-		-- detected takeoff
---	end
--- end
--- NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
-
--------------------------- new flight phase and passenger control 1709A +
-
---function detect_tripreset()		-- toggles end of flight / start of new flight
---
---	if trip_reset == 0 then
---		is_trip_reset = 1
---	elseif trip_reset > 0  then
---		is_trip_reset = 0
---	end
---end
 
 
 -- assuming board control through menu
@@ -1239,13 +1211,13 @@ function leg_control()
 		gate_departure_initialized = 0
 		gate_arrival_initialized = 0
 		play_arrival_crosscheck = 0 
-		if is_hotstart == 0 then
-			cabindoor_closed = 0
-		end
+		--if is_hotstart == 0 then
+		--	cabindoor_closed = 0
+		--end
 
-		if is_hotstart == 1 then
-			cabindoor_closed = 1
-		end
+		--if is_hotstart == 1 then
+		--	cabindoor_closed = 1
+		--end
 
 		-- is_hotstart = 0	
 		departure_time = 0
@@ -1302,8 +1274,7 @@ function pax_board()
 end
 
 function pax_belts()
--- play_belts
--- belts_fastened
+
 
 -- CONDITIONS TO (UN)FASTEN BELTS
 
@@ -1340,6 +1311,29 @@ function pax_belts()
 end
 
 
+function bellhop()
+
+	if on_the_ground == 0 then
+		cabindoor_closed = 1
+	end
+
+	if on_the_ground == 1 then
+
+		if gate_departure_initialized == 1 and departure_time == 5 then
+			cabindoor_closed = 1
+		end
+
+		if gate_arrival_initialized == 1 and arrival_time == 5 then
+			cabindoor_closed = 0
+		end
+
+		if leg_ended == 1 and leg_started == 0 then
+			cabindoor_closed = 0
+		end 
+	end
+
+end
+
 
 
 function detect_hotstart()
@@ -1347,7 +1341,7 @@ function detect_hotstart()
 	if fuel_cutoff1 == 1 and fuel_cutoff2 == 1 and flight_time < 10 then
 		is_hotstart = 1
 		passengers_talk = 1
-		cabindoor_closed = 1
+		--cabindoor_closed = 1
 		belts_fastened = 1
 		leg_started = 1
 		leg_ended = 0
@@ -1355,19 +1349,13 @@ function detect_hotstart()
 	--	is_hotstart = 0
 	elseif on_the_ground == 0 and flight_time < 10 then
 		is_hotstart = 1
-		cabindoor_closed = 1
+		--cabindoor_closed = 1
 	elseif fuel_cutoff1 < 1 or fuel_cutoff2 < 1 then
 		is_hotstart = 0 
 		
 	end
 
-	if on_the_ground == 0 then
-		cabindoor_closed = 1
-	end
-	
-	if is_hotstart == 1 then
-		cabindoor_closed = 1
-	end
+
 
 	if is_hotstart == 1 and flight_time >= 10 then
 		start_leg_commanded = 1
@@ -1375,31 +1363,190 @@ function detect_hotstart()
 
 end
 
-function detect_muffle_amount()
 
-	if cabindoor_closed == 0 and flightdeck_door_open == -1 then
-		muffle_amount = 0
+
+-- --------------------------------------------------------- 
+
+-- new AXP 1801S
+
+function detect_load_level()
+
+---- set up factors
+
+--- engine N1 (avoid double calculation)
+
+	if N1_eng_0 > N1_eng_1 then 
+		N1_current = N1_eng_0
+	elseif N1_eng_1 > N1_eng_0 then
+		N1_current = N1_eng_1
+	elseif N1_eng_0 == N1_eng_1 then
+		N1_current = N1_eng_0
 	end
 
-	if cabindoor_closed == 0 and flightdeck_door_open >= 0 then
-		muffle_amount = 1
+
+-- N1_factor
+
+	if N1_current <= 75 then
+		N1_factor = 0
+	elseif N1_current > 75 and N1_current <= 78 then
+		N1_factor = 0.1
+	elseif N1_current > 79 and N1_current <= 80 then
+		N1_factor = 0.2
+	elseif N1_current > 80 and N1_current <= 81 then
+		N1_factor = 0.4
+	elseif N1_current > 81 and N1_current <= 82 then
+		N1_factor = 0.6
+	elseif N1_current > 82 and N1_current <= 83 then
+		N1_factor = 0.7
+	elseif N1_current > 83 and N1_current <= 84 then
+		N1_factor = 0.9
+	elseif N1_current > 84 and N1_current <= 85 then
+		N1_factor = 1
+	
 	end
 
-	if cabindoor_closed == 1 then
-		muffle_amount = 2
+
+--- sink rate factor
+
+	if is_plane_onground == 0 then
+		if vvi_fpm <= -500 then 
+			sink_factor = 0
+		elseif vvi_fpm > -500 and vvi_fpm <= -300 then
+			sink_factor = 0
+		elseif vvi_fpm > -300 and vvi_fpm <= -150 then
+			sink_factor = 0.12
+		elseif vvi_fpm > -150 and vvi_fpm <= -100 then
+			sink_factor = 0.15
+		elseif vvi_fpm > -100 and vvi_fpm <= -80 then
+			sink_factor = 0.18
+		elseif vvi_fpm > -80 and vvi_fpm <= -50 then
+			sink_factor = 0.2
+		elseif vvi_fpm > -50 and vvi_fpm <= 0 then
+			sink_factor = 0.25
+		elseif vvi_fpm > 0 and vvi_fpm <= 10 then
+			sink_factor = 0.3
+		elseif vvi_fpm > 10 and vvi_fpm <= 20 then
+			sink_factor = 0.35
+		elseif vvi_fpm > 20 and vvi_fpm <= 25 then
+			sink_factor = 0.4
+		elseif vvi_fpm > 25 and vvi_fpm <= 30 then
+			sink_factor = 0.5
+		elseif vvi_fpm > 30 and vvi_fpm <= 40 then
+			sink_factor = 0.55
+		elseif vvi_fpm > 40 and vvi_fpm <= 45 then
+			sink_factor = 0.6
+		elseif vvi_fpm > 45 and vvi_fpm <= 50 then
+			sink_factor = 0.75
+		elseif vvi_fpm > 50 and vvi_fpm <= 55 then
+			sink_factor = 0.85
+		elseif vvi_fpm > 55 and vvi_fpm <= 65 then
+			sink_factor = 0.9
+		elseif vvi_fpm > 65 then
+			sink_factor = 1
+		end
+
+	elseif is_plane_onground == 1 then
+		sink_factor = 1
 	end
 
-	if replay_mode_on == 1 then
-		muffle_amount = 2
+--- load effect calculation
+
+
+load_effect = 1 - N1_factor - sink_factor
+
+end
+
+----- fire test details
+
+
+function detect_fire_handles()
+
+	if is_cargo_fire == 1 or is_eng1_fire == 1 or is_eng2_fire == 1 or is_apu_fire == 1 then 
+		fire_handles_lights = 1
+	else
+		fire_handles_lights = 0
 	end
 end
+
+------------- FA in cockpit ---------------------------------------
+
+--- timers
+
+function FA_departure_timer()
+
+	if  flightphase_landed == 0 and FA_departure_time < FA_max_time then
+
+		FA_departure_time = FA_departure_time + 1
+
+	elseif flightphase_landed == 1 then
+
+		FA_departure_time = 0
+	end
+
+	if leg_ended == 1 and leg_started == 0 then
+
+		FA_departure_time = 0
+	end
+
+end
+
+function FA_leo_timer()
+
+	if  flightphase_landed == 0 and FA_leo_time < 180 then
+
+		FA_leo_time = FA_leo_time + 1
+
+	elseif flightphase_landed == 1 then
+
+		FA_leo_time = 0
+	end
+
+	if leg_ended == 1 and leg_started == 0 then
+
+		FA_leo_time = 0
+	end
+
+end
+
+
+
+
+--- main function
+
+function FA_logic_timers()
+
+	--- start upon initializing gate departure
+	if gate_departure_initialized == 1 then
+		if is_timer_scheduled(FA_departure_timer) == false then
+			run_after_time(FA_departure_timer, 1)
+		end
+	end
+
+		--- start upon boarding
+	if leg_started == 1 and leg_ended == 0 then
+		if is_timer_scheduled(FA_leo_timer) == false then
+			run_after_time(FA_leo_timer, 1)
+		end
+	end
+
+
+end
+
+function detect_trisha_door()
+
+	if  on_the_ground == 1 and gate_departure_initialized == 1 and FA_departure_time >= 25 and FA_departure_time <= 26 and FAC_volume > 0 then
+			close_fdd:once()
+	end
+end
+
+
 
 
 function flight_start()
 
 
 
-
+	PAX_premastervolume = 10
 	on_the_ground = 0
 	touch_down = 0
 	was_air_delay = 0
@@ -1479,6 +1626,27 @@ belts_fastened = 0
 play_arrival_crosscheck = 0
 play_80 = 0
 
+----------------------------------
+-- load state
+load_effect = 0
+N1_current = 0
+N1_factor = 0
+sink_factor = 0
+
+---- fire test
+
+fire_handles_lights = 0
+
+----- FA in cockpit
+
+FA_departure_time = 0
+FA_leo_time = 0
+FA_max_time = 300
+
+--fmod_test = 0
+-----------------------------------
+
+
 	if is_timer_scheduled(ground_timer) == false then
 		run_after_time(ground_timer, 1)	-- Every 1 sec
 	end
@@ -1493,8 +1661,8 @@ end
 
 
 function after_physics()
-
-	 gear_warn()
+	--fmod_test = is_anticollision_on
+	 --gear_warn()
 	 detect_fuel_pumps()
 	 play_airport_ambience()
 	 -- 1-8-2017 new AXP  -------------------------------------------------------
@@ -1525,11 +1693,11 @@ function after_physics()
 	 --detect_prelanding()
 	 detect_seatbelt_autoplay()
 	 detect_seatbelt_10k()
+	 detect_fire_handles()
 	 -- detect_pax_leave()
 	 play_after_takeoff_announcements()
 	 alert_positive_rate()
 	 -- 3-8-2017 new AXP  -------------------------------------------------------
-	 detect_firebells()
 	 detect_pre_takeoff()
 	 find_climb_to_alt()
 	 find_descend_to_alt()
@@ -1540,7 +1708,7 @@ function after_physics()
 	 acgyrologic()
 	 recirclogic()
 	 eqcoolinglogic()
-	 appromins_func()
+	 --appromins_func()
 	 pack_play_L()
 	 pack_play_R()
 	 vvi_dial_func()
@@ -1558,7 +1726,11 @@ function after_physics()
 	pax_board()
 	pax_belts()
 	detect_hotstart()
-	detect_muffle_amount()
+	--detect_muffle_amount()
+	detect_load_level()
+	bellhop()
+	FA_logic_timers()
+	detect_trisha_door()
 
 
 	 

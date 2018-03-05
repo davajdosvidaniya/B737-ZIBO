@@ -18989,13 +18989,13 @@ ATTR_light_level 0 1 sim/flightmodel2/lights/generic_lights_brightness_ratio[0]
 TRIS	50649 108
 ANIM_begin
 	ANIM_trans	  -0.8915   -1.8670   14.9058	  -0.8915   -1.8670   14.9058	0 0	no_ref
-	ANIM_rotate	   0.9183   -0.3848   -0.0927	  0.00  75.00	0 1	sim/flightmodel2/misc/custom_slider_ratio[22]
+	ANIM_rotate	   0.9183   -0.3848   -0.0927	  0.00  75.00	0 1	laminar/B738/lights/land_ret_left_pos
 	ATTR_light_level 0 1 sim/flightmodel2/lights/landing_lights_brightness_ratio[1]
 	TRIS	50757 672
 ANIM_end
 ANIM_begin
 	ANIM_trans	   0.8915   -1.8670   14.9058	   0.8915   -1.8670   14.9058	0 0	no_ref
-	ANIM_rotate	   0.9183    0.3848    0.0927	  0.00  75.00	0 1	sim/flightmodel2/misc/custom_slider_ratio[23]
+	ANIM_rotate	   0.9183    0.3848    0.0927	  0.00  75.00	0 1	laminar/B738/lights/land_ret_right_pos
 	ATTR_light_level 0 1 sim/flightmodel2/lights/landing_lights_brightness_ratio[2]
 	TRIS	51429 672
 ANIM_end
