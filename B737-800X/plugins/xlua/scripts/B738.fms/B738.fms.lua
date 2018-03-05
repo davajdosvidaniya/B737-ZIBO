@@ -58536,6 +58536,7 @@ function B738_fmc_calc()
 					simDR_fmc_trk = (legs_intdir_crs - simDR_mag_variation + 360) % 360
 					B738DR_wpt_path = ""
 				end
+				simDR_fmc_trk_turn = -1
 			end
 			
 			--nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
@@ -61540,7 +61541,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25a"
+	version = "v3.25b"
 
 end
 

@@ -77,6 +77,17 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25b:
+------
+- fixed GPWS terrain inhibit
+- LNAV correction
+- graphics correction
+
+
+3.25a: hot fix
+------
+- fixed issue for MacOS/Linux users
+
 3.25:
 -----
 - add GPWS system with 5 modes and submodes

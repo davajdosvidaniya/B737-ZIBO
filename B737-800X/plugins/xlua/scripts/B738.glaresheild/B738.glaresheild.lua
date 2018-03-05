@@ -6554,7 +6554,7 @@ function B738_lnav2()
 						idx_dist = B738DR_xtrack - B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
 					end
 					if idx_dist < 0 then
-						if relative_brg > 15 then
+						if relative_brg > 15 and idx_dist < -1 then
 							idx_corr = 45
 						else
 							idx_dist = -idx_dist
@@ -6564,7 +6564,7 @@ function B738_lnav2()
 							idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
 						end
 					else
-						if relative_brg < -15 then
+						if relative_brg < -15 and idx_dist > 1 then
 							idx_corr = -45
 						else
 							if idx_dist > 1 then
@@ -6586,7 +6586,7 @@ function B738_lnav2()
 						idx_dist = B738DR_xtrack - B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
 					end
 					if idx_dist < 0 then
-						if relative_brg > 15 then
+						if relative_brg > 15 and idx_dist < -1 then
 							idx_corr = 45
 						else
 							idx_dist = -idx_dist
@@ -6596,7 +6596,7 @@ function B738_lnav2()
 							idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
 						end
 					else
-						if relative_brg < -15 then
+						if relative_brg < -15 and idx_dist > 1 then
 							idx_corr = -45
 						else
 							if idx_dist > 1 then
@@ -6611,7 +6611,7 @@ function B738_lnav2()
 					gnd_spd = math.max(gnd_spd, 70)
 					idx_rnp = B738_rescale(70, 1.5, 230, 3.2, gnd_spd)
 					if B738DR_xtrack < 0 then
-						if relative_brg > 15 then
+						if relative_brg > 15 and idx_dist < -1 then
 							idx_corr = 45
 						else
 							idx_dist = -B738DR_xtrack
@@ -6621,7 +6621,7 @@ function B738_lnav2()
 							idx_corr = B738_rescale(0, 0, idx_rnp, 45, idx_dist)
 						end
 					else
-						if relative_brg < -15 then
+						if relative_brg < -15 and idx_dist > 1 then
 							idx_corr = -45
 						else
 							idx_dist = B738DR_xtrack
@@ -8720,7 +8720,7 @@ function B738_fac()
 		
 		
 		if B738DR_fac_xtrack < 0 then
-			if relative_brg > 15 then
+			if relative_brg > 15  and B738DR_fac_xtrack < -1 then
 				idx_corr = 45
 			else
 				idx_dist = -B738DR_fac_xtrack
@@ -8736,7 +8736,7 @@ function B738_fac()
 			end
 			ap_hdg = (mag_trk + idx_corr + 360) % 360
 		else
-			if relative_brg < -15 then
+			if relative_brg < -15 and B738DR_fac_xtrack > 1 then
 				idx_corr = 45
 			else
 				idx_dist = B738DR_fac_xtrack

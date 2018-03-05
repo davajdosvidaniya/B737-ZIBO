@@ -1742,11 +1742,13 @@ end
 function B738_speedbrake_stop_pos_DRhandler()end
 
 
-
+function B738DR_steer_speed_DRhandler()end
 
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
+
+steer_speed						= create_dataref("laminar/B738/steer_speed", "number", B738DR_steer_speed_DRhandler)
 
 B738DR_flap_lever_stop_pos		= create_dataref("laminar/B738/handles/flap_lever/stop_pos", "number", B738DR_flap_lever_stop_pos_DRhandler)
 B738DR_speedbrake_lever			= create_dataref("laminar/B738/flt_ctrls/speedbrake_lever", "number", B738_speedbrake_lever_DRhandler)
@@ -9040,7 +9042,8 @@ function B738_nose_steer()
 				
 				if B738DR_nosewheel > 0 then
 					simDR_steer_ovr = 1
-					simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, 0.028)
+					--simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, 0.028)
+					simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, steer_speed)
 				else
 					simDR_steer_ovr = 0
 				end
@@ -9834,7 +9837,7 @@ function B738_gpws()
 					if landing_config == 1  and simDR_radio_height_pilot_ft > 200 and simDR_radio_height_pilot_ft < 780 then
 						-- Mode 2B
 						gpws_mode = 2
-						if gpws_calc_fpm < -gpws_calc_vvi then
+						if gpws_calc_fpm < -gpws_calc_vvi and B738DR_gpws_terr_pos == 0 then
 							-- TERRAIN TERRAIN
 							-- PFD -> PULL UP
 							gpws_warning = TERRAIN
@@ -9862,7 +9865,7 @@ function B738_gpws()
 				-- Mode 2A
 				gpws_mode = 2
 				gpws_calc_vvi = B738_rescale(1250, 3300, 2450, 9600, simDR_radio_height_pilot_ft)
-				if gpws_calc_fpm < -gpws_calc_vvi then
+				if gpws_calc_fpm < -gpws_calc_vvi and B738DR_gpws_terr_pos == 0 then
 					-- TERRAIN TERRAIN
 					gpws_warning = TERRAIN
 				end
@@ -11915,6 +11918,8 @@ B738_init_engineMGMT_fltStart()
 	B738DR_adf_ant2 = 0
 	simDR_adf1_power = 2
 	simDR_adf2_power = 2
+	
+	steer_speed = 0.028
 	
 end
 

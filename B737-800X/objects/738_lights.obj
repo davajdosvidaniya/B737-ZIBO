@@ -23,8 +23,8 @@ LIGHT_SPILL_CUSTOM 0.090547 1.035137 2.629122 0.53 0.86 0.92 0.00 0.04 0 0 0 1 l
 LIGHT_SPILL_CUSTOM 0.124886 1.035137 2.629122 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/eng1_wings_lights_spill
 LIGHT_SPILL_CUSTOM 0.150198 1.035137 2.629122 0.53 0.86 0.92 0.00 0.04 0 0 0 1 laminar/B738/light/spill/ratio/eng2_wings_lights_spill
 
-LIGHT_SPILL_CUSTOM 0.014248 1.535656 22.929502 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
-LIGHT_SPILL_CUSTOM 0.011240 1.531876 21.875664 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
+LIGHT_SPILL_CUSTOM 0.014248 1.535656 18.464388 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
+LIGHT_SPILL_CUSTOM 0.011240 1.531876 17.498804 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
 LIGHT_SPILL_CUSTOM -0.821318 1.404268 4.251311 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
 LIGHT_SPILL_CUSTOM -0.064900 1.526739 5.687743 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
 LIGHT_SPILL_CUSTOM 0.547853 0.958111 5.661731 1.00 0.00 0.00 0.00 0.80 0 0 0 1 laminar/B738/light/spill/ratio/cabin_emergency_lights_spill
