@@ -4565,6 +4565,10 @@ function B738_init_lighting()
 
     SET DATAREF WITH CODE AS FOLLOWS:
     X	Y	Z	R	G	B	A	SIZE	SEMI	Dx	Dy	Dz
+	
+	
+	SET DATAREF WITH CODE AS FOLLOWS: (ARRAY 0 .. 8)
+	R	G	B	A	SIZE	SEMI	Dx	Dy	Dz
     
     --]]
  

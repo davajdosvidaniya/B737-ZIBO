@@ -11639,7 +11639,7 @@ function B738_N1_thrust_manage2()
 				else
 					if B738DR_joy_axis_throttle == -1 then
 						
-						if B738DR_joy_axis_throttle1 == - 1 and B738DR_joy_axis_throttle2 == -1 then
+						if B738DR_joy_axis_throttle1 == -1 and B738DR_joy_axis_throttle2 == -1 then
 							lock_throttle = 0
 						else
 							delta_throttle = math.abs(axis_throttle1_old - B738DR_joy_axis_throttle1)

@@ -33,6 +33,9 @@ simDR_ground_speed		= find_dataref("sim/flightmodel/position/groundspeed")
 XE_DR_rain				= find_dataref("env/rain")
 XE_DR_snow				= find_dataref("env/snow")
 
+simDR_theta 		= find_dataref("sim/flightmodel/position/theta")
+simDR_phi			= find_dataref("sim/flightmodel/position/phi")
+
 --*************************************************************************************--
 --** 				               FIND X-PLANE COMMANDS                   	    	 **--
 --*************************************************************************************--
@@ -59,15 +62,23 @@ B738DR_right_wiper_up		= find_dataref("laminar/B738/others/right_wiper_up")
 --*************************************************************************************--
 --B738DR_data_test			= create_dataref("laminar/B738/data_test", "number")
 
+B738DR_horizon	= create_dataref("laminar/B738/hud/horizon", "number")
 
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
 --*************************************************************************************--
 
+function B738DR_align_horizon_DRhandler() end
+function B738DR_align_horizon2_DRhandler() end
+function B738DR_align_horizon3_DRhandler() end
 
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
+
+B738DR_align_horizon	= create_dataref("laminar/B738/hud/align_horizon", "number", B738DR_align_horizon_DRhandler)
+B738DR_align_horizon2	= create_dataref("laminar/B738/hud/align_horizon2", "number", B738DR_align_horizon2_DRhandler)
+B738DR_align_horizon3	= create_dataref("laminar/B738/hud/align_horizon3", "number", B738DR_align_horizon3_DRhandler)
 
 
 --*************************************************************************************--
@@ -675,6 +686,10 @@ function flight_start()
 		animR_ratio[h] = 0
 	end
 	
+	B738DR_align_horizon = 26		-- basic multiplier up/down
+	B738DR_align_horizon2 = -30		-- move up/down by head position
+	B738DR_align_horizon3 = 2		-- multiplier by angle
+	
 end
 
 
@@ -686,6 +701,7 @@ function after_physics()
 
 	local h = 0
 	
+	B738DR_horizon = (simDR_theta * B738DR_align_horizon) + B738DR_align_horizon2 + (simDR_phi * B738DR_align_horizon3)
 	if B738DR_kill_effect < 2 then
 		if B738DR_kill_effect == 0 then
 			precip_acf_ratio = simDR_rain_acf_ratio

@@ -110,6 +110,13 @@ month_table =
 		[12] = { [1] = "DEC", [2] = "12"}
 	}
 
+FILE_NAME_CFG = "b738x.cfg"
+FILE_NAME_STATUS = "b738x_status.dat"
+FILE_NAME_APT_DAT = "B738X_apt.dat"
+FILE_NAME_RNW_DAT = "B738X_rnw.dat"
+FILE_NAME_CUST_DAT = "Custom Data/B738X_wptx.dat"
+FILE_NAME_FMOD_CFG = "b738x_fmod.cfg"
+FILE_NAME_FMOD = "fmod/b738.snd"
 
 MAX_NUM_SCRATCH = 24
 MAX_LEGS_DATA = 37
@@ -1690,6 +1697,7 @@ play_cargo 					= find_dataref("laminar/b738/fmodpack/fmod_play_cargo")
 B738DR_vol_computer 		= find_dataref("laminar/b738/fmodpack/fmod_vol_computer")
 
 B738DR_vol_FAC 				= find_dataref("laminar/b738/fmodpack/fmod_vol_FAC")
+B738DR_vol_weather 			= find_dataref("laminar/b738/fmodpack/fmod_vol_weather")
 
 --*************************************************************************************--
 --** 				               FIND CUSTOM COMMANDS              			     **--
@@ -1735,7 +1743,7 @@ B738CMD_enable_fmc_mute_on 	= find_command("laminar/b738/fmodpack/fmod_enable_fm
 B738CMD_vol_computer		= find_command("laminar/b738/fmodpack/fmod_vol_computer")
 
 B738CMD_vol_FAC				= find_command("laminar/b738/fmodpack/fmod_vol_FAC")
-
+B738CMD_vol_weather 		= find_command("laminar/b378/fmodpack/fmod_vol_weather")
 --*************************************************************************************--
 --** 				                X-PLANE DATAREFS            			    	 **--
 --*************************************************************************************--
@@ -4288,8 +4296,7 @@ function detect_apt_dat()
 		file_navdata_log:close()
 	end
 
-	--local file_navdata2 = io.open("Output/FMS plans/B738X_apt.dat", "r")
-	local file_navdata2 = io.open(file_path .. "B738X_apt.dat", "r")
+	local file_navdata2 = io.open(file_path .. FILE_NAME_APT_DAT, "r")
 	if file_navdata2 == nil then
 		navdata_ok = 0
 	else
@@ -4300,8 +4307,7 @@ function detect_apt_dat()
 		end
 	end
 	
-	--local file_navdata3 = io.open("Output/FMS plans/B738X_rnw.dat", "r")
-	local file_navdata3 = io.open(file_path .. "B738X_rnw.dat", "r")
+	local file_navdata3 = io.open(file_path .. FILE_NAME_RNW_DAT, "r")
 	if file_navdata3 == nil then
 		navdata_ok = 0
 	else
@@ -4385,15 +4391,13 @@ function create_apt_rnw_dat2()
 	local file_aptdata = io.open(apt_file_name, "r")
 	if file_aptdata ~= nil then
 		
-		--local file_navdata2 = io.open("Output/FMS plans/B738X_apt.dat", "w")
-		local file_navdata2 = io.open(file_path .. "B738X_apt.dat", "w")
+		local file_navdata2 = io.open(file_path .. FILE_NAME_APT_DAT, "w")
 		if file_navdata2 == nil then
 			file_aptdata:close()
 			return
 		end
 		
-		--local file_navdata3 = io.open("Output/FMS plans/B738X_rnw.dat", "w")
-		local file_navdata3 = io.open(file_path .. "B738X_rnw.dat", "w")
+		local file_navdata3 = io.open(file_path .. FILE_NAME_RNW_DAT, "w")
 		if file_navdata3 == nil then
 			file_navdata2:close()
 			file_aptdata:close()
@@ -4762,8 +4766,7 @@ function read_apt_dat()
 	apt_data_num = 0
 	apt_data = {}
 	
-	--local file_navdata2 = io.open("Output/FMS plans/B738X_apt.dat", "r")
-	local file_navdata2 = io.open(file_path .. "B738X_apt.dat", "r")
+	local file_navdata2 = io.open(file_path .. FILE_NAME_APT_DAT, "r")
 	if file_navdata2 ~= nil then
 		apt_line = file_navdata2:read()
 		if string.sub(apt_line, 1, 7) == "log.txt" then
@@ -4851,8 +4854,7 @@ function read_rnw_dat()
 	
 	local apt_first = 0
 	
-	--local file_navdata2 = io.open("Output/FMS plans/B738X_rnw.dat", "r")
-	local file_navdata2 = io.open(file_path .. "B738X_rnw.dat", "r")
+	local file_navdata2 = io.open(file_path .. FILE_NAME_RNW_DAT, "r")
 	if file_navdata2 ~= nil then
 		apt_line = file_navdata2:read()
 		if string.sub(apt_line, 1, 7) == "log.txt" then
@@ -9272,7 +9274,7 @@ function load_cust_wpt()
 	wptx_n = 0
 	wptx = {}
 
-	local file_name2 = "Custom Data/B738X_wptx.dat"
+	local file_name2 = FILE_NAME_CUST_DAT	--"Custom Data/B738X_wptx.dat"
 	local file_navdata2 = io.open(file_name2, "r")
 	
 	if file_navdata2 ~= nil then
@@ -9321,7 +9323,7 @@ function save_cust_wpt()
 	local file_name2 = ""
 	
 	if wptx_n > 0 then
-		file_name2 = "Custom Data/B738X_wptx.dat"
+		file_name2 = FILE_NAME_CUST_DAT	--"Custom Data/B738X_wptx.dat"
 		local file_navdata2 = io.open(file_name2, "w")
 		
 		if file_navdata2 ~= nil then
@@ -17998,7 +18000,7 @@ function B738_detect_fmod()
 	local temp_fmod = 0
 	
 	--file_name = "Aircraft/B737-800X/fmod/b738.snd"
-	file_name = file_path .. "fmod/b738.snd"
+	file_name = file_path .. FILE_NAME_FMOD		--"fmod/b738.snd"
 	file_navdata = io.open(file_name, "r")
 	if file_navdata == nil then
 		fmod_version = ">NOT FOUND<"
@@ -18201,6 +18203,7 @@ function B738_default_fmod_config()
 	play_cargo = 0
 	B738DR_vol_computer = 5
 	B738DR_vol_FAC = 5
+	B738DR_vol_weather = 5
 	
 end
 
@@ -18234,7 +18237,7 @@ function B738_load_config()
 	local fms_line = ""
 	local temp_fmod = 0
 	
-	file_name = "b738x.cfg"
+	file_name = FILE_NAME_CFG	--"b738x.cfg"
 	file_navdata = io.open(file_name, "r")
 	if file_navdata ~= nil then
 		fms_line = file_navdata:read()
@@ -18601,6 +18604,19 @@ function B738_load_config()
 							end
 						end
 					end
+				elseif string.sub(fms_line, 1, 16) == "WEATHER VOL    =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							 temp_fmod = roundUpToIncrement(temp_fmod, 1 )
+							if temp_fmod >= 0 and  temp_fmod <= 10 then
+								B738DR_vol_weather = temp_fmod
+							else
+								B738DR_vol_weather = 10
+							end
+						end
+					end
 				-- OTHERS
 				elseif string.sub(fms_line, 1, 16) == "UNITS          =" then
 					temp_fmod = string.len(fms_line)
@@ -18913,14 +18929,14 @@ function B738_load_fmod_config()
 		fmod_preset[temp_fmod][26] = 0		-- ADD HIGHS
 		fmod_preset[temp_fmod][27] = 0		-- START CARGO
 		fmod_preset[temp_fmod][28] = 5		-- COMPUTER VOLUME
-		fmod_preset[temp_fmod][29] = 0		-- FA IN COCKPIT
-		fmod_preset[temp_fmod][30] = 0		-- NOT USED
+		fmod_preset[temp_fmod][29] = 5		-- FA IN COCKPIT
+		fmod_preset[temp_fmod][30] = 5		-- WEATHER VOLUME
 	end
 	
 	
 	local preset_nr_act = 0
 	
-	file_name = "b738x_fmod.cfg"
+	file_name = FILE_NAME_FMOD_CFG	--"b738x_fmod.cfg"
 	file_navdata = io.open(file_name, "r")
 	if file_navdata ~= nil then
 		fms_line = file_navdata:read()
@@ -19288,18 +19304,32 @@ function B738_load_fmod_config()
 							end
 						end
 					end
-				-- elseif string.sub(fms_line, 1, 16) == "ANNOUNCEM SET  =" then
-					-- temp_fmod = string.len(fms_line)
-					-- if temp_fmod > 16 then
-						-- temp_fmod = tonumber(string.sub(fms_line, 17, -1))
-						-- if temp_fmod ~= nil then
-							-- if temp_fmod == 1 then
-								-- B738DR_ann_set = 1
-							-- else
-								-- B738DR_ann_set = 0
-							-- end
-						-- end
-					-- end
+				elseif string.sub(fms_line, 1, 16) == "FA COCKPIT VOL =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							 temp_fmod = roundUpToIncrement(temp_fmod, 1 )
+							if temp_fmod >= 0 and  temp_fmod <= 10 then
+								fmod_preset[preset_nr_act][29] = temp_fmod
+							else
+								fmod_preset[preset_nr_act][29] = 10
+							end
+						end
+					end
+				elseif string.sub(fms_line, 1, 16) == "WEATHER VOL    =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							 temp_fmod = roundUpToIncrement(temp_fmod, 1 )
+							if temp_fmod >= 0 and  temp_fmod <= 10 then
+								fmod_preset[preset_nr_act][30] = temp_fmod
+							else
+								fmod_preset[preset_nr_act][30] = 10
+							end
+						end
+					end
 				end
 			end
 			fms_line = file_navdata:read()
@@ -19340,6 +19370,7 @@ function B738_set_fmod_config(fmod_nr)
 	play_cargo 						= fmod_preset[ff][27]
 	B738DR_vol_computer 			= fmod_preset[ff][28]
 	B738DR_vol_FAC					= fmod_preset[ff][29]
+	B738DR_vol_weather				= fmod_preset[ff][30]
 	
 end
 
@@ -19375,6 +19406,7 @@ function B738_mod_fmod_config(fmod_nr)
 	fmod_preset[ff][27] 	= play_cargo
 	fmod_preset[ff][28] 	= B738DR_vol_computer
 	fmod_preset[ff][29] 	= B738DR_vol_FAC
+	fmod_preset[ff][30] 	= B738DR_vol_weather
 	
 end
 
@@ -19383,8 +19415,7 @@ function B738_save_config()
 	local fms_line = ""
 	local ff = 0
 	
-	--file_name = file_path .. "b738x.cfg"
-	file_name = "b738x.cfg"
+	file_name = FILE_NAME_CFG	--"b738x.cfg"
 	file_navdata = io.open(file_name, "w")
 	if file_navdata ~= nil then
 		-- OTHERS
@@ -19487,6 +19518,8 @@ function B738_save_config()
 		file_navdata:write(fms_line)
 		fms_line = "FA COCKPIT VOL = " .. string.format("%2d", B738DR_vol_FAC) .. "\n"
 		file_navdata:write(fms_line)
+		fms_line = "WEATHER VOL    = " .. string.format("%2d", B738DR_vol_weather) .. "\n"
+		file_navdata:write(fms_line)
 		
 		file_navdata:close()
 	end
@@ -19498,7 +19531,7 @@ function B738_save_fmod_config()
 	local fms_line = ""
 	local ff = 0
 	
-	file_name = "b738x_fmod.cfg"
+	file_name = FILE_NAME_FMOD_CFG	--"b738x_fmod.cfg"
 	file_navdata = io.open(file_name, "w")
 	if file_navdata ~= nil then
 		-- OTHERS
@@ -19568,19 +19601,22 @@ function B738_save_fmod_config()
 			file_navdata:write(fms_line)
 			fms_line = "COMPUTER VOLUME= " .. string.format("%2d", fmod_preset[ff][28]) .. "\n"
 			file_navdata:write(fms_line)
+			fms_line = "FA COCKPIT VOL = " .. string.format("%2d", fmod_preset[ff][29]) .. "\n"
+			file_navdata:write(fms_line)
+			fms_line = "WEATHER VOL    = " .. string.format("%2d", fmod_preset[ff][30]) .. "\n"
+			file_navdata:write(fms_line)
 		end
 		file_navdata:close()
 	end
 
 end
 
-
 function B738_load_status()
 	
 	local fms_line = ""
 	local temp_fmod = 0
 	
-	file_name = "b738x_status.dat"
+	file_name = FILE_NAME_STATUS	--"b738x_status.dat"
 	file_navdata = io.open(file_name, "r")
 	if file_navdata ~= nil then
 		fms_line = file_navdata:read()
@@ -19623,8 +19659,7 @@ function B738_save_status()
 	local fms_line = ""
 	local ff = 0
 	
-	--file_name = file_path .. "b738x.cfg"
-	file_name = "b738x_status.dat"
+	file_name = FILE_NAME_STATUS	--"b738x_status.dat"
 	file_navdata = io.open(file_name, "w")
 	if file_navdata ~= nil then
 		-- OTHERS
@@ -22378,9 +22413,10 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				nav_data_find(entry)
 			end
 		elseif page_xtras == 1 then
-			-- FMOD SETTINGS menu
-			page_xtras = 0
-			page_xtras_fmod = 1
+			fmc_xtras_main(1)
+			-- -- FMOD SETTINGS menu
+			-- page_xtras = 0
+			-- page_xtras_fmod = 1
 		-- elseif page_xtras_fmod == 1 then
 			-- -- FMOD Pax Boarding
 			-- B738CMD_enable_pax_boarding:once()
@@ -22554,9 +22590,10 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 				page_ref_sel = 0
 			end
 		elseif page_xtras == 1 then
-			-- OTHERS menu
-			page_xtras = 0
-			page_xtras_others = 1
+			fmc_xtras_main(2)
+			-- -- OTHERS menu
+			-- page_xtras = 0
+			-- page_xtras_others = 1
 		-- elseif page_xtras_fmod == 1 then
 			-- -- FMOD Chatter
 			-- B738CMD_enable_chatter:once()
@@ -24110,14 +24147,19 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					entry = INVALID_INPUT
 				end
 			end
+		-- elseif page_xtras == 1 then
+			-- -- FUEL menu
+			-- page_xtras = 0
+			-- page_xtras_fuel = 1
+			-- cg_set_m = simDR_cg
+			-- cg_set_in = cg_set_m * 39.37
+			-- mac = calc_mac(simDR_cg)
+			-- mac_zfw = calc_zfw_mac(cg_set_m)
+			
+			
 		elseif page_xtras == 1 then
-			-- FUEL menu
-			page_xtras = 0
-			page_xtras_fuel = 1
-			cg_set_m = simDR_cg
-			cg_set_in = cg_set_m * 39.37
-			mac = calc_mac(simDR_cg)
-			mac_zfw = calc_zfw_mac(cg_set_m)
+			fmc_xtras_main(3)
+			
 		-- elseif page_xtras_fmod == 1 then
 			-- -- FMOD Crew
 			-- B738CMD_enable_crew:once()
@@ -25149,6 +25191,8 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 		-- elseif page_xtras_fmod == 3 then
 			-- -- FMOD PAX applause enable
 			-- B738CMD_vol_int_pax_applause:once()
+		elseif page_xtras == 1 then
+			fmc_xtras_main(4)
 		elseif page_xtras_fmod > 0 then
 			fmc_fmod_main(4,0)
 		elseif page_fmod_features > 0 then
@@ -26132,6 +26176,8 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 		-- elseif page_xtras_fmod == 3 then
 			-- -- FMOD Internal WIND volume
 			-- B738CMD_vol_int_wind:once()
+		elseif page_xtras == 1 then
+			fmc_xtras_main(5)
 		elseif page_xtras_fmod > 0 then
 			fmc_fmod_main(5,0)
 		elseif page_fmod_features > 0 then
@@ -30155,7 +30201,8 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 		elseif page_fmod_announ > 0 then
 			-- go to BACK
 			page_fmod_announ = 0
-			page_xtras_fmod = 1
+			page_xtras = 1
+			--page_xtras_fmod = 1
 			act_page = 1
 		elseif page_fmod_eq > 0 then
 			-- go to BACK
@@ -30165,7 +30212,8 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 		elseif page_fmod_flight_ctrl > 0 then
 			-- go to BACK
 			page_fmod_flight_ctrl = 0
-			page_xtras_fmod = 1
+			page_xtras = 1
+			--page_xtras_fmod = 1
 			act_page = 1
 		elseif page_xtras_others > 0 then
 			-- go to BACK
@@ -35099,98 +35147,67 @@ end
 function B738_fmc_xtras()
 
 	if page_xtras == 1 then
+		-- act_page = 1
+		-- max_page = 1
+		
+		-- line0_l = "    ADVANCED MENU       "
+		-- line0_s = "                    1/1 "
+		-- line1_l = "<SOUND                  "
+		-- line2_l = "<OTHERS                 "
+		-- line3_l = "<FUEL AND CG            "
+		-- line6_l = "<SAVE              MENU>"
+		
 		act_page = 1
 		max_page = 1
-		
 		line0_l = "    ADVANCED MENU       "
 		line0_s = "                    1/1 "
-		-- line1_x = "                        "
-		line1_l = "<SOUND                  "
-		-- line1_s = "                        "
-		-- line2_x = "                        "
-		line2_l = "<OTHERS                 "
-		-- line2_s = "                        "
-		-- line3_x = "                        "
-		line3_l = "<FUEL AND CG            "
-		-- line3_s = "                        "
-		-- line4_x = "                        "
-		-- line4_l = "                        "
-		-- line4_s = "                        "
-		-- line5_x = "                        "
-		-- line5_l = "                        "
-		-- line5_s = "                        "
-		-- line6_x = "                        "
+		line1_l = "<FUEL AND CG            "
+		line2_x = " ---------------------- "
+		line2_l = "<ANNOUNCEMENTS          "
+		line3_l = "<BOARD / TERMINATE      "
+		line4_x = " ---------------------- "
+		line4_l = "<AUDIO CONFIG           "
+		line5_l = "<OTHER CONFIG           "
+		line6_x = " ---------------------- "
 		line6_l = "<SAVE              MENU>"
-		-- line6_s = "                        "
 	end
 end
 
-function B738_fmc_fuel_old()
-	if page_xtras_fuel == 1 then
-		act_page = 1
-		max_page = 1
-		
-		local left_fuel = simDR_fuel_tank_weight_kg[0] / 1000
-		local center_fuel = simDR_fuel_tank_weight_kg[1] / 1000
-		local right_fuel = simDR_fuel_tank_weight_kg[2] / 1000
-		local total_fuel = left_fuel + center_fuel + right_fuel
-		
-		-- if units == 0 then
-			-- left_fuel = left_fuel * 2.204
-			-- center_fuel = center_fuel * 2.204
-			-- right_fuel = right_fuel * 2.204
-			-- total_fuel = total_fuel  * 2.204
-		-- end
-		
-		line0_l = "       FUEL AND CG      "
-		line0_s = "                    1/1 "
-		if units == 0 then
-			left_fuel = left_fuel * 2.204
-			center_fuel = center_fuel * 2.204
-			right_fuel = right_fuel * 2.204
-			total_fuel = total_fuel  * 2.204
-			line1_x = " TOTAL FUEL TANK LBS    "
-		else
-			line1_x = " TOTAL FUEL TANK KGS    "
+function fmc_xtras_main(fmod_butt)
+	
+	if page_xtras == 1 then
+		if fmod_butt == 1 then
+			-- FUEL AND CG
+			page_xtras = 0
+			page_xtras_fuel = 1
+			act_page = 1
+			
+			cg_set_m = simDR_cg
+			cg_set_in = cg_set_m * 39.37
+			mac = calc_mac(simDR_cg)
+			mac_zfw = calc_zfw_mac(cg_set_m)
+			
+		elseif fmod_butt == 2 then
+			-- ANNOUNCEMENTS
+			page_xtras = 0
+			page_fmod_announ = 1
+			act_page = 1
+		elseif fmod_butt == 3 then
+			-- BOARD / TERMINATE
+			page_xtras = 0
+			page_fmod_flight_ctrl = 1
+			act_page = 1
+		elseif fmod_butt == 4 then
+			-- AUDIO CONFIG
+			page_xtras = 0
+			page_xtras_fmod = 1
+			act_page = 1
+		elseif fmod_butt == 5 then
+			-- OTHER CONFIG
+			page_xtras = 0
+			page_xtras_others = 1
+			act_page = 1
 		end
-		line1_l = "<"
-		line1_g = "  " .. string.format("%4.1f", total_fuel)
-		line2_x = " LEFT    CENTER    RIGHT"
-		line2_l = " " .. string.format("%4.1f", left_fuel)
-		line2_l = line2_l .. "     " .. string.format("%4.1f", center_fuel)
-		line2_l = line2_l .. "     " .. string.format("%4.1f", right_fuel)
-		line3_x = "------------------------"
-		
-		line4_x = " PAYLOAD          TOTAL "
-		line4_l = "<                 "
-		total_fuel = simDR_total_weight / 1000
-		center_fuel = simDR_payload_weight / 1000
-		if units == 0 then
-			total_fuel = total_fuel * 2.204
-			center_fuel = center_fuel * 2.204
-			line4_g = "  " .. string.format("%5.1f", center_fuel)
-			line4_g = line4_g .. "           " .. string.format("%5.1f", total_fuel)
-		else
-			line4_g = "  " .. string.format("%5.1f", center_fuel)
-			line4_g = line4_g .. "           " .. string.format("%5.1f", total_fuel)
-		end
-		line5_x = " CG                 MAC "
-		line5_l = "< "
-		if units == 0 then
-			line5_g = "  " .. string.format("%5.1f", cg_set_in)
-			line5_s = "       IN"
-		else
-			line5_g = "  " .. string.format("%5.1f", (cg_set_m * 100))
-			line5_s = "       CM"
-		end
-		if mac == 0 then
-			line5_g = line5_g .. "             --%"
-		else
-			line5_g = line5_g .. "             " .. string.format("%2d", mac) .. "%"
-		end
-		-- line6_x = "                        "
-		line6_l = "                   BACK>"
-		-- line6_s = "                        "
 	end
 end
 
@@ -35248,19 +35265,17 @@ function B738_fmc_fmod_main()
 		act_page = 1
 		max_page = 2
 		
-		line0_l = " SOUND MENU             "
+		line0_l = " AUDIO CONFIG           "
 		line0_s = "                    1/2 "
 		line1_l = "<FEATURES               "
 		line2_l = "<VOLUMES                "
-		line3_l = "<ANNOUNCEMENTS          "
-		line4_l = "<EQ                     "
-		line5_l = "<FLIGHT CONTROL         "
+		line3_l = "<EQ                     "
 		line6_l = "<DEFAULT           BACK>"
 	elseif page_xtras_fmod == 2 then
 		act_page = 2
 		max_page = 2
 		
-		line0_l = " SOUND PRESETS          "
+		line0_l = " AUDIO PRESETS          "
 		line0_s = "                    2/2 "
 		line1_x = " LOAD              SAVE "
 		line1_l = "<----   " .. spaces_after(fmod_preset[1][1], 8) .. "   ---->"
@@ -35366,9 +35381,9 @@ function B738_fmc_fmod_dspl()
 	-- VOLUMES
 	elseif page_fmod_volumes == 1 then
 		act_page = 1
-		max_page = 2
+		max_page = 3
 		line0_l = " FMOD VOLUMES           "
-		line0_s = "                    1/2 "
+		line0_s = "                    1/3 "
 		line1_x = " PAX VOLUME             "
 		line1_g = "  " .. string.format("%2d", B738DR_vol_int_pax)
 		line1_l = "<     /0-10/"
@@ -35387,9 +35402,9 @@ function B738_fmc_fmod_dspl()
 		line6_l = "<DEFAULT           BACK>"
 	elseif page_fmod_volumes == 2 then
 		act_page = 2
-		max_page = 2
+		max_page = 3
 		line0_l = " FMOD VOLUMES           "
-		line0_s = "                    2/2 "
+		line0_s = "                    2/3 "
 		line1_x = " AC VOLUME              "
 		line1_g = "  " .. string.format("%2d", B738DR_vol_int_ac)
 		line1_l = "<     /0-10/"
@@ -35399,13 +35414,55 @@ function B738_fmc_fmod_dspl()
 		line3_x = " ROLL/IMPACT VOL.       "
 		line3_g = "  " .. string.format("%2d", B738DR_vol_int_roll)
 		line3_l = "<     /0-10/"
-		line4_x = " BUMPS VOL.             "
+		line4_x = " BUMPS VOLUME           "
 		line4_g = "  " .. string.format("%2d", B738DR_vol_int_bump)
 		line4_l = "<     /0-10/"
 		line5_x = " GPWS TCAS VOLUME       "
 		line5_g = "  " .. string.format("%2d", B738DR_vol_computer)
 		line5_l = "<     /0-10/"
 		line6_l = "<DEFAULT           BACK>"
+	elseif page_fmod_volumes == 3 then
+		act_page = 3
+		max_page = 3
+		line0_l = " FMOD VOLUMES           "
+		line0_s = "                    3/3 "
+		line1_x = " WEATHER VOLUME         "
+		line1_g = "  " .. string.format("%2d", B738DR_vol_weather)
+		line1_l = "<     /0-10/"
+		line6_l = "<DEFAULT           BACK>"
+	
+	-- ANNOUNCEMENTS
+	-- elseif page_fmod_announ == 1 then
+		-- act_page = 1
+		-- max_page = 2
+		-- line0_l = " FMOD ANNOUNCEMENTS     "
+		-- line0_s = "                    1/2 "
+		-- line1_x = " ANNOUNC.VOL.           "
+		-- line1_g = "  " .. string.format("%2d", B738DR_vol_crew)
+		-- line1_l = "<     /0-10/"
+		-- line2_x = " ANNOUNC.SET NR         "
+		-- line2_g = "  " .. string.format("%2d", (B738DR_announcement_set+1))
+		-- line2_l = "<     /1-16/"
+		-- line3_x = " FA IN COCKPIT          "
+		-- line3_g = "  " .. string.format("%2d", B738DR_vol_FAC)
+		-- line3_l = "<     /0-10/"
+		-- line4_x = " CAPT WELCOME           "
+		-- line4_l = "< PLAY MESSAGE          "
+		-- line5_x = " CAPT CRUISE            "
+		-- line5_l = "< PLAY MESSAGE          "
+		-- line6_l = "<DEFAULT           BACK>"
+	-- elseif page_fmod_announ == 2 then
+		-- act_page = 2
+		-- max_page = 2
+		-- line0_l = " FMOD ANNOUNCEMENTS     "
+		-- line0_s = "                    2/2 "
+		-- line1_x = " CAPT DESCENT           "
+		-- line1_l = "< PLAY MESSAGE          "
+		-- line2_x = " CAPT PRELAND           "
+		-- line2_l = "< PLAY MESSAGE          "
+		-- line3_x = " TURBULENCE             "
+		-- line3_l = "< PLAY MESSAGE          "
+		-- line6_l = "<DEFAULT           BACK>"
 	
 	-- ANNOUNCEMENTS
 	elseif page_fmod_announ == 1 then
@@ -35413,18 +35470,15 @@ function B738_fmc_fmod_dspl()
 		max_page = 2
 		line0_l = " FMOD ANNOUNCEMENTS     "
 		line0_s = "                    1/2 "
-		line1_x = " ANNOUNC.VOL.           "
-		line1_g = "  " .. string.format("%2d", B738DR_vol_crew)
-		line1_l = "<     /0-10/"
-		line2_x = " ANNOUNC.SET NR         "
-		line2_g = "  " .. string.format("%2d", (B738DR_announcement_set+1))
-		line2_l = "<     /1-16/"
-		line3_x = " FA IN COCKPIT          "
-		line3_g = "  " .. string.format("%2d", B738DR_vol_FAC)
-		line3_l = "<     /0-10/"
-		line4_x = " CAPT WELCOME           "
+		line1_x = " CAPT WELCOME           "
+		line1_l = "< PLAY MESSAGE          "
+		line2_x = " CAPT CRUISE            "
+		line2_l = "< PLAY MESSAGE          "
+		line3_x = " CAPT DESCENT           "
+		line3_l = "< PLAY MESSAGE          "
+		line4_x = " CAPT PRELAND           "
 		line4_l = "< PLAY MESSAGE          "
-		line5_x = " CAPT CRUISE            "
+		line5_x = " TURBULENCE             "
 		line5_l = "< PLAY MESSAGE          "
 		line6_l = "<DEFAULT           BACK>"
 	elseif page_fmod_announ == 2 then
@@ -35432,12 +35486,15 @@ function B738_fmc_fmod_dspl()
 		max_page = 2
 		line0_l = " FMOD ANNOUNCEMENTS     "
 		line0_s = "                    2/2 "
-		line1_x = " CAPT DESCENT           "
-		line1_l = "< PLAY MESSAGE          "
-		line2_x = " CAPT PRELAND           "
-		line2_l = "< PLAY MESSAGE          "
-		line3_x = " TURBULENCE             "
-		line3_l = "< PLAY MESSAGE          "
+		line1_x = " FA & CAPTAIN           "
+		line1_g = "  " .. string.format("%2d", B738DR_vol_crew)
+		line1_l = "<     /0-10/"
+		line2_x = " FA IN COCKPIT          "
+		line2_g = "  " .. string.format("%2d", B738DR_vol_FAC)
+		line2_l = "<     /0-10/"
+		line3_x = " ANNOUNC.SET NR         "
+		line3_g = "  " .. string.format("%2d", (B738DR_announcement_set+1))
+		line3_l = "<"	--     /1-16/"
 		line6_l = "<DEFAULT           BACK>"
 	
 	-- EQ
@@ -35511,21 +35568,21 @@ function fmc_fmod_main(fmod_butt, fmod_butt2)
 			page_xtras_fmod = 0
 			page_fmod_volumes = 1
 			act_page = 1
+		-- elseif fmod_butt == 3 then
+			-- -- ANNOUNCEMENTS
+			-- page_xtras_fmod = 0
+			-- page_fmod_announ = 1
+			-- act_page = 1
 		elseif fmod_butt == 3 then
-			-- ANNOUNCAMENTS
-			page_xtras_fmod = 0
-			page_fmod_announ = 1
-			act_page = 1
-		elseif fmod_butt == 4 then
 			-- EQ
 			page_xtras_fmod = 0
 			page_fmod_eq = 1
 			act_page = 1
-		elseif fmod_butt == 5 then
-			-- FLIGHT CONTROL
-			page_xtras_fmod = 0
-			page_fmod_flight_ctrl = 1
-			act_page = 1
+		-- elseif fmod_butt == 5 then
+			-- -- FLIGHT CONTROL
+			-- page_xtras_fmod = 0
+			-- page_fmod_flight_ctrl = 1
+			-- act_page = 1
 		end
 	elseif page_xtras_fmod == 2 then
 		-- load preset
@@ -35619,6 +35676,11 @@ function fmc_fmod_volumes(fmod_butt)
 			-- COMPUTER VOLUME (TCAS/GPWS)
 			B738CMD_vol_computer:once()
 		end
+	elseif page_fmod_volumes == 3 then
+		if fmod_butt == 1 then
+			-- WEATHER VOLUME
+			B738CMD_vol_weather:once()
+		end
 	end
 	
 end
@@ -35627,31 +35689,31 @@ function fmc_fmod_announ(fmod_butt)
 
 	if page_fmod_announ == 1 then
 		if fmod_butt == 1 then
-			-- ANNOUNCEMENTS VOLUME
-			B738CMD_vol_crew:once()
-		elseif fmod_butt == 2 then
-			-- FLIGHT ATTEND SET
-			B738CMD_announcement_set:once()
-		elseif fmod_butt == 3 then
-			-- FA IN COCKPIT
-			B738CMD_vol_FAC:once()
-		elseif fmod_butt == 4 then
 			-- WELCOME
 			B738CMD_play_welcome:once()
-		elseif fmod_butt == 5 then
+		elseif fmod_butt == 2 then
 			-- LEVEL OFF
 			B738CMD_play_cruise:once()
+		elseif fmod_butt == 3 then
+			-- DESCENT
+			B738CMD_play_descent:once()
+		elseif fmod_butt == 4 then
+			-- BEFORE LANDING
+			B738CMD_play_preland:once()
+		elseif fmod_butt == 5 then
+			-- TURBULENCE WARNING
+			B738CMD_play_turbulence:once()
 		end
 	elseif page_fmod_announ == 2 then
 		if fmod_butt == 1 then
-			-- DESCENT
-			B738CMD_play_descent:once()
+			-- FA & CAPTAIN
+			B738CMD_vol_crew:once()
 		elseif fmod_butt == 2 then
-			-- BEFORE LANDING
-			B738CMD_play_preland:once()
+			-- FA IN COCKPIT
+			B738CMD_vol_FAC:once()
 		elseif fmod_butt == 3 then
-			-- TURBULENCE WARNING
-			B738CMD_play_turbulence:once()
+			-- FLIGHT ATTEND SET
+			B738CMD_announcement_set:once()
 		end
 	end
 
@@ -35698,7 +35760,7 @@ function B738_fmc_xtras_others()
 		act_page = 1
 		max_page = 4
 		
-		line0_l = "       OTHERS           "
+		line0_l = " OTHER CONFIG           "
 		line0_s = "                    1/4 "
 		line1_x = " ALIGN TIME             "
 		if B738DR_align_time == 0 then
@@ -35761,7 +35823,7 @@ function B738_fmc_xtras_others()
 		act_page = 2
 		max_page = 4
 		
-		line0_l = "       OTHERS           "
+		line0_l = " OTHER CONFIG           "
 		line0_s = "                    2/4 "
 		line1_x = " ENGINE NO RUNNING STATE"
 		if B738DR_engine_no_running_state == 0 then
@@ -35822,7 +35884,7 @@ function B738_fmc_xtras_others()
 		act_page = 3
 		max_page = 4
 		
-		line0_l = "       OTHERS           "
+		line0_l = " OTHER CONFIG           "
 		line0_s = "                    3/4 "
 		line1_x = " FLIGHTPLAN SAVE FORMAT "
 		if B738DR_fpln_format == 0 then
@@ -35873,7 +35935,7 @@ function B738_fmc_xtras_others()
 		act_page = 4
 		max_page = 4
 		
-		line0_l = "       OTHERS           "
+		line0_l = " OTHER CONFIG           "
 		line0_s = "                    4/4 "
 		line1_x = " PITCH NULL ZONE        "
 		line1_g = "      " .. string.format("%2d", simDR_pitch_nz * 100)
@@ -61541,7 +61603,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25b"
+	version = "v3.25c"
 
 end
 

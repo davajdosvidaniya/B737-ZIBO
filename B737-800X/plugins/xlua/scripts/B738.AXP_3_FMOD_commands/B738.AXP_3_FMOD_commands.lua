@@ -75,6 +75,12 @@ axp_dev_event = create_dataref("axp/dev_event","number")
 
 B738DR_vol_FAC = create_dataref("laminar/b738/fmodpack/fmod_vol_FAC", "number")
 
+
+--- new 1803-03-09+
+
+
+B738DR_vol_weather = create_dataref("laminar/b738/fmodpack/fmod_vol_weather", "number")
+
 ---------- FIND REFS -------------------------------------------------------------------------------
 
 
@@ -549,6 +555,20 @@ function B738_vol_FAC_CMDhandler(phase, duration)
 	end
 end
 
+-- NEW AXP 1803+
+
+-- B738DR_disable_weather = create_dataref("laminar/b738/fmodpack/fmod_disable_weather_on", "number")
+
+function B738_vol_weather_CMDhandler(phase, duration)
+
+	if phase == 0 then
+		if B738DR_vol_weather <= 9 then
+			B738DR_vol_weather = (B738DR_vol_weather + 1)
+		elseif B738DR_vol_weather == 10 then
+			B738DR_vol_weather = 0
+		end
+	end
+end
 
 
 
@@ -645,6 +665,11 @@ CMD_axp_dev_event = create_command("axp/dev_event", "For developers only", dev_C
 
 
 B738CMD_vol_FAC		= create_command("laminar/b738/fmodpack/fmod_vol_FAC", "Change volume of FA in-cockpit events", B738_vol_FAC_CMDhandler)
+
+
+-- NEW AXP 1803
+
+B738CMD_vol_weather = create_command("laminar/b378/fmodpack/fmod_vol_weather", "Control volume of thunder and rain", B738_vol_weather_CMDhandler)
 
 
 function after_physics() 

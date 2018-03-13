@@ -192,7 +192,7 @@ P _gear/1/_lonE -4.0
 P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 120760.648437500
-P _gear/1/_stat_def 0.672636390
+P _gear/1/_stat_def 0.672636449
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -226,7 +226,7 @@ P _gear/2/_lonE -4.0
 P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 120760.648437500
-P _gear/2/_stat_def 0.672636390
+P _gear/2/_stat_def 0.672636449
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -37005,7 +37005,7 @@ P _wpna/count 24
 P acf/_AShi_G_k 0.005000000
 P acf/_AShi_Gdot_k 0.005000000
 P acf/_AShi_alpha_k 0.005000000
-P acf/_AShi_alphadot_k 0.005000000
+P acf/_AShi_alphadot_k 0.899999976
 P acf/_AShi_beta_k 0.008000000
 P acf/_AShi_betadot_k 0.001000000
 P acf/_AShi_hdng_rat 1.0
@@ -39488,7 +39488,7 @@ P acf/_ott_phi_sec_into_future 2.0
 P acf/_ott_phi_sec_to_tune 2.0
 P acf/_ott_roll_rate 7.599999905
 P acf/_ott_roll_response 16.299999237
-P acf/_ott_the_deg_off_for_full_def 32.0
+P acf/_ott_the_deg_off_for_full_def 34.0
 P acf/_ott_the_deg_per_kt 0.300000012
 P acf/_ott_the_sec_into_future 2.0
 P acf/_ott_the_sec_to_tune 2.0

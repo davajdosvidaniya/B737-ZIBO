@@ -4415,6 +4415,14 @@ joy_axis_throttle2 = -1
 joy_axis_left_toe_brake = -1
 joy_axis_right_toe_brake = -1
 joy_axis_nosewheel = -1
+joy_1 = 0
+joy_2 = 0
+joy_3 = 0
+joy_4 = 0
+joy_5 = 0
+joy_line = 0
+joy_num = 0
+joy_axis = 0
 
 	file_name = "Output/preferences/X-Plane Joystick Settings.prf"
 	file_joy = io.open(file_name, "r")
@@ -4430,7 +4438,10 @@ joy_axis_nosewheel = -1
 					if joy_3 <= joy_4 then
 						joy_num = tonumber(string.sub(joy_line, joy_3, -1))
 						joy_axis = tonumber(string.sub(joy_line, 14, joy_5))
-						if joy_num == 1 then
+						if joy_num == nil then
+							-- skip
+							joy_num = 0
+						elseif joy_num == 1 then
 							joy_axis_pitch = joy_axis
 						elseif joy_num == 2 then
 							joy_axis_roll = joy_axis
@@ -5895,7 +5906,7 @@ function B738_autobrake()
 	
 	-- AUTOBRAKE RTO Engaged
 	if B738DR_autobrake_RTO_arm == 2 then
-		if gnd_spd < 1.0 then 
+		if gnd_spd < 4.0 then 
 			B738DR_autobrake_RTO_arm = 0		-- AUTOBRAKE RTO Disarm
 			B738DR_autobrake_disarm = 1
 			autobrake_ratio = 0
@@ -8989,6 +9000,7 @@ function B738_nose_steer()
 	local steer_limit = 0
 	local steer_spd = 0
 	local brake_max2 = 0
+	local gear_rot_brake = 0
 	
 	local throttle_used = math.max(simDR_throttle_used_ratio[0], simDR_throttle_used_ratio[1])
 	throttle_used = math.min(throttle_used, 0.5)
@@ -9001,11 +9013,11 @@ function B738_nose_steer()
 		B738DR_parking_brake_pos = 0
 	end
 	
-	if B738DR_toe_brakes_ovr == 0 then
-		simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos)
-	else
-		simDR_brake = B738DR_parking_brake_pos
-	end
+	-- if B738DR_toe_brakes_ovr == 0 then
+		-- simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos)
+	-- else
+		-- simDR_brake = B738DR_parking_brake_pos
+	-- end
 	
 	if B738DR_chock_status == 0 then
 	
@@ -9077,13 +9089,9 @@ function B738_nose_steer()
 						steer_right_brake = B738_rescale(0, 0, 64, steer_right_brake, simDR_ground_speed * simDR_ground_speed)
 					end
 				end
-				simDR_left_brake = math.max(left_brake, steer_left_brake, autobrake_ratio)
-				simDR_right_brake = math.max(right_brake, steer_right_brake, autobrake_ratio)
+				simDR_left_brake = math.max(left_brake, steer_left_brake)	--, autobrake_ratio)
+				simDR_right_brake = math.max(right_brake, steer_right_brake)	--, autobrake_ratio)
 			else
-				if simDR_gear_deploy_1 < 1 or simDR_gear_deploy_2 < 1 then
-					left_brake = 0.02
-					right_brake = 0.02
-				end
 				simDR_steer_ovr = 0
 				if left_brake > 0 or right_brake > 0 then
 					simDR_toe_brakes_ovr = 1
@@ -9093,7 +9101,7 @@ function B738_nose_steer()
 					simDR_toe_brakes_ovr = 0
 				end
 				simDR_steer_cmd = 0
-				simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos)
+				--simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos)
 			end
 			
 		end
@@ -9102,26 +9110,34 @@ function B738_nose_steer()
 			roll_co_max = B738_rescale(0, 0.040, 225, 0.200, gs_limit * gs_limit)
 			if simDR_steer_cmd < 0 then
 				simDR_roll_co = B738_rescale(-78, roll_co_max, 0, 0.025, simDR_steer_cmd)
-				steer_spd = B738_rescale(-78, 1.5, 0, 1, simDR_steer_cmd)
+				-- steer_spd = B738_rescale(-78, 1.5, 0, 1, simDR_steer_cmd)
 			else
 				simDR_roll_co = B738_rescale(0, 0.025, 78, roll_co_max, simDR_steer_cmd)
-				steer_spd = B738_rescale(0, 1, 78, 1.5, simDR_steer_cmd)
+				-- steer_spd = B738_rescale(0, 1, 78, 1.5, simDR_steer_cmd)
 			end
 		else
 			simDR_roll_co = 0.025
-			steer_spd = 1
+			-- steer_spd = 1
 		end
 		
 	else
 		simDR_steer_ovr = 1
-		steer_spd = 1
+		-- steer_spd = 1
 	end
-	gs_limit2 = math.min(gs_limit2, 5)
-	brake_max2 = B738_rescale(0, 0.8, 5, 1.5, gs_limit2)
-	if simDR_ground_speed < 4 then
-		steer_spd = 1
+	-- gs_limit2 = math.min(gs_limit2, 5)
+	-- brake_max2 = B738_rescale(0, 0.8, 5, 1.5, gs_limit2)
+	-- if simDR_ground_speed < 4 then
+		-- steer_spd = 1
+	-- end
+	--simDR_roll_brake = B738_rescale(0, brake_max2, 0.5, 0.8, throttle_used) * steer_spd
+	simDR_roll_brake = 0.8
+	
+	if simDR_radio_height_pilot_ft > 50 then
+		if simDR_gear_deploy_1 < 1 or simDR_gear_deploy_2 < 1 then
+			gear_rot_brake = 0.02
+		end
 	end
-	simDR_roll_brake = B738_rescale(0, brake_max2, 0.5, 0.8, throttle_used) * steer_spd
+	simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos, gear_rot_brake)
 	
 end
 
@@ -9734,7 +9750,7 @@ function B738_gpws()
 				
 			-- MODE 3
 			if B738DR_flight_phase > 7 then
-				if B738DR_thrust1_leveler > 0.5 or B738DR_thrust2_leveler > 0.5 then
+				if B738DR_thrust1_leveler > 0.7 or B738DR_thrust2_leveler > 0.7 then
 					gpws_goaround = 1	-- activated Go around
 				end
 			else
@@ -9762,19 +9778,6 @@ function B738_gpws()
 				if gpws_last_peak_altitude < simDR_altitude_pilot then
 					gpws_last_peak_altitude = simDR_altitude_pilot
 				end
-				-- if gpws_mode == 3 then
-					-- if simDR_airspeed_pilot < 190 then
-						-- if gpws_goaround == 1 and simDR_radio_height_pilot_ft < 700 then
-							-- gpws_mode = 4
-						-- end
-					-- else
-						-- if B738DR_flight_phase == 0 and simDR_radio_height_pilot_ft > 1330 then
-							-- gpws_mode = 4
-						-- end
-					-- end
-				-- else
-					-- gpws_mode = 4
-				-- end
 			else
 				gpws_last_peak_altitude = simDR_altitude_pilot
 			end
@@ -10261,7 +10264,7 @@ function B738_gpws()
 
 		else
 			gpws_playing_sound = gpws_playing_sound - SIM_PERIOD
-			if gpws_playing_sound < 0 then
+			if gpws_playing_sound <= 0 then
 				gpws_playing_sound = 0
 				clear_gpws_flag()
 				gpws_aural = 0
@@ -11919,7 +11922,7 @@ B738_init_engineMGMT_fltStart()
 	simDR_adf1_power = 2
 	simDR_adf2_power = 2
 	
-	steer_speed = 0.028
+	steer_speed = 0.110	--0.028
 	
 end
 

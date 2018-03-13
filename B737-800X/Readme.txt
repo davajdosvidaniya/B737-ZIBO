@@ -77,6 +77,13 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25c:
+------
+- gently tuned A/P and acf stability
+- better access to fmod action menu
+- fixed small bugs (brakes,...)
+
+
 3.25b:
 ------
 - fixed GPWS terrain inhibit
