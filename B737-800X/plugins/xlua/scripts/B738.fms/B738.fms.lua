@@ -10468,6 +10468,8 @@ function dec_lat_lon(dec_mode, dec_idx)
 	local ctr_lon = 0
 	local turn_dir = 0
 	local ndb_navaid = 0
+	local calc_lat1 = 0
+	local calc_lon1 = 0
 	
 	
 	if dec_mode == 0 then
@@ -10986,7 +10988,14 @@ function dec_lat_lon(dec_mode, dec_idx)
 					calc_lon = dec_prev_lon
 				end
 				
+				calc_lat1 = calc_lat
+				calc_lon1 = calc_lon
 				calc_brg_brg(calc_lat, calc_lon, math.rad(crs1), lat1, lon1, math.rad(dec_next_brg))
+				
+				dist = nd_calc_dist2(calc_lat1, calc_lon1, calc_lat, calc_lon)
+				if dist > 500 then
+					calc_brg_brg(calc_lat1, calc_lon1, math.rad((crs1+180)%360), lat1, lon1, math.rad(dec_next_brg))
+				end
 			
 			end
 			
@@ -11098,7 +11107,8 @@ function dec_lat_lon(dec_mode, dec_idx)
 		end
 		dec_calc_brg = crs1
 		crs1 = (crs1 + mag_variation_deg(dec_prev_lat, dec_prev_lon)) % 360
-		
+		--B738DR_fms_test3 = mag_variation_deg(dec_prev_lat, dec_prev_lon)
+		--crs1 = (crs1 + 9.24) % 360
 		-- if dec_mode == 0 then
 			-- if legs_data[dec_idx][19] == 1 then
 				-- dist = ref_icao_alt
@@ -11885,7 +11895,7 @@ function B738_calc_rte()
 			calc_rte_enable = 0
 			--dataref_legs()
 	end
-	B738DR_fms_test3 = calc_rte_act
+	--B738DR_fms_test3 = calc_rte_act
 
 end
 
@@ -61603,7 +61613,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25c"
+	version = "v3.25d"
 
 end
 

@@ -9013,6 +9013,13 @@ function B738_nose_steer()
 		B738DR_parking_brake_pos = 0
 	end
 	
+	if simDR_radio_height_pilot_ft > 50 then
+		if simDR_gear_deploy_1 < 1 or simDR_gear_deploy_2 < 1 then
+			gear_rot_brake = 0.02
+		end
+	end
+	simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos, gear_rot_brake)
+	
 	-- if B738DR_toe_brakes_ovr == 0 then
 		-- simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos)
 	-- else
@@ -9132,12 +9139,6 @@ function B738_nose_steer()
 	--simDR_roll_brake = B738_rescale(0, brake_max2, 0.5, 0.8, throttle_used) * steer_spd
 	simDR_roll_brake = 0.8
 	
-	if simDR_radio_height_pilot_ft > 50 then
-		if simDR_gear_deploy_1 < 1 or simDR_gear_deploy_2 < 1 then
-			gear_rot_brake = 0.02
-		end
-	end
-	simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos, gear_rot_brake)
 	
 end
 

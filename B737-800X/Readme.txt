@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25d:
+------
+- fixed parking brake with Better Pushback plugin
+- fixed decode CIFS
+
 3.25c:
 ------
 - gently tuned A/P and acf stability
