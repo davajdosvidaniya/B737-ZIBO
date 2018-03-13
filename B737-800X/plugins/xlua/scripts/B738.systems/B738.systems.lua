@@ -9838,7 +9838,7 @@ function B738_gpws()
 			if simDR_airspeed_pilot < 220 then
 				if simDR_radio_height_pilot_ft < 1250 then
 					gpws_calc_vvi = B738_rescale(0, 2100, 1250, 3300, simDR_radio_height_pilot_ft)
-					if landing_config == 1  and simDR_radio_height_pilot_ft > 200 and simDR_radio_height_pilot_ft < 780 then
+					if landing_config == 1 and simDR_radio_height_pilot_ft > 200 and simDR_radio_height_pilot_ft < 780 then
 						-- Mode 2B
 						gpws_mode = 2
 						if gpws_calc_fpm < -gpws_calc_vvi and B738DR_gpws_terr_pos == 0 then

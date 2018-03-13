@@ -163,6 +163,7 @@ CL_THRSHLD = 0.18
 --** 					            GLOBAL VARIABLES                				 **--
 --*************************************************************************************--
 
+
 xxx_str = ""
 xxx = 0
 
@@ -4934,9 +4935,9 @@ function read_mag_declination()
 	
 	mag_dec = {}
 	
-	for ii = 1, 19 do
+	for ii = 1, 37 do
 		mag_dec[ii] = {}
-		for jj = 1, 37 do
+		for jj = 1, 73 do
 			mag_dec[ii][jj] = 0
 		end
 	end
@@ -4991,7 +4992,7 @@ function read_mag_declination()
 							-- end
 						-- end
 						
-						if md1 < 20 then
+						if md1 < 38 then
 							md2 = md2 + 1
 							
 							kk = tonumber(apt_word[5])
@@ -4999,7 +5000,7 @@ function read_mag_declination()
 								mag_dec[md1][md2] = kk
 							end
 							
-							if md2 == 37 then
+							if md2 == 73 then
 								md2 = 0
 								md1 = md1 + 1
 							end
@@ -5025,8 +5026,8 @@ function dump_mag_dec()
 	local file_navdata2 = io.open(file_name2, "w")
 	
 	if file_navdata2 ~= nil then
-		for vvv = 1, 19 do
-			for www = 1, 37 do
+		for vvv = 1, 37 do
+			for www = 1, 73 do
 				fms_line = fms_line .. mag_dec[vvv][www] .. ","
 				file_navdata2:write(fms_line)
 			end
@@ -9562,21 +9563,21 @@ end
 
 function mag_variation_rad(lat_mag, lon_mag)
 	
-	local lat_step1 = math.floor((math.deg(lat_mag) + 90.5)/10) + 1
-	lat_step1 = math.min(lat_step1, 19)
+	local lat_step1 = math.floor((math.deg(lat_mag) + 90.5)/5) + 1
+	lat_step1 = math.min(lat_step1, 37)
 	lat_step1 = math.max(lat_step1, 1)
 	
 	local lat_step2 = lat_step1 + 1
-	if lat_step2 > 19 then
+	if lat_step2 > 37 then
 		lat_step2 = 1
 	end
 	
-	local lon_step1 = math.floor((math.deg(lon_mag) + 180.5)/10) + 1
-	lon_step1 = math.min(lon_step1, 37)
+	local lon_step1 = math.floor((math.deg(lon_mag) + 180.5)/5) + 1
+	lon_step1 = math.min(lon_step1, 73)
 	lon_step1 = math.max(lon_step1, 1)
 	
 	local lon_step2 = lon_step1 + 1
-	if lon_step2 > 37 then
+	if lon_step2 > 73 then
 		lon_step2 = 1
 	end
 	
@@ -9587,10 +9588,20 @@ function mag_variation_rad(lat_mag, lon_mag)
 	
 	local mag_lon_left = 0
 	local mag_lon_right = 0
-	local temp7 = lon_mag -  math.floor(lon_mag + 0.5)
+	local temp7 = 0
+	
+	if math.deg(lon_mag) < 0 then
+		temp7 = (math.deg(lon_mag) - ((lon_step2 * 5) - 185)) / 5
+	else
+		temp7 = (math.deg(lon_mag) - ((lon_step1 * 5) - 185)) / 5
+	end
+	if temp7 < 0 then
+		temp7 = -temp7
+	end
 	temp7 = math.min(temp7, 1)
 	temp7 = math.max(temp7, 0)
-	if lon_mag < 0 then
+	
+	if math.deg(lon_mag) < 0 then
 		mag_lon_left = B738_rescale(0, mag_lu, 1, mag_ld, temp7)
 		mag_lon_right = B738_rescale(0, mag_ru, 1, mag_rd, temp7)
 	else
@@ -9598,12 +9609,19 @@ function mag_variation_rad(lat_mag, lon_mag)
 		mag_lon_right = B738_rescale(0, mag_rd, 1, mag_ru, temp7)
 	end
 	
-	temp7 = lat_mag -  math.floor(lat_mag + 0.5)
+	if math.deg(lat_mag) < 0 then
+		temp7 = (math.deg(lat_mag) - ((lat_step2 * 5) - 95)) / 5
+	else
+		temp7 = (math.deg(lat_mag) - ((lat_step1 * 5) - 95)) / 5
+	end
+	if temp7 < 0 then
+		temp7 = -temp7
+	end
 	temp7 = math.min(temp7, 1)
 	temp7 = math.max(temp7, 0)
 	
 	local result = 0
-	if lat_mag < 0 then
+	if math.deg(lat_mag) < 0 then
 		result = B738_rescale(0, mag_lon_right, 1, mag_lon_left, temp7)
 	else
 		result = B738_rescale(0, mag_lon_left, 1, mag_lon_right, temp7)
@@ -9616,21 +9634,21 @@ end
 
 function mag_variation_deg(lat_mag, lon_mag)
 	
-	local lat_step1 = math.floor((lat_mag + 90.5)/10) + 1
-	lat_step1 = math.min(lat_step1, 19)
+	local lat_step1 = math.floor((lat_mag + 90.5)/5) + 1
+	lat_step1 = math.min(lat_step1, 37)
 	lat_step1 = math.max(lat_step1, 1)
 	
 	local lat_step2 = lat_step1 + 1
-	if lat_step2 > 19 then
+	if lat_step2 > 37 then
 		lat_step2 = 1
 	end
 	
-	local lon_step1 = math.floor((lon_mag + 180.5)/10) + 1
-	lon_step1 = math.min(lon_step1, 37)
+	local lon_step1 = math.floor((lon_mag + 180.5)/5) + 1
+	lon_step1 = math.min(lon_step1, 73)
 	lon_step1 = math.max(lon_step1, 1)
 	
 	local lon_step2 = lon_step1 + 1
-	if lon_step2 > 37 then
+	if lon_step2 > 73 then
 		lon_step2 = 1
 	end
 	
@@ -9645,9 +9663,20 @@ function mag_variation_deg(lat_mag, lon_mag)
 	
 	local mag_lon_left = 0
 	local mag_lon_right = 0
-	local temp7 = lon_mag - math.floor(lon_mag + 0.5)
+	local temp7 = 0
+	--local temp7 = lon_mag - math.floor(lon_mag + 0.5)
+	if lon_mag < 0 then
+		temp7 = (lon_mag - ((lon_step2 * 5) - 185)) / 5
+	else
+		temp7 = (lon_mag - ((lon_step1 * 5) - 185)) / 5
+	end
+	if temp7 < 0 then
+		temp7 = -temp7
+	end
 	temp7 = math.min(temp7, 1)
 	temp7 = math.max(temp7, 0)
+	
+	
 	if lon_mag < 0 then
 		mag_lon_left = B738_rescale(0, mag_lu, 1, mag_ld, temp7)
 		mag_lon_right = B738_rescale(0, mag_ru, 1, mag_rd, temp7)
@@ -9656,7 +9685,15 @@ function mag_variation_deg(lat_mag, lon_mag)
 		mag_lon_right = B738_rescale(0, mag_rd, 1, mag_ru, temp7)
 	end
 	
-	temp7 = lat_mag -  math.floor(lat_mag + 0.5)
+	--temp7 = lat_mag - math.floor(lat_mag + 0.5)
+	if lat_mag < 0 then
+		temp7 = (lat_mag - ((lat_step2 * 5) - 95)) / 5
+	else
+		temp7 = (lat_mag - ((lat_step1 * 5) - 95)) / 5
+	end
+	if temp7 < 0 then
+		temp7 = -temp7
+	end
 	temp7 = math.min(temp7, 1)
 	temp7 = math.max(temp7, 0)
 	
@@ -21152,21 +21189,21 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 			if item <= navaid_list_n then
 				-- select item
 				if nav_data_type == 0 then -- WPT
-					ref_nav_wpt = entry
+					ref_nav_wpt = nav_data_entry	--entry
 					ref_nav_navaid = "----"
 					ref_nav_apt = "----"
 				elseif nav_data_type == 1 then -- NAVAID
 					ref_nav_wpt = "-----"
-					ref_nav_navaid = entry
+					ref_nav_navaid = nav_data_entry	--entry
 					ref_nav_apt = "----"
 				else -- APT
 					ref_nav_wpt = "-----"
 					ref_nav_navaid = "----"
-					ref_nav_apt = entry
+					ref_nav_apt = nav_data_entry	--entry
 				end
 				nav_data_idx = item
 				ref_nav_new = "*****"
-				ref_nav_wpt = nav_data_entry
+				--ref_nav_wpt = nav_data_entry
 				page_ref_nav_data = 1
 				page_ref_sel = 0
 			end
@@ -22581,20 +22618,20 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 			if item <= navaid_list_n then
 				-- select item
 				if nav_data_type == 0 then -- WPT
-					ref_nav_wpt = entry
+					ref_nav_wpt = nav_data_entry	--entry
 					ref_nav_navaid = "----"
 					ref_nav_apt = "----"
 				elseif nav_data_type == 1 then -- NAVAID
 					ref_nav_wpt = "-----"
-					ref_nav_navaid = entry
+					ref_nav_navaid = nav_data_entry	--entry
 					ref_nav_apt = "----"
 				else -- APT
 					ref_nav_wpt = "-----"
 					ref_nav_navaid = "----"
-					ref_nav_apt = entry
+					ref_nav_apt = nav_data_entry	--entry
 				end
 				nav_data_idx = item
-				ref_nav_wpt = nav_data_entry
+				--ref_nav_wpt = nav_data_entry
 				ref_nav_new = "*****"
 				page_ref_nav_data = 1
 				page_ref_sel = 0
@@ -23990,20 +24027,20 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 			if item <= navaid_list_n then
 				-- select item
 				if nav_data_type == 0 then -- WPT
-					ref_nav_wpt = entry
+					ref_nav_wpt = nav_data_entry	--entry
 					ref_nav_navaid = "----"
 					ref_nav_apt = "----"
 				elseif nav_data_type == 1 then -- NAVAID
 					ref_nav_wpt = "-----"
-					ref_nav_navaid = entry
+					ref_nav_navaid = nav_data_entry	--entry
 					ref_nav_apt = "----"
 				else -- APT
 					ref_nav_wpt = "-----"
 					ref_nav_navaid = "----"
-					ref_nav_apt = entry
+					ref_nav_apt = nav_data_entry	--entry
 				end
 				nav_data_idx = item
-				ref_nav_wpt = nav_data_entry
+				--ref_nav_wpt = nav_data_entry
 				ref_nav_new = "*****"
 				page_ref_nav_data = 1
 				page_ref_sel = 0
@@ -25079,20 +25116,20 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 			if item <= navaid_list_n then
 				-- select item
 				if nav_data_type == 0 then -- WPT
-					ref_nav_wpt = entry
+					ref_nav_wpt = nav_data_entry	--entry
 					ref_nav_navaid = "----"
 					ref_nav_apt = "----"
 				elseif nav_data_type == 1 then -- NAVAID
 					ref_nav_wpt = "-----"
-					ref_nav_navaid = entry
+					ref_nav_navaid = nav_data_entry	--entry
 					ref_nav_apt = "----"
 				else -- APT
 					ref_nav_wpt = "-----"
 					ref_nav_navaid = "----"
-					ref_nav_apt = entry
+					ref_nav_apt = nav_data_entry	--entry
 				end
 				nav_data_idx = item
-				ref_nav_wpt = nav_data_entry
+				--ref_nav_wpt = nav_data_entry
 				ref_nav_new = "*****"
 				page_ref_nav_data = 1
 				page_ref_sel = 0
@@ -26026,20 +26063,20 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 			if item <= navaid_list_n then
 				-- select item
 				if nav_data_type == 0 then -- WPT
-					ref_nav_wpt = entry
+					ref_nav_wpt = nav_data_entry	--entry
 					ref_nav_navaid = "----"
 					ref_nav_apt = "----"
 				elseif nav_data_type == 1 then -- NAVAID
 					ref_nav_wpt = "-----"
-					ref_nav_navaid = entry
+					ref_nav_navaid = nav_data_entry	--entry
 					ref_nav_apt = "----"
 				else -- APT
 					ref_nav_wpt = "-----"
 					ref_nav_navaid = "----"
-					ref_nav_apt = entry
+					ref_nav_apt = nav_data_entry	--entry
 				end
 				nav_data_idx = item
-				ref_nav_wpt = nav_data_entry
+				--ref_nav_wpt = nav_data_entry
 				ref_nav_new = "*****"
 				page_ref_nav_data = 1
 				page_ref_sel = 0
@@ -35012,14 +35049,121 @@ end
 function B738_fmc_ref_nav_data_navaid()
 
 	if page_ref_nav_data_navaid == 1 then
-		line3_l = line3_l .. "  ...IN DEVELOPMENT...  "
+		act_page = 1
+		max_page = 1
+		local pos_str = ""
+		local ii = 0
+		
+		line0_l = "   REF NAV DATA         "
+		line1_x = " NAVAID IDENT           "
+		line1_l = ref_nav_navaid
+		line3_x = " LATITUDE      LONGITUDE"
+		
+		if ref_nav_lat == 0 then
+			line3_l = "---`--.-       "
+		else
+			pos_str = string_lat_pos(ref_nav_lat)
+			line3_l = string.sub(pos_str, 1, 3) .. "`" .. string.sub(pos_str, 4, 7)
+			line3_l = line3_l .. "       "
+		end
+		if ref_nav_lon == 0 then
+			line3_l = line3_l .. "----`--.-"
+		else
+			pos_str = string_lon_pos(ref_nav_lon)
+			line3_l = line3_l .. string.sub(pos_str, 1, 4) .. "`" .. string.sub(pos_str, 5, 8)
+		end
+		line4_x = " MAG VAR                "
+		if ref_nav_mag_var == "" then
+			line4_l = "----`"
+		elseif string.sub(ref_nav_mag_var, 1, 1) == ">" then
+			ii = tonumber(string.sub(ref_nav_mag_var, 2, -1))
+			if ii == nil then
+				line4_l = "   0`"
+			else
+				if ii == 0 then
+					line4_s = "   0`"
+				elseif ii < 0 then
+					line4_s = "W" .. string.format("%3d", -ii) .. "`"
+				else
+					line4_s = "E" .. string.format("%3d", ii) .. "`"
+				end
+			end
+		else
+			ii = tonumber(ref_nav_mag_var)
+			if ii == nil then
+				line4_l = "   0`"
+			else
+				if ii == 0 then
+					line4_l = "   0`"
+				elseif ii < 0 then
+					line4_l = "W" .. string.format("%3d", -ii) .. "`"
+				else
+					line4_l = "E" .. string.format("%3d", ii) .. "`"
+				end
+			end
+		end
+		
+		--line3_l = line3_l .. "  ...IN DEVELOPMENT...  "
 	end
 end
 
 function B738_fmc_ref_nav_data_apt()
 
 	if page_ref_nav_data_apt == 1 then
-		line3_l = line3_l .. "  ...IN DEVELOPMENT...  "
+		act_page = 1
+		max_page = 1
+		local pos_str = ""
+		local ii = 0
+		
+		line0_l = "   REF NAV DATA         "
+		line1_x = " AIRPORT IDENT          "
+		line1_l = ref_nav_apt
+		line3_x = " LATITUDE      LONGITUDE"
+		
+		if ref_nav_lat == 0 then
+			line3_l = "---`--.-       "
+		else
+			pos_str = string_lat_pos(ref_nav_lat)
+			line3_l = string.sub(pos_str, 1, 3) .. "`" .. string.sub(pos_str, 4, 7)
+			line3_l = line3_l .. "       "
+		end
+		if ref_nav_lon == 0 then
+			line3_l = line3_l .. "----`--.-"
+		else
+			pos_str = string_lon_pos(ref_nav_lon)
+			line3_l = line3_l .. string.sub(pos_str, 1, 4) .. "`" .. string.sub(pos_str, 5, 8)
+		end
+		line4_x = " MAG VAR                "
+		if ref_nav_mag_var == "" then
+			line4_l = "----`"
+		elseif string.sub(ref_nav_mag_var, 1, 1) == ">" then
+			ii = tonumber(string.sub(ref_nav_mag_var, 2, -1))
+			if ii == nil then
+				line4_l = "   0`"
+			else
+				if ii == 0 then
+					line4_s = "   0`"
+				elseif ii < 0 then
+					line4_s = "W" .. string.format("%3d", -ii) .. "`"
+				else
+					line4_s = "E" .. string.format("%3d", ii) .. "`"
+				end
+			end
+		else
+			ii = tonumber(ref_nav_mag_var)
+			if ii == nil then
+				line4_l = "   0`"
+			else
+				if ii == 0 then
+					line4_l = "   0`"
+				elseif ii < 0 then
+					line4_l = "W" .. string.format("%3d", -ii) .. "`"
+				else
+					line4_l = "E" .. string.format("%3d", ii) .. "`"
+				end
+			end
+		end
+		--line3_l = line3_l .. "  ...IN DEVELOPMENT...  "
 	end
 end
 
@@ -61613,7 +61757,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25d"
+	version = "v3.25e"
 
 end
 

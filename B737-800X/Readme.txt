@@ -77,6 +77,10 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25e
+------
+- fixed bugs in magnetic variation and accurate geo model
+
 3.25d:
 ------
 - fixed parking brake with Better Pushback plugin
