@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25g:
+------
+- add predict fuel (approximately, not finished yet)
+- fixed small bugs
+
 3.25f:
 ------
 - add RTE DATA page

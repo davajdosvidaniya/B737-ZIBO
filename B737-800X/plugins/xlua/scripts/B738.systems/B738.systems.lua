@@ -5906,7 +5906,7 @@ function B738_autobrake()
 	
 	-- AUTOBRAKE RTO Engaged
 	if B738DR_autobrake_RTO_arm == 2 then
-		if gnd_spd < 4.0 then 
+		if gnd_spd < 7.9 then 
 			B738DR_autobrake_RTO_arm = 0		-- AUTOBRAKE RTO Disarm
 			B738DR_autobrake_disarm = 1
 			autobrake_ratio = 0

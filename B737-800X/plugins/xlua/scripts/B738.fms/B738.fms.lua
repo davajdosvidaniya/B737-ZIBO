@@ -20764,6 +20764,7 @@ function reset_fmc_pages()
 	page_ref_nav_data_apt = 0
 	page_ref_sel = 0
 	page_fix = 0
+	page_rte_legs = 0
 end
 
 function reset_fmc_pages_fo()
@@ -20807,6 +20808,7 @@ function reset_fmc_pages_fo()
 	page_ref_nav_data_apt2 = 0
 	page_ref_sel2 = 0
 	page_fix2 = 0
+	page_rte_legs2 = 0
 end
 
 
@@ -43455,7 +43457,15 @@ function B738_fmc_progress()
 				end
 				line2_l = line2_l .. tmp_wpt_eta
 				-- fuel qty
-				line2_l = line2_l .. "  --.-"
+				if legs_data[offset][40] == 0 then
+					line2_l = line2_l .. "  --.-"
+				else
+					if units == 0 then
+						line2_l = line2_l .. "  " .. string.format("%4.1f", (legs_data[offset][40] / 1000) * 2.204)
+					else
+						line2_l = line2_l .. "  " .. string.format("%4.1f", (legs_data[offset][40] / 1000))
+					end
+				end
 			end
 			
 			-- NEXT WAYPOINT
@@ -43495,7 +43505,15 @@ function B738_fmc_progress()
 					end
 					line3_l = line3_l .. tmp_wpt_eta
 					-- fuel qty
-					line3_l = line3_l .. "  --.-"
+					if legs_data[prev_idx][40] == 0 then
+						line3_l = line3_l .. "  --.-"
+					else
+						if units == 0 then
+							line3_l = line3_l .. "  " .. string.format("%4.1f", (legs_data[prev_idx][40] / 1000) * 2.204)
+						else
+							line3_l = line3_l .. "  " .. string.format("%4.1f", (legs_data[prev_idx][40] / 1000))
+						end
+					end
 				end
 			-- else
 				-- line3_x = ""
@@ -43540,7 +43558,15 @@ function B738_fmc_progress()
 				end
 				line4_l = line4_l .. tmp_wpt_eta
 				-- fuel qty
-				line4_l = line4_l .. "  --.-"
+				if legs_data[prev_idx][40] == 0 then
+					line4_l = line4_l .. "  --.-"
+				else
+					if units == 0 then
+						line4_l = line4_l .. "  " .. string.format("%4.1f", (legs_data[prev_idx][40] / 1000) * 2.204)
+					else
+						line4_l = line4_l .. "  " .. string.format("%4.1f", (legs_data[prev_idx][40] / 1000))
+					end
+				end
 			-- else
 				-- line4_x = ""
 				-- line4_l = ""
@@ -60396,11 +60422,17 @@ function B738_fmc_calc()
 		local wc_speed = 0
 		local tmp_wind_dir = 0
 		local tmp_wind_spd = 0
+		local act_fuel = simDR_fuel_weight
+		local calc_fuel = 0
+		local fuel_flow = 0
+		local ff_phase = 0
 		
 		if crz_alt_num > 0 and perf_exec > 0 and ref_icao ~= "----" and des_icao ~= "****" then
 			time_calc_enable = 1
 			time_zulu = simDR_zulu_hours + (simDR_zulu_minutes/60) + (simDR_zulu_seconds/3600)
 		end
+		
+		-- CALCSK
 		
 		-- create SPD and ALT restrict table
 		legs_restr_spd = {}
@@ -60514,24 +60546,51 @@ function B738_fmc_calc()
 					end
 					speed_temp1 = speed_temp1 - wc_speed
 					
-					
 					time_temp = (dist_temp * 1852) / (speed_temp1 * 0.51444)	-- seconds
 					time_temp = time_temp / 3600	-- hours
+					
+					if n <= tc_idx then
+						ff_phase = 0	-- climb
+					elseif n <= td_idx then
+						ff_phase = 1	-- cruise
+					elseif n <= ed_found then
+						ff_phase = 2	-- descent
+					else
+						ff_phase = 3	-- approach
+					end
+					if n == 1 then
+						fuel_flow = 0
+					elseif n == offset then
+						fuel_flow = calc_fuel_flow(ff_phase, simDR_altitude_pilot, legs_data[n][11])
+					else
+						fuel_flow = calc_fuel_flow(ff_phase, legs_data[n-1][11], legs_data[n][11])
+					end
+					
 					if n == offset or n == 1 then
+						--fuel_flow = 7000	-- 7000 kg/hour --calc_fuel_flow(ff_alt1, ff_alt2, ff_gw)
+						--fuel_flow = calc_fuel_flow(ff_phase)
+						calc_fuel = act_fuel - (time_temp * fuel_flow)
 						time_temp = (time_zulu + time_temp) % 24
 					else
+						--fuel_flow = 7000	-- 7000 kg/hour --calc_fuel_flow(ff_alt1, ff_alt2, ff_gw)
+						--fuel_flow = calc_fuel_flow(ff_phase)
+						calc_fuel = legs_data[n-1][40] - (time_temp * fuel_flow)
 						time_temp = (legs_data[n-1][13] + time_temp) % 24
 					end
 					if n <= legs_num then
 						legs_data[n][13] = time_temp
+						legs_data[n][40] = calc_fuel
 					else
 						if des_app == "------" then
 							legs_data[n][13] = time_temp
+							legs_data[n][40] = calc_fuel
 						else
 							if rnav_idx_last > 0 and rnav_idx_last <= legs_num then
 								legs_data[n][13] = (legs_data[rnav_idx_last][13] + 0.033) % 24
+								legs_data[n][40] = legs_data[rnav_idx_last][40] - 1.5 -- taxi fuel
 							else
 								legs_data[n][13] = time_temp
+								legs_data[n][40] = calc_fuel
 							end
 						end
 					end
@@ -60636,6 +60695,39 @@ function B738_fmc_calc()
 		legs_restr_spd_n_mod = 0
 		legs_restr_alt_n_mod = 0
 	end
+end
+
+function calc_fuel_flow(phase, alt1, alt2)
+	
+	local ff_calc = 0
+	local ff_calc2 = 0
+	local ff_alt1 = math.min(alt1, 40000)
+	local ff_alt2 = math.min(alt2, 40000)
+	ff_alt1 = math.max(ff_alt1, 5000)
+	ff_alt2 = math.max(ff_alt2, 5000)
+	
+	if phase == 0 then
+		ff_calc = B738_rescale(5000, 7700, 40000, 3000, ff_alt1)
+		ff_calc2 = B738_rescale(5000, 7700, 40000, 3000, ff_alt2)
+		ff_calc = (ff_calc + ff_calc2) / 2
+	elseif phase == 1 then
+		ff_alt1 = math.max(ff_alt1, 26000)
+		--ff_alt2 = math.max(ff_alt2, 26000)
+		ff_calc = B738_rescale(26000, 2500, 40000, 1880, ff_alt1)
+		--ff_calc2 = B738_rescale(26000, 3000, 40000, 1840, ff_alt2)
+		--ff_calc = (ff_calc + ff_calc2) / 2
+	elseif phase == 2 then
+		ff_alt1 = math.min(ff_alt1, 23000)
+		ff_alt2 = math.min(ff_alt2, 23000)
+		ff_calc = B738_rescale(5000, 820, 23000, 150, ff_alt1)
+		ff_calc2 = B738_rescale(5000, 820, 23000, 150, ff_alt2)
+		ff_calc = (ff_calc + ff_calc2) / 2
+	elseif phase == 3 then
+		ff_calc = 3050
+	end
+	
+	return ff_calc
+	
 end
 
 -- function B738_fmc_time_calc()
@@ -62608,7 +62700,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25f"
+	version = "v3.25g"
 
 end
 

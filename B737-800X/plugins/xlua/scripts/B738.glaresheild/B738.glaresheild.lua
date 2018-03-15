@@ -366,6 +366,8 @@ hide_hdg_line_fo = 0
 measure = 0
 airspeed_dial_kts_old = 0
 
+alt_acq_disable = 0
+
 --*************************************************************************************--
 --** 					               CONSTANTS                    				 **--
 --*************************************************************************************--
@@ -8410,15 +8412,17 @@ function B738_alt_acq()	--ALT ACQ mode
 
 	local alt_x = 0
 	local alt_y = 0
-	local alt_acq_disable = 0
+	--local alt_acq_disable = 0
 	local climb_descent = 0
+	
+	alt_acq_disable = 0
 	
 		if B738DR_autopilot_vnav_status == 1 and ap_pitch_mode == 5 and ap_pitch_mode_eng == 5 then
 			alt_acq_disable = 1
 			if B738DR_flight_phase > 4 and B738DR_flight_phase < 8 then
 				alt_x = simDR_altitude_pilot - ed_alt
 				--if B738DR_rest_wpt_alt == ed_alt and B738DR_mcp_alt_dial >= ed_alt and alt_x < 700 and ed_alt > 0 then	-- stop VNAV on E/D
-				if B738DR_mcp_alt_dial >= ed_alt and alt_x < 700 then	-- stop VNAV on E/D
+				if B738DR_mcp_alt_dial >= ed_alt and alt_x < 700 and alt_x > -300 then	-- stop VNAV on E/D
 					alt_acq_disable = 0
 				end
 			end
@@ -8845,19 +8849,14 @@ function B738_lnav_vnav()
 	
 	local r_delta_alt = 0
 	
-	-- if ap_pitch_mode_eng == 5 and ap_pitch_mode == 5 	-- VNAV
-	-- and ap_roll_mode_eng == 4 and ap_roll_mode == 4		-- LNAV
-	-- and B738DR_gp_active > 0 and B738DR_pfd_vert_path == 1 then	-- LNAV/VNAV
-	
 	if ap_pitch_mode_eng == 5 and ap_pitch_mode == 5 	-- VNAV
-	and lnav_engaged == 1 and B738DR_pfd_vert_path == 1 and B738DR_vnav_app_active == 1 then	-- LNAV/VNAV
-	--and B738DR_gp_active > 0 and B738DR_pfd_vert_path == 1 then	-- LNAV/VNAV
+	and lnav_engaged == 1 and B738DR_pfd_vert_path == 1 and B738DR_vnav_app_active == 1 and alt_acq_disable == 1 then	-- LNAV/VNAV
 		if pitch_mode_old ~= ap_pitch_mode_eng or at_on_old ~= B738DR_autopilot_autothr_arm_pos then
 			if B738DR_autopilot_autothr_arm_pos == 1 then
 				at_mode = 2
 			end
 		end
-		r_delta_alt = simDR_altitude_pilot + 700
+		r_delta_alt = simDR_altitude_pilot + 650
 		if B738DR_mcp_alt_dial > r_delta_alt then
 			simDR_ap_altitude_dial_ft = B738DR_mcp_alt_dial
 		else
@@ -8905,7 +8904,7 @@ function B738_loc_vnav()
 	local r_delta_alt = 0
 	if ap_pitch_mode_eng == 5 and ap_pitch_mode == 5 	-- VNAV
 	and ap_roll_mode_eng == 2 and ap_roll_mode == 2		-- VOR LOC
-	and B738DR_nd_vert_path == 1 then	-- LOC/VNAV
+	and B738DR_nd_vert_path == 1 and alt_acq_disable == 1 then	-- LOC/VNAV
 	--and B738DR_gp_active > 0 and B738DR_pfd_vert_path == 1 then	-- (G/P) -> LOC/VNAV
 		if pitch_mode_old ~= ap_pitch_mode_eng or at_on_old ~= B738DR_autopilot_autothr_arm_pos then
 			if B738DR_autopilot_autothr_arm_pos == 1 then
@@ -8913,7 +8912,7 @@ function B738_loc_vnav()
 				--at_mode_eng = 20
 			end
 		end
-		r_delta_alt = simDR_altitude_pilot + 700
+		r_delta_alt = simDR_altitude_pilot + 650
 		if B738DR_mcp_alt_dial > r_delta_alt then
 			simDR_ap_altitude_dial_ft = B738DR_mcp_alt_dial
 		else
@@ -14669,6 +14668,9 @@ function after_physics()
 		B738_lnav2()
 		--B738_gs()
 		B738_vnav6()
+		
+		B738_alt_acq()
+		
 		B738_fac()
 		B738_loc_gp()
 		B738_gp()
@@ -14677,7 +14679,7 @@ function after_physics()
 		B738_lvl_chg()
 		B738_vs()
 
-		B738_alt_acq()
+		--B738_alt_acq()
 		B738_alt_hld()
 		B738_app()
 		B738_hdg()
