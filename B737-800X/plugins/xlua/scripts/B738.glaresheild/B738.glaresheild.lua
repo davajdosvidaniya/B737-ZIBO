@@ -9062,7 +9062,7 @@ function B738_ap_autoland()
 		-- rate of descent in fpm = tan(glideslope) * (speed in knots * 6076 / 60)
 		ra_fdpitch = math.min(2.5, simDR_fdir_pitch)
 		ra_fdpitch = math.max(0, simDR_fdir_pitch)
-		ra_thrshld = B738_rescale(0, 64, 2.5, 54, ra_fdpitch)
+		ra_thrshld = B738_rescale(0, 66, 2.5, 56, ra_fdpitch)
 		--ra_thrshld = B738_rescale(0, 78, 2.5, 68, ra_fdpitch)
 		if simDR_radio_height_pilot_ft < ra_thrshld then -- 63, 43 -- at 50 ft FLARE
 			B738DR_flare_status = 2			-- FLARE engaged

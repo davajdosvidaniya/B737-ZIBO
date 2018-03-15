@@ -119,7 +119,7 @@ FILE_NAME_FMOD_CFG = "b738x_fmod.cfg"
 FILE_NAME_FMOD = "fmod/b738.snd"
 
 MAX_NUM_SCRATCH = 24
-MAX_LEGS_DATA = 37
+MAX_LEGS_DATA = 40
 
 -- MESSAGES --
 INVALID_INPUT 				= ">INVALID ENTRY"
@@ -293,7 +293,7 @@ page_offset = 0
 page_legs_step = 0
 page_xtras_fuel = 0
 page_fix = 0
-
+page_rte_legs = 0
 
 page_menu2 = 0
 page_ident2 = 0
@@ -336,7 +336,7 @@ page_ref_nav_data_navaid2 = 0
 page_ref_nav_data_apt2 = 0
 page_ref_sel2 = 0
 page_fix2 = 0
-
+page_rte_legs2 = 0
 
 legs_step = 0
 legs_step2 = 0
@@ -1896,8 +1896,8 @@ B738DR_descent_mode			= create_dataref("laminar/B738/FMS/descent_mode", "number"
 B738DR_fms_exec_light_pilot		= create_dataref("laminar/B738/indicators/fms_exec_light_pilot", "number")
 B738DR_fms_exec_light_copilot	= create_dataref("laminar/B738/indicators/fms_exec_light_copilot", "number")
 -- new --
-B738FR_fmc_exec_lights			= create_dataref("laminar/B738/indicators/fmc_exec_lights", "number")
-B738FR_fmc_exec_lights_fo		= create_dataref("laminar/B738/indicators/fmc_exec_lights_fo", "number")
+B738DR_fmc_exec_lights			= create_dataref("laminar/B738/indicators/fmc_exec_lights", "number")
+B738DR_fmc_exec_lights_fo		= create_dataref("laminar/B738/indicators/fmc_exec_lights_fo", "number")
 
 B738DR_autopilot_alt_interv_pos	= create_dataref("laminar/B738/autopilot/alt_interv_pos", "number")
 
@@ -6197,6 +6197,9 @@ function fpln_add_leg_disco(idx_disco)
 	legs_data2[legs_num2][35] = ""
 	legs_data2[legs_num2][36] = 0
 	legs_data2[legs_num2][37] = 0
+	legs_data2[legs_num2][38] = ""
+	legs_data2[legs_num2][39] = ""
+	legs_data2[legs_num2][40] = 0
 	
 end
 
@@ -6258,6 +6261,9 @@ function fpln_add_leg_dir2(idx_copy, idx_paste, idx_via)
 				legs_data2[legs_num2][35] = ""
 				legs_data2[legs_num2][36] = navaid_list[1][1]
 				legs_data2[legs_num2][37] = 0
+				legs_data2[legs_num2][38] = ""
+				legs_data2[legs_num2][39] = ""
+				legs_data2[legs_num2][40] = 0
 			else
 				legs_data2[legs_num2] = {}
 				legs_data2[legs_num2][1] = leg_wpt_id	--entry
@@ -6297,6 +6303,9 @@ function fpln_add_leg_dir2(idx_copy, idx_paste, idx_via)
 				legs_data2[legs_num2][35] = ""
 				legs_data2[legs_num2][36] = 0
 				legs_data2[legs_num2][37] = 0
+				legs_data2[legs_num2][38] = ""
+				legs_data2[legs_num2][39] = ""
+				legs_data2[legs_num2][40] = 0
 			end
 			
 		end
@@ -6370,6 +6379,9 @@ function fpln_add_leg_dir(idx_copy, idx_paste, idx_via, wpt_idx)
 	legs_data2[legs_num2][35] = ""
 	legs_data2[legs_num2][36] = navaid_list[wpt_idx][1]
 	legs_data2[legs_num2][37] = 0
+	legs_data2[legs_num2][38] = ""
+	legs_data2[legs_num2][39] = ""
+	legs_data2[legs_num2][40] = 0
 		
 	if dir_disco == 1 then
 		-- add DISCO
@@ -7582,6 +7594,9 @@ function use_import_data_old()
 				legs_data[legs_num][35] = ""
 				legs_data[legs_num][36] = 9
 				legs_data[legs_num][37] = 0
+				legs_data[legs_num][38] = ""
+				legs_data[legs_num][39] = ""
+				legs_data[legs_num][40] = 0
 			else
 				kk = 1
 			end
@@ -7636,6 +7651,9 @@ function use_import_data_old()
 				legs_data[legs_num][35] = ""
 				legs_data[legs_num][36] = 0
 				legs_data[legs_num][37] = 0
+				legs_data[legs_num][38] = ""
+				legs_data[legs_num][39] = ""
+				legs_data[legs_num][40] = 0
 			end
 			
 			-- DES ICAO
@@ -7974,6 +7992,9 @@ function use_import_data()
 				legs_data2[legs_num2][35] = ""
 				legs_data2[legs_num2][36] = 9
 				legs_data2[legs_num2][37] = 0
+				legs_data2[legs_num2][38] = ""
+				legs_data2[legs_num2][39] = ""
+				legs_data2[legs_num2][40] = 0
 			else
 				kk = 1
 			end
@@ -8042,6 +8063,9 @@ function use_import_data()
 					legs_data2[legs_num2][36] = 0
 				end
 				legs_data2[legs_num2][37] = 0
+				legs_data2[legs_num2][38] = ""
+				legs_data2[legs_num2][39] = ""
+				legs_data2[legs_num2][40] = 0
 			end
 			
 			-- DES ICAO
@@ -8175,6 +8199,9 @@ function use_import_data()
 				legs_data2[legs_num2][35] = ""
 				legs_data2[legs_num2][36] = 9
 				legs_data2[legs_num2][37] = 0
+				legs_data2[legs_num2][38] = ""
+				legs_data2[legs_num2][39] = ""
+				legs_data2[legs_num2][40] = 0
 			else
 				kk = 1
 			end
@@ -13347,6 +13374,9 @@ function rte_add_wpt2(wpt_idx)
 			legs_data2[legs_num2][35] = ""
 			legs_data2[legs_num2][36] = navaid_list[wpt_idx][1]
 			legs_data2[legs_num2][37] = 0
+			legs_data2[legs_num2][38] = ""
+			legs_data2[legs_num2][39] = ""
+			legs_data2[legs_num2][40] = 0
 			rte_lat = legs_data2[legs_num2][7]
 			rte_lon = legs_data2[legs_num2][8]
 			
@@ -13433,6 +13463,9 @@ function rte_add_wpt(aaa)
 				legs_data2[legs_num2][35] = ""
 				legs_data2[legs_num2][36] = navaid_list[1][1]
 				legs_data2[legs_num2][37] = 0
+				legs_data2[legs_num2][38] = ""
+				legs_data2[legs_num2][39] = ""
+				legs_data2[legs_num2][40] = 0
 				rte_lat = legs_data2[legs_num2][7]
 				rte_lon = legs_data2[legs_num2][8]
 				
@@ -13670,6 +13703,9 @@ function rte_add_wpt3(aaa, id_nav, id_brg, id_dist)
 					legs_data2[legs_num2][35] = ""
 					legs_data2[legs_num2][36] = 4
 					legs_data2[legs_num2][37] = 0
+					legs_data2[legs_num2][38] = ""
+					legs_data2[legs_num2][39] = ""
+					legs_data2[legs_num2][40] = 0
 					rte_lat = legs_data2[legs_num2][7]
 					rte_lon = legs_data2[legs_num2][8]
 					
@@ -13796,6 +13832,9 @@ function rte_add_wpt4(wpt_idx)
 			legs_data2[legs_num2][35] = ""
 			legs_data2[legs_num2][36] = navaid_list[wpt_idx][1]
 			legs_data2[legs_num2][37] = 0
+			legs_data2[legs_num2][38] = ""
+			legs_data2[legs_num2][39] = ""
+			legs_data2[legs_num2][40] = 0
 			rte_lat = legs_data2[legs_num2][7]
 			rte_lon = legs_data2[legs_num2][8]
 			
@@ -13930,6 +13969,9 @@ function rte_add_wpt_cust(aaa, id_cust, lat_cust, lon_cust)
 				legs_data2[legs_num2][35] = ""
 				legs_data2[legs_num2][36] = 4
 				legs_data2[legs_num2][37] = 0
+				legs_data2[legs_num2][38] = ""
+				legs_data2[legs_num2][39] = ""
+				legs_data2[legs_num2][40] = 0
 				rte_lat = legs_data2[legs_num2][7]
 				rte_lon = legs_data2[legs_num2][8]
 				
@@ -14123,6 +14165,9 @@ function rte_add_hold_old(aaa)
 	legs_data2[legs_num2][35] = ""
 	legs_data2[legs_num2][36] = 0
 	legs_data2[legs_num2][37] = 0
+	legs_data2[legs_num2][38] = ""
+	legs_data2[legs_num2][39] = ""
+	legs_data2[legs_num2][40] = 0
 	rte_lat = legs_data2[legs_num2][7]
 	rte_lon = legs_data2[legs_num2][8]
 	
@@ -14212,6 +14257,9 @@ function rte_add_hold(aaa)
 	legs_data2[legs_num2][35] = ""
 	legs_data2[legs_num2][36] = 0
 	legs_data2[legs_num2][37] = 0
+	legs_data2[legs_num2][38] = ""
+	legs_data2[legs_num2][39] = ""
+	legs_data2[legs_num2][40] = 0
 	rte_lat = legs_data2[legs_num2][7]
 	rte_lon = legs_data2[legs_num2][8]
 	
@@ -14290,6 +14338,9 @@ function rte_add_disco(aaa)
 	legs_data2[aaa][35] = ""
 	legs_data2[aaa][36] = 0
 	legs_data2[aaa][37] = 0
+	legs_data2[aaa][38] = ""
+	legs_data2[aaa][39] = ""
+	legs_data2[aaa][40] = 0
 	
 end
 
@@ -15616,6 +15667,9 @@ function rte_add_discob(aaa)
 	legs_data2b[aaa][35] = ""
 	legs_data2b[aaa][36] = 0
 	legs_data2b[aaa][37] = 0
+	legs_data2b[aaa][38] = ""
+	legs_data2b[aaa][39] = ""
+	legs_data2b[aaa][40] = 0
 	
 end
 
@@ -15868,6 +15922,9 @@ function rte_add_sid2()
 							legs_data2b[legs_num2b][35] = ""
 							legs_data2b[legs_num2b][36] = 4
 							legs_data2b[legs_num2b][37] = 0
+							legs_data2b[legs_num2b][38] = ""
+							legs_data2b[legs_num2b][39] = ""
+							legs_data2b[legs_num2b][40] = 0
 							break
 						end
 					end
@@ -16164,6 +16221,9 @@ function rte_add_sid2()
 								legs_data2b[legs_num2b][35] = rte_sid[gg][21]
 								legs_data2b[legs_num2b][36] = 0
 								legs_data2b[legs_num2b][37] = 0
+								legs_data2b[legs_num2b][38] = ""
+								legs_data2b[legs_num2b][39] = ""
+								legs_data2b[legs_num2b][40] = 0
 							end
 						end
 					end
@@ -16592,6 +16652,9 @@ function rte_add_star2()
 							legs_data2b[legs_num2b][35] = rte_star[gg][21]
 							legs_data2b[legs_num2b][36] = 0
 							legs_data2b[legs_num2b][37] = 0
+							legs_data2b[legs_num2b][38] = ""
+							legs_data2b[legs_num2b][39] = ""
+							legs_data2b[legs_num2b][40] = 0
 						end
 						
 					end
@@ -17013,6 +17076,9 @@ function rte_add_app2()
 								legs_data2b[legs_num2b][35] = rte_app[gg][21]
 								legs_data2b[legs_num2b][36] = 0
 								legs_data2b[legs_num2b][37] = 0
+								legs_data2b[legs_num2b][38] = ""
+								legs_data2b[legs_num2b][39] = ""
+								legs_data2b[legs_num2b][40] = 0
 								
 								--end
 								
@@ -26652,7 +26718,7 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 			page_takeoff = 0
 			display_update = 1
 		elseif page_dep == 1 then
-			if B738FR_fmc_exec_lights == 1 then
+			if B738DR_fmc_exec_lights == 1 then
 				if legs_num > 1 then
 					if rte_exec == 1 then
 						--copy_to_fpln2()
@@ -26697,7 +26763,7 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 				-- -- update legs_data2
 			-- end
 		elseif page_arr == 1 then
-			if B738FR_fmc_exec_lights == 1 then
+			if B738DR_fmc_exec_lights == 1 then
 				if legs_num > 1 then
 					if rte_exec == 1 then
 						--copy_to_fpln2()
@@ -26748,7 +26814,7 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 				-- end
 			-- end
 		elseif page_rte_init == 1 then
-			if B738FR_fmc_exec_lights == 1 then
+			if B738DR_fmc_exec_lights == 1 then
 				if legs_num > 1 then
 					if ref_exec == 1 then
 						ref_icao_x = ref_icao
@@ -26898,7 +26964,7 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 			local ww = 0
 			local uu = 0
 			-- cancel MOD
-			if B738FR_fmc_exec_lights == 1 then
+			if B738DR_fmc_exec_lights == 1 then
 				if legs_num > 1 then
 					if rte_exec == 1 then
 						--copy_to_fpln2()
@@ -27124,6 +27190,36 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 			copy_to_legsdata_3()
 			copy_to_legsdata2()
 			create_fpln()
+		elseif page_rte_legs > 0 then
+			if B738DR_fmc_exec_lights == 1 then
+				if legs_num > 1 then
+					if rte_exec == 1 then
+						--copy_to_fpln2()
+						legs_delete = 0
+						copy_to_legsdata2()
+						create_fpln()
+						rte_exec = 0
+					end
+					if legs_delete == 1 then
+						legs_delete = 0
+						copy_to_legsdata2()
+						-- new
+						create_fpln()
+						-- new
+					end
+					ref_rwy2 = ref_rwy
+					ref_sid2 = ref_sid
+					ref_sid_tns2 = ref_sid_tns
+					des_app2 = des_app
+					des_app_tns2 = des_app_tns
+					des_star2 = des_star
+					des_star_trans2 = des_star_trans
+				end
+			-- else
+				-- page_rte_legs = 0
+				-- page_legs = 1
+				--act_page = 1
+			end
 		elseif page_xtras_fuel == 1 then
 			-- entry cg
 			local kk = 0
@@ -27413,6 +27509,9 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 									legs_data2[legs_num2][35] = ""
 									legs_data2[legs_num2][36] = 9
 									legs_data2[legs_num2][37] = 0
+									legs_data2[legs_num2][38] = ""
+									legs_data2[legs_num2][39] = ""
+									legs_data2[legs_num2][40] = 0
 									
 									-- DES ICAO
 									legs_num2 = legs_num2 + 1
@@ -27454,6 +27553,9 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 									legs_data2[legs_num2][35] = ""
 									legs_data2[legs_num2][36] = 9
 									legs_data2[legs_num2][37] = 0
+									legs_data2[legs_num2][38] = ""
+									legs_data2[legs_num2][39] = ""
+									legs_data2[legs_num2][40] = 0
 									legs_num2 = legs_num2 - 1
 									----
 									copy_to_legsdata()
@@ -28001,6 +28103,52 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 					end
 				end
 			end
+		elseif page_rte_legs > 0 then
+			-- entry WIND DATA
+			local strlen = string.len(entry)
+			local item = 0
+			local button = 1	-- button 1 RSK
+			
+			if nav_mode == 1 then
+				item = legs_num2 + 2
+			else
+				item = (act_page - 1) * 5 + offset - 1 + button
+			end
+			
+			if strlen > 0 and item <= legs_num2 and item > 0 then
+				if entry == ">DELETE" then
+					legs_data2[item][39] = ""
+					entry = ""
+					legs_delete = 1
+				else
+					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
+						local n = tonumber(string.sub(entry, 1, 3))
+						if n == nil then
+							entry = INVALID_INPUT
+						else
+							if n < 0 or n > 359 then		-- wind heading 0 - 359
+								entry = INVALID_INPUT
+							else
+								local wind_dir = string.format("%03d", n)
+								n = tonumber(string.sub(entry, 5, strlen))
+								if n == nil then
+									entry = INVALID_INPUT
+								else
+									if n < 1 or n > 199 then	-- wind speed 1 - 199
+										entry = INVALID_INPUT
+									else
+										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										entry = ""
+										legs_delete = 1
+									end
+								end
+							end
+						end
+					else
+						entry = INVALID_INPUT
+					end
+				end
+			end
 		elseif page_xtras_others == 4 then
 			if simDR_pitch_nz < 0.30 then
 				simDR_pitch_nz = simDR_pitch_nz + 0.01
@@ -28470,6 +28618,52 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 				simDR_roll_nz = simDR_roll_nz + 0.01
 			else
 				simDR_roll_nz = 0
+			end
+		elseif page_rte_legs > 0 then
+			-- entry WIND DATA
+			local strlen = string.len(entry)
+			local item = 0
+			local button = 2	-- button 2 RSK
+			
+			if nav_mode == 1 then
+				item = legs_num2 + 2
+			else
+				item = (act_page - 1) * 5 + offset - 1 + button
+			end
+			
+			if strlen > 0 and item <= legs_num2 and item > 0 then
+				if entry == ">DELETE" then
+					legs_data2[item][39] = ""
+					entry = ""
+					legs_delete = 1
+				else
+					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
+						local n = tonumber(string.sub(entry, 1, 3))
+						if n == nil then
+							entry = INVALID_INPUT
+						else
+							if n < 0 or n > 359 then		-- wind heading 0 - 359
+								entry = INVALID_INPUT
+							else
+								local wind_dir = string.format("%03d", n)
+								n = tonumber(string.sub(entry, 5, strlen))
+								if n == nil then
+									entry = INVALID_INPUT
+								else
+									if n < 1 or n > 199 then	-- wind speed 1 - 199
+										entry = INVALID_INPUT
+									else
+										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										entry = ""
+										legs_delete = 1
+									end
+								end
+							end
+						end
+					else
+						entry = INVALID_INPUT
+					end
+				end
 			end
 		end
 		
@@ -29084,6 +29278,52 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 			else
 				simDR_yaw_nz = 0
 			end
+		elseif page_rte_legs > 0 then
+			-- entry WIND DATA
+			local strlen = string.len(entry)
+			local item = 0
+			local button = 3	-- button 3 RSK
+			
+			if nav_mode == 1 then
+				item = legs_num2 + 2
+			else
+				item = (act_page - 1) * 5 + offset - 1 + button
+			end
+			
+			if strlen > 0 and item <= legs_num2 and item > 0 then
+				if entry == ">DELETE" then
+					legs_data2[item][39] = ""
+					entry = ""
+					legs_delete = 1
+				else
+					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
+						local n = tonumber(string.sub(entry, 1, 3))
+						if n == nil then
+							entry = INVALID_INPUT
+						else
+							if n < 0 or n > 359 then		-- wind heading 0 - 359
+								entry = INVALID_INPUT
+							else
+								local wind_dir = string.format("%03d", n)
+								n = tonumber(string.sub(entry, 5, strlen))
+								if n == nil then
+									entry = INVALID_INPUT
+								else
+									if n < 1 or n > 199 then	-- wind speed 1 - 199
+										entry = INVALID_INPUT
+									else
+										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										entry = ""
+										legs_delete = 1
+									end
+								end
+							end
+						end
+					else
+						entry = INVALID_INPUT
+					end
+				end
+			end
 		end
 		
 	elseif phase == 2 then
@@ -29545,6 +29785,52 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 		----------
 		elseif page_xtras_fmod > 0 then
 			fmc_fmod_main(0,4)
+		elseif page_rte_legs > 0 then
+			-- entry WIND DATA
+			local strlen = string.len(entry)
+			local item = 0
+			local button = 4	-- button 4 RSK
+			
+			if nav_mode == 1 then
+				item = legs_num2 + 2
+			else
+				item = (act_page - 1) * 5 + offset - 1 + button
+			end
+			
+			if strlen > 0 and item <= legs_num2 and item > 0 then
+				if entry == ">DELETE" then
+					legs_data2[item][39] = ""
+					entry = ""
+					legs_delete = 1
+				else
+					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
+						local n = tonumber(string.sub(entry, 1, 3))
+						if n == nil then
+							entry = INVALID_INPUT
+						else
+							if n < 0 or n > 359 then		-- wind heading 0 - 359
+								entry = INVALID_INPUT
+							else
+								local wind_dir = string.format("%03d", n)
+								n = tonumber(string.sub(entry, 5, strlen))
+								if n == nil then
+									entry = INVALID_INPUT
+								else
+									if n < 1 or n > 199 then	-- wind speed 1 - 199
+										entry = INVALID_INPUT
+									else
+										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										entry = ""
+										legs_delete = 1
+									end
+								end
+							end
+						end
+					else
+						entry = INVALID_INPUT
+					end
+				end
+			end
 		end
 		
 	elseif phase == 2 then
@@ -29927,6 +30213,52 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 		---
 		elseif page_xtras_fmod > 0 then
 			fmc_fmod_main(0,5)
+		elseif page_rte_legs > 0 then
+			-- entry WIND DATA
+			local strlen = string.len(entry)
+			local item = 0
+			local button = 5	-- button 5 RSK
+			
+			if nav_mode == 1 then
+				item = legs_num2 + 2
+			else
+				item = (act_page - 1) * 5 + offset - 1 + button
+			end
+			
+			if strlen > 0 and item <= legs_num2 and item > 0 then
+				if entry == ">DELETE" then
+					legs_data2[item][39] = ""
+					entry = ""
+					legs_delete = 1
+				else
+					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
+						local n = tonumber(string.sub(entry, 1, 3))
+						if n == nil then
+							entry = INVALID_INPUT
+						else
+							if n < 0 or n > 359 then		-- wind heading 0 - 359
+								entry = INVALID_INPUT
+							else
+								local wind_dir = string.format("%03d", n)
+								n = tonumber(string.sub(entry, 5, strlen))
+								if n == nil then
+									entry = INVALID_INPUT
+								else
+									if n < 1 or n > 199 then	-- wind speed 1 - 199
+										entry = INVALID_INPUT
+									else
+										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										entry = ""
+										legs_delete = 1
+									end
+								end
+							end
+						end
+					else
+						entry = INVALID_INPUT
+					end
+				end
+			end
 		end
 		
 	elseif phase == 2 then
@@ -29940,7 +30272,7 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 		B738DR_fms_key = 1
 		
 		if page_rte_init == 1 then
-			if B738FR_fmc_exec_lights == 0 then
+			if B738DR_fmc_exec_lights == 0 then
 				if exec_load_fpln == 1 then
 						exec_load_fpln = 2
 						-- ACTIVATE Flight plan
@@ -30026,7 +30358,7 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 			local strlen = string.len(entry)
 			local n = tonumber(entry)
 			
-			if B738FR_fmc_exec_lights == 1 then --and legs_intdir == 1 then
+			if B738DR_fmc_exec_lights == 1 then --and legs_intdir == 1 then
 				if legs_intdir == 1 then
 					if strlen == 3 then
 						if n == nil then
@@ -30054,6 +30386,10 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 						end
 						page_legs_step = math.floor((legs_step - offset) / 5) + 1
 						act_page = page_legs_step
+					else
+						-- RTE DATA
+						page_rte_legs = 1
+						page_legs = 0
 					end
 				end
 			else
@@ -30086,7 +30422,10 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 						act_page = page_legs_step
 					else
 						if new_hold == 0 then
-							-- RTA DATA
+							-- RTE DATA
+							page_rte_legs = 1
+							page_legs = 0
+							--act_page = 1
 						else
 							if in_flight_mode == 1 then
 								-- HOLD at PPOS
@@ -30132,7 +30471,11 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 								-- -- ACTIVATE Flight plan
 								-- rte_exec = 1
 							-- end
+							
 							-- RTA DATA
+							page_rte_legs = 1
+							page_legs = 0
+							--act_page = 1
 						end
 					end
 				end
@@ -30272,6 +30615,10 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 			page_xtras_fuel = 0
 			page_xtras = 1
 			act_page = 1
+		elseif page_rte_legs > 0 then
+			-- go to LEGS
+			page_rte_legs = 0
+			page_legs = 1
 		elseif page_ref_nav_data == 1 then
 			local strlen = string.len(entry)
 			if ref_nav_wpt == "-----" and ref_nav_navaid == "----" and ref_nav_apt == "----" then
@@ -30723,7 +31070,7 @@ function B738_fmc1_init_ref_CMDhandler(phase, duration)
 		
 		B738DR_fms_key = 1
 		
-		--if B738FR_fmc_exec_lights == 0 then
+		--if B738DR_fmc_exec_lights == 0 then
 		
 			local irs_align_ok = 0
 			if B738DR_irs_left_mode > 1 or B738DR_irs_right_mode > 1 then
@@ -30879,7 +31226,7 @@ function B738_fmc1_menu_CMDhandler(phase, duration)
 		
 		B738DR_fms_key = 1
 		
-		--if B738FR_fmc_exec_lights == 0 then
+		--if B738DR_fmc_exec_lights == 0 then
 		
 			reset_fmc_pages()
 			page_menu = 1
@@ -30939,7 +31286,7 @@ function B738_fmc1_n1_lim_CMDhandler(phase, duration)
 		
 		B738DR_fms_key = 1
 		
-		--if B738FR_fmc_exec_lights == 0 then
+		--if B738DR_fmc_exec_lights == 0 then
 		
 			reset_fmc_pages()
 			-- page_menu = 0
@@ -30984,7 +31331,7 @@ function B738_fmc1_rte_CMDhandler(phase, duration)
 		
 		B738DR_fms_key = 1
 		
-		--if B738FR_fmc_exec_lights == 0 then
+		--if B738DR_fmc_exec_lights == 0 then
 		
 			
 			reset_fmc_pages()
@@ -31033,7 +31380,7 @@ function B738_fmc1_legs_CMDhandler(phase, duration)
 		
 		B738DR_fms_key = 1
 		
-		--if B738FR_fmc_exec_lights == 0 then
+		--if B738DR_fmc_exec_lights == 0 then
 		
 			reset_fmc_pages()
 			-- page_dep_arr = 0
@@ -31095,7 +31442,7 @@ function B738_fmc1_clb_CMDhandler(phase, duration)
 		
 		B738DR_fms_key = 1
 		
-		--if B738FR_fmc_exec_lights == 0 then
+		--if B738DR_fmc_exec_lights == 0 then
 		
 			reset_fmc_pages()
 			page_climb = 1
@@ -31140,7 +31487,7 @@ function B738_fmc1_crz_CMDhandler(phase, duration)
 		
 		B738DR_fms_key = 1
 		
-		--if B738FR_fmc_exec_lights == 0 then
+		--if B738DR_fmc_exec_lights == 0 then
 		
 			reset_fmc_pages()
 			-- page_climb = 0
@@ -31185,7 +31532,7 @@ function B738_fmc1_des_CMDhandler(phase, duration)
 		
 		B738DR_fms_key = 1
 		
-		--if B738FR_fmc_exec_lights == 0 then
+		--if B738DR_fmc_exec_lights == 0 then
 		
 			reset_fmc_pages()
 			-- page_climb = 0
@@ -31230,7 +31577,7 @@ function B738_fmc1_dep_app_CMDhandler(phase, duration)
 		
 		B738DR_fms_key = 1
 		
-		--if B738FR_fmc_exec_lights == 0 then
+		--if B738DR_fmc_exec_lights == 0 then
 		
 			reset_fmc_pages()
 			page_dep_arr = 1
@@ -31276,7 +31623,7 @@ function B738_fmc1_hold_CMDhandler(phase, duration)
 		
 		B738DR_fms_key = 1
 		
-		if B738FR_fmc_exec_lights == 0 then
+		if B738DR_fmc_exec_lights == 0 then
 		
 			reset_fmc_pages()
 			-- page_dep_arr = 0
@@ -31351,7 +31698,7 @@ function B738_fmc1_prog_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_fms_key = 1
 		
-		--if B738FR_fmc_exec_lights == 0 then
+		--if B738DR_fmc_exec_lights == 0 then
 		
 			reset_fmc_pages()
 			-- page_dep_arr = 0
@@ -31405,7 +31752,7 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 		--local change_star = 0
 		--local change_app = 0
 		
-		if B738FR_fmc_exec_lights == 1 then
+		if B738DR_fmc_exec_lights == 1 then
 		
 			if page_cruise == 1 then
 			
@@ -31482,7 +31829,7 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 				exec_enable = 1
 			end
 			if exec_enable == 1 then
-				if page_legs > 0 or page_dep > 0 or page_arr > 0 or page_rte_init > 0 or page_climb > 0 then
+				if page_legs > 0 or page_dep > 0 or page_arr > 0 or page_rte_init > 0 or page_climb > 0 or page_rte_legs > 0 then
 					if legs_delete == 1 or rte_exec == 1 then
 						
 						if exec_load_fpln == 2 then
@@ -31732,6 +32079,9 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 							legs_data2[legs_num2][35] = ""
 							legs_data2[legs_num2][36] = 9
 							legs_data2[legs_num2][37] = 0
+							legs_data2[legs_num2][38] = ""
+							legs_data2[legs_num2][39] = ""
+							legs_data2[legs_num2][40] = 0
 							legs_num2 = legs_num2 - 1
 						end
 					end
@@ -31977,6 +32327,9 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 				legs_data2[legs_num2][35] = ""
 				legs_data2[legs_num2][36] = 9
 				legs_data2[legs_num2][37] = 0
+				legs_data2[legs_num2][38] = ""
+				legs_data2[legs_num2][39] = ""
+				legs_data2[legs_num2][40] = 0
 				legs_num2 = legs_num2 - 1
 				----
 				arr_data = 0
@@ -33423,7 +33776,7 @@ function B738_fmc2_6R_CMDhandler(phase, duration)
 			local strlen = string.len(entry)
 			local n = tonumber(entry)
 			
-			if B738FR_fmc_exec_lights == 1 then --and legs_intdir == 1 then
+			if B738DR_fmc_exec_lights == 1 then --and legs_intdir == 1 then
 				if legs_intdir == 1 then
 				-----
 				else
@@ -34188,7 +34541,7 @@ function B738_fmc2_prog_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_fms_key = 1
 		
-		--if B738FR_fmc_exec_lights == 0 then
+		--if B738DR_fmc_exec_lights == 0 then
 		
 			-- page_dep_arr2 = 0
 			-- page_climb2 = 0
@@ -36437,7 +36790,7 @@ function B738_fmc_rte_init()
 		end
 		
 		if act_page == 1 then
-			if B738FR_fmc_exec_lights == 1 then
+			if B738DR_fmc_exec_lights == 1 then
 				if legs_num > 1 then
 					line0_inv = " MOD"
 					line0_l   = "     "
@@ -36510,7 +36863,7 @@ function B738_fmc_rte_init()
 		
 		if act_page > 1 then
 			
-			if B738FR_fmc_exec_lights == 1 then
+			if B738DR_fmc_exec_lights == 1 then
 				if legs_num > 1 then
 					line0_inv = " MOD"
 					line0_l   = "     "
@@ -36633,7 +36986,7 @@ function B738_fmc_rte_init()
 		
 		line0_l = line0_l .. "RTE                "
 		
-		if B738FR_fmc_exec_lights == 1 then
+		if B738DR_fmc_exec_lights == 1 then
 			if legs_num > 1 then
 				line6_l = "<ERASE                  "
 			end
@@ -37349,7 +37702,7 @@ function B738_fmc_dep99()
 		line0_s = line0_s .. string.format("%1d",max_page)
 		line1_x = " SIDS            RUNWAYS"
 		--if ref_sid_exec == 1 or ref_rwy_exec == 1 or ref_tns_exec == 1 or ref_app_tns_exec == 1 then
-		if B738FR_fmc_exec_lights == 1 and legs_num > 1 then
+		if B738DR_fmc_exec_lights == 1 and legs_num > 1 then
 			line6_l = "<ERASE            ROUTE>"
 		else
 			line6_l = "                  ROUTE>"
@@ -38204,7 +38557,7 @@ function B738_fmc_arr99()
 		
 		-- line6_x = "------------------------"
 		-- if des_star_exec == 1 or des_star_tns_exec == 1 or des_app_exec == 1 or des_app_tns_exec == 1 then
-		if B738FR_fmc_exec_lights == 1 and legs_num > 1 then
+		if B738DR_fmc_exec_lights == 1 and legs_num > 1 then
 			line6_l = "<ERASE            ROUTE>"
 		else
 			line6_l = "                  ROUTE>"
@@ -39246,7 +39599,7 @@ function B738_fmc_legs()
 		
 		max_page = max_page_legs
 		
-		if B738FR_fmc_exec_lights == 1 then
+		if B738DR_fmc_exec_lights == 1 then
 			if legs_num > 1 then
 				line0_inv = " MOD"
 				line0_l   = "     "
@@ -39266,13 +39619,14 @@ function B738_fmc_legs()
 			line0_inv = ""
 		end
 		
-		if B738FR_fmc_exec_lights == 1 then
+		line6_x = "------------------------"
+		if B738DR_fmc_exec_lights == 1 then
 			if legs_intdir == 0 then
 				if legs_num > 1 then
 					if B738DR_capt_map_mode == 3 then
 						line6_l = "<ERASE             STEP>"
 					else
-						line6_l = "<ERASE                  "
+						line6_l = "<ERASE         RTE DATA>"
 					end
 				else
 					if B738DR_capt_map_mode == 3 then
@@ -39910,7 +40264,7 @@ function B738_fmc_legs2()
 		
 		max_page = max_page_legs
 		
-		if B738FR_fmc_exec_lights == 1 then
+		if B738DR_fmc_exec_lights == 1 then
 			if legs_num > 1 then
 				line0_inv = " MOD"
 				line0_l   = "     "
@@ -39926,7 +40280,8 @@ function B738_fmc_legs2()
 			line0_inv = ""
 		end
 		
-		if B738FR_fmc_exec_lights == 1 then
+		line6_x = "------------------------"
+		if B738DR_fmc_exec_lights == 1 then
 			if legs_intdir == 0 then
 				if legs_num > 1 then
 					if B738DR_fo_map_mode == 3 then
@@ -40010,32 +40365,442 @@ function B738_fmc_legs2()
 
 end
 
-
-function B7338_rte_data()
+function time_string(time_num)
 	
-		-- line0_l =   "  ACT RTE   DATA        "
-		-- line0_s =   "                    1/2 "
-		-- line1_x =   "          ETA       WIND"
-		-- line1_inv = "VERNO                   "
-		-- line1_l   = "         1315           "
-		-- line1_s =   "             z  070`/ 40"
-		-- line2_x =   "                        "
-		-- line2_l =   "ABC      1328   080`/140"
-		-- line2_s =   "             z          "
-		-- line3_x =   "                        "
-		-- line3_l =   "DEF      1333           "
-		-- line3_s =   "             z  080`/140"
-		-- line4_x =   "                        "
-		-- line4_l =   "                        "
-		-- line4_s =   "                        "
-		-- line5_x =   "                        "
-		-- line5_l =   "                        "
-		-- line5_s =   "                        "
-		-- line6_x =   "------------------------"
-		-- line6_l =   "<LEGS                   "
-		
-		
+	local tmp_wpt_eta2 = math.floor(time_num)
+	local tmp_wpt_eta3 = (time_num - tmp_wpt_eta2) * 60
+	local result = string.format("%02d", tmp_wpt_eta2) .. string.format("%04.1f", tmp_wpt_eta3)
+	return result
 end
+
+function B738_rte_data()
+
+	if page_rte_legs == 1 then
+		--act_page = 1
+		--max_page = 1
+		
+		local ii = 0
+		local jj = 0
+		local kk = 0
+		local ll = 0
+		--local lll = 0
+		
+		local max_page_legs = 0
+		
+		local left_line = {}
+		left_line[1] = ""
+		left_line[2] = ""
+		left_line[3] = ""
+		left_line[4] = ""
+		left_line[5] = ""
+		local right_line = {}
+		right_line[1] = ""
+		right_line[2] = ""
+		right_line[3] = ""
+		right_line[4] = ""
+		right_line[5] = ""
+		local left_line_x = {}
+		left_line_x[1] = ""
+		left_line_x[2] = ""
+		left_line_x[3] = ""
+		left_line_x[4] = ""
+		left_line_x[5] = ""
+		local line_s = {}
+		line_s[1] = ""
+		line_s[2] = ""
+		line_s[3] = ""
+		line_s[4] = ""
+		line_s[5] = ""
+		local line_ml = {}
+		line_ml[1] = ""
+		line_ml[2] = ""
+		line_ml[3] = ""
+		line_ml[4] = ""
+		line_ml[5] = ""
+		local line_m = {}
+		line_m[1] = ""
+		line_m[2] = ""
+		line_m[3] = ""
+		line_m[4] = ""
+		line_m[5] = ""
+		local line_in = {}
+		line_in[1] = ""
+		line_in[2] = ""
+		line_in[3] = ""
+		line_in[4] = ""
+		line_in[5] = ""
+		
+		local sid_len = 0
+		local temp_string = ""
+		local overwrite_disc = 0
+		local discon_last = 0
+		
+		local allign_ok = 0
+		
+		local disable_page = 0
+						
+						
+
+		-- line1_x = ""
+		-- line2_x = ""
+		-- line3_x = ""
+		-- line4_x = ""
+		-- line5_x = ""
+		-- line6_x = "------------------------"
+		
+		if B738DR_irs_left_mode > 1 or B738DR_irs_right_mode > 1 then
+			allign_ok = 1
+		end
+		
+		local offset_temp = offset
+		
+		jj = math.floor((legs_num2 + 2 - offset_temp ) / 5)
+		kk = (legs_num2 + 2 - offset_temp ) % 5
+		if kk > 0 then
+			max_page_legs = jj + 1
+		else
+			max_page_legs = jj
+		end
+		
+		if legs_num2 == 0 then
+			max_page_legs = 1
+		end
+		if act_page > max_page_legs then
+			act_page = max_page_legs
+			if act_page == 0 then
+				act_page = 1
+			end
+		end
+		-- if legs_step > legs_num2 then
+			-- legs_step = legs_num2
+		-- end
+		
+		if nav_mode == 1 then
+			if legs_delete == 0 then
+				disable_page = 1
+			else
+				offset_temp = offset + 1
+				if offset_temp > legs_num2 then
+					disable_page = 1
+				end
+			end
+		end
+		
+		if legs_num2 > 0 and disable_page == 0 then
+			
+			if offset_temp > legs_num2 then
+				offset_temp = legs_num2
+			end
+		
+			if offset_temp == 0 then
+				offset_temp = 1
+			end
+			
+			-- if legs_step < offset_temp then
+				-- legs_step = offset_temp
+			-- end
+			
+			kk = (act_page - 1) * 5
+			for ii = 1, 5 do
+				jj = kk + ii + (offset_temp - 1) 	-- + lll
+				-- if legs_select > 0 and jj >= legs_select then
+					-- jj = jj + (legs_offset - legs_select)
+				-- end
+				if ii == 1 then
+					line_m[1] = ""
+				end
+				if jj > legs_num2 or jj == 0 then
+					left_line_x[ii] = ""
+					left_line[ii] = ""
+					right_line[ii] = ""
+				else
+					if act_page == 1 and ii == 1 then
+						-- is HOLD ?
+						if legs_data2[jj][21] == -1 or legs_data2[jj][21] > 1 then
+							-- id
+							if legs_data2[jj][1] == "DISCONTINUITY" then
+								left_line_x[ii] = " THEN"
+								if allign_ok == 0 then
+									line_ml[1] = ""
+									left_line[ii] = "*****"
+								else
+									line_ml[1] = "*****"
+									left_line[ii] = ""
+								end
+								right_line[ii] = ""
+								left_line_x[ii+1] = "-- ROUTE DISCONTINUITY -"
+								discon_last = 1
+							else
+								if allign_ok == 0 or offset_temp > legs_num2 then
+									if legs_data2[jj][17] == 200 and legs_num > 1 then
+										line_ml[1] = "     "
+										left_line[ii] = "     "
+										line_in[ii] = legs_data2[jj][1]
+									else
+										line_ml[1] = "     "
+										left_line[ii] = legs_data2[jj][1]
+									end
+								else
+									if legs_data2[jj][17] == 200 and legs_num > 1 then
+										line_ml[1] = "     "
+										left_line[ii] = "     "
+										line_in[ii] = legs_data2[jj][1]
+									else
+										line_ml[1] = legs_data2[jj][1]
+										left_line[ii] = "     "
+									end
+								end
+							end
+						else
+							left_line_x[ii] = " HOLD "
+							if legs_data2[jj][21] == 0 then
+								left_line_x[ii] = left_line_x[ii] .. "L"
+							else
+								left_line_x[ii] = left_line_x[ii] .. "R"
+							end
+							if allign_ok == 0 or offset_temp > legs_num2 then
+								if legs_data2[jj][17] == 200 and legs_num > 1 then
+									line_ml[1] = "     "
+									left_line[ii] = "     "
+									line_in[ii] = legs_data2[jj][1]
+								else
+									left_line[ii] = legs_data2[jj][1]
+									line_ml[1] = "     "
+								end
+							else
+								if legs_data2[jj][17] == 200 and legs_num > 1 then
+									line_ml[1] = "     "
+									left_line[ii] = "     "
+									line_in[ii] = legs_data2[jj][1]
+								else
+									line_ml[1] = legs_data2[jj][1]
+									left_line[ii] = "     "
+								end
+							end
+						end
+						
+						-- eta
+						line_s[ii] = "             z  "
+						if legs_data2[jj][13] == 0 then
+							right_line[ii] = "----   "
+							--line_s[ii] = "                "
+						else
+							right_line[ii] = string.sub(time_string(legs_data2[jj][13]), 1, 4) .. "   "
+							--line_s[ii] = "             z  "
+						end
+						
+						-- wind
+						if legs_data2[jj][39] == "" then
+							if legs_data2[jj][38] ~= "" then
+								line_s[ii] = line_s[ii] .. legs_data2[jj][38]
+							end
+						else
+							right_line[ii] = right_line[ii] .. legs_data2[jj][39]
+						end
+						
+						if ii < 5 then
+							left_line_x[ii+1] = ""
+						end
+					else
+						overwrite_disc = 0
+						if legs_data2[jj][1] == "DISCONTINUITY" or overwrite_disc == 1 then
+							left_line_x[ii] = " THEN"
+							left_line[ii] = "*****"
+							right_line[ii] = ""
+							if ii == 5 then
+								line6_x = "-- ROUTE DISCONTINUITY -"
+							else
+								left_line_x[ii+1] = "-- ROUTE DISCONTINUITY -"
+							end
+							discon_last = 1
+						else
+							-- id
+							if legs_data2[jj][17] == 200 and legs_num > 1 then
+								left_line[ii] = "     "
+								line_in[ii] = legs_data2[jj][1]
+							else
+								left_line[ii] = legs_data2[jj][1]
+							end
+							if B738DR_capt_map_mode == 3 and legs_step == jj then
+								left_line[ii] = left_line[ii] .. "<CTR>"
+							end
+							if discon_last == 1 then
+								discon_last = 0
+							else
+								-- is HOLD ?
+								if legs_data2[jj][21] == -1 or legs_data2[jj][21] > 1 then
+									left_line_x[ii] = "      "
+								else
+									left_line_x[ii] = " HOLD "
+									if legs_data2[jj][21] == 0 then
+										left_line_x[ii] = left_line_x[ii] .. "L"
+									else
+										left_line_x[ii] = left_line_x[ii] .. "R"
+									end
+								end
+							end
+							
+							-- eta
+							line_s[ii] = "             z  "
+							if legs_data2[jj][13] == 0 then
+								right_line[ii] = "----   "
+								--line_s[ii] = "                "
+							else
+								right_line[ii] = string.sub(time_string(legs_data2[jj][13]), 1, 4) .. "   "
+								--line_s[ii] = "             z  "
+							end
+							
+							-- wind
+							if legs_data2[jj][39] == "" then
+								if legs_data2[jj][38] ~= "" then
+									line_s[ii] = line_s[ii] .. legs_data2[jj][38]
+								end
+							else
+								right_line[ii] = right_line[ii] .. legs_data2[jj][39]
+							end
+							
+							-- clear line
+							if ii < 5 then
+								left_line_x[ii+1] = ""
+							end
+						end
+					end
+				end
+			end
+		else
+			max_page_legs = 1
+			left_line[1] = " "
+			left_line[2] = " "
+			left_line[3] = " "
+			left_line[4] = " "
+			left_line[5] = " "
+		end
+		
+		
+		-- display engine
+		for ii = 1, 5 do
+			sid_len = string.len(left_line[ii])
+			if sid_len < 9 then
+				for jj = sid_len, 8 do
+					left_line[ii] = left_line[ii] .. " "
+				end
+			end
+			-- sid_len = string.len(right_line[ii])
+			-- if sid_len < 12 then
+				-- for jj = sid_len, 11 do
+					-- right_line[ii] = " " .. right_line[ii]
+				-- end
+			-- end
+		end
+		
+		for ii = 1, 5 do
+			sid_len = string.len(line_ml[ii])
+			if sid_len < 9 then
+				for jj = sid_len, 8 do
+					line_ml[ii] = line_ml[ii] .. " "
+				end
+			end
+			-- sid_len = string.len(line_m[ii])
+			-- if sid_len < 12 then
+				-- for jj = sid_len, 11 do
+					-- line_m[ii] = " " .. line_m[ii]
+				-- end
+			-- end
+		end
+		
+		line1_l = left_line[1] .. right_line[1]
+		line2_l = left_line[2] .. right_line[2]
+		line3_l = left_line[3] .. right_line[3]
+		line4_l = left_line[4] .. right_line[4]
+		line5_l = left_line[5] .. right_line[5]
+		
+		line1_x = left_line_x[1]
+		line2_x = left_line_x[2]
+		line3_x = left_line_x[3]
+		line4_x = left_line_x[4]
+		line5_x = left_line_x[5]
+		
+		line1_s = line_s[1]
+		line2_s = line_s[2]
+		line3_s = line_s[3]
+		line4_s = line_s[4]
+		line5_s = line_s[5]
+		
+		line1_m = line_ml[1] --.. line_m[1]
+		line2_m = line_ml[2] --.. line_m[2]
+		line3_m = line_ml[3] --.. line_m[3]
+		line4_m = line_ml[4] --.. line_m[4]
+		line5_m = line_ml[5] --.. line_m[5]
+		
+		line1_inv = line_in[1]
+		line2_inv = line_in[2]
+		line3_inv = line_in[3]
+		line4_inv = line_in[4]
+		line5_inv = line_in[5]
+		
+		max_page = max_page_legs
+		
+		if B738DR_fmc_exec_lights == 1 then
+			if legs_num > 1 then
+				line0_inv = "  MOD"
+				line0_l   = "      "
+			else
+				line0_l = "      "
+			end
+		else
+			if legs_num > 1 then
+				line0_l = "  ACT "
+			else
+				line0_l = "      "
+			end
+			line0_inv = ""
+		end
+		
+		-- -- line0_l =   "  ACT RTE   DATA        "
+		-- -- line0_s =   "                    1/2 "
+		-- -- line1_x =   "          ETA       WIND"
+		-- -- line1_inv = "VERNO                   "
+		-- -- line1_l   = "         1315           "
+		line0_l = line0_l .. "RTE   DATA       "
+		line0_s = "                    " .. string.format("%1d",act_page)
+		line0_s = line0_s .. "/"
+		line0_s = line0_s .. string.format("%1d",max_page)
+		line1_x = "          ETA       WIND"
+		line6_x = "------------------------"
+		if B738DR_fmc_exec_lights == 1 then
+			line6_l = "<ERASE             LEGS>"
+		else
+			line6_l = "                   LEGS>"
+		end
+	end
+
+end
+
+-- function B7338_rte_data()
+	
+		-- -- line0_l =   "  ACT RTE   DATA        "
+		-- -- line0_s =   "                    1/2 "
+		-- -- line1_x =   "          ETA       WIND"
+		-- -- line1_inv = "VERNO                   "
+		-- -- line1_l   = "         1315           "
+		-- -- line1_s =   "             z  070`/ 40"
+		-- -- line2_x =   "                        "
+		-- -- line2_l =   "ABC      1328   080`/140"
+		-- -- line2_s =   "             z          "
+		-- -- line3_x =   "                        "
+		-- -- line3_l =   "DEF      1333           "
+		-- -- line3_s =   "             z  080`/140"
+		-- -- line4_x =   "                        "
+		-- -- line4_l =   "                        "
+		-- -- line4_s =   "                        "
+		-- -- line5_x =   "                        "
+		-- -- line5_l =   "                        "
+		-- -- line5_s =   "                        "
+		-- -- line6_x =   "------------------------"
+		-- -- line6_l =   "<LEGS                   "
+		
+		
+-- end
 
 function edit_hold()
 	
@@ -40166,7 +40931,7 @@ function B738_fmc_hold()
 				hold_active = 1
 			end
 			if hold_active == 0 then
-				if B738FR_fmc_exec_lights == 1 then
+				if B738DR_fmc_exec_lights == 1 then
 					if legs_num2 > 1 then
 						line0_inv = " MOD"
 						line0_l   = "     "
@@ -40309,7 +41074,7 @@ function B738_fmc_hold()
 			end
 			-------------------------------------------------------
 			
-			if B738FR_fmc_exec_lights == 1 then
+			if B738DR_fmc_exec_lights == 1 then
 				if hold_term == 0 then
 					line6_l = "<ERASE                  "
 				elseif hold_term == 1 then
@@ -42741,7 +43506,7 @@ function B738_fmc_progress()
 			-- DEST ICAO
 			if des_icao ~= "****" then
 				prev_idx = legs_num + 1
-				if B738FR_fmc_exec_lights == 0 then
+				if B738DR_fmc_exec_lights == 0 then
 					line4_x = ""
 				else
 					line4_x = " MOD"
@@ -43326,7 +44091,10 @@ function B738_fmc_disp_capt()
 		B738_ref_nav_sel()
 	elseif page_fix > 0 then
 		B738_fmc_fix()
+	elseif page_rte_legs > 0 then
+		B738_rte_data()
 	end
+	
 	B738_fmc_fmod_dspl()
 	
 	B738_fmc_display()
@@ -43384,6 +44152,7 @@ function B738_fmc_disp_fo()
 	local page_ref_nav_data_apt_00 = page_ref_nav_data_apt
 	local page_ref_sel_00 = page_ref_sel
 	local page_fix_00 = page_fix
+	local page_rte_legs_00 = page_rte_legs
 	
 	act_page = act_page2
 	if (page_legs == 1 and page_legs2 == 1)
@@ -43436,6 +44205,7 @@ function B738_fmc_disp_fo()
 	page_ref_nav_data_apt = page_ref_nav_data_apt2
 	page_ref_sel = page_ref_sel2
 	page_fix = page_fix2
+	page_rte_legs = page_rte_legs2
 	
 	-- B738_fmc_menu()
 	-- B738_fmc_pos_init()
@@ -43542,6 +44312,8 @@ function B738_fmc_disp_fo()
 		B738_ref_nav_sel()
 	elseif page_fix > 0 then
 		B738_fmc_fix()
+	elseif page_rte_legs > 0 then
+		B738_rte_data()
 	end
 	B738_fmc_fmod_dspl()
 	
@@ -43592,6 +44364,7 @@ function B738_fmc_disp_fo()
 	page_ref_nav_data_apt = page_ref_nav_data_apt_00
 	page_ref_sel = page_ref_sel_00
 	page_fix = page_fix_00
+	page_rte_legs = page_rte_legs_00
 	
 	B738_fmc_display2()
 
@@ -44310,7 +45083,7 @@ function on_ground_25sec()
 end
 
 function switch_fmc_page(sw_page)
-	if B738FR_fmc_exec_lights == 0 then
+	if B738DR_fmc_exec_lights == 0 then
 		if page_climb == 1 or page_cruise == 1 or page_descent == 1 
 		or page_climb2 == 1 or page_cruise2 == 1 or page_descent2 == 1 then
 			if sw_page == 1 then
@@ -49004,6 +49777,7 @@ function B738_vnav_calc()
 			end
 			legs_data[n][10] = 0
 			legs_data[n][14] = 50000
+			legs_data[n][38] = ""
 			--legs_data[n][13] = 0
 		end
 
@@ -50222,6 +50996,9 @@ function B738_vnav_calc()
 							end
 						end
 						legs_data[ii][11] = crz_alt_num
+						if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
+							legs_data[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+						end
 					end
 				end
 			else
@@ -50230,11 +51007,41 @@ function B738_vnav_calc()
 						for ii = offset2, n do
 							legs_data[ii][10] = calc_wpt_spd
 							legs_data[ii][11] = crz_alt_num
+							if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
+								legs_data[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+							end
 						end
 					end
 				else
 					legs_data[n][10] = calc_wpt_spd 
 					legs_data[n][11] = crz_alt_num
+					if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
+						legs_data[n][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+					end
+				end
+			end
+			
+			
+			-- descent WIND
+			if ed_found > td_idx then
+				for ii = td_idx, ed_found do
+					if legs_data[ii][11] <= forec_alt_3_num and forec_alt_3_num > 0 then
+						if forec_dir_3 ~= "---" and forec_spd_3 ~= "---" then
+							legs_data[ii][38] = forec_dir_3 .. "`/" .. forec_spd_3
+						end
+					elseif legs_data[ii][11] <= forec_alt_2_num and forec_alt_2_num > 0 then
+						if forec_dir_2 ~= "---" and forec_spd_2 ~= "---" then
+							legs_data[ii][38] = forec_dir_2 .. "`/" .. forec_spd_2
+						end
+					elseif legs_data[ii][11] <= forec_alt_1_num and forec_alt_1_num > 0 then
+						if forec_dir_1 ~= "---" and forec_spd_1 ~= "---" then
+							legs_data[ii][38] = forec_dir_1 .. "`/" .. forec_spd_1
+						end
+					elseif forec_alt_1_num > 0 then
+						if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
+							legs_data[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+						end
+					end
 				end
 			end
 		end
@@ -50249,6 +51056,7 @@ function B738_vnav_calc()
 				end
 				legs_data[n][10] = 0
 				legs_data[n][14] = 50000
+				legs_data[n][38] = ""
 			end
 		end
 		tc_idx = 0
@@ -50465,6 +51273,7 @@ function B738_vnav_calc_mod()
 			end
 			legs_data2[n][10] = 0
 			legs_data2[n][14] = 50000
+			legs_data2[n][38] = ""
 		end
 
 
@@ -51439,6 +52248,9 @@ function B738_vnav_calc_mod()
 							end
 						end
 						legs_data2[ii][11] = crz_alt_num
+						if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
+							legs_data2[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+						end
 					end
 				end
 			else
@@ -51446,24 +52258,42 @@ function B738_vnav_calc_mod()
 					if offset2 <= n then
 						for ii = offset2, n do
 							-- cruise phase
-							-- if legs_data[ii][4] > 0 and last_sid_idx > 0then
-								-- nd_x = legs_data[ii][4]
-							-- end
-							-- if nd_x < calc_wpt_spd then
-								-- legs_data[ii][10] = nd_x
-							-- else
 							legs_data2[ii][10] = calc_wpt_spd
-							-- end
 							legs_data2[ii][11] = crz_alt_num
+							if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
+								legs_data2[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+							end
 						end
 					end
 				else
-					-- if legs_data[n][4] < calc_wpt_spd then
-						-- legs_data[n][10] = legs_data[n][4] 
-					-- else
-						legs_data2[n][10] = calc_wpt_spd 
-					-- end
+					legs_data2[n][10] = calc_wpt_spd 
 					legs_data2[n][11] = crz_alt_num
+					if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
+						legs_data2[n][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+					end
+				end
+			end
+			
+			-- descent WIND
+			if ed_found_mod > td_idx_mod then
+				for ii = td_idx_mod, ed_found_mod do
+					if legs_data2[ii][11] <= forec_alt_3_num and forec_alt_3_num > 0 then
+						if forec_dir_3 ~= "---" and forec_spd_3 ~= "---" then
+							legs_data2[ii][38] = forec_dir_3 .. "`/" .. forec_spd_3
+						end
+					elseif legs_data2[ii][11] <= forec_alt_2_num and forec_alt_2_num > 0 then
+						if forec_dir_2 ~= "---" and forec_spd_2 ~= "---" then
+							legs_data2[ii][38] = forec_dir_2 .. "`/" .. forec_spd_2
+						end
+					elseif legs_data2[ii][11] <= forec_alt_1_num and forec_alt_1_num > 0 then
+						if forec_dir_1 ~= "---" and forec_spd_1 ~= "---" then
+							legs_data2[ii][38] = forec_dir_1 .. "`/" .. forec_spd_1
+						end
+					elseif forec_alt_1_num > 0 then
+						if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
+							legs_data2[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+						end
+					end
 				end
 			end
 		end
@@ -51478,6 +52308,7 @@ function B738_vnav_calc_mod()
 				end
 				legs_data2[n][10] = 0
 				legs_data2[n][14] = 50000
+				legs_data2[n][38] = ""
 			end
 		end
 		tc_idx_mod = 0
@@ -59563,6 +60394,8 @@ function B738_fmc_calc()
 		local dist_temp = 0
 		local time_calc_enable = 0
 		local wc_speed = 0
+		local tmp_wind_dir = 0
+		local tmp_wind_spd = 0
 		
 		if crz_alt_num > 0 and perf_exec > 0 and ref_icao ~= "----" and des_icao ~= "****" then
 			time_calc_enable = 1
@@ -59657,12 +60490,30 @@ function B738_fmc_calc()
 					
 					speed_temp1 = (speed_temp1 + speed_temp2) / 2
 					
-					if crz_wind_dir == "---" or crz_wind_spd == "---" then
-						wc_speed = 0
+					-- if crz_wind_dir == "---" or crz_wind_spd == "---" then
+						-- wc_speed = 0
+					-- else
+						-- wc_speed = tonumber(crz_wind_spd) * math.cos(math.rad(Angle180(tonumber(crz_wind_dir)))-legs_data[n][2])
+					-- end
+					-- speed_temp1 = speed_temp1 - wc_speed
+					
+					tmp_wind_spd = 0
+					if legs_data[n][39] == "" then
+						if legs_data[n][38] ~= "" then
+							tmp_wind_dir = tonumber(string.sub(legs_data[n][38], 1, 3))
+							tmp_wind_spd = tonumber(string.sub(legs_data[n][38], -3, -1))
+						end
 					else
-						wc_speed = tonumber(crz_wind_spd) * math.cos(math.rad(Angle180(tonumber(crz_wind_dir)))-legs_data[n][2])
+						tmp_wind_dir = tonumber(string.sub(legs_data[n][39], 1, 3))
+						tmp_wind_spd = tonumber(string.sub(legs_data[n][39], -3, -1))
+					end
+					
+					wc_speed = 0
+					if tmp_wind_spd > 0 then
+						wc_speed = tonumber(tmp_wind_spd) * math.cos(math.rad(Angle180(tonumber(tmp_wind_dir)))-legs_data[n][2])
 					end
 					speed_temp1 = speed_temp1 - wc_speed
+					
 					
 					time_temp = (dist_temp * 1852) / (speed_temp1 * 0.51444)	-- seconds
 					time_temp = time_temp / 3600	-- hours
@@ -61757,7 +62608,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25e"
+	version = "v3.25f"
 
 end
 
@@ -61814,7 +62665,7 @@ function B738_exec_light()
 		end
 	end
 	
-	if page_legs > 0 or page_dep > 0 or page_arr > 0 or page_rte_init > 0 or page_climb > 0 then
+	if page_legs > 0 or page_dep > 0 or page_arr > 0 or page_rte_init > 0 or page_climb > 0 or page_rte_legs > 0 then
 		if legs_delete == 1 and legs_num > 1 then
 			exec_light_tmp = 1
 		end
@@ -61829,16 +62680,16 @@ function B738_exec_light()
 	
 	if exec_light_tmp == 1 then
 		--B738DR_fms_exec_light_pilot = 1
-		B738FR_fmc_exec_lights = 1
+		B738DR_fmc_exec_lights = 1
 	else
 		--B738DR_fms_exec_light_pilot = 0
-		B738FR_fmc_exec_lights = 0
+		B738DR_fmc_exec_lights = 0
 	end
 	
 	if B738DR_ac_tnsbus2_status == 0 then
-		B738FR_fmc_exec_lights_fo = 0
+		B738DR_fmc_exec_lights_fo = 0
 	else
-		B738FR_fmc_exec_lights_fo = B738FR_fmc_exec_lights
+		B738DR_fmc_exec_lights_fo = B738DR_fmc_exec_lights
 	end
 	--B738DR_fms_exec_light_copilot = B738DR_fms_exec_light_pilot
 

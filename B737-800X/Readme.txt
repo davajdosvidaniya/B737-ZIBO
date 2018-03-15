@@ -77,7 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
-3.25e
+3.25f:
+------
+- add RTE DATA page
+
+
+3.25e:
 ------
 - fixed bugs in magnetic variation and accurate geo model
 
