@@ -1476,6 +1476,7 @@ B738DR_fms_v2_set			= find_dataref("laminar/B738/FMS/v2_set")
 
 B738DR_calc_spd_enable		= find_dataref("laminar/B738/FMS/calc_spd_enable")
 B738DR_fmc_gw				= find_dataref("laminar/B738/FMS/fmc_gw")
+B738DR_fmc_gw_app			= find_dataref("laminar/B738/FMS/fmc_gw_app")
 B738DR_fmc_units			= find_dataref("laminar/B738/FMS/fmc_units")
 B738DR_fmc_cg				= find_dataref("laminar/B738/FMS/fmc_cg")
 B738DR_fms_N1_to_sel		= find_dataref("laminar/B738/FMS/N1_mode_to_sel")
@@ -2327,7 +2328,8 @@ end
 
 function B738_calc_vref()
 
-	local gw_to = B738DR_fmc_gw / 2.204	-- to x1000 kg
+	--local gw_to = B738DR_fmc_gw / 2.204	-- to x1000 kg
+	local gw_to = B738DR_fmc_gw_app / 2.204	-- to x1000 kg
 	local weight_min = 0
 	local weight_max = 0
 		

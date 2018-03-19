@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25h:
+------
+- add predict fuel for T/C, T/D and E/D
+- add predict gross weight on approach page
+
 3.25g:
 ------
 - add predict fuel (approximately, not finished yet)

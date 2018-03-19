@@ -4966,7 +4966,6 @@ function B738_ac_dc_power()
 	local gpu_available = 0
 	if simDR_aircraft_on_ground == 1 
 	and simDR_aircraft_groundspeed < 0.05 then
-	--and simDR_brake == 1 then
 		gpu_available = 1
 	end
 	if B738DR_chock_status == 1 then
@@ -5906,7 +5905,7 @@ function B738_autobrake()
 	
 	-- AUTOBRAKE RTO Engaged
 	if B738DR_autobrake_RTO_arm == 2 then
-		if gnd_spd < 7.9 then 
+		if gnd_spd < 3.8 then 
 			B738DR_autobrake_RTO_arm = 0		-- AUTOBRAKE RTO Disarm
 			B738DR_autobrake_disarm = 1
 			autobrake_ratio = 0
@@ -5931,7 +5930,7 @@ function B738_autobrake()
 	if B738DR_autobrake_arm == 2 then
 		if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1
 		or simDR_on_ground_2 == 1 then
-			if gnd_spd < 1.0
+			if gnd_spd < 3.8
 			or throttle_idle_3s == 0
 			or manual_brake == 1 then
 				B738DR_autobrake_arm = 0			-- AUTOBRAKE Disarm
@@ -11485,7 +11484,7 @@ function B738_fmc_source()
 end
 
 
-function cockpit_door()
+function B738_cockpit_door()
 	
 	B738DR_flt_dk_door_ratio = B738_set_anim_value(B738DR_flt_dk_door_ratio, flt_dk_door_tgt, 0, 1, 2)
 	
@@ -11983,7 +11982,7 @@ function after_physics()
 		B738_electric_bus()
 		B738_brightness()
 		B738_fmc_source()
-		cockpit_door()
+		B738_cockpit_door()
 		B738_adf()
 		B738_speedbrake_lever_stop()
 		B738_speedbrake_handle_animation()

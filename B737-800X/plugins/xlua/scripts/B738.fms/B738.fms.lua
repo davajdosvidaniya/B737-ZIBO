@@ -394,6 +394,10 @@ gw = "***.*"
 gw_calc = "***.*"
 gw_lbs = "***.*"
 gw_kgs = "***.*"
+gw_app = "***.*"
+gw_app_lbs = "***.*"
+gw_app_kgs = "***.*"
+gw_app_nul = 0
 
 zfw_calc = "---.-"
 zfw_calc_lbs = "---.-"
@@ -1025,6 +1029,10 @@ app_str = ""
 
 af_finish_crs = 0
 
+ff_approx = 0
+ff_total_old = 0
+ff_sample = 0
+
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
 --*************************************************************************************--
@@ -1481,6 +1489,8 @@ simDR_pitch_nz 				= find_dataref("sim/joystick/joystick_pitch_nullzone")
 simDR_roll_nz 				= find_dataref("sim/joystick/joystick_roll_nullzone")
 simDR_yaw_nz 				= find_dataref("sim/joystick/joystick_heading_nullzone")
 
+simDR_ff 					= find_dataref("sim/flightmodel/engine/ENGN_FF_")
+
 --*************************************************************************************--
 --** 				               FIND X-PLANE COMMANDS                   	    	 **--
 --*************************************************************************************--
@@ -1866,6 +1876,7 @@ B738DR_fms_v2_set			= create_dataref("laminar/B738/FMS/v2_set", "number")
 
 B738DR_calc_spd_enable		= create_dataref("laminar/B738/FMS/calc_spd_enable", "number")
 B738DR_fmc_gw				= create_dataref("laminar/B738/FMS/fmc_gw", "number")
+B738DR_fmc_gw_app			= create_dataref("laminar/B738/FMS/fmc_gw_app", "number")
 B738DR_irs_pos_fmc			= create_dataref("laminar/B738/FMS/irs_pos_fmc", "number")
 
 B738DR_irs_hdg_fmc			= create_dataref("laminar/B738/FMS/irs_hdg_fmc", "number")
@@ -21744,7 +21755,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 			else
 				entry = fmc_pos
 			end
-		elseif page_perf == 1 or page_approach == 1 then
+		elseif page_perf == 1 then
 			-- entry GW
 			local strlen = string.len(entry)
 			local n = tonumber(entry)
@@ -21823,6 +21834,61 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 			end
 			B738_calc_vnav_spd()
 			vnav_update = 1
+		elseif page_approach == 1 then
+			-- entry GW
+			local strlen = string.len(entry)
+			local n = tonumber(entry)
+			local qqq = 0
+			if strlen > 0 then
+				if entry == ">DELETE" then
+					-- gw_app = "***.*"
+					-- gw_app_lbs = gw_app
+					-- gw_app_kgs = gw_app
+					-- gw_app_nul = 1
+					entry = ""
+					gw_app = "***.*"
+					gw_app_lbs = gw_app
+					gw_app_kgs = gw_app
+					gw_app_nul = 0
+					if legs_num > 1 then
+						if legs_data[legs_num][40] ~= 0 then
+							qqq = tonumber(zfw_kgs)
+							if qqq ~= nil then
+								qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
+								if units == 0 then
+									gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
+									gw_app_lbs = gw_app
+									gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
+								else
+									gw_app = string.format("%5.1f", qqq)		-- to kgs
+									gw_app_kgs = gw_app
+									gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
+								end
+							end
+						end
+					end
+				else
+					if n == nil then
+						entry = INVALID_INPUT
+					else
+						if n < weight_min or n > weight_max then	-- GW min and max
+							entry = INVALID_INPUT
+						else
+							gw_app = string.format("%5.1f", n)
+							if units == 0 then
+								gw_app_lbs = gw_app
+								gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
+							else
+								gw_app_kgs = gw_app
+								gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
+							end
+							gw_app_nul = 1
+							entry = ""
+						end
+					end
+				end
+			end
+		
 		elseif page_descent_forecast == 1 then
 			-- entry Trans level
 			local strlen = string.len(entry)
@@ -25724,6 +25790,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 					reserves = "**.*"
 					reserves_lbs = reserves
 					reserves_kgs = reserves
+					msg_using_rsv_fuel = 0
 					entry = ""
 				else
 					if n == nil then
@@ -25740,6 +25807,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 								reserves_kgs = reserves
 								reserves_lbs = string.format("%4.1f", (tonumber(reserves) * 2.204))
 							end
+							msg_using_rsv_fuel = 0
 							entry = ""
 						end
 					end
@@ -26524,6 +26592,28 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 			page_init = 0
 			page_approach = 1
 			display_update = 1
+			local qqq = 0
+			gw_app = "***.*"
+			gw_app_lbs = gw_app
+			gw_app_kgs = gw_app
+			gw_app_nul = 0
+			if legs_num > 1 then
+				if legs_data[legs_num][40] ~= 0 then
+					qqq = tonumber(zfw_kgs)
+					if qqq ~= nil then
+						qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
+						if units == 0 then
+							gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
+							gw_app_lbs = gw_app
+							gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
+						else
+							gw_app = string.format("%5.1f", qqq)		-- to kgs
+							gw_app_kgs = gw_app
+							gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
+						end
+					end
+				end
+			end
 		elseif page_pos_init == 2 then
 			if B738DR_gps2_pos == "-----.-------.-" then
 				entry = ""
@@ -31068,6 +31158,9 @@ function B738_fmc1_next_page_CMDhandler(phase, duration)
 end
 
 function B738_fmc1_init_ref_CMDhandler(phase, duration)
+	
+	local qqq = 0
+	
 	if phase == 0 then
 		
 		B738DR_fms_key = 1
@@ -31167,22 +31260,28 @@ function B738_fmc1_init_ref_CMDhandler(phase, duration)
 				end
 			elseif was_on_air == 1 then
 				-- in fligt -> Approach page
-				-- page_menu = 0
-				-- page_init = 0
-				-- page_ident = 0
-				-- page_takeoff = 0
 				page_approach = 1
-				-- page_perf = 0
-				-- page_n1_limit = 0
-				-- page_pos_init = 0
-				-- page_climb = 0
-				-- page_cruise = 0
-				-- page_descent = 0
-				-- page_descent_forecast = 0
-				-- page_rte_init = 0
-				-- page_dep_arr = 0
-				-- page_dep = 0
-				-- page_arr = 0
+				gw_app = "***.*"
+				gw_app_lbs = gw_app
+				gw_app_kgs = gw_app
+				gw_app_nul = 0
+				if legs_num > 1 then
+					if legs_data[legs_num][40] ~= 0 then
+						qqq = tonumber(zfw_kgs)
+						if qqq ~= nil then
+							qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
+							if units == 0 then
+								gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
+								gw_app_lbs = gw_app
+								gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
+							else
+								gw_app = string.format("%5.1f", qqq)		-- to kgs
+								gw_app_kgs = gw_app
+								gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
+							end
+						end
+					end
+				end
 			else
 				-- Pos Init page
 				-- page_menu = 0
@@ -41047,17 +41146,48 @@ function B738_fmc_hold()
 				line3_s = line3_s .. "            Z"
 				
 				line4_x   = " LEG TIME     HOLD AVAIL"
+				local res_fuel = tonumber(reserves_kgs)
+				local ff_time = 0
+				local ff_time2 = 0
+				local ff_time_str = ""
+				if res_fuel == nil then
+					res_fuel = 0
+				else
+					res_fuel = res_fuel * 1000
+				end
+				if legs_num > 1 then
+					if legs_data[legs_num][40] ~= 0 and ff_approx > 0 then
+						ff_time = legs_data[legs_num][40] - res_fuel + 200
+						ff_time = ff_time / ff_approx
+					end
+				end
+				if ff_time <= 0 then
+					ff_time_str = "----"
+				else
+					ff_time2 = math.floor(ff_time)
+					ff_time = (ff_time - ff_time2) * 60
+					if ff_time2 > 9 then
+						ff_time2 = 9
+					end
+					if ff_time > 59.49 then
+						ff_time = 59
+					end
+					ff_time_str = string.format("%1d", ff_time2)
+					ff_time_str = ff_time_str .. "+" .. string.format("%02d", ff_time)
+				end
 				--line4_l   = "-.-                 ----"
 				if hold_time == "-.-" and hold_dist == "--.-" then
-					line4_l = "                    ----"
+					line4_l = "                    " .. ff_time_str
 					line4_m = "1.5"		-- default time
 					line4_s = "   "
 				else
 					if hold_time == "-.-" then
-						line4_l = hold_time .. "                 ----"
+						line4_l = hold_time .. "                 "
+						line4_l = line4_l .. ff_time_str
 						line4_s = "   "
 					else
-						line4_l = "                    ----"
+						line4_l = "                    "
+						line4_l = line4_l .. ff_time_str
 						line4_m = hold_time
 						line4_s = "   "
 					end
@@ -41478,15 +41608,26 @@ function B738_fmc_approach()
 		line0_l = "     APPROACH REF       "
 		line0_s = "                    1/1 "
 		line1_x = " GROSS WT   FLAPS   VREF"
-		line1_l = " " .. gw
-		line1_l = line1_l .. "       15`   "
+		--line1_l = " " .. gw
+		if gw_app == "***.*" then
+			line1_l = gw_app
+			line1_s = "                   "
+		elseif gw_app_nul == 0 then
+			line1_l = "     "
+			line1_s = gw_app .. "              "
+		else
+			line1_l = gw_app
+			line1_s = "                   "
+		end
+		line1_l = line1_l .. "        15`   "
 		if flaps_app == "15" then
 			line1_l = (line1_l .. vref_15)
 			line1_l = (line1_l .. "KT")
 			--line1_s = "                        "
 		else
 			line1_l = (line1_l .. "     ")
-			line1_s = ("                   " .. vref_15)
+			--line1_s = ("                   " .. vref_15)
+			line1_s = line1_s .. vref_15
 			line1_s = (line1_s .. "KT")
 		end
 		line2_x = " GA N1                  "
@@ -43412,7 +43553,7 @@ function B738_fmc_progress()
 					line1_l = line1_l .. tmp_wpt_eta
 					-- fuel qty
 					line1_l = line1_l .. "  "
-					if legs_data[prev_idx][15] == 0 then
+					if legs_data[prev_idx][15] <= 0 then
 						tmp_wpt_eta = "--.-"
 					else
 						if units == 0 then
@@ -43457,7 +43598,7 @@ function B738_fmc_progress()
 				end
 				line2_l = line2_l .. tmp_wpt_eta
 				-- fuel qty
-				if legs_data[offset][40] == 0 then
+				if legs_data[offset][40] <= 0 then
 					line2_l = line2_l .. "  --.-"
 				else
 					if units == 0 then
@@ -43505,7 +43646,7 @@ function B738_fmc_progress()
 					end
 					line3_l = line3_l .. tmp_wpt_eta
 					-- fuel qty
-					if legs_data[prev_idx][40] == 0 then
+					if legs_data[prev_idx][40] <= 0 then
 						line3_l = line3_l .. "  --.-"
 					else
 						if units == 0 then
@@ -43558,7 +43699,7 @@ function B738_fmc_progress()
 				end
 				line4_l = line4_l .. tmp_wpt_eta
 				-- fuel qty
-				if legs_data[prev_idx][40] == 0 then
+				if legs_data[prev_idx][40] <= 0 then
 					line4_l = line4_l .. "  --.-"
 				else
 					if units == 0 then
@@ -43581,7 +43722,16 @@ function B738_fmc_progress()
 					tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
 					line5_l = tmp_wpt_eta .. " /"
 					line5_l = line5_l .. string.format("%4d", dist_tc)
-					line5_l = line5_l .. "          --.-"
+					line5_l = line5_l .. "          "
+					if fuel_tc <= 0 then
+						line5_l = line5_l .. "--.-"
+					else
+						if units == 0 then
+							line5_l = line5_l .. string.format("%4.1f", (fuel_tc / 1000) * 2.204)
+						else
+							line5_l = line5_l .. string.format("%4.1f", (fuel_tc / 1000))
+						end
+					end
 					--line5_l = "1355 / 32           --.-"
 					line5_s = "    Z     NM            "
 				elseif B738DR_flight_phase < 5 then
@@ -43592,7 +43742,16 @@ function B738_fmc_progress()
 						tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
 						line5_l = tmp_wpt_eta .. " /"
 						line5_l = line5_l .. string.format("%4d", dist_td)
-						line5_l = line5_l .. "          --.-"
+						line5_l = line5_l .. "          "
+						if fuel_td <= 0 then
+							line5_l = line5_l .. "--.-"
+						else
+							if units == 0 then
+								line5_l = line5_l .. string.format("%4.1f", (fuel_td / 1000) * 2.204)
+							else
+								line5_l = line5_l .. string.format("%4.1f", (fuel_td / 1000))
+							end
+						end
 						--line5_l = "1355 / 32           --.-"
 						line5_s = "    Z     NM            "
 					-- else
@@ -43608,7 +43767,16 @@ function B738_fmc_progress()
 						tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
 						line5_l = tmp_wpt_eta .. " /"
 						line5_l = line5_l .. string.format("%4d", dist_ed)
-						line5_l = line5_l .. "          --.-"
+						line5_l = line5_l .. "          "
+						if fuel_ed <= 0 then
+							line5_l = line5_l .. "--.-"
+						else
+							if units == 0 then
+								line5_l = line5_l .. string.format("%4.1f", (fuel_ed / 1000) * 2.204)
+							else
+								line5_l = line5_l .. string.format("%4.1f", (fuel_ed / 1000))
+							end
+						end
 						--line5_l = "1355 / 32           --.-"
 						line5_s = "    Z     NM            "
 					-- else
@@ -44559,6 +44727,18 @@ function B738_calc()
 			B738DR_fmc_gw = 0
 		else
 			B738DR_fmc_gw = v	-- GW lbs
+		end
+	end
+	
+	-- GW approach
+	if gw_app == "***.*" then
+		B738DR_fmc_gw_app = 0
+	else
+		v = tonumber(gw_app_lbs)
+		if v == nil then
+			B738DR_fmc_gw_app = 0
+		else
+			B738DR_fmc_gw_app = v	-- GW lbs
 		end
 	end
 	
@@ -45954,16 +46134,26 @@ function B738_fmc_msg()
 		
 		-- USING_RSV_FUEL
 		local res_fuel = tonumber(reserves_kgs)
-		if res_fuel == nil then
-			msg_using_rsv_fuel = 0
-		else
+		local disable_rsv_fuel = 0
+		if simDR_radio_height_pilot_ft < 50 then
+			disable_rsv_fuel = 1
+		elseif res_fuel == nil then
+			disable_rsv_fuel = 1
+		elseif legs_num < 2 then
+			disable_rsv_fuel = 1
+		elseif legs_data[legs_num][40] == 0 then
+			disable_rsv_fuel = 1
+		end
+		if disable_rsv_fuel == 0 then
 			res_fuel = res_fuel * 1000
-			if simDR_fuel_weight <= res_fuel then
+			if legs_data[legs_num][40] < res_fuel then
 				if msg_using_rsv_fuel == 0 then
 					msg_using_rsv_fuel = 1
 					add_fmc_msg(USING_RSV_FUEL, 1)
 				end
 			end
+		else
+			msg_using_rsv_fuel = 0
 		end
 		
 		-- UNABLE_REQ_NAV_PERF
@@ -49799,7 +49989,9 @@ function B738_vnav_calc()
 			if string.sub(legs_data[n][1], 1, 2) == "RW" and n == 2 then
 				legs_data[n][11] = ref_icao_alt
 			else
-				legs_data[n][11] = 0
+				--if n >= offset2 then
+					legs_data[n][11] = 0
+				--end
 			end
 			legs_data[n][10] = 0
 			legs_data[n][14] = 50000
@@ -51295,7 +51487,9 @@ function B738_vnav_calc_mod()
 			if string.sub(legs_data2[n][1], 1, 2) == "RW" and n == 2 then
 				legs_data2[n][11] = ref_icao_alt
 			else
-				legs_data2[n][11] = 0
+				--if n >= offset2 then
+					legs_data2[n][11] = 0
+				--end
 			end
 			legs_data2[n][10] = 0
 			legs_data2[n][14] = 50000
@@ -58702,6 +58896,9 @@ function B738_fmc_calc()
 	time_td = 0
 	dist_ed = 0
 	time_ed = 0
+	fuel_ed = 0
+	fuel_tc = 0
+	fuel_td = 0
 
 	if ref_icao == "----" or des_icao == "****" then
 		legs_num = 0
@@ -60556,7 +60753,7 @@ function B738_fmc_calc()
 					elseif n <= ed_found then
 						ff_phase = 2	-- descent
 					else
-						ff_phase = 3	-- approach
+						ff_phase = 3	-- final approach
 					end
 					if n == 1 then
 						fuel_flow = 0
@@ -60567,13 +60764,9 @@ function B738_fmc_calc()
 					end
 					
 					if n == offset or n == 1 then
-						--fuel_flow = 7000	-- 7000 kg/hour --calc_fuel_flow(ff_alt1, ff_alt2, ff_gw)
-						--fuel_flow = calc_fuel_flow(ff_phase)
 						calc_fuel = act_fuel - (time_temp * fuel_flow)
 						time_temp = (time_zulu + time_temp) % 24
 					else
-						--fuel_flow = 7000	-- 7000 kg/hour --calc_fuel_flow(ff_alt1, ff_alt2, ff_gw)
-						--fuel_flow = calc_fuel_flow(ff_phase)
 						calc_fuel = legs_data[n-1][40] - (time_temp * fuel_flow)
 						time_temp = (legs_data[n-1][13] + time_temp) % 24
 					end
@@ -60601,6 +60794,7 @@ function B738_fmc_calc()
 							dist_ed = dist_ed + dist_temp
 							if n == ed_found then
 								time_ed = time_temp
+								fuel_ed = legs_data[n][40]
 							end
 						end
 					end
@@ -60613,6 +60807,15 @@ function B738_fmc_calc()
 								dist_tc = dist_tc - tc_dist
 								time_temp = (tc_dist * 1852) / (speed_temp1 * 0.51444)	-- seconds
 								time_temp = time_temp / 3600	-- hours
+								fuel_tc = legs_data[n][40] + (time_temp * fuel_flow)
+								-- corected T/C idx fuel (cruise)
+								if n == offset then
+									fuel_flow = calc_fuel_flow(1, simDR_altitude_pilot, legs_data[n][11])
+									legs_data[n][40] = fuel_tc - (time_temp * fuel_flow)
+								elseif n > 1 then
+									fuel_flow = calc_fuel_flow(1, legs_data[n-1][11], legs_data[n][11])
+									legs_data[n][40] = fuel_tc - (time_temp * fuel_flow)
+								end
 								time_temp = legs_data[n][13] - time_temp
 								if time_temp < 0 then
 									time_temp = time_temp + 24
@@ -60630,6 +60833,7 @@ function B738_fmc_calc()
 								dist_td = dist_td - td_dist
 								time_temp = (td_dist * 1852) / (speed_temp1 * 0.51444)	-- seconds
 								time_temp = time_temp / 3600	-- hours
+								fuel_td = legs_data[n][40] + (time_temp * fuel_flow)
 								time_temp = legs_data[n][13] - time_temp
 								if time_temp < 0 then
 									time_temp = time_temp + 24
@@ -60723,7 +60927,8 @@ function calc_fuel_flow(phase, alt1, alt2)
 		ff_calc2 = B738_rescale(5000, 820, 23000, 150, ff_alt2)
 		ff_calc = (ff_calc + ff_calc2) / 2
 	elseif phase == 3 then
-		ff_calc = 3050
+		--ff_calc = 2950
+		ff_calc = 3950
 	end
 	
 	return ff_calc
@@ -62415,6 +62620,9 @@ temp_ils4 = ""
 	time_td = 0
 	dist_ed = 0
 	time_ed = 0
+	fuel_ed = 0
+	fuel_tc = 0
+	fuel_td = 0
 	fms_msg_sound = 0
 	legs_page = 0
 	legs_button = 0
@@ -62700,7 +62908,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25g"
+	version = "v3.25h"
 
 end
 
@@ -62819,6 +63027,19 @@ function irs_timer()
 	irs_enable = 0
 end
 
+function B738_ff_approx()
+	local ff_total = (simDR_ff[0] + simDR_ff[1]) * 3600	-- kgs/hour
+	ff_sample = ff_sample + 1
+	ff_total_old = ff_total_old + ff_total
+	if ff_sample > 4 then
+		ff_approx = ff_total_old / ff_sample
+		ff_sample = 0
+		ff_total_old = 0
+	end
+	-- ff_approx = (ff_total + ff_total_old) / 2
+	-- ff_total_old = ff_total
+end
+
 --*************************************************************************************--
 --** 				               XLUA EVENT CALLBACKS       	        			 **--
 --*************************************************************************************--
@@ -62912,6 +63133,10 @@ function flight_start()
 	
 	run_after_time(set_cg, 3)
 	irs_enable = 0
+	
+	if is_timer_scheduled(B738_ff_approx) == false then
+		run_at_interval(B738_ff_approx, 1)
+	end
 	
 end
 
