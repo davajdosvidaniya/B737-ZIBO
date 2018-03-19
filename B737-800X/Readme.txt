@@ -77,6 +77,10 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25i:
+------
+- rewrited code for LNAV
+
 3.25h:
 ------
 - add predict fuel for T/C, T/D and E/D

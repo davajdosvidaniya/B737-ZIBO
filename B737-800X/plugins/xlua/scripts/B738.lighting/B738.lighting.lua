@@ -130,6 +130,7 @@ B738DR_engine_no_running_state 	= find_dataref("laminar/B738/fms/engine_no_runni
 
 B738DR_apu_start_load			= find_dataref("laminar/B738/electric/apu_start_load")
 
+B738DR_batbus_status			= find_dataref("laminar/B738/electric/batbus_status")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
@@ -821,13 +822,18 @@ function land_ret_anim()
 		land_ret_left_tgt = 1
 	end
 	
-	B738DR_land_ret_left_pos = B738_set_anim_value(B738DR_land_ret_left_pos, land_ret_left_tgt, 0, 1, 3)
+	if B738DR_batbus_status ~= 0 then
+		B738DR_land_ret_left_pos = B738_set_anim_value(B738DR_land_ret_left_pos, land_ret_left_tgt, 0, 1, 3)
+	end
 	
 	local land_ret_right_tgt = 0
 	if B738DR_land_lights_ret_right_pos > 0 then
 		land_ret_right_tgt = 1
 	end
-	B738DR_land_ret_right_pos = B738_set_anim_value(B738DR_land_ret_right_pos, land_ret_right_tgt, 0, 1, 3)
+	
+	if B738DR_batbus_status ~= 0 then
+		B738DR_land_ret_right_pos = B738_set_anim_value(B738DR_land_ret_right_pos, land_ret_right_tgt, 0, 1, 3)
+	end
 	
 end
 

@@ -2428,6 +2428,7 @@ simDR_fmc_dist				= create_dataref("laminar/B738/fms/lnav_dist_next", "number")
 simDR_fmc_dist2				= create_dataref("laminar/B738/fms/lnav_dist2_next", "number")
 simDR_fmc_crs				= create_dataref("laminar/B738/fms/gps_course_degtm", "number")
 simDR_fmc_trk				= create_dataref("laminar/B738/fms/gps_track_degtm", "number")
+simDR_fmc_trk2				= create_dataref("laminar/B738/fms/gps_track2_degtm", "number")
 B738DR_fpln_active			= create_dataref("laminar/B738/fms/fpln_acive", "number")
 B738DR_fpln_active_fo		= create_dataref("laminar/B738/fms/fpln_acive_fo", "number")
 B738DR_fpln_nav_id			= create_dataref("laminar/B738/fms/fpln_nav_id", "string")
@@ -18935,7 +18936,7 @@ function B738_load_config()
 						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
 						if temp_fmod ~= nil then
 							 temp_fmod = roundUpToIncrement(temp_fmod, 1 )
-							if temp_fmod >= 0 and  temp_fmod <= 20 then
+							if temp_fmod >= 0 and  temp_fmod <= 30 then
 								simDR_pitch_nz = temp_fmod / 100
 							else
 								simDR_pitch_nz = 0
@@ -18948,7 +18949,7 @@ function B738_load_config()
 						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
 						if temp_fmod ~= nil then
 							 temp_fmod = roundUpToIncrement(temp_fmod, 1 )
-							if temp_fmod >= 0 and  temp_fmod <= 20 then
+							if temp_fmod >= 0 and  temp_fmod <= 30 then
 								simDR_yaw_nz = temp_fmod / 100
 							else
 								simDR_yaw_nz = 0
@@ -18961,7 +18962,7 @@ function B738_load_config()
 						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
 						if temp_fmod ~= nil then
 							 temp_fmod = roundUpToIncrement(temp_fmod, 1 )
-							if temp_fmod >= 0 and  temp_fmod <= 20 then
+							if temp_fmod >= 0 and  temp_fmod <= 30 then
 								simDR_roll_nz = temp_fmod / 100
 							else
 								simDR_roll_nz = 0
@@ -60381,6 +60382,7 @@ function B738_fmc_calc()
 				nd_hdg = (nd_hdg + 270) % 360
 			end
 			simDR_fmc_trk = nd_hdg
+			simDR_fmc_trk2 = (nd_hdg + simDR_mag_variation + 360) % 360
 			
 			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
 			nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
@@ -60440,7 +60442,7 @@ function B738_fmc_calc()
 			simDR_fmc_trk_turn = -1
 			B738DR_wpt_path = "CF"
 			simDR_fmc_trk = af_finish_crs
-			
+			simDR_fmc_trk2 = (af_finish_crs + simDR_mag_variation + 360) % 360
 			
 			nd_lat2 = math.rad(legs_data[offset][7])
 			nd_lon2 = math.rad(legs_data[offset][8])
@@ -60516,6 +60518,7 @@ function B738_fmc_calc()
 				nd_hdg = (nd_hdg + 270) % 360
 			end
 			simDR_fmc_trk = nd_hdg
+			simDR_fmc_trk2 = (nd_hdg + simDR_mag_variation + 360) % 360
 			
 			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
 			nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
@@ -60780,7 +60783,7 @@ function B738_fmc_calc()
 						else
 							if rnav_idx_last > 0 and rnav_idx_last <= legs_num then
 								legs_data[n][13] = (legs_data[rnav_idx_last][13] + 0.033) % 24
-								legs_data[n][40] = legs_data[rnav_idx_last][40] - 1.5 -- taxi fuel
+								legs_data[n][40] = legs_data[rnav_idx_last][40] - 1.3 -- taxi fuel
 							else
 								legs_data[n][13] = time_temp
 								legs_data[n][40] = calc_fuel
@@ -62908,7 +62911,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25h"
+	version = "v3.25i"
 
 end
 

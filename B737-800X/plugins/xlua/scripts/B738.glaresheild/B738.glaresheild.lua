@@ -617,6 +617,7 @@ simDR_airspeed_accel		= find_dataref("sim/cockpit2/gauges/indicators/airspeed_ac
 
 simDR_fmc_crs				= find_dataref("laminar/B738/fms/gps_course_degtm")
 simDR_fmc_trk				= find_dataref("laminar/B738/fms/gps_track_degtm")
+simDR_fmc_trk2				= find_dataref("laminar/B738/fms/gps_track2_degtm")
 simDR_TAS					= find_dataref("sim/flightmodel/position/true_airspeed")
 simDR_fmc_trk_turn			= find_dataref("laminar/B738/fms/gps_track_turn")
 simDR_fmc_trk_turn2			= find_dataref("laminar/B738/fms/gps_track_turn2")
@@ -6436,7 +6437,7 @@ function B738_lnav2()
 			if relative_brg > 180 then
 				relative_brg = relative_brg - 360
 			end
-			B738DR_test_test = relative_brg
+			--B738DR_test_test = relative_brg
 			
 			relative_brg2 = (simDR_fmc_crs - simDR_ahars_mag_hdg + 360) % 360
 			if relative_brg2 > 180 then
@@ -6731,6 +6732,485 @@ function B738_bank_angle()
 	end
 
 end
+
+function B738_lnav3()
+
+	local wca = 0
+--	local ws = 0
+	local wh = 0
+	local tas = 0
+	local awa = 0
+	local relative_brg = 0
+	local relative_brg2 = 0
+	local relative_brg3 = 0
+	local relative_brg4 = 0
+	local bearing_corr = 0
+	local idx_corr = 0
+	local idx_dist = 0
+	local hdg_corr = 0
+	local mag_hdg = 0
+	local mag_trk = 0	-- temporary without mag variantion
+	local ap_hdg = 0
+	local rnp = 0
+	local fix_bank_angle = 0
+	local fac_capture = 0
+	local idx_rnp = 0
+	local scale_horizont = 0
+	local pom1 = 0
+	local gnd_spd = 0
+	local target_hdg = 0
+	
+	--local tgt_heading = 0
+	--local act_heading = 0
+
+	if ap_roll_mode == 4 and ap_roll_mode_eng == 4 then	-- LNAV
+		if lnav_engaged == 0 then
+			if simDR_radio_height_pilot_ft > 50 and B738DR_xtrack > -3 and B738DR_xtrack < 3 then
+				lnav_engaged = 1
+				ap_roll_mode = 4	-- LNAV
+				ap_roll_mode_eng = 4
+			end
+		end
+	elseif ap_roll_mode == 10 and ap_roll_mode_eng == 10 then	-- HDG/LNAV arm
+		if lnav_engaged == 0 then
+			if simDR_radio_height_pilot_ft > 50 and B738DR_xtrack > -3 and B738DR_xtrack < 3 then
+				lnav_engaged = 1
+				ap_roll_mode = 4	-- LNAV
+				ap_roll_mode_eng = 4
+			end
+		end
+	elseif ap_roll_mode == 8 and ap_roll_mode_eng == 8 then		-- LNAV/FAC arm (G/P)
+		if fac_engaged == 0 then
+			mag_trk = (B738DR_fac_trk + simDR_mag_variation + 360) % 360
+			relative_brg = (mag_trk - simDR_ahars_mag_hdg + 360) % 360
+			if relative_brg > 180 then
+				relative_brg = relative_brg - 360
+			end
+			if relative_brg > -90 and relative_brg < 90 then
+				fac_capture = 1
+			end
+			-- engage FAC
+			if B738DR_pfd_gp_path == 1 and B738DR_fac_xtrack > -2.0 and B738DR_fac_xtrack < 2.0 and fac_capture == 1 then
+				fac_engaged = 1
+				ap_roll_mode = 11	-- FAC
+				ap_roll_mode_eng = 11
+			end
+			-- if ap_pitch_mode_eng ~= 7 then
+				-- B738DR_gp_status = 1	-- G/P armed
+			-- end
+		end
+	elseif ap_roll_mode == 5 and ap_roll_mode_eng == 5 then		-- LNAV/VOR LOC arm
+		if simDR_nav_status > 1 then
+			ap_roll_mode = 2	-- VOR LOC
+			ap_roll_mode_eng = 2
+			lnav_engaged = 0
+		end
+	elseif ap_roll_mode == 6 and ap_roll_mode_eng == 6 then		-- LNAV/APP arm (G/S)
+		-- if simDR_approach_status > 1 then
+			-- ap_roll_mode = 3	-- APP
+			-- ap_roll_mode_eng = 3
+			-- lnav_engaged = 0
+		-- end
+		if simDR_nav_status == 2 and simDR_approach_status == 0 then
+			simCMD_autopilot_app:once()
+			ap_roll_mode = 3
+			ap_roll_mode_eng = 3
+			lnav_engaged = 0
+		end
+		if simDR_approach_status == 2 then
+			if ap_pitch_mode_eng ~= 4 and simDR_glideslope_status == 2 then 	-- G/S engaged
+				ap_pitch_mode = 4
+			end
+		end
+	elseif ap_roll_mode == 12 and ap_roll_mode_eng == 12 then		-- HDG/VOR LOC arm GP
+		if simDR_nav_status > 1 then
+			ap_roll_mode = 14	-- LOC GP
+			ap_roll_mode_eng = 14
+			lnav_engaged = 0
+		end
+	elseif ap_roll_mode == 13 and ap_roll_mode_eng == 13 then		-- LNAV/VOR LOC arm GP
+		if simDR_nav_status > 1 then
+			ap_roll_mode = 14	-- LOC GP
+			ap_roll_mode_eng = 14
+			lnav_engaged = 0
+		end
+	else
+		lnav_engaged = 0
+	end
+	
+	if lnav_engaged == 1 then
+		if simDR_autopilot_heading_mode ~= 1 then
+			simCMD_autopilot_hdg:once()
+		end
+		
+		
+		--if legs_intdir_act == 0 then
+		if legs_intdir_act == 0 or B738DR_wpt_path == "DF" or B738DR_wpt_path == "VM" then
+			intdir_act = 0
+		else
+			if intdir_act == 0 then
+				intdir_act = 2
+				turn_active = 0
+			end
+		end
+		
+		if intdir_act == 2 then
+			if B738DR_xtrack > -2 and B738DR_xtrack < 2 then
+				intdir_act = 1
+			end
+		
+		elseif intdir_act < 2 then
+		
+			-- heading to track
+			mag_trk = simDR_fmc_trk + simDR_mag_variation
+			relative_brg = (simDR_fmc_trk - simDR_ahars_mag_hdg + 360) % 360
+			if relative_brg > 180 then
+				relative_brg = relative_brg - 360
+			end
+			--B738DR_test_test = relative_brg
+			
+			relative_brg2 = (simDR_fmc_crs - simDR_ahars_mag_hdg + 360) % 360
+			if relative_brg2 > 180 then
+				relative_brg2 = relative_brg2 - 360
+			end
+			
+			relative_brg3 = (mag_trk - simDR_ahars_mag_hdg + 360) % 360
+			if relative_brg3 > 180 then
+				relative_brg3 = relative_brg3 - 360
+			end
+			
+			relative_brg4 = (mag_trk - simDR_mag_hdg + 360) % 360
+			if relative_brg4 > 180 then
+				relative_brg4 = relative_brg4 - 360
+			end
+			relative_brg4 = -relative_brg4
+			
+			if turn_active < 2 then
+				if simDR_fmc_trk_turn == 2 then
+					-- left turn
+					idx_corr = -100
+					turn_active = 1
+				elseif simDR_fmc_trk_turn == 3 then
+					-- right turn
+					idx_corr = 100
+					turn_active = 1
+				end
+			end
+			
+			if simDR_fmc_trk_turn == 0 then
+				-- left turn
+				idx_corr = -100
+				turn_active = 1
+			elseif simDR_fmc_trk_turn == 1 then
+				-- right turn
+				idx_corr = 100
+				turn_active = 1
+			elseif simDR_fmc_trk_turn == -1 then
+				turn_active = 0
+			end
+			
+			if turn_active == 1 then
+				ap_hdg = (simDR_ahars_mag_hdg + idx_corr + 360) % 360
+				if simDR_fmc_trk_turn < 2 then
+					fix_bank_angle = 1
+					if B738DR_hold_phase == 6 then
+						if simDR_fmc_trk_turn == 1 and relative_brg2 > -90 and relative_brg2 < -45 then
+							turn_active = 2
+							B738DR_hold_phase = 7
+						end
+						if simDR_fmc_trk_turn == 0 and relative_brg2 < 90 and relative_brg2 > 45 then
+							turn_active = 2
+							B738DR_hold_phase = 7
+						end
+						simDR_bank_angle = 6
+					else
+						if simDR_fmc_trk_turn == 0 and relative_brg2 > -45 and relative_brg2 < 0 then
+							turn_active = 2
+							if B738DR_hold_phase == 1 then
+								B738DR_hold_phase = 2
+							elseif B738DR_hold_phase == 3 then
+								B738DR_hold_phase = 0
+							end
+						end
+						if simDR_fmc_trk_turn == 1 and relative_brg < 45 and relative_brg > 0 then
+							turn_active = 2
+							if B738DR_hold_phase == 1 then
+								B738DR_hold_phase = 2
+							elseif B738DR_hold_phase == 3 then
+								B738DR_hold_phase = 0
+							end
+						end
+						simDR_bank_angle = 5
+					end
+				else
+					if simDR_fmc_trk_turn == 2 and relative_brg2 > -80 and relative_brg2 < 0 then
+						turn_active = 2
+						idx_corr = -45
+					end
+					if simDR_fmc_trk_turn == 3 and relative_brg2 < 80 and relative_brg2 > 0 then
+						turn_active = 2
+						idx_corr = 45
+					end
+					simDR_bank_angle = 6
+				end
+			else
+				if B738DR_wpt_path == "DF" then
+					-- Direct To Fix
+					ap_hdg = simDR_fmc_crs
+				elseif B738DR_wpt_path == "HA" or B738DR_wpt_path == "HF" or B738DR_wpt_path == "HM" then
+					-- Hold
+					if B738DR_hold_phase == 0 then
+						ap_hdg = simDR_fmc_crs
+					else
+						ap_hdg = simDR_fmc_trk
+					end
+					simDR_bank_angle = 5
+					fix_bank_angle = 1
+				elseif B738DR_wpt_path == "VM" then
+					ap_hdg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
+				elseif B738DR_wpt_path == "AF" or B738DR_wpt_path == "RF" then
+					gnd_spd = math.min(simDR_ground_spd, 236)
+					gnd_spd = math.max(gnd_spd, 71)
+					if simDR_fmc_trk_turn == -1 then
+						if simDR_fmc_trk_turn2 == 2 then
+							-- left
+							idx_dist = B738DR_xtrack + B738_rescale(71, 0.40, 236, 0.47, gnd_spd)	--0.27 / 0.33 ** 0.33 / 0.39 ** 0.39/0.45
+						else
+							-- right
+							idx_dist = B738DR_xtrack - B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
+						end
+					elseif simDR_fmc_trk_turn == 2 then
+						-- left
+						idx_dist = B738DR_xtrack + B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
+					else
+						-- right
+						idx_dist = B738DR_xtrack - B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
+					end
+					
+					
+					if idx_dist < 0 then
+						idx_dist = -idx_dist
+						if idx_dist > 1 then
+							idx_dist = 1
+						end
+						idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
+					else
+						if idx_dist > 1 then
+							idx_dist = 1
+						end
+						idx_corr = -B738_rescale(0, 0, 1, 45, idx_dist)
+					end
+					ap_hdg = (simDR_fmc_trk2 + idx_corr + 360) % 360
+					
+					
+					-- if idx_dist < 0 then
+						-- if relative_brg > 15 and idx_dist < -1 then
+							-- idx_corr = 45
+						-- else
+							-- idx_dist = -idx_dist
+							-- if idx_dist > 1 then
+								-- idx_dist = 1
+							-- end
+							-- idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
+						-- end
+					-- else
+						-- if relative_brg < -15 and idx_dist > 1 then
+							-- idx_corr = -45
+						-- else
+							-- if idx_dist > 1 then
+								-- idx_dist = 1
+							-- end
+							-- idx_corr = -B738_rescale(0, 0, 1, 45, idx_dist)
+						-- end
+					-- end
+					-- ap_hdg = (mag_trk + idx_corr + 360) % 360
+				elseif nav_mode == 5 then
+					-- radii turn
+					gnd_spd = math.min(simDR_ground_spd, 236)
+					gnd_spd = math.max(gnd_spd, 71)
+					if simDR_fmc_trk_turn2 == 2 then
+						-- left
+						idx_dist = B738DR_xtrack + B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
+					else
+						-- right
+						idx_dist = B738DR_xtrack - B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
+					end
+					
+					
+					if idx_dist < 0 then
+						idx_dist = -idx_dist
+						if idx_dist > 1 then
+							idx_dist = 1
+						end
+						idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
+					else
+						if idx_dist > 1 then
+							idx_dist = 1
+						end
+						idx_corr = -B738_rescale(0, 0, 1, 45, idx_dist)
+					end
+					ap_hdg = (simDR_fmc_trk2 + idx_corr + 360) % 360
+					
+					
+					-- if idx_dist < 0 then
+						-- if relative_brg > 15 and idx_dist < -1 then
+							-- idx_corr = 45
+						-- else
+							-- idx_dist = -idx_dist
+							-- if idx_dist > 1 then
+								-- idx_dist = 1
+							-- end
+							-- idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
+						-- end
+					-- else
+						-- if relative_brg < -15 and idx_dist > 1 then
+							-- idx_corr = -45
+						-- else
+							-- if idx_dist > 1 then
+								-- idx_dist = 1
+							-- end
+							-- idx_corr = -B738_rescale(0, 0, 1, 45, idx_dist)
+						-- end
+					-- end
+					-- ap_hdg = (mag_trk + idx_corr + 360) % 360
+				else
+					-----
+					-- gnd_spd = math.min(simDR_ground_spd, 230)
+					-- gnd_spd = math.max(gnd_spd, 70)
+					-- idx_rnp = B738_rescale(70, 1.5, 230, 3.2, gnd_spd)
+					
+					
+					if B738DR_xtrack < 0 then
+						idx_dist = -B738DR_xtrack
+						-- if idx_dist > idx_rnp then
+							-- idx_dist = idx_rnp
+						-- end
+						--idx_corr = B738_rescale(0, 0, idx_rnp, 45, idx_dist)
+						idx_dist = idx_dist * idx_dist * 1.85
+						if idx_dist > 1 then
+							idx_dist = 1
+						end
+						--idx_dist = idx_dist * idx_dist
+						idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
+					else
+						idx_dist = B738DR_xtrack
+						-- if idx_dist > idx_rnp then
+							-- idx_dist = idx_rnp
+						-- end
+						--idx_corr = -B738_rescale(0, 0, idx_rnp, 45, idx_dist)
+						
+						idx_dist = idx_dist * idx_dist * 1.85
+						if idx_dist > 1 then
+							idx_dist = 1
+						end
+						--idx_dist = idx_dist * idx_dist
+						idx_corr = -B738_rescale(0, 0, 1, 45, idx_dist)
+					end
+					ap_hdg = (simDR_fmc_trk + simDR_mag_variation + idx_corr + 360) % 360
+					--B738DR_test_test = idx_corr
+					------
+					-- if B738DR_xtrack < 0 then
+						-- if relative_brg > 15 and idx_dist < -1 then
+							-- idx_corr = 45
+						-- else
+							-- idx_dist = -B738DR_xtrack
+							-- if idx_dist > idx_rnp then
+								-- idx_dist = idx_rnp
+							-- end
+							-- idx_corr = B738_rescale(0, 0, idx_rnp, 45, idx_dist)
+						-- end
+					-- else
+						-- if relative_brg < -15 and idx_dist > 1 then
+							-- idx_corr = -45
+						-- else
+							-- idx_dist = B738DR_xtrack
+							-- if idx_dist > idx_rnp then
+								-- idx_dist = idx_rnp
+							-- end
+							-- idx_corr = -B738_rescale(0, 0, idx_rnp, 45, idx_dist)
+						-- end
+					-- end
+					-- ap_hdg = (mag_trk + idx_corr + 360) % 360
+				end
+				--bank angle
+				if B738DR_fms_vref ~= 0 and simDR_airspeed_pilot < (B738DR_fms_vref - 3) and simDR_airspeed_pilot > 45 then
+					simDR_bank_angle = 3	-- bank angle protection below Vref speed
+				else
+					if fix_bank_angle == 0 then
+						simDR_bank_angle = B738DR_fmc_bank_angle
+					end
+				end
+			end
+			
+			--B738DR_gps_horizont = idx_corr
+			
+			idx_corr = B738DR_xtrack
+			if B738DR_radii_turn_act == 1 then
+				if idx_corr < 0 then
+					idx_corr = idx_corr + B738DR_radii_correct
+				else
+					idx_corr = idx_corr - B738DR_radii_correct
+				end
+			end
+			if idx_corr < 0 then
+				idx_corr = -idx_corr
+				if idx_corr > B738DR_rnp then
+					idx_corr = B738DR_rnp
+				end
+				scale_horizont = -B738_rescale(0, 0, B738DR_rnp, 2.5, idx_corr)
+			else
+				if idx_corr > B738DR_rnp then
+					idx_corr = B738DR_rnp
+				end
+				scale_horizont = B738_rescale(0, 0, B738DR_rnp, 2.5, idx_corr)
+			end
+			B738DR_gps_horizont = scale_horizont
+			
+			-- if B738DR_xtrack < -2.5 then
+				-- B738DR_gps_horizont = -2.5
+			-- elseif B738DR_xtrack > 2.5 then
+				-- B738DR_gps_horizont = 2.5
+			-- else
+				-- B738DR_gps_horizont = B738DR_xtrack
+			-- end
+			
+			-- wind correction
+			mag_hdg = simDR_ahars_mag_hdg --- simDR_mag_variation
+			tas = simDR_ground_spd * 1.94384449244	-- m/s to knots
+			wh = (simDR_wind_hdg + 180) % 360
+			relative_brg = (wh - mag_hdg + 360) % 360
+			if relative_brg > 180 then
+				relative_brg = relative_brg - 360
+			end
+			if relative_brg < -90 then
+				awa = math.rad(180 + relative_brg)
+				wca = math.asin(simDR_wind_spd * ((math.sin(awa) / tas)))
+				wca = math.deg(-wca)
+			elseif relative_brg < 0 then
+				awa = math.rad(-relative_brg)
+				wca = math.asin(simDR_wind_spd * ((math.sin(awa) / tas)))
+				wca = math.deg(-wca)
+			elseif relative_brg < 90 then
+				awa = math.rad(relative_brg)
+				wca = math.asin(simDR_wind_spd * ((math.sin(awa) / tas)))
+				wca = math.deg(wca)
+			else
+				awa = math.rad(180 - relative_brg)
+				wca = math.asin(simDR_wind_spd * ((math.sin(awa) / tas)))
+				wca = math.deg(wca)
+			end
+			
+			ap_wca = B738_set_anim_value(ap_wca, wca, -360, 360, 1)
+			
+			simDR_ap_capt_heading = (ap_hdg - ap_wca) % 360
+		end
+		
+	else
+		simDR_ap_capt_heading = B738DR_mcp_hdg_dial
+	end
+	
+end
+
 
 -- function B738_gs()
 	-- if ap_roll_mode_eng == 3 and ap_pitch_mode_eng ~= 4 then	-- APP
@@ -14633,7 +15113,7 @@ airspeed_dial_kts_old = 0
 
 --B738DR_test_test = 1.0
 --B738DR_test_test2 = 2.0
-
+B738DR_test_test = 1.0
 
 end
 
@@ -14665,7 +15145,8 @@ function after_physics()
 		B738_ap_goaround()
 		B738_ap_autoland()
 		B738_ap_system()
-		B738_lnav2()
+		B738_lnav3()
+		--B738_lnav2()
 		--B738_gs()
 		B738_vnav6()
 		
