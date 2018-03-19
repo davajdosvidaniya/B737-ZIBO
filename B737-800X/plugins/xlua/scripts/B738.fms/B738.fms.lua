@@ -2395,6 +2395,16 @@ B738DR_fix_fo_rad04_1		= create_dataref("laminar/B738/nd/fix_fo_rad04_1", "strin
 B738DR_fix_fo_rad04_2		= create_dataref("laminar/B738/nd/fix_fo_rad04_2", "string")
 
 
+B738DR_acf_show 			= create_dataref("laminar/B738/nd/acf_show", "number")
+B738DR_acf_x 				= create_dataref("laminar/B738/nd/acf_x", "number")
+B738DR_acf_y 				= create_dataref("laminar/B738/nd/acf_y", "number")
+B738DR_acf_rot 				= create_dataref("laminar/B738/nd/acf_rot", "number")
+
+B738DR_acf_fo_show			= create_dataref("laminar/B738/nd/acf_fo_show", "number")
+B738DR_acf_x_fo 			= create_dataref("laminar/B738/nd/acf_x_fo", "number")
+B738DR_acf_y_fo 			= create_dataref("laminar/B738/nd/acf_y_fo", "number")
+B738DR_acf_rot_fo			= create_dataref("laminar/B738/nd/acf_rot_fo", "number")
+
 B738DR_rest_wpt_spd_id 		= create_dataref("laminar/B738/fms/rest_wpt_spd_id", "string")
 B738DR_rest_wpt_spd 		= create_dataref("laminar/B738/fms/rest_wpt_spd", "number")
 B738DR_rest_wpt_spd_idx		= create_dataref("laminar/B738/fms/rest_wpt_spd_idx", "number")
@@ -4541,10 +4551,16 @@ function create_apt_rnw_dat2()
 				
 				if jj == 3 then
 					if apt_word[1] == "1302" and apt_word[2] == "datum_lat" then
-						lat_temp = apt_word[3]
+						--lat_temp = apt_word[3]
+						if apt_lat == "0" then
+							apt_lat = apt_word[3]
+						end
 					end
 					if apt_word[1] == "1302" and apt_word[2] == "datum_lon" then
-						lon_temp = apt_word[3]
+						--lon_temp = apt_word[3]
+						if apt_lon == "0" then
+							apt_lon = apt_word[3]
+						end
 					end
 					if apt_word[1] == "1302" and apt_word[2] == "transition_alt" then
 						apt_tns_alt = apt_word[3]
@@ -4554,14 +4570,24 @@ function create_apt_rnw_dat2()
 					end
 				end
 				
-				if jj > 1 then
-					if apt_word[1] == "1302" and  apt_word[2] == "icao_code" then
-						if jj == 3 then
-							--save_airport = 1
-							apt_icao = apt_word[3]
-							apt_lat = lat_temp
-							apt_lon = lon_temp
-						end
+				-- if jj > 1 then
+					-- if apt_word[1] == "1302" and apt_word[2] == "icao_code" then
+						-- if jj == 3 then
+							-- --save_airport = 1
+							-- apt_icao = apt_word[3]
+							-- apt_lat = lat_temp
+							-- apt_lon = lon_temp
+						-- end
+						-- lat_temp = "0"
+						-- lon_temp = "0"
+					-- end
+				-- end
+				-- add protect against missing datas
+				if jj > 5 then
+					if apt_word[1] == "1" and string.len(apt_word[5]) == 4 then
+						apt_icao = apt_word[5]
+						apt_lat = "0"	--lat_temp
+						apt_lon = "0"	--lon_temp
 						lat_temp = "0"
 						lon_temp = "0"
 					end
@@ -4586,15 +4612,6 @@ function create_apt_rnw_dat2()
 							-- bad data
 						else
 						
-							-- nd_lat = math.rad(tonumber(apt_rnw_lat0))
-							-- nd_lon = math.rad(tonumber(apt_rnw_lon0))
-							-- nd_lat2 = math.rad(tonumber(apt_rnw_lat1))
-							-- nd_lon2 = math.rad(tonumber(apt_rnw_lon1))
-							
-							-- nd_x = (nd_lon2 - nd_lon) * math.cos((nd_lat + nd_lat2)/2)
-							-- nd_y = nd_lat2 - nd_lat
-							-- nd_dis = math.sqrt(nd_x*nd_x + nd_y*nd_y) * 3440.064795	-- in nm
-							
 							nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 							
 							nd_dis = nd_dis * 1852	-- in m
@@ -4666,6 +4683,12 @@ function create_apt_rnw_dat2()
 							end
 							if longest_rnw < nd_dis then
 								longest_rnw = nd_dis
+							end
+							
+							-- add protect against missing datas
+							if apt_lat == "0" and apt_lon == "0" then
+								apt_lat = apt_rnw_lat1
+								apt_lon = apt_rnw_lon1
 							end
 						end
 					end
@@ -21856,6 +21879,9 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							qqq = tonumber(zfw_kgs)
 							if qqq ~= nil then
 								qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
+								if qqq < 0 then
+									qqq = 0
+								end
 								if units == 0 then
 									gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
 									gw_app_lbs = gw_app
@@ -26603,6 +26629,9 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 					qqq = tonumber(zfw_kgs)
 					if qqq ~= nil then
 						qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
+						if qqq < 0 then
+							qqq = 0
+						end
 						if units == 0 then
 							gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
 							gw_app_lbs = gw_app
@@ -31271,6 +31300,9 @@ function B738_fmc1_init_ref_CMDhandler(phase, duration)
 						qqq = tonumber(zfw_kgs)
 						if qqq ~= nil then
 							qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
+							if qqq < 0 then
+								qqq = 0
+							end
 							if units == 0 then
 								gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
 								gw_app_lbs = gw_app
@@ -35344,7 +35376,7 @@ function B738_fmc_menu()
 		line4_l = "  Z I B O               "
 		line4_s = "           M O D  " .. version
 		if menu_tick < 5 then
-			line5_x = "FLIGHT MODEL 4.3 TWKSTER"
+			line5_x = "FLIGHT MODEL 4.4 TWKSTER"
 			line5_l = "         A   S  D  G    "
 			line5_s = "      BY  ERO IM EV ROUP"
 			line6_x = "SOUND PACK "
@@ -46461,7 +46493,217 @@ function calc_hold_rad(ahold_alt)
 end
 
 
-
+function B738_displ_acf()
+	
+	local nd_lat_acf = math.rad(ndx_lat)
+	local nd_lon_acf = math.rad(ndx_lon)
+	local nd_lat = 0
+	local nd_lon = 0
+	local mag_hdg = 0
+	local nd_lat2 = 0
+	local nd_lon2 = 0
+	local nd_dis = 0
+	local nd_x = 0
+	local nd_y = 0
+	local nd_hdg = 0
+	local delta_hdg = 0
+	local nd_zoom = 0
+	
+	if ref_icao == "----" or des_icao == "****" then
+		legs_num = 0
+	end
+	
+	if legs_num > 0 then 
+		
+		if legs_step > legs_num2 then
+			legs_step = legs_num2
+		end
+		
+		if legs_step2 > legs_num2 then
+			legs_step2 = legs_num2
+		end
+		
+		-- CAPTAIN
+		if B738DR_capt_map_mode == 3 then
+			if legs_step == 0 then
+				nd_lat = math.rad(legs_data2[1][7])
+				nd_lon = math.rad(legs_data2[1][8])
+			else
+				nd_lat = math.rad(legs_data2[legs_step][7])
+				nd_lon = math.rad(legs_data2[legs_step][8])
+			end
+			mag_hdg = -simDR_mag_variation
+		
+			nd_lat2 = nd_lat_acf
+			nd_lon2 = nd_lon_acf
+			
+			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+			
+			if nd_dis < 645 then
+				
+				nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+				nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+				nd_hdg = math.atan2(nd_y, nd_x)
+				nd_hdg = math.deg(nd_hdg)
+				nd_hdg = (nd_hdg + 360) % 360
+				
+				delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
+				
+				if delta_hdg >= 0 and delta_hdg <= 90 then
+					-- right
+					delta_hdg = 90 - delta_hdg
+					delta_hdg = math.rad(delta_hdg)
+					nd_y = nd_dis * math.sin(delta_hdg)
+					nd_x = nd_dis * math.cos(delta_hdg)
+				elseif delta_hdg < 0 and delta_hdg >= -90 then
+					-- left
+					delta_hdg = 90 + delta_hdg
+					delta_hdg = math.rad(delta_hdg)
+					nd_y = nd_dis * math.sin(delta_hdg)
+					nd_x = -nd_dis * math.cos(delta_hdg)
+				elseif delta_hdg >= 90 then
+					-- right back
+					delta_hdg = delta_hdg - 90
+					delta_hdg = math.rad(delta_hdg)
+					nd_y = -nd_dis * math.sin(delta_hdg)
+					nd_x = nd_dis * math.cos(delta_hdg)
+				elseif delta_hdg <= -90 then
+					-- left back
+					delta_hdg = -90 - delta_hdg
+					delta_hdg = math.rad(delta_hdg)
+					nd_y = -nd_dis * math.sin(delta_hdg)
+					nd_x = -nd_dis * math.cos(delta_hdg)
+				end
+				
+				if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+					nd_zoom = 2
+				elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+					nd_zoom = 1
+				elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+					nd_zoom = 0.5
+				elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+					nd_zoom = 0.25
+				elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+					nd_zoom = 0.125
+				elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
+					nd_zoom = 0.0625
+				elseif B738DR_efis_map_range_capt == 6 then	-- 320 NM
+					nd_zoom = 0.03125
+				else	-- 640 NM
+					nd_zoom = 0.015625
+				end
+				
+				nd_zoom = nd_zoom / 2
+				
+				nd_x = nd_x * nd_zoom		-- zoom
+				nd_y = nd_y * nd_zoom		-- zoom
+				nd_y = nd_y + 4.1	-- adjust center
+				
+				B738DR_acf_show = 1
+				B738DR_acf_x = nd_x
+				B738DR_acf_y = nd_y
+				B738DR_acf_rot = ndx_ahars_mag_hdg - simDR_mag_variation
+			else
+				B738DR_acf_show = 0
+			end
+		else
+			B738DR_acf_show = 0
+		end
+		
+		-- FIRST OFFICER
+		if B738DR_fo_map_mode == 3 then
+			
+			if legs_step2 == 0 then
+				nd_lat = math.rad(legs_data2[1][7])
+				nd_lon = math.rad(legs_data2[1][8])
+			else
+				nd_lat = math.rad(legs_data2[legs_step2][7])
+				nd_lon = math.rad(legs_data2[legs_step2][8])
+			end
+			
+			mag_hdg = -simDR_mag_variation
+		
+			nd_lat2 = nd_lat_acf
+			nd_lon2 = nd_lon_acf
+			
+			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+			
+			if nd_dis < 645 then
+				
+				nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+				nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+				nd_hdg = math.atan2(nd_y, nd_x)
+				nd_hdg = math.deg(nd_hdg)
+				nd_hdg = (nd_hdg + 360) % 360
+				
+				delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
+				
+				if delta_hdg >= 0 and delta_hdg <= 90 then
+					-- right
+					delta_hdg = 90 - delta_hdg
+					delta_hdg = math.rad(delta_hdg)
+					nd_y = nd_dis * math.sin(delta_hdg)
+					nd_x = nd_dis * math.cos(delta_hdg)
+				elseif delta_hdg < 0 and delta_hdg >= -90 then
+					-- left
+					delta_hdg = 90 + delta_hdg
+					delta_hdg = math.rad(delta_hdg)
+					nd_y = nd_dis * math.sin(delta_hdg)
+					nd_x = -nd_dis * math.cos(delta_hdg)
+				elseif delta_hdg >= 90 then
+					-- right back
+					delta_hdg = delta_hdg - 90
+					delta_hdg = math.rad(delta_hdg)
+					nd_y = -nd_dis * math.sin(delta_hdg)
+					nd_x = nd_dis * math.cos(delta_hdg)
+				elseif delta_hdg <= -90 then
+					-- left back
+					delta_hdg = -90 - delta_hdg
+					delta_hdg = math.rad(delta_hdg)
+					nd_y = -nd_dis * math.sin(delta_hdg)
+					nd_x = -nd_dis * math.cos(delta_hdg)
+				end
+				
+				if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+					nd_zoom = 2
+				elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+					nd_zoom = 1
+				elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+					nd_zoom = 0.5
+				elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+					nd_zoom = 0.25
+				elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+					nd_zoom = 0.125
+				elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
+					nd_zoom = 0.0625
+				elseif B738DR_efis_map_range_fo == 6 then	-- 320 NM
+					nd_zoom = 0.03125
+				else	-- 640 NM
+					nd_zoom = 0.015625
+				end
+				
+				nd_zoom = nd_zoom / 2
+				
+				nd_x = nd_x * nd_zoom		-- zoom
+				nd_y = nd_y * nd_zoom		-- zoom
+				nd_y = nd_y + 4.1	-- adjust center
+				
+				B738DR_acf_fo_show = 1
+				B738DR_acf_x_fo = nd_x
+				B738DR_acf_y_fo = nd_y
+				B738DR_acf_rot_fo = ndx_ahars_mag_hdg - simDR_mag_variation
+			else
+				B738DR_acf_fo_show = 0
+			end
+		else
+			B738DR_acf_fo_show = 0
+		end
+	else
+		B738DR_acf_show = 0
+		B738DR_acf_fo_show = 0
+	end
+	
+end
 
 function B738_displ_wpt()
 
@@ -62911,7 +63153,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25i"
+	version = "v3.25j"
 
 end
 
@@ -63043,6 +63285,38 @@ function B738_ff_approx()
 	-- ff_total_old = ff_total
 end
 
+function B738_gw_approach()
+	
+	if gw_app_nul == 0 then
+		gw_app = "***.*"
+		gw_app_lbs = gw_app
+		gw_app_kgs = gw_app
+		--gw_app_nul = 0
+		if legs_num > 1 then
+			if legs_data[legs_num][40] ~= 0 then
+				qqq = tonumber(zfw_kgs)
+				if qqq ~= nil then
+					qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
+					if qqq < 0 then
+						qqq = 0
+					end
+					if units == 0 then
+						gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
+						gw_app_lbs = gw_app
+						gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
+					else
+						gw_app = string.format("%5.1f", qqq)		-- to kgs
+						gw_app_kgs = gw_app
+						gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
+					end
+				end
+			end
+		end
+	end
+	
+end
+
+
 --*************************************************************************************--
 --** 				               XLUA EVENT CALLBACKS       	        			 **--
 --*************************************************************************************--
@@ -63139,6 +63413,10 @@ function flight_start()
 	
 	if is_timer_scheduled(B738_ff_approx) == false then
 		run_at_interval(B738_ff_approx, 1)
+	end
+	
+	if is_timer_scheduled(B738_gw_approach) == false then
+		run_at_interval(B738_gw_approach, 5)
 	end
 	
 end
@@ -63250,7 +63528,7 @@ function after_physics()
 				--if B738DR_kill_fms_navaid3 == 0 then
 				
 				B738_displ_wpt()
-				
+				B738_displ_acf()
 				--end
 			end
 		end

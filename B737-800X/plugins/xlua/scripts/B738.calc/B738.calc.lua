@@ -2329,10 +2329,21 @@ end
 function B738_calc_vref()
 
 	--local gw_to = B738DR_fmc_gw / 2.204	-- to x1000 kg
-	local gw_to = B738DR_fmc_gw_app / 2.204	-- to x1000 kg
+	--local gw_to = B738DR_fmc_gw_app / 2.204	-- to x1000 kg
+	local gw_to = 0
 	local weight_min = 0
 	local weight_max = 0
 		
+	if B738DR_flight_phase < 2 then
+		gw_to = B738DR_fmc_gw / 2.204	-- to x1000 kg
+	else
+		-- if B738DR_fmc_gw_app == 0 then
+			-- gw_to = B738DR_fmc_gw / 2.204	-- to x1000 kg
+		-- else
+			gw_to = B738DR_fmc_gw_app / 2.204	-- to x1000 kg
+		-- end
+	end
+	
 	if gw_to ~= 0 then
 		
 		-- Weight: 40 to 85  x1000 kg
@@ -2399,7 +2410,7 @@ function B738_vspeed_bugs()
 	local gw_to = B738DR_fmc_gw
 	local flaps_to = B738DR_fms_takeoff_flaps
 	local flap_1_show = 0
-  local flap_5_show = 0
+	local flap_5_show = 0
 	local flap_15_show = 0
 
 	-- show V2+15 bug
@@ -2505,7 +2516,7 @@ function B738_vspeed_bugs()
 	-- flaps bugs 1, 5, 15 show
 	local vref_4 = 0
 	vref_4 = B738DR_fms_vref + 4
-	if flaps > 0.75 or simDR_airspeed_pilot < vref_4 then --or B738DR_fms_vref > 0 then	-- flaps move to 30 or 40
+	if flaps > 0.75 or (simDR_airspeed_pilot < vref_4 and B738DR_fms_vref ~= 0) then --or B738DR_fms_vref > 0 then	-- flaps move to 30 or 40
 		flap_1_show = 0
 		flap_5_show = 0
 		flap_15_show = 0
@@ -2527,7 +2538,8 @@ function B738_vspeed_bugs()
 			flap_15_show = 0
 		end
 	end
---	if B738DR_fms_v2_bugs == 1 then
+
+	--	if B738DR_fms_v2_bugs == 1 then
 	if B738DR_flight_phase < 2 then
 		if flaps < 0.124 then		-- flaps 1
 			flap_1_show = 0

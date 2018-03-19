@@ -77,6 +77,15 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25j:
+------
+- tuned flight model by Twkster (better landing stab, rudder pedal steering)
+- add aircraft symbol to MAP mode (ND)
+- fixed own database if default navdata are missing
+- fixed small bugs (flaps bug on PFD, GW predict...)
+Note: You need delete files B738X_apt.dat and B738X_rnw.dat (located in root B738X install folder).
+
+
 3.25i:
 ------
 - rewrited code for LNAV
