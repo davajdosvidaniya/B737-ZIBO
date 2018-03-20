@@ -2329,20 +2329,20 @@ end
 function B738_calc_vref()
 
 	--local gw_to = B738DR_fmc_gw / 2.204	-- to x1000 kg
-	--local gw_to = B738DR_fmc_gw_app / 2.204	-- to x1000 kg
-	local gw_to = 0
+	local gw_to = B738DR_fmc_gw_app / 2.204	-- to x1000 kg
+	--local gw_to = 0
 	local weight_min = 0
 	local weight_max = 0
 		
-	if B738DR_flight_phase < 2 then
-		gw_to = B738DR_fmc_gw / 2.204	-- to x1000 kg
-	else
-		-- if B738DR_fmc_gw_app == 0 then
-			-- gw_to = B738DR_fmc_gw / 2.204	-- to x1000 kg
-		-- else
-			gw_to = B738DR_fmc_gw_app / 2.204	-- to x1000 kg
-		-- end
-	end
+	-- if B738DR_flight_phase < 2 then
+		-- gw_to = B738DR_fmc_gw / 2.204	-- to x1000 kg
+	-- else
+		-- -- if B738DR_fmc_gw_app == 0 then
+			-- -- gw_to = B738DR_fmc_gw / 2.204	-- to x1000 kg
+		-- -- else
+			-- gw_to = B738DR_fmc_gw_app / 2.204	-- to x1000 kg
+		-- -- end
+	-- end
 	
 	if gw_to ~= 0 then
 		

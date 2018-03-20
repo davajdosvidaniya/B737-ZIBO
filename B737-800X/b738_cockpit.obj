@@ -18398,12 +18398,12 @@ ANIM_begin
 	ANIM_hide	0.0 0.5	sim/graphics/view/hide_yoke
 	ANIM_show	0.5 1.0	sim/graphics/view/hide_yoke
 	ANIM_trans	  -0.5075   -0.4866    2.1775	  -0.5075   -0.4866    2.1775	0 0	no_ref
-	ANIM_rotate	  -1.0000    0.0000   -0.0000	 10.00 -10.00	-1.0 1	sim/cockpit2/controls/yoke_pitch_ratio
+	ANIM_rotate	  -1.0000    0.0000   -0.0000	 10.00 -10.00	-1.0 1	laminar/yoke/pitch
 	ANIM_begin
 		ANIM_hide	0.0 0.5	sim/graphics/view/hide_yoke
 		ANIM_show	0.5 1.0	sim/graphics/view/hide_yoke
 		ANIM_trans	   0.0000    0.8040   -0.0011	   0.0000    0.8040   -0.0011	0 0	no_ref
-		ANIM_rotate	  -0.0000   -0.0872   -0.9962	  0.00 107.50	0 1	sim/cockpit2/controls/yoke_roll_ratio
+		ANIM_rotate	  -0.0000   -0.0872   -0.9962	  0.00 107.50	0 1	laminar/yoke/roll
 		ANIM_begin
 			ANIM_trans	   0.0000   -0.0203    0.0781	   0.0000   -0.0203    0.0781	0 0	no_ref
 			ANIM_rotate	  -1.0000    0.0000    0.0000	  7.00   7.00	0 1	laminar/no_ref
@@ -18415,7 +18415,7 @@ ANIM_begin
 		ANIM_hide	0.0 0.5	sim/graphics/view/hide_yoke
 		ANIM_show	0.5 1.0	sim/graphics/view/hide_yoke
 		ANIM_trans	   1.0149    0.8040   -0.0011	   1.0149    0.8040   -0.0011	0 0	no_ref
-		ANIM_rotate	  -0.0000   -0.0872   -0.9962	  0.00 107.50	0 1	sim/cockpit2/controls/yoke_roll_ratio
+		ANIM_rotate	  -0.0000   -0.0872   -0.9962	  0.00 107.50	0 1	laminar/yoke/roll
 		ANIM_begin
 			ANIM_trans	   0.0000   -0.0203    0.0781	   0.0000   -0.0203    0.0781	0 0	no_ref
 			ANIM_rotate	  -1.0000    0.0000    0.0000	  7.00   7.00	0 1	laminar/no_ref

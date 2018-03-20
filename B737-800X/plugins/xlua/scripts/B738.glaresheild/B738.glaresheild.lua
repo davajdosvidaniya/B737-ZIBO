@@ -368,6 +368,8 @@ airspeed_dial_kts_old = 0
 
 alt_acq_disable = 0
 
+yoke_servo = 0
+
 --*************************************************************************************--
 --** 					               CONSTANTS                    				 **--
 --*************************************************************************************--
@@ -579,6 +581,18 @@ simDR_efis_vor_on		= find_dataref("sim/cockpit2/EFIS/EFIS_vor_on")
 simDR_efis_apt_on		= find_dataref("sim/cockpit2/EFIS/EFIS_airport_on")
 simDR_efis_fix_on		= find_dataref("sim/cockpit2/EFIS/EFIS_fix_on")
 simDR_efis_wxr_on		= find_dataref("sim/cockpit2/EFIS/EFIS_weather_on")
+
+simDR_servo_pitch_ratio		= find_dataref("sim/joystick/servo_pitch_ratio")
+simDR_servo_roll_ratio		= find_dataref("sim/joystick/servo_roll_ratio")
+simDR_servo_heading_ratio	= find_dataref("sim/joystick/servo_heading_ratio")
+
+simDR_heading_ratio			= find_dataref("sim/joystick/yoke_heading_ratio")
+simDR_pitch_ratio			= find_dataref("sim/joystick/yoke_pitch_ratio")
+simDR_roll_ratio			= find_dataref("sim/joystick/yoke_roll_ratio")
+
+simDR_heading_ratio2		= find_dataref("sim/cockpit2/controls/yoke_heading_ratio")
+simDR_pitch_ratio2			= find_dataref("sim/cockpit2/controls/yoke_pitch_ratio")
+simDR_roll_ratio2			= find_dataref("sim/cockpit2/controls/yoke_roll_ratio")
 
 --- VNAV
 --td_dist						= find_dataref("laminar/B738/fms/td_dist")
@@ -1295,6 +1309,7 @@ B738DR_nav_bearing_fo		= create_dataref("laminar/radios/copilot/nav_bearing", "n
 B738DR_nav_course_fo		= create_dataref("laminar/radios/copilot/nav_course", "number")
 B738DR_nav_type_fo			= create_dataref("laminar/radios/copilot/nav_type", "number")
 
+
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
 --*************************************************************************************--
@@ -1365,9 +1380,16 @@ function B738DR_test_test2_DRhandler() end
 
 function B738DR_kill_glareshield_DRhandler() end
 
+function B738DR_yoke_roll_DRhandler() end
+function B738DR_yoke_pitch_DRhandler() end
+
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
+
+B738DR_yoke_roll			= create_dataref("laminar/yoke/roll", "number", B738DR_yoke_roll_DRhandler)
+B738DR_yoke_pitch			= create_dataref("laminar/yoke/pitch", "number", B738DR_yoke_pitch_DRhandler)
+
 
 B738DR_kill_glareshield	= create_dataref("laminar/B738/perf/kill_glareshield", "number", B738DR_kill_glareshield_DRhandler)
 
@@ -6759,6 +6781,7 @@ function B738_lnav3()
 	local pom1 = 0
 	local gnd_spd = 0
 	local target_hdg = 0
+	local max_idx_dist = 0
 	
 	--local tgt_heading = 0
 	--local act_heading = 0
@@ -7036,18 +7059,18 @@ function B738_lnav3()
 						idx_dist = B738DR_xtrack - B738_rescale(71, 0.40, 236, 0.47, gnd_spd)
 					end
 					
-					
+					max_idx_dist = B738_rescale(71, 1, 236, 2, gnd_spd)
 					if idx_dist < 0 then
 						idx_dist = -idx_dist
-						if idx_dist > 1 then
-							idx_dist = 1
+						if idx_dist > max_idx_dist then
+							idx_dist = max_idx_dist
 						end
-						idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
+						idx_corr = B738_rescale(0, 0, max_idx_dist, 45, idx_dist)
 					else
-						if idx_dist > 1 then
-							idx_dist = 1
+						if idx_dist > max_idx_dist then
+							idx_dist = max_idx_dist
 						end
-						idx_corr = -B738_rescale(0, 0, 1, 45, idx_dist)
+						idx_corr = -B738_rescale(0, 0, max_idx_dist, 45, idx_dist)
 					end
 					ap_hdg = (simDR_fmc_trk2 + idx_corr + 360) % 360
 					
@@ -7075,11 +7098,11 @@ function B738_lnav3()
 					-- ap_hdg = (mag_trk + idx_corr + 360) % 360
 				else
 					-----
-					-- gnd_spd = math.min(simDR_ground_spd, 230)
-					-- gnd_spd = math.max(gnd_spd, 70)
+					gnd_spd = math.min(simDR_ground_spd, 236)
+					gnd_spd = math.max(gnd_spd, 71)
 					-- idx_rnp = B738_rescale(70, 1.5, 230, 3.2, gnd_spd)
 					
-					
+					max_idx_dist = B738_rescale(71, 1, 236, 2, gnd_spd)
 					if B738DR_xtrack < 0 then
 						idx_dist = -B738DR_xtrack
 						-- if idx_dist > idx_rnp then
@@ -7087,11 +7110,11 @@ function B738_lnav3()
 						-- end
 						--idx_corr = B738_rescale(0, 0, idx_rnp, 45, idx_dist)
 						idx_dist = idx_dist * idx_dist * 1.85
-						if idx_dist > 1 then
-							idx_dist = 1
+						if idx_dist > max_idx_dist then
+							idx_dist = max_idx_dist
 						end
 						--idx_dist = idx_dist * idx_dist
-						idx_corr = B738_rescale(0, 0, 1, 45, idx_dist)
+						idx_corr = B738_rescale(0, 0, max_idx_dist, 45, idx_dist)
 					else
 						idx_dist = B738DR_xtrack
 						-- if idx_dist > idx_rnp then
@@ -7100,11 +7123,11 @@ function B738_lnav3()
 						--idx_corr = -B738_rescale(0, 0, idx_rnp, 45, idx_dist)
 						
 						idx_dist = idx_dist * idx_dist * 1.85
-						if idx_dist > 1 then
-							idx_dist = 1
+						if idx_dist > max_idx_dist then
+							idx_dist = max_idx_dist
 						end
 						--idx_dist = idx_dist * idx_dist
-						idx_corr = -B738_rescale(0, 0, 1, 45, idx_dist)
+						idx_corr = -B738_rescale(0, 0, max_idx_dist, 45, idx_dist)
 					end
 					ap_hdg = (simDR_fmc_trk + simDR_mag_variation + idx_corr + 360) % 360
 					--B738DR_test_test = idx_corr
@@ -9542,6 +9565,15 @@ function B738_ap_autoland()
 		ra_fdpitch = math.min(2.5, simDR_fdir_pitch)
 		ra_fdpitch = math.max(0, simDR_fdir_pitch)
 		ra_thrshld = B738_rescale(0, 78, 2.5, 68, ra_fdpitch)
+		if B738DR_fms_approach_speed > 134 then
+			ra_thrshld = ra_thrshld - (1.5 * (B738DR_fms_approach_speed - 135))
+			if ra_thrshld < 50 then
+				ra_thrshld = 50
+			end
+			if ra_thrshld > 78 then
+				ra_thrshld = 78
+			end
+		end
 		--ra_thrshld = B738_rescale(0, 78, 2.5, 68, ra_fdpitch)
 		if simDR_radio_height_pilot_ft < ra_thrshld then -- 63, 43 -- at 50 ft FLARE
 			B738DR_flare_status = 2			-- FLARE engaged
@@ -9580,7 +9612,8 @@ function B738_ap_autoland()
 			if is_timer_scheduled(B738_adjust_flare) == false then
 				run_at_interval(B738_adjust_flare, 0.5)	--0.3)
 			end
-			B738DR_flare_ratio = B738_rescale(580, 3.4, 1000, 5.9, delta_vvi)		-- 3.2 / 5.9
+			--B738DR_flare_ratio = B738_rescale(580, 3.4, 1000, 5.9, delta_vvi)		-- 3.2 / 5.9
+			B738DR_flare_ratio = B738_rescale(0, 5.9, 2.5, 3.4, ra_fdpitch)
 		end
 -----------------------------------------------------------------------
 		
@@ -12856,7 +12889,7 @@ function B738_draw_arc()
 	local arc_vvi = 0
 	
 	--if simDR_EFIS_mode == 2 and B738DR_capt_map_mode <= 2 then
-	if (B738DR_capt_map_mode <= 2 or B738DR_fo_map_mode <= 2) then --and ap_pitch_mode ~= 5 then
+	if (B738DR_capt_map_mode == 2 or B738DR_fo_map_mode == 2) then --and ap_pitch_mode ~= 5 then
 		if ap_pitch_mode == 1 then		-- V/S
 			arc_vvi = simDR_ap_vvi_dial
 			if arc_vvi > 100 and simDR_ap_altitude_dial_ft > simDR_altitude_pilot then
@@ -12873,7 +12906,7 @@ function B738_draw_arc()
 				arc_dist = simDR_ground_spd * arc_time * 0.00054	-- m to NM
 				
 				-- Captain
-				if B738DR_capt_map_mode <= 2 and B738DR_capt_exp_map_mode == 1 then
+				if B738DR_capt_map_mode == 2 then 	--and B738DR_capt_exp_map_mode == 1 then
 					arc_zoom = 0
 					if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 						arc_zoom = 0.226
@@ -12902,7 +12935,7 @@ function B738_draw_arc()
 				end
 				
 				-- First Officer
-				if B738DR_fo_map_mode <= 2 and B738DR_fo_exp_map_mode == 1 then
+				if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode == 1 then
 					arc_zoom = 0
 					if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 						arc_zoom = 0.226
@@ -12948,7 +12981,7 @@ function B738_draw_arc()
 				arc_dist = simDR_ground_spd * arc_time * 0.00054	-- m to NM
 				
 				-- Captain
-				if B738DR_capt_map_mode <= 2 and B738DR_capt_exp_map_mode == 1 then
+				if B738DR_capt_map_mode == 2 then	--and B738DR_capt_exp_map_mode == 1 then
 					arc_zoom = 0
 					if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 						arc_zoom = 0.226
@@ -12977,7 +13010,7 @@ function B738_draw_arc()
 				end
 				
 				-- First Officer
-				if B738DR_fo_map_mode <= 2 and B738DR_fo_exp_map_mode == 1 then
+				if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode == 1 then
 					arc_zoom = 0
 					if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 						arc_zoom = 0.226
@@ -13024,7 +13057,7 @@ function B738_draw_arc()
 					arc_dist = simDR_ground_spd * arc_time * 0.00054	-- m to NM
 				
 					-- Captain
-					if B738DR_capt_map_mode <= 2 and B738DR_capt_exp_map_mode == 1 then
+					if B738DR_capt_map_mode == 2 then	--and B738DR_capt_exp_map_mode == 1 then
 						arc_zoom = 0
 						if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 							arc_zoom = 0.226
@@ -13053,7 +13086,7 @@ function B738_draw_arc()
 					end
 					
 					-- First Officer
-					if B738DR_fo_map_mode <= 2 and B738DR_fo_exp_map_mode == 1 then
+					if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode == 1 then
 						arc_zoom = 0
 						if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 							arc_zoom = 0.226
@@ -13127,7 +13160,8 @@ function B738_vor_sel()
 		simDR_hsi_crs2 = simDR_nav1_obs_copilot
 	-- end
 	
-	if B738DR_capt_exp_map_mode == 1 and B738DR_capt_map_mode ~= 3 then
+	--if B738DR_capt_exp_map_mode == 1 and B738DR_capt_map_mode ~= 3 then
+	if B738DR_capt_map_mode == 2 then
 		
 		-- CAPTAIN VOR1
 --		if simDR_vor1_capt == 2 and simDR_nav1_type == 4 then	-- VOR select
@@ -13489,7 +13523,8 @@ function B738_vor_sel()
 	
 	
 	
-	if B738DR_fo_exp_map_mode == 1 and B738DR_fo_map_mode ~= 3 then
+	--if B738DR_fo_exp_map_mode == 1 and B738DR_fo_map_mode ~= 3 then
+	if B738DR_fo_map_mode == 2 then
 	
 		-- FIRST OFFICER VOR1
 		str_len = 0
@@ -14806,6 +14841,52 @@ function B738_nd()
 	
 end
 
+function B738_yoke()
+	
+	local yoke_pitch = 0
+	local yoke_roll = 0
+	
+	if simDR_flight_dir_mode == 2 then
+		simDR_pitch_ratio2 = B738_set_anim_value(simDR_pitch_ratio2, 0, -1.0, 1.0, 3)
+		simDR_roll_ratio2 = B738_set_anim_value(simDR_roll_ratio2, 0, -1.0, 1.0, 3)
+		simDR_heading_ratio2 = B738_set_anim_value(simDR_heading_ratio2, 0, -1.0, 1.0, 3)
+		
+		yoke_pitch = simDR_pitch_ratio2 + simDR_servo_pitch_ratio
+		yoke_pitch = math.min(yoke_pitch, 1.0)
+		yoke_pitch = math.max(yoke_pitch, -1.0)
+		
+		yoke_roll = simDR_roll_ratio2 + simDR_servo_roll_ratio
+		yoke_roll = math.min(yoke_roll, 1.0)
+		yoke_roll = math.max(yoke_roll, -1.0)
+		
+		B738DR_yoke_pitch = B738_set_anim_value(B738DR_yoke_pitch, yoke_pitch, -1.0, 1.0, 3)
+		B738DR_yoke_roll = B738_set_anim_value(B738DR_yoke_roll, yoke_roll, -1.0, 1.0, 3)
+		
+		yoke_servo = 1
+	else
+		if yoke_servo == 0 then
+			B738DR_yoke_pitch = simDR_pitch_ratio2
+			B738DR_yoke_roll = simDR_roll_ratio2
+		else
+			B738DR_yoke_pitch = B738_set_anim_value(B738DR_yoke_pitch, simDR_pitch_ratio2, -1.0, 1.0, 3)
+			B738DR_yoke_roll = B738_set_anim_value(B738DR_yoke_roll, simDR_roll_ratio2, -1.0, 1.0, 3)
+			yoke_pitch = B738DR_yoke_pitch - simDR_pitch_ratio2
+			if yoke_pitch < 0 then
+				yoke_pitch = -yoke_pitch
+			end
+			yoke_roll = B738DR_yoke_roll - simDR_roll_ratio2
+			if yoke_roll < 0 then
+				yoke_roll = -yoke_roll
+			end
+			if yoke_pitch < 0.01 and yoke_roll < 0.01 then
+				yoke_servo = 0
+			end
+		end
+	end
+	
+end
+
+
 --*************************************************************************************--
 --** 				               XLUA EVENT CALLBACKS       	        			 **--
 --*************************************************************************************--
@@ -15193,6 +15274,7 @@ function after_physics()
 		simDR_efis_sub_mode = 2
 		simDR_efis_map_mode = 0
 		B738_nd()
+		B738_yoke()
 		--B738DR_mcp_hdg_dial_nd = B738DR_test_test
 		--B738DR_data_test = 0
 		--B738DR_test_test = SIM_PERIOD

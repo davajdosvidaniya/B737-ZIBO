@@ -8995,7 +8995,7 @@ function B738_nose_steer()
 	local roll_co_max = 0
 	
 	local brake_max = 1.0	--0.15/0.25
-	local brake_min = 0.15	--0.25/0.08/0.15
+	local brake_min = 0.25	--0.15/0.25/0.08/0.15
 	local steer_limit = 0
 	local steer_spd = 0
 	local brake_max2 = 0

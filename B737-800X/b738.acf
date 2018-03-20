@@ -158,7 +158,7 @@ P _gear/0/_lonE 0.0
 P _gear/0/_lonN 0.0
 P _gear/0/_lonR 111.0
 P _gear/0/_scon 112094.945312500
-P _gear/0/_stat_def 0.105244994
+P _gear/0/_stat_def 0.105245017
 P _gear/0/_steerdeg_hispeed 6.0
 P _gear/0/_steerdeg_lospeed 63.0
 P _gear/0/_strut_comp 0.0
@@ -192,7 +192,7 @@ P _gear/1/_lonE -4.0
 P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 112094.945312500
-P _gear/1/_stat_def 0.724378943
+P _gear/1/_stat_def 0.724379003
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -226,7 +226,7 @@ P _gear/2/_lonE -4.0
 P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 112094.945312500
-P _gear/2/_stat_def 0.724378943
+P _gear/2/_stat_def 0.724379003
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -46135,7 +46135,6 @@ GROUP MFD CAPT FO
       SHOW_LESS 0.000000 laminar/B738/perf/kill_fms_navaid
       LOCKED
       HIDE
-      GROUP_OPEN
       GROUP NDx FO
         LOCKED
         HIDE
@@ -65519,7 +65518,7 @@ GROUP MFD CAPT FO
       SHOW_LESS 1.000000 laminar/B738/EFIS_control/fo/map_mode_pos
       SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/fo/exp_map
       LOCKED
-      HIDE
+      GROUP_OPEN
       GROUP_ANIMATE_MODE TRANSLATE
       GROUP_WIDTH 490
       GROUP_HEIGHT 500
@@ -65530,9 +65529,22 @@ GROUP MFD CAPT FO
       KEY_FRAME 1.000000 0.000000
       IS_VERTICAL 0
       OFFSET 0.000000
+      gen_pointer ACF CTR 2
+        POS 771.500000 502.000000
+        IMAGE EFIS/acf2
+        DATAREF 
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 3
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1.000000 6.000000
+        IS_DRAGGABLE 0
+        IS_VERTICAL 1
+        OFFSET 0.000000
+
       GROUP HDG CTR rot
         LOCKED
-        HIDE
         GROUP_OPEN
         GROUP_ANIMATE_MODE ROTATE
         GROUP_WIDTH 0
@@ -65548,7 +65560,6 @@ GROUP MFD CAPT FO
           IMAGE EFIS/efis_hdg
           DATAREF 
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -65564,7 +65575,7 @@ GROUP MFD CAPT FO
       SHOW_LESS 1.000000 laminar/B738/EFIS_control/fo/map_mode_pos
       SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/fo/exp_map
       LOCKED
-      HIDE
+      GROUP_OPEN
       GROUP_ANIMATE_MODE TRANSLATE
       GROUP_WIDTH 400
       GROUP_HEIGHT 400
@@ -65577,7 +65588,6 @@ GROUP MFD CAPT FO
       OFFSET 0.000000
       GROUP ND CRS rot
         LOCKED
-        HIDE
         GROUP_OPEN
         GROUP_ANIMATE_MODE ROTATE
         GROUP_WIDTH 0
@@ -65593,7 +65603,6 @@ GROUP MFD CAPT FO
           IMAGE EFIS/nd_crs
           DATAREF 
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -65608,7 +65617,6 @@ GROUP MFD CAPT FO
           IMAGE EFIS/nd_crs_hor
           DATAREF 
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -91906,7 +91914,6 @@ GROUP MFD CAPT FO
       SHOW_EQUAL 1.000000 laminar/B738/EFIS_control/capt/exp_map
       LOCKED
       HIDE
-      GROUP_OPEN
       GROUP_ANIMATE_MODE TRANSLATE
       GROUP_WIDTH 500
       GROUP_HEIGHT 490
@@ -92102,7 +92109,7 @@ GROUP MFD CAPT FO
       SHOW_LESS 1.000000 laminar/B738/EFIS_control/capt/map_mode_pos
       SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/capt/exp_map
       LOCKED
-      HIDE
+      GROUP_OPEN
       GROUP_ANIMATE_MODE TRANSLATE
       GROUP_WIDTH 490
       GROUP_HEIGHT 500
@@ -92113,9 +92120,22 @@ GROUP MFD CAPT FO
       KEY_FRAME 1.000000 0.000000
       IS_VERTICAL 0
       OFFSET 0.000000
+      gen_pointer ACF CTR
+        POS 771.500000 -10.000000
+        IMAGE EFIS/acf2
+        DATAREF 
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 2
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1.000000 6.000000
+        IS_DRAGGABLE 0
+        IS_VERTICAL 1
+        OFFSET 0.000000
+
       GROUP HDG CTR rot
         LOCKED
-        HIDE
         GROUP_OPEN
         GROUP_ANIMATE_MODE ROTATE
         GROUP_WIDTH 0
@@ -92131,7 +92151,6 @@ GROUP MFD CAPT FO
           IMAGE EFIS/efis_hdg
           DATAREF 
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92147,7 +92166,7 @@ GROUP MFD CAPT FO
       SHOW_LESS 1.000000 laminar/B738/EFIS_control/capt/map_mode_pos
       SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/capt/exp_map
       LOCKED
-      HIDE
+      GROUP_OPEN
       GROUP_ANIMATE_MODE TRANSLATE
       GROUP_WIDTH 400
       GROUP_HEIGHT 400
@@ -92160,7 +92179,6 @@ GROUP MFD CAPT FO
       OFFSET 0.000000
       GROUP ND CRS rot
         LOCKED
-        HIDE
         GROUP_OPEN
         GROUP_ANIMATE_MODE ROTATE
         GROUP_WIDTH 0
@@ -92176,7 +92194,6 @@ GROUP MFD CAPT FO
           IMAGE EFIS/nd_crs
           DATAREF 
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92191,7 +92208,6 @@ GROUP MFD CAPT FO
           IMAGE EFIS/nd_crs_hor
           DATAREF 
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92710,7 +92726,6 @@ GROUP MFD CAPT FO
   END_GROUP
   GROUP DO NOT SHOW in PLAN
     LOCKED
-    GROUP_OPEN
     GROUP Captain
       SHOW_LESS 2.000000 laminar/B738/EFIS_control/capt/map_mode_pos
       LOCKED
@@ -96161,7 +96176,8 @@ GROUP PLAN Range FO
 
 END_GROUP
 GROUP EFIS annun
-  SHOW_EQUAL 1.000000 laminar/B738/EFIS_control/capt/exp_map
+  SHOW_EQUAL 2.000000 laminar/B738/EFIS_control/capt/map_mode_pos
+  GROUP_OPEN
   gen_rotary WPT
     POS 542.000000 -76.000000
     IMAGE MFD/EFIS_mode/WPT
@@ -96248,7 +96264,8 @@ GROUP EFIS annun
 
 END_GROUP
 GROUP EFIS annun FO
-  SHOW_EQUAL 1.000000 laminar/B738/EFIS_control/fo/exp_map_mode
+  SHOW_EQUAL 2.000000 laminar/B738/EFIS_control/fo/map_mode_pos
+  GROUP_OPEN
   gen_rotary WPT 2
     POS 542.000000 436.000000
     IMAGE MFD/EFIS_mode/WPT

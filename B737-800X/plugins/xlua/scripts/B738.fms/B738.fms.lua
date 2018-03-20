@@ -21865,35 +21865,35 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 			local qqq = 0
 			if strlen > 0 then
 				if entry == ">DELETE" then
+					entry = ""
 					-- gw_app = "***.*"
 					-- gw_app_lbs = gw_app
 					-- gw_app_kgs = gw_app
-					-- gw_app_nul = 1
-					entry = ""
-					gw_app = "***.*"
-					gw_app_lbs = gw_app
-					gw_app_kgs = gw_app
+					-- gw_app_nul = 0
+					-- if legs_num > 1 then
+						-- if legs_data[legs_num][40] ~= 0 then
+							-- qqq = tonumber(zfw_kgs)
+							-- if qqq ~= nil then
+								-- qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
+								-- if qqq < 0 then
+									-- qqq = 0
+								-- end
+								-- if units == 0 then
+									-- gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
+									-- gw_app_lbs = gw_app
+									-- gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
+								-- else
+									-- gw_app = string.format("%5.1f", qqq)		-- to kgs
+									-- gw_app_kgs = gw_app
+									-- gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
+								-- end
+							-- end
+						-- end
+					-- end
 					gw_app_nul = 0
-					if legs_num > 1 then
-						if legs_data[legs_num][40] ~= 0 then
-							qqq = tonumber(zfw_kgs)
-							if qqq ~= nil then
-								qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
-								if qqq < 0 then
-									qqq = 0
-								end
-								if units == 0 then
-									gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
-									gw_app_lbs = gw_app
-									gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
-								else
-									gw_app = string.format("%5.1f", qqq)		-- to kgs
-									gw_app_kgs = gw_app
-									gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
-								end
-							end
-						end
-					end
+					gw_app = gw
+					gw_app_lbs = gw_lbs
+					gw_app_kgs = gw_kgs
 				else
 					if n == nil then
 						entry = INVALID_INPUT
@@ -22432,9 +22432,18 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					n = (n * 9 / 5) + 32
 					oat_f = string.format("%4d", n)
 					oat_unit = "`C"
+					if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+						if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+							entry = ""
+						else
+							add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+							entry = ""
+						end
+					end
 					v1_set = "---"
 					vr_set = "---"
 					v2_set = "---"
+					B738DR_calc_vspd = 1
 				elseif strlen > 0 then
 					if entry == ">DELETE" then
 						sel_temp = "----"
@@ -26619,31 +26628,35 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 			page_init = 0
 			page_approach = 1
 			display_update = 1
-			local qqq = 0
-			gw_app = "***.*"
-			gw_app_lbs = gw_app
-			gw_app_kgs = gw_app
+			-- local qqq = 0
+			-- gw_app = "***.*"
+			-- gw_app_lbs = gw_app
+			-- gw_app_kgs = gw_app
+			-- gw_app_nul = 0
+			-- if legs_num > 1 then
+				-- if legs_data[legs_num][40] ~= 0 then
+					-- qqq = tonumber(zfw_kgs)
+					-- if qqq ~= nil then
+						-- qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
+						-- if qqq < 0 then
+							-- qqq = 0
+						-- end
+						-- if units == 0 then
+							-- gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
+							-- gw_app_lbs = gw_app
+							-- gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
+						-- else
+							-- gw_app = string.format("%5.1f", qqq)		-- to kgs
+							-- gw_app_kgs = gw_app
+							-- gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
+						-- end
+					-- end
+				-- end
+			-- end
 			gw_app_nul = 0
-			if legs_num > 1 then
-				if legs_data[legs_num][40] ~= 0 then
-					qqq = tonumber(zfw_kgs)
-					if qqq ~= nil then
-						qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
-						if qqq < 0 then
-							qqq = 0
-						end
-						if units == 0 then
-							gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
-							gw_app_lbs = gw_app
-							gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
-						else
-							gw_app = string.format("%5.1f", qqq)		-- to kgs
-							gw_app_kgs = gw_app
-							gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
-						end
-					end
-				end
-			end
+			gw_app = gw
+			gw_app_lbs = gw_lbs
+			gw_app_kgs = gw_kgs
 		elseif page_pos_init == 2 then
 			if B738DR_gps2_pos == "-----.-------.-" then
 				entry = ""
@@ -28230,6 +28243,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 			local strlen = string.len(entry)
 			local item = 0
 			local button = 1	-- button 1 RSK
+			local qqq = 0
 			
 			if nav_mode == 1 then
 				item = legs_num2 + 2
@@ -28260,6 +28274,25 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 										entry = INVALID_INPUT
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										if item + 1 <= legs_num2 + 1 then
+											for qqq = item + 1, legs_num2 + 1 do
+												if item >= tc_idx and item < td_idx and tc_dx ~= 0 and td_idx ~= 0 then
+													if qqq >= td_idx then
+														break
+													end
+												end
+												if item < tc_idx and tc_dx ~= 0 then
+													if qqq >= tc_idx then
+														break
+													end
+												end
+												if legs_data2[qqq][39] == "" then
+													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												else
+													break
+												end
+											end
+										end
 										entry = ""
 										legs_delete = 1
 									end
@@ -28746,6 +28779,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 			local strlen = string.len(entry)
 			local item = 0
 			local button = 2	-- button 2 RSK
+			local qqq = 0
 			
 			if nav_mode == 1 then
 				item = legs_num2 + 2
@@ -28776,6 +28810,25 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 										entry = INVALID_INPUT
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										if item + 1 <= legs_num2 + 1 then
+											for qqq = item + 1, legs_num2 + 1 do
+												if item >= tc_idx and item < td_idx and tc_dx ~= 0 and td_idx ~= 0 then
+													if qqq >= td_idx then
+														break
+													end
+												end
+												if item < tc_idx and tc_dx ~= 0 then
+													if qqq >= tc_idx then
+														break
+													end
+												end
+												if legs_data2[qqq][39] == "" then
+													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												else
+													break
+												end
+											end
+										end
 										entry = ""
 										legs_delete = 1
 									end
@@ -29405,6 +29458,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 			local strlen = string.len(entry)
 			local item = 0
 			local button = 3	-- button 3 RSK
+			local qqq = 0
 			
 			if nav_mode == 1 then
 				item = legs_num2 + 2
@@ -29435,6 +29489,25 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 										entry = INVALID_INPUT
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										if item + 1 <= legs_num2 + 1 then
+											for qqq = item + 1, legs_num2 + 1 do
+												if item >= tc_idx and item < td_idx and tc_dx ~= 0 and td_idx ~= 0 then
+													if qqq >= td_idx then
+														break
+													end
+												end
+												if item < tc_idx and tc_dx ~= 0 then
+													if qqq >= tc_idx then
+														break
+													end
+												end
+												if legs_data2[qqq][39] == "" then
+													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												else
+													break
+												end
+											end
+										end
 										entry = ""
 										legs_delete = 1
 									end
@@ -29912,6 +29985,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 			local strlen = string.len(entry)
 			local item = 0
 			local button = 4	-- button 4 RSK
+			local qqq = 0
 			
 			if nav_mode == 1 then
 				item = legs_num2 + 2
@@ -29942,6 +30016,25 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 										entry = INVALID_INPUT
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										if item + 1 <= legs_num2 + 1 then
+											for qqq = item + 1, legs_num2 + 1 do
+												if item >= tc_idx and item < td_idx and tc_dx ~= 0 and td_idx ~= 0 then
+													if qqq >= td_idx then
+														break
+													end
+												end
+												if item < tc_idx and tc_dx ~= 0 then
+													if qqq >= tc_idx then
+														break
+													end
+												end
+												if legs_data2[qqq][39] == "" then
+													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												else
+													break
+												end
+											end
+										end
 										entry = ""
 										legs_delete = 1
 									end
@@ -30167,7 +30260,12 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 					entry = INVALID_INPUT
 				end
 			else
-				entry = INVALID_INPUT
+				--entry = INVALID_INPUT
+				if wind_corr == "--" then
+					entry = 5
+				else
+					entry = wind_corr
+				end
 			end
 		elseif page_descent_forecast == 1 then
 			-- entry WIND LAYER 3
@@ -30340,6 +30438,7 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 			local strlen = string.len(entry)
 			local item = 0
 			local button = 5	-- button 5 RSK
+			local qqq = 0
 			
 			if nav_mode == 1 then
 				item = legs_num2 + 2
@@ -30370,6 +30469,25 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 										entry = INVALID_INPUT
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										if item + 1 <= legs_num2 + 1 then
+											for qqq = item + 1, legs_num2 + 1 do
+												if item >= tc_idx and item < td_idx and tc_dx ~= 0 and td_idx ~= 0 then
+													if qqq >= td_idx then
+														break
+													end
+												end
+												if item < tc_idx and tc_dx ~= 0 then
+													if qqq >= tc_idx then
+														break
+													end
+												end
+												if legs_data2[qqq][39] == "" then
+													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												else
+													break
+												end
+											end
+										end
 										entry = ""
 										legs_delete = 1
 									end
@@ -30401,9 +30519,15 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 						rte_exec = 1
 				elseif legs_num > 1 then
 					if in_flight_mode == 0 then
-						-- go to perf init
-						page_perf = 1
-						page_rte_init = 0
+						if pre_flt_perf_init == 0 then
+							-- go to perf init
+							page_perf = 1
+							page_rte_init = 0
+						else
+							-- go to takeoff
+							page_takeoff = 1
+							page_rte_init = 0
+						end
 					else
 						-- go to offset page
 						page_rte_init = 0
@@ -30417,9 +30541,15 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 						rte_exec = 1
 					else
 						if in_flight_mode == 0 then
-							-- go to perf init
-							page_perf = 1
-							page_rte_init = 0
+							if pre_flt_perf_init == 0 then
+								-- go to perf init
+								page_perf = 1
+								page_rte_init = 0
+							else
+								-- go to takeoff
+								page_takeoff = 1
+								page_rte_init = 0
+							end
 						else
 							-- go to offset page
 							page_rte_init = 0
@@ -31195,160 +31325,75 @@ function B738_fmc1_init_ref_CMDhandler(phase, duration)
 		
 		B738DR_fms_key = 1
 		
-		--if B738DR_fmc_exec_lights == 0 then
+		local irs_align_ok = 0
+		if B738DR_irs_left_mode > 1 or B738DR_irs_right_mode > 1 then
+			irs_align_ok = 1
+		end
+		local perf_init_complete = 1
+		if gw == "***.*" or cost_index == "***" or reserves == "**.*" or crz_alt == "*****" then
+			perf_init_complete = 0
+		end
+		if perf_exec < 2 then
+			perf_init_complete = 0
+		end
 		
-			local irs_align_ok = 0
-			if B738DR_irs_left_mode > 1 or B738DR_irs_right_mode > 1 then
-				irs_align_ok = 1
-			end
-			local perf_init_complete = 1
-			if gw == "***.*" or cost_index == "***" or reserves == "**.*" or crz_alt == "*****" then
-				perf_init_complete = 0
-			end
-			if perf_exec < 2 then
-				perf_init_complete = 0
-			end
-			
-			local ref_des_icao = 1
-			if ref_icao == "----" or des_icao == "****" then
-				ref_des_icao = 0
-			end
-			
-			reset_fmc_pages()
-			if irs_align_ok == 0 then
-				-- Pos Init (index) page
-				-- page_menu = 0
-				-- page_init = 0
-				-- page_ident = 0
-				-- page_takeoff = 0
-				-- page_approach = 0
-				-- page_perf = 0
-				-- page_n1_limit = 0
-				page_pos_init = 1
-				-- page_climb = 0
-				-- page_cruise = 0
-				-- page_descent = 0
-				-- page_descent_forecast = 0
-				-- page_rte_init = 0
-				-- page_dep_arr = 0
-				-- page_dep = 0
-				-- page_arr = 0
-			elseif B738DR_flight_phase == 0 and simDR_on_ground_0 == 1 then
-				if ref_des_icao == 0 then
-					-- page_menu = 0
-					-- page_init = 0
-					-- page_ident = 0
-					-- page_takeoff = 0
-					-- page_approach = 0
-					-- page_perf = 0
-					-- page_n1_limit = 0
-					-- page_pos_init = 0
-					-- page_climb = 0
-					-- page_cruise = 0
-					-- page_descent = 0
-					-- page_descent_forecast = 0
-					page_rte_init = 1
-					-- page_dep_arr = 0
-					-- page_dep = 0
-					-- page_arr = 0
-				elseif perf_init_complete == 0 then
-					-- On the graound -> Perf Init page
-					-- page_menu = 0
-					-- page_init = 0
-					-- page_ident = 0
-					-- page_takeoff = 0
-					-- page_approach = 0
-					page_perf = 1
-					-- page_n1_limit = 0
-					-- page_pos_init = 0
-					-- page_climb = 0
-					-- page_cruise = 0
-					-- page_descent = 0
-					-- page_descent_forecast = 0
-					-- page_rte_init = 0
-					-- page_dep_arr = 0
-					-- page_dep = 0
-					-- page_arr = 0
-				else
-					-- On the graound -> Takeoff page
-					-- page_menu = 0
-					-- page_init = 0
-					-- page_ident = 0
-					page_takeoff = 1
-					-- page_approach = 0
-					-- page_perf = 0
-					-- page_n1_limit = 0
-					-- page_pos_init = 0
-					-- page_climb = 0
-					-- page_cruise = 0
-					-- page_descent = 0
-					-- page_descent_forecast = 0
-					-- page_rte_init = 0
-					-- page_dep_arr = 0
-					-- page_dep = 0
-					-- page_arr = 0
-				end
-			elseif was_on_air == 1 then
-				-- in fligt -> Approach page
-				page_approach = 1
-				gw_app = "***.*"
-				gw_app_lbs = gw_app
-				gw_app_kgs = gw_app
-				gw_app_nul = 0
-				if legs_num > 1 then
-					if legs_data[legs_num][40] ~= 0 then
-						qqq = tonumber(zfw_kgs)
-						if qqq ~= nil then
-							qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
-							if qqq < 0 then
-								qqq = 0
-							end
-							if units == 0 then
-								gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
-								gw_app_lbs = gw_app
-								gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
-							else
-								gw_app = string.format("%5.1f", qqq)		-- to kgs
-								gw_app_kgs = gw_app
-								gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
-							end
-						end
-					end
-				end
+		local ref_des_icao = 1
+		if ref_icao == "----" or des_icao == "****" then
+			ref_des_icao = 0
+		end
+		
+		local n1_oat = 1
+		if oat == "****" then
+			n1_oat = 0
+		end
+		
+		reset_fmc_pages()
+		if irs_align_ok == 0 then
+			page_pos_init = 1
+		elseif B738DR_flight_phase == 0 and simDR_on_ground_0 == 1 then
+			if ref_des_icao == 0 then
+				page_rte_init = 1
+			elseif perf_init_complete == 0 then
+				page_perf = 1
+			elseif n1_oat == 0 then
+				page_n1_limit = 1
 			else
-				-- Pos Init page
-				-- page_menu = 0
-				page_init = 1
-				-- page_ident = 0
-				-- page_takeoff = 0
-				-- page_approach = 0
-				-- page_perf = 0
-				-- page_n1_limit = 0
-				-- page_pos_init = 0
-				-- page_climb = 0
-				-- page_cruise = 0
-				-- page_descent = 0
-				-- page_descent_forecast = 0
-				-- page_rte_init = 0
-				-- page_dep_arr = 0
-				-- page_dep = 0
-				-- page_arr = 0
+				page_takeoff = 1
 			end
-			-- page_progress = 0
-			-- page_route = 0
-			-- page_legs = 0
-			-- page_hold = 0
-			-- page_xtras_fmod = 0
-			-- page_xtras = 0
-			-- page_xtras_others = 0
-			-- page_sel_wpt = 0
-			-- page_sel_wpt2 = 0
-			-- page_sel_wpt3 = 0
-			-- page_sel_wpt4 = 0
-			-- page_offset = 0
-
-			
-		--end
+		elseif was_on_air == 1 then
+			-- in fligt -> Approach page
+			page_approach = 1
+			-- gw_app = "***.*"
+			-- gw_app_lbs = gw_app
+			-- gw_app_kgs = gw_app
+			-- gw_app_nul = 0
+			-- if legs_num > 1 then
+				-- if legs_data[legs_num][40] ~= 0 then
+					-- qqq = tonumber(zfw_kgs)
+					-- if qqq ~= nil then
+						-- qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
+						-- if qqq < 0 then
+							-- qqq = 0
+						-- end
+						-- if units == 0 then
+							-- gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
+							-- gw_app_lbs = gw_app
+							-- gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
+						-- else
+							-- gw_app = string.format("%5.1f", qqq)		-- to kgs
+							-- gw_app_kgs = gw_app
+							-- gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
+						-- end
+					-- end
+				-- end
+			-- end
+			gw_app_nul = 0
+			gw_app = gw
+			gw_app_lbs = gw_lbs
+			gw_app_kgs = gw_kgs
+		else
+			page_init = 1
+		end
 		
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -37133,7 +37178,11 @@ function B738_fmc_rte_init()
 				end
 			elseif legs_num > 1 then
 				if in_flight_mode == 0 then
-					line6_l = "              PERF INIT>"
+					if pre_flt_perf_init == 0 then
+						line6_l = "              PERF INIT>"
+					else
+						line6_l = "                TAKEOFF>"
+					end
 				else
 					line6_l = "                 OFFSET>"
 				end
@@ -37142,7 +37191,11 @@ function B738_fmc_rte_init()
 					line6_l = "               ACTIVATE>"
 				else
 					if in_flight_mode == 0 then
-						line6_l = "              PERF INIT>"
+						if pre_flt_perf_init == 0 then
+							line6_l = "              PERF INIT>"
+						else
+							line6_l = "                TAKEOFF>"
+						end
 					else
 						line6_l = "                 OFFSET>"
 					end
@@ -44737,14 +44790,14 @@ function B738_calc()
 	
 	-- V Speed calculate enable
 	if gw_lbs == "***.*" then
-		vref_15 = "---"
-		vref_30 = "---"
-		vref_40 = "---"
+		-- vref_15 = "---"
+		-- vref_30 = "---"
+		-- vref_40 = "---"
 		v1 = "---"
 		vr = "---"
 		v2 = "---"
 		trim = "    "
-		flaps_app = "  "
+		-- flaps_app = "  "
 		B738DR_fmc_gw = 0
 	else
 		if flaps == "**" then
@@ -44766,6 +44819,10 @@ function B738_calc()
 	-- GW approach
 	if gw_app == "***.*" then
 		B738DR_fmc_gw_app = 0
+		vref_15 = "---"
+		vref_30 = "---"
+		vref_40 = "---"
+		flaps_app = "  "
 	else
 		v = tonumber(gw_app_lbs)
 		if v == nil then
@@ -46602,7 +46659,11 @@ function B738_displ_acf()
 				B738DR_acf_show = 1
 				B738DR_acf_x = nd_x
 				B738DR_acf_y = nd_y
-				B738DR_acf_rot = ndx_ahars_mag_hdg - simDR_mag_variation
+				if simDR_radio_height_pilot_ft > 50 then
+					B738DR_acf_rot = ndx_mag_hdg
+				else
+					B738DR_acf_rot = ndx_ahars_mag_hdg
+				end
 			else
 				B738DR_acf_show = 0
 			end
@@ -46691,7 +46752,11 @@ function B738_displ_acf()
 				B738DR_acf_fo_show = 1
 				B738DR_acf_x_fo = nd_x
 				B738DR_acf_y_fo = nd_y
-				B738DR_acf_rot_fo = ndx_ahars_mag_hdg - simDR_mag_variation
+				if simDR_radio_height_pilot_ft > 50 then
+					B738DR_acf_rot_fo = ndx_mag_hdg
+				else
+					B738DR_acf_rot_fo = ndx_ahars_mag_hdg
+				end
 			else
 				B738DR_acf_fo_show = 0
 			end
@@ -46811,14 +46876,14 @@ function B738_displ_wpt()
 				wpt_from = offset - 1
 			end
 			rte_plan_mode = 1
-		else
-			if B738DR_capt_map_mode < 2 then
-				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
-					nav_disable = 1
-				end
+		elseif B738DR_capt_map_mode == 2 then
+			-- if B738DR_capt_map_mode < 2 then
+				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
+					-- nav_disable = 1
+				-- end
 				
-			else
+			-- else
 				if B738DR_track_up == 0 then
 					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
 				else
@@ -46828,9 +46893,11 @@ function B738_displ_wpt()
 						mag_hdg = ndx_mag_hdg - simDR_mag_variation
 					end
 				end
-			end
+			-- end
 			rte_plan_mode = 0
 			wpt_from = offset
+		else
+			nav_disable = 1
 		end
 		
 		if des_app == "------" then
@@ -48227,14 +48294,14 @@ function B738_displ_wpt()
 				wpt_from = offset - 1
 			end
 			rte_plan_mode = 1
-		else
-			if B738DR_fo_map_mode < 2 then
-				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
-					nav_disable = 1
-				end
+		elseif B738DR_fo_map_mode == 2 then
+			-- if B738DR_fo_map_mode < 2 then
+				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
+					-- nav_disable = 1
+				-- end
 				
-			else
+			-- else
 				if B738DR_track_up == 0 then
 					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
 				else
@@ -48245,9 +48312,11 @@ function B738_displ_wpt()
 					end
 				end
 				-- mag_hdg = simDR_mag_hdg - simDR_mag_variation
-			end
+			-- end
 			rte_plan_mode = 0
 			wpt_from = offset
+		else
+			nav_disable = 1
 		end
 		
 		if des_app == "------" then
@@ -51458,7 +51527,9 @@ function B738_vnav_calc()
 						end
 						legs_data[ii][11] = crz_alt_num
 						if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
-							legs_data[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+							if legs_data[ii][39] == "" then
+								legs_data[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+							end
 						end
 					end
 				end
@@ -51469,7 +51540,9 @@ function B738_vnav_calc()
 							legs_data[ii][10] = calc_wpt_spd
 							legs_data[ii][11] = crz_alt_num
 							if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
-								legs_data[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+								if legs_data[ii][39] == "" then
+									legs_data[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+								end
 							end
 						end
 					end
@@ -51477,7 +51550,9 @@ function B738_vnav_calc()
 					legs_data[n][10] = calc_wpt_spd 
 					legs_data[n][11] = crz_alt_num
 					if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
-						legs_data[n][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+						if legs_data[n][39] == "" then
+							legs_data[n][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+						end
 					end
 				end
 			end
@@ -51488,19 +51563,27 @@ function B738_vnav_calc()
 				for ii = td_idx, ed_found do
 					if legs_data[ii][11] <= forec_alt_3_num and forec_alt_3_num > 0 then
 						if forec_dir_3 ~= "---" and forec_spd_3 ~= "---" then
-							legs_data[ii][38] = forec_dir_3 .. "`/" .. forec_spd_3
+							if legs_data[ii][39] == "" then
+								legs_data[ii][38] = forec_dir_3 .. "`/" .. forec_spd_3
+							end
 						end
 					elseif legs_data[ii][11] <= forec_alt_2_num and forec_alt_2_num > 0 then
 						if forec_dir_2 ~= "---" and forec_spd_2 ~= "---" then
-							legs_data[ii][38] = forec_dir_2 .. "`/" .. forec_spd_2
+							if legs_data[ii][39] == "" then
+								legs_data[ii][38] = forec_dir_2 .. "`/" .. forec_spd_2
+							end
 						end
 					elseif legs_data[ii][11] <= forec_alt_1_num and forec_alt_1_num > 0 then
 						if forec_dir_1 ~= "---" and forec_spd_1 ~= "---" then
-							legs_data[ii][38] = forec_dir_1 .. "`/" .. forec_spd_1
+							if legs_data[ii][39] == "" then
+								legs_data[ii][38] = forec_dir_1 .. "`/" .. forec_spd_1
+							end
 						end
 					elseif forec_alt_1_num > 0 then
 						if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
-							legs_data[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+							if legs_data[ii][39] == "" then
+								legs_data[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+							end
 						end
 					end
 				end
@@ -52712,7 +52795,9 @@ function B738_vnav_calc_mod()
 						end
 						legs_data2[ii][11] = crz_alt_num
 						if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
-							legs_data2[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+							if legs_data2[ii][39] == "" then
+								legs_data2[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+							end
 						end
 					end
 				end
@@ -52724,7 +52809,9 @@ function B738_vnav_calc_mod()
 							legs_data2[ii][10] = calc_wpt_spd
 							legs_data2[ii][11] = crz_alt_num
 							if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
-								legs_data2[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+								if legs_data2[ii][39] == "" then
+									legs_data2[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+								end
 							end
 						end
 					end
@@ -52732,7 +52819,9 @@ function B738_vnav_calc_mod()
 					legs_data2[n][10] = calc_wpt_spd 
 					legs_data2[n][11] = crz_alt_num
 					if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
-						legs_data2[n][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+						if legs_data2[n][39] == "" then
+							legs_data2[n][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+						end
 					end
 				end
 			end
@@ -52742,19 +52831,27 @@ function B738_vnav_calc_mod()
 				for ii = td_idx_mod, ed_found_mod do
 					if legs_data2[ii][11] <= forec_alt_3_num and forec_alt_3_num > 0 then
 						if forec_dir_3 ~= "---" and forec_spd_3 ~= "---" then
-							legs_data2[ii][38] = forec_dir_3 .. "`/" .. forec_spd_3
+							if legs_data2[ii][39] == "" then
+								legs_data2[ii][38] = forec_dir_3 .. "`/" .. forec_spd_3
+							end
 						end
 					elseif legs_data2[ii][11] <= forec_alt_2_num and forec_alt_2_num > 0 then
 						if forec_dir_2 ~= "---" and forec_spd_2 ~= "---" then
-							legs_data2[ii][38] = forec_dir_2 .. "`/" .. forec_spd_2
+							if legs_data2[ii][39] == "" then
+								legs_data2[ii][38] = forec_dir_2 .. "`/" .. forec_spd_2
+							end
 						end
 					elseif legs_data2[ii][11] <= forec_alt_1_num and forec_alt_1_num > 0 then
 						if forec_dir_1 ~= "---" and forec_spd_1 ~= "---" then
-							legs_data2[ii][38] = forec_dir_1 .. "`/" .. forec_spd_1
+							if legs_data2[ii][39] == "" then
+								legs_data2[ii][38] = forec_dir_1 .. "`/" .. forec_spd_1
+							end
 						end
 					elseif forec_alt_1_num > 0 then
 						if crz_wind_dir ~= "---" and crz_wind_spd ~= "---" then
-							legs_data2[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+							if legs_data2[ii][39] == "" then
+								legs_data2[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
+							end
 						end
 					end
 				end
@@ -53003,16 +53100,16 @@ function B738_displ_tc()
 				-- ils_lon = math.rad(legs_data[legs_step][8])
 			-- end
 			-- mag_hdg = -simDR_mag_variation
-		else
-			if B738DR_capt_map_mode < 2 then
-				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				-- if simDR_efis_map_mode == 0 then
-				if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
-					ils_disable = 1
-				end
-			-- elseif simDR_efis_sub_mode == 4 then
-				-- ils_disable = 1
-			else
+		elseif B738DR_capt_map_mode == 2 then
+			-- if B738DR_capt_map_mode < 2 then
+				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- -- if simDR_efis_map_mode == 0 then
+				-- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
+					-- ils_disable = 1
+				-- end
+			-- -- elseif simDR_efis_sub_mode == 4 then
+				-- -- ils_disable = 1
+			-- else
 				if B738DR_track_up == 0 then
 					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
 				else
@@ -53022,7 +53119,9 @@ function B738_displ_tc()
 						mag_hdg = ndx_mag_hdg - simDR_mag_variation
 					end
 				end
-			end
+			-- end
+		else
+			ils_disable = 1
 		end
 		if tc_idx == 0 or B738DR_flight_phase > 1 then
 			ils_disable = 1
@@ -53158,13 +53257,13 @@ function B738_displ_tc()
 				-- ils_lon = math.rad(legs_data[legs_step][8])
 			-- end
 			-- mag_hdg = -simDR_mag_variation
-		else
-			if B738DR_fo_map_mode < 2 then
-				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
-					ils_disable = 1
-				end
-			else
+		elseif B738DR_fo_map_mode == 2 then
+			-- if B738DR_fo_map_mode < 2 then
+				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
+					-- ils_disable = 1
+				-- end
+			-- else
 				if B738DR_track_up == 0 then
 					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
 				else
@@ -53175,7 +53274,9 @@ function B738_displ_tc()
 					end
 				end
 				-- mag_hdg = simDR_mag_hdg - simDR_mag_variation
-			end
+			-- end
+		else
+			ils_disable = 1
 		end
 		if tc_idx == 0 or B738DR_flight_phase > 1 then
 			ils_disable = 1
@@ -53342,13 +53443,13 @@ function B738_displ_decel()
 				-- ils_lon = math.rad(legs_data[legs_step][8])
 			-- end
 			-- mag_hdg = -simDR_mag_variation
-		else
-			if B738DR_capt_map_mode < 2 then
-				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
-					ils_disable = 1
-				end
-			else
+		elseif B738DR_capt_map_mode == 2 then
+			-- if B738DR_capt_map_mode < 2 then
+				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
+					-- ils_disable = 1
+				-- end
+			-- else
 				if B738DR_track_up == 0 then
 					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
 				else
@@ -53358,7 +53459,9 @@ function B738_displ_decel()
 						mag_hdg = ndx_mag_hdg - simDR_mag_variation
 					end
 				end
-			end
+			-- end
+		else
+			ils_disable = 1
 		end
 		if decel_idx == 0 or was_decel == 1 then
 			ils_disable = 1
@@ -53493,13 +53596,13 @@ function B738_displ_decel()
 				-- ils_lon = math.rad(legs_data[legs_step][8])
 			-- end
 			-- mag_hdg = -simDR_mag_variation
-		else
-			if B738DR_fo_map_mode < 2 then
-				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
-					ils_disable = 1
-				end
-			else
+		elseif B738DR_fo_map_mode == 2 then
+			-- if B738DR_fo_map_mode < 2 then
+				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
+					-- ils_disable = 1
+				-- end
+			-- else
 				if B738DR_track_up == 0 then
 					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
 				else
@@ -53510,7 +53613,9 @@ function B738_displ_decel()
 					end
 				end
 				-- mag_hdg = simDR_mag_hdg - simDR_mag_variation
-			end
+			-- end
+		else
+			ils_disable = 1
 		end
 		if decel_idx == 0 or was_decel == 1 then
 			ils_disable = 1
@@ -53676,13 +53781,13 @@ function B738_displ_td()
 				-- ils_lon = math.rad(legs_data[legs_step][8])
 			-- end
 			-- mag_hdg = -simDR_mag_variation
-		else
-			if B738DR_capt_map_mode < 2 then
-				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
-					ils_disable = 1
-				end
-			else
+		elseif B738DR_capt_map_mode == 2 then
+			-- if B738DR_capt_map_mode < 2 then
+				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
+					-- ils_disable = 1
+				-- end
+			-- else
 				if B738DR_track_up == 0 then
 					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
 				else
@@ -53692,7 +53797,9 @@ function B738_displ_td()
 						mag_hdg = ndx_mag_hdg - simDR_mag_variation
 					end
 				end
-			end
+			-- end
+		else
+			ils_disable = 1
 		end
 		
 		if td_idx == 0 or B738DR_flight_phase > 4 or B738DR_vnav_td_dist < 0.5 then
@@ -53832,13 +53939,13 @@ function B738_displ_td()
 				-- ils_lon = math.rad(legs_data[legs_step][8])
 			-- end
 			-- mag_hdg = -simDR_mag_variation
-		else
-			if B738DR_fo_map_mode < 2 then
-				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
-					ils_disable = 1
-				end
-			else
+		elseif B738DR_fo_map_mode == 2 then
+			-- if B738DR_fo_map_mode < 2 then
+				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
+					-- ils_disable = 1
+				-- end
+			-- else
 				if B738DR_track_up == 0 then
 					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
 				else
@@ -53849,7 +53956,9 @@ function B738_displ_td()
 					end
 				end
 				-- mag_hdg = simDR_mag_hdg - simDR_mag_variation
-			end
+			-- end
+		else
+			ils_disable = 1
 		end
 		
 		if td_idx == 0 or B738DR_flight_phase > 4 or B738DR_vnav_td_dist < 0.5 then
@@ -54005,15 +54114,15 @@ function B738_displ_rnw()
 		
 		-- CAPTAIN
 		-- DES RUNWAY
-		if B738DR_capt_map_mode < 2 then
-			mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-			-- if simDR_efis_map_mode == 0 then
-			if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
-				ils_disable = 1
-			end
-		-- elseif simDR_efis_sub_mode == 4 then
-			-- ils_disable = 1
-		elseif B738DR_capt_map_mode == 3 then
+		-- if B738DR_capt_map_mode < 2 then
+			-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+			-- -- if simDR_efis_map_mode == 0 then
+			-- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
+				-- ils_disable = 1
+			-- end
+		-- -- elseif simDR_efis_sub_mode == 4 then
+			-- -- ils_disable = 1
+		if B738DR_capt_map_mode == 3 then
 			if legs_step == 0 then
 				ils_lat = math.rad(legs_data2[1][7])
 				ils_lon = math.rad(legs_data2[1][8])
@@ -54031,7 +54140,7 @@ function B738_displ_rnw()
 				-- ils_lon = math.rad(legs_data[legs_step][8])
 			-- end
 			-- mag_hdg = -simDR_mag_variation
-		else
+		elseif B738DR_capt_map_mode == 2 then
 			if B738DR_track_up == 0 then
 				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
 			else
@@ -54041,6 +54150,8 @@ function B738_displ_rnw()
 					mag_hdg = ndx_mag_hdg - simDR_mag_variation
 				end
 			end
+		else
+			ils_disable = 1
 		end
 		
 		if des_app == "------" and des_app2 == "------" then
@@ -54168,15 +54279,15 @@ function B738_displ_rnw()
 		
 		ils_disable = 0
 		ils_on_off = 0
-		if B738DR_capt_map_mode < 2 then
-			mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-			-- if simDR_efis_map_mode == 0 then
-			if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
-				ils_disable = 1
-			end
-		-- elseif simDR_efis_sub_mode == 4 then
-			-- ils_disable = 1
-		elseif B738DR_capt_map_mode == 3 then
+		-- if B738DR_capt_map_mode < 2 then
+			-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+			-- -- if simDR_efis_map_mode == 0 then
+			-- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
+				-- ils_disable = 1
+			-- end
+		-- -- elseif simDR_efis_sub_mode == 4 then
+			-- -- ils_disable = 1
+		if B738DR_capt_map_mode == 3 then
 			if legs_step == 0 then
 				ils_lat = math.rad(legs_data2[1][7])
 				ils_lon = math.rad(legs_data2[1][8])
@@ -54185,7 +54296,7 @@ function B738_displ_rnw()
 				ils_lon = math.rad(legs_data2[legs_step][8])
 			end
 			mag_hdg = -simDR_mag_variation
-		else
+		elseif B738DR_capt_map_mode == 2 then
 			if B738DR_track_up == 0 then
 				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
 			else
@@ -54195,6 +54306,8 @@ function B738_displ_rnw()
 					mag_hdg = ndx_mag_hdg - simDR_mag_variation
 				end
 			end
+		else
+			ils_disable = 1
 		end
 		
 		if ref_rwy == "-----" and ref_rwy2 == "-----" then
@@ -54320,13 +54433,13 @@ function B738_displ_rnw()
 		-- ils_lon = math.rad(simDR_longitude) 
 		ils_lat = math.rad(ndx_lat) 
 		ils_lon = math.rad(ndx_lon) 
-		if B738DR_fo_map_mode < 2 then
-			mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-			-- if simDR_efis_map_mode == 0 then
-			if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
-				ils_disable = 1
-			end
-		elseif B738DR_fo_map_mode == 3 then
+		-- if B738DR_fo_map_mode < 2 then
+			-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+			-- -- if simDR_efis_map_mode == 0 then
+			-- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
+				-- ils_disable = 1
+			-- end
+		if B738DR_fo_map_mode == 3 then
 			if legs_step2 == 0 then
 				ils_lat = math.rad(legs_data2[1][7])
 				ils_lon = math.rad(legs_data2[1][8])
@@ -54346,7 +54459,7 @@ function B738_displ_rnw()
 				-- ils_lon = math.rad(legs_data[legs_step][8])
 			-- end
 			-- mag_hdg = -simDR_mag_variation
-		else
+		elseif B738DR_fo_map_mode == 2 then
 			if B738DR_track_up == 0 then
 				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
 			else
@@ -54357,6 +54470,8 @@ function B738_displ_rnw()
 				end
 			end
 			-- mag_hdg = simDR_mag_hdg - simDR_mag_variation
+		else
+			ils_disable = 1
 		end
 		-- if des_app == "------" then
 			-- ils_disable = 1
@@ -54484,15 +54599,15 @@ function B738_displ_rnw()
 		
 		ils_disable = 0
 		ils_on_off = 0
-		if B738DR_fo_map_mode < 2 then
-			mag_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
-			-- if simDR_efis_map_mode == 0 then
-			if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
-				ils_disable = 1
-			end
-		-- elseif simDR_efis_sub_mode == 4 then
-			-- ils_disable = 1
-		elseif B738DR_fo_map_mode == 3 then
+		-- if B738DR_fo_map_mode < 2 then
+			-- mag_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
+			-- -- if simDR_efis_map_mode == 0 then
+			-- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
+				-- ils_disable = 1
+			-- end
+		-- -- elseif simDR_efis_sub_mode == 4 then
+			-- -- ils_disable = 1
+		if B738DR_fo_map_mode == 3 then
 			if legs_step2 == 0 then
 				ils_lat = math.rad(legs_data2[1][7])
 				ils_lon = math.rad(legs_data2[1][8])
@@ -54501,7 +54616,7 @@ function B738_displ_rnw()
 				ils_lon = math.rad(legs_data2[legs_step2][8])
 			end
 			mag_hdg = -simDR_mag_variation
-		else
+		elseif B738DR_fo_map_mode == 2 then
 			if B738DR_track_up == 0 then
 				mag_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
 			else
@@ -54512,6 +54627,8 @@ function B738_displ_rnw()
 				end
 			end
 			-- mag_hdg = simDR_mag_hdg - simDR_mag_variation
+		else
+			ils_disable = 1
 		end
 		
 		-- if ref_rwy == "-----" then
@@ -55424,7 +55541,7 @@ function B738_displ_apt()
 	-- end
 	
 	nav_disable = 1
-	if B738DR_capt_map_mode == 2 and B738DR_capt_exp_map_mode ~= 0 then
+	if B738DR_capt_map_mode == 2 then	--and B738DR_capt_exp_map_mode ~= 0 then
 		nav_disable = 0
 	end
 	if B738DR_efis_apt_on == 0 then
@@ -55432,7 +55549,7 @@ function B738_displ_apt()
 	end
 	
 	nav_disable2 = 1
-	if B738DR_fo_map_mode == 2 and B738DR_fo_exp_map_mode ~= 0 then
+	if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode ~= 0 then
 		nav_disable2 = 0
 	end
 	if B738DR_efis_fo_apt_on == 0 then
@@ -56342,12 +56459,12 @@ function B738_displ_navaid()
 	local nd_on_off2 = 0
 	
 	nav_disable = 1
-	if B738DR_capt_map_mode == 2 and B738DR_capt_exp_map_mode ~= 0 then
+	if B738DR_capt_map_mode == 2 then	--and B738DR_capt_exp_map_mode ~= 0 then
 		nav_disable = 0
 	end
 	
 	nav_disable2 = 1
-	if B738DR_fo_map_mode == 2 and B738DR_fo_exp_map_mode ~= 0 then
+	if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode ~= 0 then
 		nav_disable2 = 0
 	end
 	
@@ -63153,7 +63270,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25j"
+	version = "v3.25l"
 
 end
 
@@ -63288,30 +63405,34 @@ end
 function B738_gw_approach()
 	
 	if gw_app_nul == 0 then
-		gw_app = "***.*"
-		gw_app_lbs = gw_app
-		gw_app_kgs = gw_app
-		--gw_app_nul = 0
-		if legs_num > 1 then
-			if legs_data[legs_num][40] ~= 0 then
-				qqq = tonumber(zfw_kgs)
-				if qqq ~= nil then
-					qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
-					if qqq < 0 then
-						qqq = 0
-					end
-					if units == 0 then
-						gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
-						gw_app_lbs = gw_app
-						gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
-					else
-						gw_app = string.format("%5.1f", qqq)		-- to kgs
-						gw_app_kgs = gw_app
-						gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
-					end
-				end
-			end
-		end
+		-- gw_app = "***.*"
+		-- gw_app_lbs = gw_app
+		-- gw_app_kgs = gw_app
+		-- --gw_app_nul = 0
+		-- if legs_num > 1 then
+			-- if legs_data[legs_num][40] ~= 0 then
+				-- qqq = tonumber(zfw_kgs)
+				-- if qqq ~= nil then
+					-- qqq = ((tonumber(zfw_kgs) * 1000) + legs_data[legs_num][40]) / 1000
+					-- if qqq < 0 then
+						-- qqq = 0
+					-- end
+					-- if units == 0 then
+						-- gw_app = string.format("%5.1f", (qqq * 2.204))		-- to lbs
+						-- gw_app_lbs = gw_app
+						-- gw_app_kgs = string.format("%5.1f", (tonumber(gw_app) / 2.204))		-- to kgs
+					-- else
+						-- gw_app = string.format("%5.1f", qqq)		-- to kgs
+						-- gw_app_kgs = gw_app
+						-- gw_app_lbs = string.format("%5.1f", (tonumber(gw_app) * 2.204))		-- to lbs
+					-- end
+				-- end
+			-- end
+		-- end
+		
+		gw_app = gw
+		gw_app_lbs = gw_lbs
+		gw_app_kgs = gw_kgs
 	end
 	
 end

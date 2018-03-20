@@ -77,6 +77,18 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25L:
+------
+- fixed graphic bugs (Green arc, acf icon on FO ND,...)
+- corrected some systems
+
+
+3.25k:
+------
+- graphic correction on ND
+- tuned gently autoland
+- corrected some systems
+
 3.25j:
 ------
 - tuned flight model by Twkster (better landing stab, rudder pedal steering)
