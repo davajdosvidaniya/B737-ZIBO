@@ -158,7 +158,7 @@ P _gear/0/_lonE 0.0
 P _gear/0/_lonN 0.0
 P _gear/0/_lonR 111.0
 P _gear/0/_scon 112094.945312500
-P _gear/0/_stat_def 0.105245017
+P _gear/0/_stat_def 0.105245009
 P _gear/0/_steerdeg_hispeed 6.0
 P _gear/0/_steerdeg_lospeed 63.0
 P _gear/0/_strut_comp 0.0
@@ -192,7 +192,7 @@ P _gear/1/_lonE -4.0
 P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 112094.945312500
-P _gear/1/_stat_def 0.724379003
+P _gear/1/_stat_def 0.724379182
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -226,7 +226,7 @@ P _gear/2/_lonE -4.0
 P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 112094.945312500
-P _gear/2/_stat_def 0.724379003
+P _gear/2/_stat_def 0.724379182
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -28887,7 +28887,7 @@ P _part/86/_part_specs_invis 1
 P _part/86/_part_tex 0
 P _part/86/_part_the 0.0
 P _part/86/_part_x -9.350000381
-P _part/86/_part_y -8.699057579
+P _part/86/_part_y -8.699056625
 P _part/86/_part_z 64.554344177
 P _part/86/_patt_con 0
 P _part/86/_patt_prt 0
@@ -30364,7 +30364,7 @@ P _part/87/_part_specs_invis 1
 P _part/87/_part_tex 0
 P _part/87/_part_the 0.0
 P _part/87/_part_x 9.350000381
-P _part/87/_part_y -8.699057579
+P _part/87/_part_y -8.699056625
 P _part/87/_part_z 64.554344177
 P _part/87/_patt_con 0
 P _part/87/_patt_prt 0
@@ -38711,7 +38711,7 @@ P acf/_cyclic_lf_trim_rat 0.250000000
 P acf/_cyclic_rt_trim_rat 0.250000000
 P acf/_cyclic_up_trim_rat 0.500000000
 P acf/_deg_psi_per_deg_def 8.0
-P acf/_deg_the_per_deg_def 12.0
+P acf/_deg_the_per_deg_def 8.0
 P acf/_delta3 0.0
 P acf/_descrip Boeing 737-800X
 P acf/_diff_coll_with_hdng 0.0
@@ -39488,7 +39488,7 @@ P acf/_ott_phi_sec_into_future 2.0
 P acf/_ott_phi_sec_to_tune 2.0
 P acf/_ott_roll_rate 7.599999905
 P acf/_ott_roll_response 16.299999237
-P acf/_ott_the_deg_off_for_full_def 18.0
+P acf/_ott_the_deg_off_for_full_def 33.0
 P acf/_ott_the_deg_per_kt 0.200000003
 P acf/_ott_the_sec_into_future 3.0
 P acf/_ott_the_sec_to_tune 2.0
@@ -40063,6 +40063,7 @@ PANEL_2D_END
 PANEL_3D_BEGIN
 GROUP EICAS
   LOCKED
+  GROUP_OPEN
   GROUP synoptic
     LOCKED
     gen_pie N1 pie #1
@@ -40546,6 +40547,7 @@ GROUP EICAS
     GROUP Fuel side by side
       SHOW_EQUAL 0.000000 laminar/B738/effects/fuelgauge
       LOCKED
+      GROUP_OPEN
       gen_pie Left tank pie
         POS 1368.000000 -203.000000
         IMAGE EICAS/EICAS_pie_tank
@@ -40668,12 +40670,13 @@ GROUP EICAS
     GROUP Lower DU - SYS
       SHOW_EQUAL 2.000000 laminar/B738/systems/lowerDU_page
       LOCKED
-      GROUP_OPEN
+      HIDE
       gen_rotary EICAS page2
         POS 1786.000000 2.000000
         IMAGE EICAS/systems
         DATAREF 
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40695,6 +40698,7 @@ GROUP EICAS
         IMAGE EICAS/pointer_left
         DATAREF sim/flightmodel2/wing/aileron1_deg[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40710,6 +40714,7 @@ GROUP EICAS
         IMAGE EICAS/pointer_left
         DATAREF sim/flightmodel2/wing/spoiler1_deg[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40724,6 +40729,7 @@ GROUP EICAS
         IMAGE EICAS/pointer_left
         DATAREF sim/flightmodel2/wing/elevator1_deg[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40739,6 +40745,7 @@ GROUP EICAS
         IMAGE EICAS/pointer_right
         DATAREF sim/flightmodel2/wing/aileron1_deg[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40754,6 +40761,7 @@ GROUP EICAS
         IMAGE EICAS/pointer_right
         DATAREF sim/flightmodel2/wing/spoiler1_deg[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40768,6 +40776,7 @@ GROUP EICAS
         IMAGE EICAS/pointer_right
         DATAREF sim/flightmodel2/wing/elevator1_deg[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40783,6 +40792,7 @@ GROUP EICAS
         IMAGE EICAS/pointer_up
         DATAREF sim/flightmodel2/wing/rudder1_deg[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40798,6 +40808,7 @@ GROUP EICAS
         IMAGE TYPE/white_size23_stretched_vert
         DATAREF laminar/B738/hydraulic/B_pressure[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40813,6 +40824,7 @@ GROUP EICAS
         IMAGE TYPE/white_size23_stretched_vert
         DATAREF laminar/B738/hydraulic/A_pressure[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40828,6 +40840,7 @@ GROUP EICAS
         IMAGE TYPE/white_size23_stretched_vert
         DATAREF laminar/B738/hydraulic/hyd_B_qty[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40843,6 +40856,7 @@ GROUP EICAS
         IMAGE TYPE/white_size23_stretched_vert
         DATAREF laminar/B738/hydraulic/hyd_A_qty[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40859,6 +40873,7 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_right_out[1]
         SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_right_out
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40875,6 +40890,7 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_right_in[1]
         SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_right_in
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40891,6 +40907,7 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_left_in[1]
         SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_left_in
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40907,6 +40924,7 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_left_out[1]
         SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_left_out
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40923,6 +40941,7 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_right_out[1]
         SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_right_out
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40939,6 +40958,7 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_right_in[1]
         SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_right_in
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40955,6 +40975,7 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_left_out[1]
         SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_left_out
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40971,6 +40992,7 @@ GROUP EICAS
         DATAREF laminar/B738/systems/brake_temp_left_in[1]
         SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_left_in
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -40986,6 +41008,7 @@ GROUP EICAS
         IMAGE EICAS/brake_white
         DATAREF laminar/B738/systems/brake_temp_left_out
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41011,6 +41034,7 @@ GROUP EICAS
         IMAGE EICAS/brake_white
         DATAREF laminar/B738/systems/brake_temp_left_in
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41036,6 +41060,7 @@ GROUP EICAS
         IMAGE EICAS/brake_white
         DATAREF laminar/B738/systems/brake_temp_right_in
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41061,6 +41086,7 @@ GROUP EICAS
         IMAGE EICAS/brake_white
         DATAREF laminar/B738/systems/brake_temp_right_out
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41086,6 +41112,7 @@ GROUP EICAS
         IMAGE EICAS/brake_amber
         DATAREF laminar/B738/systems/brake_temp_right_out
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41109,6 +41136,7 @@ GROUP EICAS
         IMAGE EICAS/brake_amber
         DATAREF laminar/B738/systems/brake_temp_right_in
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41132,6 +41160,7 @@ GROUP EICAS
         IMAGE EICAS/brake_amber
         DATAREF laminar/B738/systems/brake_temp_left_in
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41155,6 +41184,7 @@ GROUP EICAS
         IMAGE EICAS/brake_amber
         DATAREF laminar/B738/systems/brake_temp_left_out
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -41178,7 +41208,6 @@ GROUP EICAS
       SHOW_EQUAL 1.000000 laminar/B738/systems/lowerDU_page
       LOCKED
       HIDE
-      GROUP_OPEN
       gen_pie N2 pie #1
         POS 1709.500000 184.500000
         IMAGE EICAS/EICAS_pie
@@ -42100,13 +42129,14 @@ GROUP EICAS
     END_GROUP
     GROUP Fuel over under
       SHOW_EQUAL 1.000000 laminar/B738/effects/fuelgauge
-      GROUP_OPEN
+      HIDE
       gen_rotary EICAS1 main screen
         POS 1282.000000 -2.000000
         IMAGE EICAS/background_eicas1
         DATAREF 
         SHOW_LESS 0.000000 laminar/B738/FMS/fmc_units
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42129,6 +42159,7 @@ GROUP EICAS
         DATAREF 
         SHOW_GREATER 1.000000 laminar/B738/FMS/fmc_units
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42432,12 +42463,14 @@ GROUP EICAS
     GROUP R FUEL STATUS
       SHOW_EQUAL 0.000000 laminar/B738/effects/fuelgauge
       LOCKED
+      HIDE
       gen_rotary R FUEL LOW
         POS 1469.000000 -219.000000
         IMAGE EICAS/low_fuel
         DATAREF 
         SHOW_EQUAL 1.000000 laminar/B738/fuel/right_status
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42460,6 +42493,7 @@ GROUP EICAS
         DATAREF 
         SHOW_EQUAL 2.000000 laminar/B738/fuel/right_status
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42480,12 +42514,14 @@ GROUP EICAS
     GROUP L FUEL STATUS
       SHOW_EQUAL 0.000000 laminar/B738/effects/fuelgauge
       LOCKED
+      HIDE
       gen_rotary L FUEL LOW
         POS 1367.000000 -219.000000
         IMAGE EICAS/low_fuel
         DATAREF 
         SHOW_EQUAL 1.000000 laminar/B738/fuel/left_status
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42508,6 +42544,7 @@ GROUP EICAS
         DATAREF 
         SHOW_EQUAL 2.000000 laminar/B738/fuel/left_status
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42528,12 +42565,14 @@ GROUP EICAS
     GROUP C FUEL STATUS
       SHOW_EQUAL 0.000000 laminar/B738/effects/fuelgauge
       LOCKED
+      HIDE
       gen_rotary C FUEL LOW
         POS 1417.000000 -150.000000
         IMAGE EICAS/low_fuel
         DATAREF 
         SHOW_EQUAL 1.000000 laminar/B738/fuel/center_status
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42556,6 +42595,7 @@ GROUP EICAS
         DATAREF 
         SHOW_EQUAL 3.000000 laminar/B738/fuel/center_status
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42577,12 +42617,14 @@ GROUP EICAS
       SHOW_EQUAL 0.000000 laminar/B738/effects/fuelgauge
       SHOW_GREATER 1.000000 laminar/B738/FMS/fmc_units
       LOCKED
+      HIDE
       gen_LED L tank large A
-        POS 1364.000000 -200.000000
+        POS 1366.000000 -200.000000
         IMAGE PFD/amber_type_large
         DATAREF laminar/B738/fuel/left_tank_kgs[0]
         SHOW_LESS 907.539978 sim/flightmodel/weight/m_fuel[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42599,6 +42641,7 @@ GROUP EICAS
         DATAREF laminar/B738/fuel/left_tank_kgs[0]
         SHOW_LESS 907.539978 sim/flightmodel/weight/m_fuel[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42610,11 +42653,12 @@ GROUP EICAS
         LED_ROWS 0
 
       gen_LED R tank large A
-        POS 1465.000000 -200.000000
+        POS 1467.000000 -200.000000
         IMAGE PFD/amber_type_large
         DATAREF laminar/B738/fuel/right_tank_kgs[2]
         SHOW_LESS 907.539978 sim/flightmodel/weight/m_fuel[2]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42631,6 +42675,7 @@ GROUP EICAS
         DATAREF laminar/B738/fuel/right_tank_kgs[2]
         SHOW_LESS 907.539978 sim/flightmodel/weight/m_fuel[2]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42642,12 +42687,13 @@ GROUP EICAS
         LED_ROWS 0
 
       gen_LED C tank large A
-        POS 1419.000000 -133.000000
+        POS 1421.000000 -133.000000
         IMAGE PFD/amber_type_large
         DATAREF laminar/B738/fuel/center_tank_kgs[1]
         SHOW_LESS 907.539978 [1]
         SHOW_EQUAL 3.000000 laminar/B738/fuel/center_status
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42665,6 +42711,7 @@ GROUP EICAS
         SHOW_LESS 907.539978 [1]
         SHOW_EQUAL 3.000000 laminar/B738/fuel/center_status
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42676,11 +42723,12 @@ GROUP EICAS
         LED_ROWS 0
 
       gen_LED L tank large
-        POS 1364.000000 -200.000000
+        POS 1366.000000 -200.000000
         IMAGE PFD/white_type_large
         DATAREF laminar/B738/fuel/left_tank_kgs[0]
         SHOW_GREATER 907.549988 sim/flightmodel/weight/m_fuel[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42697,6 +42745,7 @@ GROUP EICAS
         DATAREF laminar/B738/fuel/left_tank_kgs[0]
         SHOW_GREATER 907.549988 sim/flightmodel/weight/m_fuel[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42708,11 +42757,12 @@ GROUP EICAS
         LED_ROWS 0
 
       gen_LED R tank large
-        POS 1465.000000 -200.000000
+        POS 1467.000000 -200.000000
         IMAGE PFD/white_type_large
         DATAREF laminar/B738/fuel/right_tank_kgs[2]
         SHOW_GREATER 907.549988 sim/flightmodel/weight/m_fuel[2]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42729,6 +42779,7 @@ GROUP EICAS
         DATAREF laminar/B738/fuel/right_tank_kgs[2]
         SHOW_GREATER 907.549988 sim/flightmodel/weight/m_fuel[2]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42740,12 +42791,13 @@ GROUP EICAS
         LED_ROWS 0
 
       gen_LED C tank large
-        POS 1419.000000 -133.000000
+        POS 1421.000000 -133.000000
         IMAGE PFD/white_type_large
         DATAREF laminar/B738/fuel/center_tank_kgs[1]
         SHOW_LESS 0.000000 laminar/B738/fuel/center_status
         SHOW_GREATER 907.549988 [1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42763,6 +42815,7 @@ GROUP EICAS
         SHOW_LESS 0.000000 laminar/B738/fuel/center_status
         SHOW_GREATER 907.549988 [1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
@@ -42779,7 +42832,7 @@ GROUP EICAS
       SHOW_EQUAL 0.000000 laminar/B738/effects/fuelgauge
       LOCKED
       gen_LED L tank large A
-        POS 1364.000000 -200.000000
+        POS 1366.000000 -200.000000
         IMAGE PFD/amber_type_large
         DATAREF laminar/B738/fuel/left_tank_lbs[0]
         SHOW_LESS 907.539978 sim/flightmodel/weight/m_fuel[0]
@@ -42811,7 +42864,7 @@ GROUP EICAS
         LED_ROWS 0
 
       gen_LED R tank large A
-        POS 1465.000000 -200.000000
+        POS 1467.000000 -200.000000
         IMAGE PFD/amber_type_large
         DATAREF laminar/B738/fuel/right_tank_lbs[2]
         SHOW_LESS 907.539978 sim/flightmodel/weight/m_fuel[2]
@@ -42843,7 +42896,7 @@ GROUP EICAS
         LED_ROWS 0
 
       gen_LED C tank large A
-        POS 1419.000000 -133.000000
+        POS 1421.000000 -133.000000
         IMAGE PFD/amber_type_large
         DATAREF laminar/B738/fuel/center_tank_lbs[1]
         SHOW_LESS 907.539978 [1]
@@ -42877,7 +42930,7 @@ GROUP EICAS
         LED_ROWS 0
 
       gen_LED L tank large
-        POS 1364.000000 -200.000000
+        POS 1366.000000 -200.000000
         IMAGE PFD/white_type_large
         DATAREF laminar/B738/fuel/left_tank_lbs[0]
         SHOW_GREATER 907.549988 sim/flightmodel/weight/m_fuel[0]
@@ -42909,7 +42962,7 @@ GROUP EICAS
         LED_ROWS 0
 
       gen_LED R tank large
-        POS 1465.000000 -200.000000
+        POS 1467.000000 -200.000000
         IMAGE PFD/white_type_large
         DATAREF laminar/B738/fuel/right_tank_lbs[2]
         SHOW_GREATER 907.549988 sim/flightmodel/weight/m_fuel[2]
@@ -42941,7 +42994,7 @@ GROUP EICAS
         LED_ROWS 0
 
       gen_LED C tank large
-        POS 1419.000000 -133.000000
+        POS 1421.000000 -133.000000
         IMAGE PFD/white_type_large
         DATAREF laminar/B738/fuel/center_tank_lbs[1]
         SHOW_LESS 0.000000 laminar/B738/fuel/center_status
@@ -42980,11 +43033,13 @@ GROUP EICAS
     SHOW_EQUAL 1.000000 laminar/B738/effects/fuelgauge
     SHOW_GREATER 1.000000 laminar/B738/FMS/fmc_units
     LOCKED
+    HIDE
     gen_LED fuel quantity 1
       POS 1367.000000 -191.000000
       IMAGE TYPE/white_size20
       DATAREF sim/cockpit2/fuel/fuel_quantity[0]
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 4
       BUS_SRC 3
@@ -43001,6 +43056,7 @@ GROUP EICAS
       DATAREF sim/cockpit2/fuel/fuel_quantity[1]
       SHOW_LESS 10000.000000 sim/cockpit2/fuel/fuel_quantity[1]
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 4
       BUS_SRC 3
@@ -43018,6 +43074,7 @@ GROUP EICAS
       SHOW_LESS 4535.923828 [1]
       SHOW_GREATER 10000.000000 sim/cockpit2/fuel/fuel_quantity[1]
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 4
       BUS_SRC 3
@@ -43033,6 +43090,7 @@ GROUP EICAS
       IMAGE TYPE/white_size20
       DATAREF sim/cockpit2/fuel/fuel_quantity[2]
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 4
       BUS_SRC 3
@@ -43048,6 +43106,7 @@ GROUP EICAS
       IMAGE TYPE/white_size23_stretched_vert
       DATAREF sim/flightmodel/weight/m_fuel_total
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 4
       BUS_SRC 3
@@ -43396,11 +43455,13 @@ GROUP EICAS
     SHOW_LESS 0.000000 laminar/B738/FMS/fmc_units
     SHOW_EQUAL 1.000000 laminar/B738/effects/fuelgauge
     LOCKED
+    HIDE
     gen_LED fuel quantity 1
       POS 1367.000000 -191.000000
       IMAGE TYPE/white_size20
       DATAREF sim/cockpit2/fuel/fuel_quantity[0]
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 4
       BUS_SRC 3
@@ -43417,6 +43478,7 @@ GROUP EICAS
       DATAREF sim/cockpit2/fuel/fuel_quantity[1]
       SHOW_LESS 4535.923828 sim/cockpit2/fuel/fuel_quantity[1]
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 4
       BUS_SRC 3
@@ -43434,6 +43496,7 @@ GROUP EICAS
       SHOW_LESS 4535.923828 [1]
       SHOW_GREATER 4535.919922 sim/cockpit2/fuel/fuel_quantity[1]
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 4
       BUS_SRC 3
@@ -43449,6 +43512,7 @@ GROUP EICAS
       IMAGE TYPE/white_size20
       DATAREF sim/cockpit2/fuel/fuel_quantity[2]
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 4
       BUS_SRC 3
@@ -43464,6 +43528,7 @@ GROUP EICAS
       IMAGE TYPE/white_size23_stretched_vert
       DATAREF sim/flightmodel/weight/m_fuel_total
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 4
       BUS_SRC 3
@@ -43481,6 +43546,7 @@ GROUP CLOCKS
   GROUP CAPT clock
     SHOW_EQUAL 1.000000 B738DR_clock_capt_power
     LOCKED
+    GROUP_OPEN
     GROUP ET CAPT
       SHOW_EQUAL 1.000000 laminar/B738/clock/chrono_display_mode_capt
       LOCKED
@@ -43523,7 +43589,7 @@ GROUP CLOCKS
       gen_needle CHR Seconds Needle
         POS 1138.500000 367.500000
         IMAGE Clocks/CHRseconds_needle
-        DATAREF laminar/B738/clock/captain/chrono_seconds
+        DATAREF laminar/B738/clock/captain/chrono_seconds_needle
         LOCKED
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 8
@@ -43907,6 +43973,7 @@ GROUP CLOCKS
   GROUP FO clock
     SHOW_EQUAL 1.000000 B738DR_clock_fo_power
     LOCKED
+    GROUP_OPEN
     GROUP ET FO
       SHOW_EQUAL 1.000000 laminar/B738/clock/chrono_display_mode_fo
       LOCKED
@@ -43949,7 +44016,7 @@ GROUP CLOCKS
       gen_needle CHR Seconds Needle
         POS 1364.500000 367.500000
         IMAGE Clocks/CHRseconds_needle
-        DATAREF laminar/B738/clock/fo/chrono_seconds
+        DATAREF laminar/B738/clock/fo/chrono_seconds_needle
         LOCKED
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 8
@@ -46035,7 +46102,6 @@ END_GROUP
 GROUP MFD CAPT FO
   LOCKED
   HIDE
-  GROUP_OPEN
   GROUP WX Capt
     SHOW_EQUAL 1.000000 laminar/B738/EFIS/EFIS_wx_on
     HIDE
@@ -46071,7 +46137,6 @@ GROUP MFD CAPT FO
   GROUP ND FO
     LOCKED
     HIDE
-    GROUP_OPEN
     gen_rotary ND BGND PLN FO
       POS 771.000000 507.000000
       IMAGE EFIS/efis_bgnd_pln
@@ -65791,7 +65856,6 @@ GROUP MFD CAPT FO
   END_GROUP
   GROUP ND
     HIDE
-    GROUP_OPEN
     gen_rotary ND BGND PLN
       POS 771.000000 -5.000000
       IMAGE EFIS/efis_bgnd_pln
@@ -92726,9 +92790,11 @@ GROUP MFD CAPT FO
   END_GROUP
   GROUP DO NOT SHOW in PLAN
     LOCKED
+    HIDE
     GROUP Captain
       SHOW_LESS 2.000000 laminar/B738/EFIS_control/capt/map_mode_pos
       LOCKED
+      HIDE
       GROUP_OPEN
       gen_rotary VOR1 Null CA
         POS 559.000000 -217.000000
@@ -92784,6 +92850,7 @@ GROUP MFD CAPT FO
 
       GROUP ADF1
         SHOW_LESS -1.000000 laminar/B738/EFIS_control/capt/vor1_off_pos
+        HIDE
         gen_rotary ADF1 Indicator
           POS 559.000000 -217.000000
           IMAGE MFD/Radio Information/ADF1
@@ -92811,6 +92878,7 @@ GROUP MFD CAPT FO
           IMAGE MFD/type_blue
           DATAREF sim/cockpit2/radios/indicators/adf1_nav_id
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -92822,6 +92890,7 @@ GROUP MFD CAPT FO
       END_GROUP
       GROUP ADF2
         SHOW_LESS -1.000000 laminar/B738/EFIS_control/capt/vor2_off_pos
+        HIDE
         gen_rotary ADF2 Indicator
           POS 982.000000 -217.000000
           IMAGE MFD/Radio Information/ADF2
@@ -92849,6 +92918,7 @@ GROUP MFD CAPT FO
           IMAGE MFD/type_blue
           DATAREF sim/cockpit2/radios/indicators/adf2_nav_id
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -93107,6 +93177,7 @@ GROUP MFD CAPT FO
     END_GROUP
     GROUP First Officer
       SHOW_LESS 2.000000 laminar/B738/EFIS_control/fo/map_mode_pos
+      HIDE
       GROUP_OPEN
       gen_rotary VOR1 Null FO
         POS 559.000000 295.000000
@@ -93162,12 +93233,14 @@ GROUP MFD CAPT FO
 
       GROUP ADF1 FO
         SHOW_LESS -1.000000 laminar/B738/EFIS_control/fo/vor1_off_pos
+        HIDE
         GROUP_OPEN
         gen_rotary ADF1 Indicator 2
           POS 559.000000 295.000000
           IMAGE MFD/Radio Information/ADF1
           DATAREF 
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -93189,6 +93262,7 @@ GROUP MFD CAPT FO
           IMAGE MFD/type_blue
           DATAREF sim/cockpit2/radios/indicators/adf1_nav_id
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -93200,12 +93274,14 @@ GROUP MFD CAPT FO
       END_GROUP
       GROUP ADF2 FO
         SHOW_LESS -1.000000 laminar/B738/EFIS_control/fo/vor2_off_pos
+        HIDE
         GROUP_OPEN
         gen_rotary ADF2 Indicator 2
           POS 982.000000 295.000000
           IMAGE MFD/Radio Information/ADF2
           DATAREF 
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -93227,6 +93303,7 @@ GROUP MFD CAPT FO
           IMAGE MFD/type_blue
           DATAREF sim/cockpit2/radios/indicators/adf2_nav_id
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 3
           BUS_SRC 3
@@ -94678,17 +94755,18 @@ GROUP MFD CAPT FO
   GROUP Active Nav
     LOCKED
     HIDE
+    GROUP_OPEN
     GROUP GPS CAPT
       SHOW_EQUAL 1.000000 laminar/B738/fms/fpln_acive
       SHOW_GREATER 2.000000 laminar/B738/EFIS_control/capt/map_mode_pos
       LOCKED
       HIDE
+      GROUP_OPEN
       gen_text GPS ID
         POS 963.000000 229.000000
         IMAGE MFD/type_magenta
         DATAREF laminar/B738/fms/fpln_nav_id
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 2
         BUS_SRC 3
@@ -94725,35 +94803,30 @@ GROUP MFD CAPT FO
         LIGHT_RHEOSTAT 2
         BUS_SRC 3
         KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 1000.000000 1000.000000
+        KEY_FRAME 999.000000 999.000000 1.000000
+        KEY_FRAME 50000.000000 999.000000
         DIGITS 3
         DECIMALS 0
         PERIOD_WIDTH 7
         LED_ROWS 0
 
-      gen_LED DEST Minutes
-        POS 942.000000 211.000000
-        IMAGE MFD/whiteDME_numbers
+      gen_text GPS ETA
+        POS 963.000000 211.000000
+        IMAGE MFD/type_white
         DATAREF laminar/B738/fms/id_eta
-        SHOW_GREATER 0.000000 laminar/B738/fms/id_eta
-        LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 2
         BUS_SRC 3
         KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 60.000000 60.000000
-        DIGITS 4
-        DECIMALS 2
-        PERIOD_WIDTH 7
-        LED_ROWS 0
+        KEY_FRAME 1.000000 1.000000
+        OFFSET_X -30
+        OFFSET_Y -11.000000
 
       gen_rotary MIN
-        POS 980.000000 210.000000
+        POS 1004.000000 208.000000
         IMAGE MFD/zulu
         DATAREF 
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 2
         BUS_SRC 3
@@ -94775,7 +94848,6 @@ GROUP MFD CAPT FO
         IMAGE MFD/Nautical_Mile
         DATAREF 
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 2
         BUS_SRC 3
@@ -94798,12 +94870,12 @@ GROUP MFD CAPT FO
       SHOW_GREATER 2.000000 laminar/B738/EFIS_control/fo/map_mode_pos
       LOCKED
       HIDE
+      GROUP_OPEN
       gen_text GPS ID 2
         POS 963.000000 741.000000
         IMAGE MFD/type_magenta
         DATAREF laminar/B738/fms/fpln_nav_id
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 3
         BUS_SRC 3
@@ -94840,35 +94912,31 @@ GROUP MFD CAPT FO
         LIGHT_RHEOSTAT 3
         BUS_SRC 3
         KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 1000.000000 1000.000000
+        KEY_FRAME 999.000000 999.000000 1.000000
+        KEY_FRAME 50000.000000 999.000000
         DIGITS 3
         DECIMALS 0
         PERIOD_WIDTH 7
         LED_ROWS 0
 
-      gen_LED DEST Minutes
-        POS 942.000000 723.000000
-        IMAGE MFD/whiteDME_numbers
+      gen_text GPS ETA 2
+        POS 963.000000 723.000000
+        IMAGE MFD/type_white
         DATAREF laminar/B738/fms/id_eta
-        SHOW_LESS 99.949997 laminar/B738/fms/id_eta
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 3
         BUS_SRC 3
         KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 60.000000 60.000000
-        DIGITS 4
-        DECIMALS 2
-        PERIOD_WIDTH 7
-        LED_ROWS 0
+        KEY_FRAME 1.000000 1.000000
+        OFFSET_X -30
+        OFFSET_Y -11.000000
 
       gen_rotary MIN 2
-        POS 980.000000 722.000000
+        POS 1004.000000 720.000000
         IMAGE MFD/zulu
         DATAREF 
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 3
         BUS_SRC 3
@@ -96177,7 +96245,6 @@ GROUP PLAN Range FO
 END_GROUP
 GROUP EFIS annun
   SHOW_EQUAL 2.000000 laminar/B738/EFIS_control/capt/map_mode_pos
-  GROUP_OPEN
   gen_rotary WPT
     POS 542.000000 -76.000000
     IMAGE MFD/EFIS_mode/WPT
@@ -96265,7 +96332,6 @@ GROUP EFIS annun
 END_GROUP
 GROUP EFIS annun FO
   SHOW_EQUAL 2.000000 laminar/B738/EFIS_control/fo/map_mode_pos
-  GROUP_OPEN
   gen_rotary WPT 2
     POS 542.000000 436.000000
     IMAGE MFD/EFIS_mode/WPT
@@ -105895,7 +105961,7 @@ gen_LED MAN Vspeed 2
   POS 128.000000 342.000000
   IMAGE PFD/green_type
   DATAREF laminar/B738/pfd/vspeed
-  SHOW_EQUAL 1.000000 laminar/B738/pfd/fo_vspeed_digit_show
+  SHOW_EQUAL 1.000000 laminar/B738/pfd/vspeed_digit_show_fo
   LOCKED
   LIGHT_MODE GLASS_AUTO
   LIGHT_RHEOSTAT 0
@@ -105911,7 +105977,7 @@ gen_rotary MAN Vref 2
   POS 150.000000 362.000000
   IMAGE PFD/man_vref
   DATAREF 
-  SHOW_EQUAL 1.000000 laminar/B738/pfd/fo_vspeed_vref_show
+  SHOW_EQUAL 1.000000 laminar/B738/pfd/vspeed_vref_show_fo
   LOCKED
   LIGHT_MODE GLASS_AUTO
   LIGHT_RHEOSTAT 0

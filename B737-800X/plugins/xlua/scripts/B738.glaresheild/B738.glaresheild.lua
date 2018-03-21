@@ -9527,7 +9527,7 @@ function B738_ap_autoland()
 				vorloc_only = 1
 				simDR_fdir_pitch = fd_cur
 			end
-			if simDR_radio_height_pilot_ft > 115 then	--90 120 150
+			if simDR_radio_height_pilot_ft > 120 then	--90 120 150
 				simDR_fdir_pitch_ovr = 0
 				if simDR_autopilot_altitude_mode ~= 4 then
 					simDR_ap_vvi_dial = simDR_vvi_fpm_pilot
@@ -9564,7 +9564,7 @@ function B738_ap_autoland()
 		-- rate of descent in fpm = tan(glideslope) * (speed in knots * 6076 / 60)
 		ra_fdpitch = math.min(2.5, simDR_fdir_pitch)
 		ra_fdpitch = math.max(0, simDR_fdir_pitch)
-		ra_thrshld = B738_rescale(0, 78, 2.5, 68, ra_fdpitch)
+		ra_thrshld = B738_rescale(0, 88, 2.5, 78, ra_fdpitch)
 		if B738DR_fms_approach_speed > 134 then
 			ra_thrshld = ra_thrshld - (1.5 * (B738DR_fms_approach_speed - 135))
 			if ra_thrshld < 50 then

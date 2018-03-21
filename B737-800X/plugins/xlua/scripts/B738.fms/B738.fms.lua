@@ -122,7 +122,7 @@ MAX_NUM_SCRATCH = 24
 MAX_LEGS_DATA = 40
 
 -- MESSAGES --
-INVALID_INPUT 				= ">INVALID ENTRY"
+INVALID_INPUT 				= "INVALID ENTRY"
 INVALID_DELETE 				= ">INVALID DELETE"
 ENTER_IRS_POS 				= "ENTER IRS POSITION"
 ENTER_IRS_HDG 				= "ENTER IRS HEADING"
@@ -389,6 +389,7 @@ co_route = "------------"
 flt_num = "--------"
 ref_rwy = "-----"
 des_rwy = "----"
+ref_icao2 = "----"
 
 gw = "***.*"
 gw_calc = "***.*"
@@ -1443,6 +1444,8 @@ B738DR_nav_nav_id			= find_dataref("laminar/radios/pilot/nav_nav_id")
 B738DR_nav_dme				= find_dataref("laminar/radios/pilot/nav_dme")
 B738DR_nav_has_dme			= find_dataref("laminar/radios/pilot/nav_has_dme")
 B738DR_nav_obs				= find_dataref("laminar/radios/pilot/nav_obs")
+B738DR_nav_type				= find_dataref("laminar/radios/pilot/nav_type")
+
 -- COPILOT
 B738DR_nav_flag_gs_fo		= find_dataref("laminar/radios/copilot/nav_flag_gs")
 B738DR_nav_vert_dsp_fo		= find_dataref("laminar/radios/copilot/nav_vert_dsp")
@@ -1452,7 +1455,7 @@ B738DR_nav_nav_id_fo		= find_dataref("laminar/radios/copilot/nav_nav_id")
 B738DR_nav_dme_fo			= find_dataref("laminar/radios/copilot/nav_dme")
 B738DR_nav_has_dme_fo		= find_dataref("laminar/radios/copilot/nav_has_dme")
 B738DR_nav_obs_fo			= find_dataref("laminar/radios/copilot/nav_obs")
-
+B738DR_nav_type_fo			= find_dataref("laminar/radios/copilot/nav_type")
 
 
 simDR_approach_status		= find_dataref("sim/cockpit2/autopilot/approach_status")
@@ -2512,7 +2515,7 @@ first_miss_app_idx 			= create_dataref("laminar/B738/fms/missed_app_wpt_idx", "n
 
 B738DR_bank_angle		= create_dataref("laminar/B738/FMS/bank_angle", "number")
 
-B738DR_fms_id_eta		= create_dataref("laminar/B738/fms/id_eta", "number")
+B738DR_fms_id_eta		= create_dataref("laminar/B738/fms/id_eta", "string")
 B738DR_end_route		= create_dataref("laminar/B738/fms/end_route", "number")
 B738DR_no_perf			= create_dataref("laminar/B738/fms/no_perf", "number")
 
@@ -9441,7 +9444,8 @@ function load_fpln()
 			file_name2 = "Output/FMS plans/" .. entry .. ".fms"
 			file_navdata2 = io.open(file_name2, "r")
 			if file_navdata2 == nil then 
-				entry = INVALID_INPUT
+				--add_fmc_msg(INVALID_INPUT, 1)
+				add_fmc_msg(INVALID_INPUT, 1)
 			else
 				-- check v3 or v11
 				fms_line = file_navdata2:read()
@@ -13759,7 +13763,8 @@ function rte_add_wpt3(aaa, id_nav, id_brg, id_dist)
 					--end
 					calc_rte_enable2 = 1
 				else
-					entry = INVALID_INPUT
+					--add_fmc_msg(INVALID_INPUT, 1)
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			else
 				page_sel_wpt3 = 1
@@ -13779,7 +13784,8 @@ function rte_add_wpt3(aaa, id_nav, id_brg, id_dist)
 		end
 		entry = ""
 	else
-		entry = INVALID_INPUT
+		--add_fmc_msg(INVALID_INPUT, 1)
+		add_fmc_msg(INVALID_INPUT, 1)
 	end
 	
 
@@ -14040,7 +14046,7 @@ function rte_add_wpt_cust(aaa, id_cust, lat_cust, lon_cust)
 		-- end
 		entry = ""
 	-- else
-		-- entry = INVALID_INPUT
+		-- add_fmc_msg(INVALID_INPUT, 1)
 	-- end
 	
 end
@@ -20611,9 +20617,11 @@ function set_spd_alt_rest(item_idx)
 	
 	
 	if item_idx > legs_num2 then
-		entry = INVALID_INPUT
+		--add_fmc_msg(INVALID_INPUT, 1)
+		add_fmc_msg(INVALID_INPUT, 1)
 	elseif legs_data2[item_idx][1] == "DISCONTINUITY" then
-		entry = INVALID_INPUT
+		--add_fmc_msg(INVALID_INPUT, 1)
+		add_fmc_msg(INVALID_INPUT, 1)
 	elseif entry == ">DELETE" then
 		legs_data2[item_idx][4] = 0
 		legs_data2[item_idx][5] = 0
@@ -20628,7 +20636,8 @@ function set_spd_alt_rest(item_idx)
 			if n == nil then
 				n = entry_alt(entry, 100, 41000, 1, 18000)
 				if n == nil then
-					entry = INVALID_INPUT
+					--add_fmc_msg(INVALID_INPUT, 1)
+					add_fmc_msg(INVALID_INPUT, 1)
 				else
 					if string.sub(output_str, -1, -1) == "A" then
 						nn = 43
@@ -20653,7 +20662,8 @@ function set_spd_alt_rest(item_idx)
 			-- SPD/ALT
 			n = entry_spd_alt(entry, 100, 340, 100, 41000, 18000)
 			if n == nil then
-				entry = INVALID_INPUT
+				--add_fmc_msg(INVALID_INPUT, 1)
+				add_fmc_msg(INVALID_INPUT, 1)
 			else
 				legs_data2[item_idx][4] = output_num1		-- speed
 				if string.sub(output_str2, -1, -1) == "A" then
@@ -21193,7 +21203,8 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					elseif entry == "" and ref_icao ~= "----" then
 						entry = ref_icao
 					else
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 				-- arr_data = 0
@@ -21458,14 +21469,16 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1))
 						item_sel = 0
 					else
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			else
 				if entry == ">DELETE" then
 					-- delete waypoint
 					if act_page == 1 then
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if legs_data2[item-1][17] < 99 then
 							legs_data2[item-1][17] = legs_data2[item-1][17] + 100
@@ -21496,7 +21509,8 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							-- add waypoint
 							rte_add_wpt(item)
 						else
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
@@ -21549,20 +21563,23 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							if legs_data2[item][19] ~= 6 then
 								-- select item
 								if legs_data2[item][1] == "DISCONTINUITY" then
-									entry = INVALID_INPUT
+									--add_fmc_msg(INVALID_INPUT, 1)
+									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel = 0
 								else
 									item_sel = item
 									entry = legs_data2[item][1]
 								end
 							else
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
 							else
 								item_sel = item
@@ -21570,7 +21587,8 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel = 0
 					end
 				else
@@ -21615,13 +21633,15 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 								rte_paste(item_sel)
 								calc_rte_enable2 = 1
 							else
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 							end
 							entry = ""
 							item_sel = 0
 							legs_delete = 1
 						else
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- entry item
@@ -21675,7 +21695,8 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							--legs_intdir_crs = (nd_hdg - simDR_mag_variation) % 360
 							legs_intdir_crs_mod = (nd_hdg + simDR_mag_variation) % 360
 						else
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 						entry = ""
 						item_sel = 0
@@ -21760,7 +21781,8 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					B738DR_calc_vspd = 1
 					B738DR_calc_trim = 1
 				else
-					entry = INVALID_INPUT
+					--add_fmc_msg(INVALID_INPUT, 1)
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 			display_update = 1
@@ -21817,10 +21839,12 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					B738DR_calc_trim = 1
 				else
 					if n == nil then
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < weight_min or n > weight_max then	-- GW min and max
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							gw = string.format("%5.1f", n)
 							if units == 0 then
@@ -21896,10 +21920,12 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					gw_app_kgs = gw_kgs
 				else
 					if n == nil then
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < weight_min or n > weight_max then	-- GW min and max
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							gw_app = string.format("%5.1f", n)
 							if units == 0 then
@@ -21929,10 +21955,12 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				else
 					if strlen == 3 then
 						if n == nil then
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n < 30 or n > 410 then
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								trans_lvl = "FL" .. string.format("%03d", n)
 								entry = ""
@@ -21988,10 +22016,12 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						if string.sub(entry, 1, 2) == "FL" then
 							n = tonumber(string.sub(entry, 3, 5))
 							if n == nil then
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								if n < 30 or n > 410 then
-									entry = INVALID_INPUT
+									--add_fmc_msg(INVALID_INPUT, 1)
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									trans_lvl = "FL" .. string.format("%03d", n)
 									entry = ""
@@ -22044,10 +22074,12 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 								end
 							end
 						else
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -22071,18 +22103,22 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n < 0 or n > 359 then		-- wind heading 0 - 359
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local wind_dir = string.format("%03d", n)
 								n = tonumber(string.sub(entry, 5, strlen))
 								if n == nil then
-									entry = INVALID_INPUT
+									--add_fmc_msg(INVALID_INPUT, 1)
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < 1 or n > 199 then	-- wind speed 1 - 199
-										entry = INVALID_INPUT
+										--add_fmc_msg(INVALID_INPUT, 1)
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										rw_wind_dir = wind_dir
 										rw_wind_spd = string.format("%03d", n)
@@ -22100,7 +22136,8 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -22109,17 +22146,20 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 			local strlen = string.len(entry)
 			local n = tonumber(entry)
 			if strlen == 0 then
-				 entry = INVALID_INPUT
+				 --add_fmc_msg(INVALID_INPUT, 1)
+				 add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					time_err = "  "
 					entry = ""
 				else
 					if n == nil then
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 5 or n > 30 then	-- Time error min and max
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							time_err = string.format("%2d", n)
 							entry = ""
@@ -22134,12 +22174,14 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				if strlen == 5 and string.sub(entry, 1, 2) == "FL" then
 					local n = tonumber(string.sub(entry, 3, 5))
 					if n == nil then
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						--local nn = crz_alt_num / 100
 						--if n < nn or n > 410 then	-- Cruise level FLxxx min and max
 						if n < 10 or n > 410 then	-- Cruise level FLxxx min and max
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							crz_alt_num = n * 100
 							if crz_alt_num >= B738DR_trans_alt then
@@ -22158,13 +22200,15 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				else
 					local n = tonumber(entry)
 					if n == nil then
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if strlen == 3 then
 							--local nn = crz_alt_num / 100
 							--if n < nn or n > 410 then	-- Cruise level FLxxx min and max
 							if n < 10 or n > 410 then	-- Cruise level FLxxx min and max
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								crz_alt_num = n * 100
 								if crz_alt_num >= B738DR_trans_alt then
@@ -22182,7 +22226,8 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						else
 							--if n < crz_alt_num or n > 41000 then	-- Cruise alt min and max
 							if n < 1000 or n > 41000 then	-- Cruise level FLxxx min and max
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								crz_alt_num = n
 								if crz_alt_num >= B738DR_trans_alt then
@@ -22211,10 +22256,12 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				if strlen == 5 and string.sub(entry, 1, 2) == "FL" then
 					local n = tonumber(string.sub(entry, 3, 5))
 					if n == nil then
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 10 or n > 410 then	-- Cruise level FLxxx min and max
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if B738DR_autopilot_vnav_status == 1 then
 								--if B738DR_flight_phase == 2 or B738DR_flight_phase == 3 or B738DR_flight_phase == 4 then
@@ -22280,11 +22327,13 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				else
 					local n = tonumber(entry)
 					if n == nil then
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if strlen == 3 then
 							if n < 10 or n > 410 then	-- Cruise level FLxxx min and max
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								if B738DR_autopilot_vnav_status == 1 then
 									--if B738DR_flight_phase == 2 or B738DR_flight_phase == 3 or B738DR_flight_phase == 4 then
@@ -22348,7 +22397,8 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							end
 						else
 							if n < 1000 or n > 41000 then	-- Cruise alt min and max
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								if B738DR_autopilot_vnav_status == 1 then
 									--if B738DR_flight_phase == 2 or B738DR_flight_phase == 3 or B738DR_flight_phase == 4  then
@@ -22473,10 +22523,12 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							if n_str == "C" then 
 								n = tonumber(string.sub(entry, 1, strlen-1))
 								if n == nil then
-									entry = INVALID_INPUT
+									--add_fmc_msg(INVALID_INPUT, 1)
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < -40 or n > 70 then	-- Celsius min and max
-										entry = INVALID_INPUT
+										--add_fmc_msg(INVALID_INPUT, 1)
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										oat_unit = "`C"
 										if oat_set == 0 then
@@ -22518,10 +22570,12 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							elseif n_str == "F" then
 								n = tonumber(string.sub(entry, 1, strlen-1))
 								if n == nil then
-									entry = INVALID_INPUT
+									--add_fmc_msg(INVALID_INPUT, 1)
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < -40 or n > 158 then	-- Fahrenheit min and max
-										entry = INVALID_INPUT
+										--add_fmc_msg(INVALID_INPUT, 1)
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										oat_unit = "`F"
 										if oat_set == 0 then
@@ -22563,10 +22617,12 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							else
 								n = tonumber(string.sub(entry, 1, strlen))
 								if n == nil then
-									entry = INVALID_INPUT
+									--add_fmc_msg(INVALID_INPUT, 1)
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < -40 or n > 70 then	-- Celsius min and max
-										entry = INVALID_INPUT
+										--add_fmc_msg(INVALID_INPUT, 1)
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										oat_unit = "`C"
 										if oat_set == 0 then
@@ -22609,7 +22665,8 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							
 							
 						else
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					end
 				end
@@ -22624,7 +22681,8 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 		elseif page_ref_nav_data == 1 then
 			local strlen = string.len(entry)
 			if strlen == 0 or strlen > 5 then
-				entry = INVALID_INPUT
+				--add_fmc_msg(INVALID_INPUT, 1)
+				add_fmc_msg(INVALID_INPUT, 1)
 			else
 				nav_data_type = 0 -- wpt
 				nav_data_find(entry)
@@ -22878,10 +22936,12 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						-- distance
 						ii = tonumber(string.sub(entry, 2, -1))
 						if ii == nil then
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if ii <= 0 or ii > 511 then
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								fix_data[act_page][7] = ii
 								fix_data[act_page][6] = -1
@@ -22893,10 +22953,12 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						-- radial
 						ii = tonumber(string.sub(entry, 1, -2))
 						if ii == nil then
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if ii < 0 or ii > 359 then
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								fix_data[act_page][6] = ii
 								fix_data[act_page][7] = -1
@@ -22908,10 +22970,12 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						-- radial
 						ii = tonumber(entry)
 						if ii == nil then
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if ii < 0 or ii > 359 then
-								entry = INVALID_INPUT
+								--add_fmc_msg(INVALID_INPUT, 1)
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								fix_data[act_page][6] = ii
 								fix_data[act_page][7] = -1
@@ -22921,7 +22985,8 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						end
 					end
 				else
-					entry = INVALID_INPUT
+					--add_fmc_msg(INVALID_INPUT, 1)
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		elseif page_legs == 1 then
@@ -22951,11 +23016,13 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						-- add waypoint last
 						rte_add_wpt(item)
 					else
-						entry = INVALID_INPUT
+						--add_fmc_msg(INVALID_INPUT, 1)
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					item_sel = 0
 				else
-					entry = INVALID_INPUT
+					--add_fmc_msg(INVALID_INPUT, 1)
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			else
 				if entry == ">DELETE" then
@@ -22987,7 +23054,8 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 							-- add waypoint
 							rte_add_wpt(item)
 						else
-							entry = INVALID_INPUT
+							--add_fmc_msg(INVALID_INPUT, 1)
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
@@ -23006,20 +23074,20 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 							if legs_data2[item][19] ~= 6 then
 								-- select item
 								if legs_data2[item][1] == "DISCONTINUITY" then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel = 0
 								else
 									item_sel = item
 									entry = legs_data2[item][1]
 								end
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
 							else
 								item_sel = item
@@ -23027,7 +23095,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel = 0
 					end
 				else
@@ -23052,13 +23120,13 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								rte_paste(item_sel)
 								calc_rte_enable2 = 1
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							end
 							entry = ""
 							item_sel = 0
 							legs_delete = 1
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- entry item
@@ -23080,7 +23148,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 							rte_paste(item_sel)
 							calc_rte_enable2 = 1
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 						entry = ""
 						item_sel = 0
@@ -23095,19 +23163,22 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 			local xy = 0
 			if entry == ">DELETE" then
 				entry = INVALID_DELETE
-				-- if ref_icao ~= "****" then
-					-- ref_icao_x = "****"
-					-- des_icao_x = "****"
-					-- ref_exec = 1
-				-- end
-				-- entry = ""
-				
 			else
-				if string.len(entry) == 4 then
-					-- file_name = "Custom Data/CIFP/" .. entry
-					-- file_name = file_name .. ".dat"
-					-- file_navdata = io.open(file_name, "r")
-					-- if file_navdata == nil then
+				-- if string.len(entry) == 4 then
+					-- if cust_def_data == 1 then
+						-- file_name = "Custom Data/CIFP/" .. entry
+						-- file_name = file_name .. ".dat"
+						-- file_navdata = io.open(file_name, "r")
+						-- if file_navdata == nil then
+							-- if apt_exist(entry) == true then
+								-- apt_ok = 1
+							-- end
+						-- else
+							-- read_ref_data(entry)		-- read reference airport data
+							-- file_navdata:close()
+							-- apt_ok = 1
+						-- end
+					-- elseif cust_def_data == 2 then
 						-- file_name = "Resources/default data/CIFP/" .. entry
 						-- file_name = file_name .. ".dat"
 						-- file_navdata = io.open(file_name, "r")
@@ -23120,12 +23191,90 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 							-- file_navdata:close()
 							-- apt_ok = 1
 						-- end
-					-- else
-						-- read_ref_data(entry)		-- read reference airport data
-						-- file_navdata:close()
-						-- apt_ok = 1
 					-- end
 					
+					-- if apt_ok == 0 then
+						-- add_fmc_msg(NOT_IN_DATABASE, 1)
+					-- else
+						-- ref_icao_x = entry
+						-- des_icao_x = "****"
+						
+						-- if ref_icao == "----" then
+						
+							-- ref_icao = entry
+							-- des_icao = "****"
+							-- --des_icao_x = "****"
+							-- des_app_from_apt = 0
+							-- ref_gate = "-----"
+							-- co_route = "------------"
+							-- co_route_x = co_route
+							-- trans_alt = "-----"
+							-- ref_rwy = "-----"
+							-- ref_sid = "------"
+							-- ref_sid_tns = "------"
+							-- des_app = "------"
+							-- des_app_tns = "------"
+							-- des_star = "------"
+							-- des_star_trans = "------"
+							-- ----
+							-- ref_rwy2 = "-----"
+							-- ref_sid2 = "------"
+							-- ref_sid_tns2 = "------"
+							-- des_app2 = "------"
+							-- des_app_tns2 = "------"
+							-- des_star2 = "------"
+							-- des_star_trans2 = "------"
+							-- ----
+							-- legs_num = 0
+							-- crz_alt = "*****"
+							-- crz_alt_num = 0
+							-- crz_alt_num2 = 0
+							-- offset = 0
+							
+							-- offset_act = 0
+							-- offset_start = 0
+							-- offset_end = 0
+							-- offset_dist = 0
+							-- offset_side = 0
+							
+							-- if apt_exist(entry) == true then
+								-- ref_icao_lat = icao_latitude
+								-- ref_icao_lon = icao_longitude
+								-- ref_tns_alt = icao_tns_alt
+								-- ref_tns_lvl = icao_tns_lvl
+								-- ref_icao_alt = 0
+								-- if rwy_num > 0 then
+									-- xy = tonumber(ref_data[1][2])
+									-- if xy ~= nil then
+										-- ref_icao_alt = xy
+									-- end
+								-- end
+							-- else
+								-- ref_tns_alt = 0
+								-- ref_tns_lvl = 0
+							-- end
+							-- if ref_tns_alt == 0 then
+								-- trans_alt = "-----"
+							-- else
+								-- trans_alt = string.format("%5d", ref_tns_alt)
+							-- end
+							-- arr_data = 0
+							-- airport_pos()
+							-- create_rnw_list()
+							-- create_sid_list()
+						
+						-- else
+							-- ref_exec = 1
+						-- end
+						-- entry = ""
+					-- end
+				-- elseif entry == "" and ref_icao ~= "----" then
+					-- entry = ref_icao
+				-- else
+					-- add_fmc_msg(INVALID_INPUT, 1)
+				-- end
+				
+				if string.len(entry) == 4 then
 					if cust_def_data == 1 then
 						file_name = "Custom Data/CIFP/" .. entry
 						file_name = file_name .. ".dat"
@@ -23135,7 +23284,6 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								apt_ok = 1
 							end
 						else
-							read_ref_data(entry)		-- read reference airport data
 							file_navdata:close()
 							apt_ok = 1
 						end
@@ -23148,93 +23296,22 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								apt_ok = 1
 							end
 						else
-							read_ref_data(entry)		-- read reference airport data
 							file_navdata:close()
 							apt_ok = 1
 						end
 					end
 					
 					if apt_ok == 0 then
-						-- fmc_message_num = fmc_message_num + 1
-						-- fmc_message[fmc_message_num] = NOT_IN_DATABASE
 						add_fmc_msg(NOT_IN_DATABASE, 1)
 					else
-						ref_icao_x = entry
-						des_icao_x = "****"
-						
-						if ref_icao == "----" then
-						
-							ref_icao = entry
-							des_icao = "****"
-							--des_icao_x = "****"
-							des_app_from_apt = 0
-							ref_gate = "-----"
-							co_route = "------------"
-							co_route_x = co_route
-							trans_alt = "-----"
-							ref_rwy = "-----"
-							ref_sid = "------"
-							ref_sid_tns = "------"
-							des_app = "------"
-							des_app_tns = "------"
-							des_star = "------"
-							des_star_trans = "------"
-							----
-							ref_rwy2 = "-----"
-							ref_sid2 = "------"
-							ref_sid_tns2 = "------"
-							des_app2 = "------"
-							des_app_tns2 = "------"
-							des_star2 = "------"
-							des_star_trans2 = "------"
-							----
-							legs_num = 0
-							crz_alt = "*****"
-							crz_alt_num = 0
-							crz_alt_num2 = 0
-							offset = 0
-							
-							offset_act = 0
-							offset_start = 0
-							offset_end = 0
-							offset_dist = 0
-							offset_side = 0
-							
-							if apt_exist(entry) == true then
-								ref_icao_lat = icao_latitude
-								ref_icao_lon = icao_longitude
-								ref_tns_alt = icao_tns_alt
-								ref_tns_lvl = icao_tns_lvl
-								ref_icao_alt = 0
-								if rwy_num > 0 then
-									xy = tonumber(ref_data[1][2])
-									if xy ~= nil then
-										ref_icao_alt = xy
-									end
-								end
-							else
-								ref_tns_alt = 0
-								ref_tns_lvl = 0
-							end
-							if ref_tns_alt == 0 then
-								trans_alt = "-----"
-							else
-								trans_alt = string.format("%5d", ref_tns_alt)
-							end
-							arr_data = 0
-							airport_pos()
-							create_rnw_list()
-							create_sid_list()
-						
-						else
-							ref_exec = 1
-						end
+						ref_icao2 = entry
+						airport_pos2()
 						entry = ""
 					end
-				elseif entry == "" and ref_icao ~= "----" then
-					entry = ref_icao
+				elseif entry == "" and ref_icao2 ~= "----" then
+					entry = ref_icao2
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 			-- -- entry Ref airport ICAO
@@ -23363,7 +23440,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 				-- elseif entry == "" and ref_icao ~= "----" then
 					-- entry = ref_icao
 				-- else
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- end
 			-- end
 			-- arr_data = 0
@@ -23383,7 +23460,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					if ii > 0 and ii < 13 then
 						load_fpln()
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			else
@@ -23419,7 +23496,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 		elseif page_ref_nav_data == 1 then
 			local strlen = string.len(entry)
 			if strlen ~= 4 then
-				entry = INVALID_INPUT
+				add_fmc_msg(INVALID_INPUT, 1)
 			else
 				nav_data_type = 2 -- apt
 				nav_data_find(entry)
@@ -23447,11 +23524,11 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					entry = ""
 				else
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if units == 0 then
 							if n < 0 or n > 45.1 then	-- Plan min and max
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								plan_weight = string.format("%5.1f", n)
 								plan_weight_lbs = plan_weight
@@ -23460,7 +23537,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 							end
 						else
 							if n < 0 or n > 20.5 then	-- Plan min and max
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								plan_weight = string.format("%5.1f", n)
 								plan_weight_kgs = plan_weight
@@ -23470,7 +23547,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						end
 						
 						-- if n < weight_min or n > weight_max then	-- Plan min and max
-							-- entry = INVALID_INPUT
+							-- add_fmc_msg(INVALID_INPUT, 1)
 						-- else
 							-- plan_weight = string.format("%5.1f", n)
 							-- if units == 0 then
@@ -23534,10 +23611,10 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						if string.sub(entry, 1, 1) == "/" then
 							local n = tonumber(string.sub(entry, 2, 4))
 							if n == nil then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								if n < 0 or n > 359 then	-- HDG min and max
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									rw_hdg = string.format("%03d", n)
 									if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
@@ -23556,7 +23633,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 							if up_down == "D" or up_down == "U" then
 								local n = tonumber(string.sub(entry, 2, 4))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									rw_slope = up_down .. string.format("%03.1f", n)
 									if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
@@ -23570,13 +23647,13 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 									B738DR_calc_vspd = 1
 								end
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							end
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -23588,7 +23665,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 			local nnn = 0
 			local n2 = 0
 			if strlen == 0 then
-				 entry = INVALID_INPUT
+				 add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					entry = ""
@@ -23596,7 +23673,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					if strlen > 2 and  strlen < 6 and string.sub(entry, 1, 2) == "/." then		-- only mach
 						n = tonumber(string.sub(entry, 2, strlen))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							nn = tonumber(des_max_mach)
 							nnn = tonumber(des_min_mach)
@@ -23609,7 +23686,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								nnn = 0.400		-- min
 							end
 							if n < nnn or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								B738DR_fmc_descent_speed_mach = n
 								entry = ""
@@ -23619,7 +23696,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					elseif strlen > 1 and  strlen < 5 and string.sub(entry, 1, 1) == "." then		-- only mach
 						n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							nn = tonumber(des_max_mach)
 							nnn = tonumber(des_min_mach)
@@ -23632,7 +23709,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								nnn = 0.400		-- min
 							end
 							if n < nnn or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								B738DR_fmc_descent_speed_mach = n
 								entry = ""
@@ -23642,7 +23719,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					elseif strlen == 3 then			-- only kts
 						n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							nn = tonumber(des_max_kts)
 							nnn = tonumber(des_min_kts)
@@ -23653,7 +23730,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								nnn = 100		-- min
 							end
 							if n < nnn or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								B738DR_descent_mode = 2
 								entry = ""
@@ -23674,12 +23751,12 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 									nnn = 100		-- min
 								end
 								if n < nnn or n > nn then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									n2 = n
 									n = tonumber(string.sub(entry, 5, -1))
 									if n == nil then
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										nn = tonumber(des_max_mach)
 										nnn = tonumber(des_min_mach)
@@ -23692,7 +23769,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 											nnn = 0.400		-- min
 										end
 										if n < nnn or n > nn then
-											entry = INVALID_INPUT
+											add_fmc_msg(INVALID_INPUT, 1)
 										else
 											B738DR_fmc_descent_speed_mach = n
 											B738DR_fmc_descent_speed = n2
@@ -23703,10 +23780,10 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								end
 							end
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -23718,7 +23795,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 			local nnn = 0
 			local n2 = 0
 			if strlen == 0 then
-				 entry = INVALID_INPUT
+				 add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					entry = ""
@@ -23726,7 +23803,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					if strlen > 2 and  strlen < 6 and string.sub(entry, 1, 2) == "/." then		-- only mach
 						n = tonumber(string.sub(entry, 2, strlen))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							nn = tonumber(clb_max_mach)
 							nnn = tonumber(clb_min_mach)
@@ -23739,7 +23816,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								nnn = 0.400		-- min
 							end
 							if n < nnn or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								B738DR_fmc_climb_speed_mach = n
 								entry = ""
@@ -23749,7 +23826,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					elseif strlen > 1 and strlen < 5 and string.sub(entry, 1, 1) == "." then		-- only mach
 						n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							nn = tonumber(clb_max_mach)
 							nnn = tonumber(clb_min_mach)
@@ -23762,7 +23839,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								nnn = 0.400		-- min
 							end
 							if n < nnn or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								B738DR_fmc_climb_speed_mach = n
 								entry = ""
@@ -23772,7 +23849,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					elseif strlen == 3 then			-- only kts
 						n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							nn = tonumber(clb_max_kts)
 							nnn = tonumber(clb_min_kts)
@@ -23783,7 +23860,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								nnn = 100		-- min
 							end
 							if n < nnn or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								B738DR_fmc_climb_speed = n
 								entry = ""
@@ -23804,12 +23881,12 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 									nnn = 100		-- min
 								end
 								if n < nnn or n > nn then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									n2 = n
 									n = tonumber(string.sub(entry, 5, -1))
 									if n == nil then
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										nn = tonumber(clb_max_mach)
 										nnn = tonumber(clb_min_mach)
@@ -23822,7 +23899,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 											nnn = 0.400		-- min
 										end
 										if n < nnn or n > nn then
-											entry = INVALID_INPUT
+											add_fmc_msg(INVALID_INPUT, 1)
 										else
 											B738DR_fmc_climb_speed_mach = n
 											B738DR_fmc_climb_speed = n2
@@ -23833,10 +23910,10 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								end
 							end
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -23848,7 +23925,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 			local nnn = 0
 			local n2 = 0
 			if strlen == 0 then
-				 entry = INVALID_INPUT
+				 add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					entry = ""
@@ -23856,7 +23933,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					if strlen > 2 and  strlen < 6 and string.sub(entry, 1, 2) == "/." then		-- only mach
 						n = tonumber(string.sub(entry, 2, strlen))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							nn = tonumber(crz_max_mach)
 							nnn = tonumber(crz_min_mach)
@@ -23869,7 +23946,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								nnn = 0.400		-- min
 							end
 							if n < nnn or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								B738DR_fmc_cruise_speed_mach = n
 								entry = ""
@@ -23879,7 +23956,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					elseif strlen > 1 and  strlen < 5 and string.sub(entry, 1, 1) == "." then		-- only mach
 						n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							nn = tonumber(crz_max_mach)
 							nnn = tonumber(crz_min_mach)
@@ -23892,7 +23969,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								nnn = 0.400		-- min
 							end
 							if n < nnn or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								B738DR_fmc_cruise_speed_mach = n
 								entry = ""
@@ -23902,7 +23979,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					elseif strlen == 3 then			-- only kts
 						n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							nn = tonumber(crz_max_kts)
 							nnn = tonumber(crz_min_kts)
@@ -23913,7 +23990,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								nnn = 100		-- min
 							end
 							if n < nnn or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								B738DR_fmc_cruise_speed = n
 								entry = ""
@@ -23934,12 +24011,12 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 									nnn = 100		-- min
 								end
 								if n < nnn or n > nn then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									n2 = n
 									n = tonumber(string.sub(entry, 5, -1))
 									if n == nil then
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										nn = tonumber(crz_max_mach)
 										nnn = tonumber(crz_min_mach)
@@ -23952,7 +24029,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 											nnn = 0.400		-- min
 										end
 										if n < nnn or n > nn then
-											entry = INVALID_INPUT
+											add_fmc_msg(INVALID_INPUT, 1)
 										else
 											B738DR_fmc_cruise_speed_mach = n
 											B738DR_fmc_cruise_speed = n2
@@ -23963,10 +24040,10 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								end
 							end
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -23974,7 +24051,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 			-- CLB min speed kts/mach
 			local strlen = string.len(entry)
 			if strlen == 0 then
-				 entry = INVALID_INPUT
+				 add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					clb_min_kts = "   "
@@ -23984,7 +24061,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					if strlen > 2 and  strlen < 6 and string.sub(entry, 1, 2) == "/." then		-- only mach
 						local n = tonumber(string.sub(entry, 2, strlen))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(clb_max_mach)
 							if nn == nil then
@@ -23993,7 +24070,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								nn = nn / 1000
 							end
 							if n < 0.4 or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								n = n * 1000
 								clb_min_mach = string.format("%03d", n)
@@ -24003,14 +24080,14 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					elseif strlen == 3 then			-- only kts
 						local n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(clb_max_kts)
 							if nn == nil then
 								nn = 340
 							end
 							if n < 100 or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								clb_min_kts = string.format("%03d", n)
 								entry = ""
@@ -24019,19 +24096,19 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					elseif strlen > 5 and strlen < 9 and string.sub(entry, 4, 5) == "/." then 	-- kts and mach
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(clb_max_kts)
 							if nn == nil then
 								nn = 340
 							end
 							if n < 100 or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local kts = string.format("%03d", n)
 									n = tonumber(string.sub(entry, 5, strlen))
 									if n == nil then
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										nn = tonumber(clb_max_mach)
 										if nn == nil then
@@ -24040,7 +24117,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 											nn = nn / 1000
 										end
 										if n < 0.4 or n > nn then
-											entry = INVALID_INPUT
+											add_fmc_msg(INVALID_INPUT, 1)
 										else
 											n = n * 1000
 											clb_min_kts = kts
@@ -24051,7 +24128,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -24060,7 +24137,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 			local strlen = string.len(entry)
 			local n = 0
 			if strlen < 3 then
-				entry = INVALID_INPUT
+				add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					--offset_dist = 0
@@ -24093,11 +24170,11 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						offset_side = 2
 						n = tonumber(string.sub(entry, 1, -2))
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					if offset_side ~= 0 then
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n > 0 and n < 50 then
 								offset_dist = n
@@ -24108,12 +24185,12 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 									offset_act = 2
 								end
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							end
 						end
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		elseif page_xtras_others == 4 then
@@ -24225,7 +24302,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 				-- new_hold_turn = -1
 				-- entry = ""
 				-- hold_exec = 1
-				entry = INVALID_INPUT
+				add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if strlen == 5 then
 					-- format XXX/X
@@ -24271,13 +24348,13 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						entry = ""
 						hold_exec = 1
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				elseif strlen == 3 then
 					-- format XXX
 					m = tonumber(entry)
 					if m == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						-- if hold_exec == 0 then
 							-- edit_hold()
@@ -24323,7 +24400,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						entry = ""
 						hold_exec = 1
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				elseif strlen == 1 then
 					-- format X
@@ -24358,10 +24435,10 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						entry = ""
 						hold_exec = 1
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		-- elseif page_xtras == 1 then
@@ -24507,10 +24584,10 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						-- distance
 						ii = tonumber(string.sub(entry, 2, -1))
 						if ii == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if ii <= 0 or ii > 511 then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								fix_data[act_page][9] = ii
 								fix_data[act_page][8] = -1
@@ -24522,10 +24599,10 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						-- radial
 						ii = tonumber(string.sub(entry, 1, -2))
 						if ii == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if ii < 0 or ii > 359 then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								fix_data[act_page][8] = ii
 								fix_data[act_page][9] = -1
@@ -24537,10 +24614,10 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						-- radial
 						ii = tonumber(entry)
 						if ii == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if ii < 0 or ii > 359 then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								fix_data[act_page][8] = ii
 								fix_data[act_page][9] = -1
@@ -24550,7 +24627,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						end
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		elseif page_legs == 1 then
@@ -24579,11 +24656,11 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						-- add waypoint last
 						rte_add_wpt(item)
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					item_sel = 0
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 				-- if item == tmp_tmp and item_sel == 0 then
 					-- if wpt_lat_lon(entry) == true then
@@ -24595,7 +24672,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					-- end
 					-- item_sel = 0
 				-- else
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- end
 			else
 				if entry == ">DELETE" then
@@ -24627,7 +24704,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							-- add waypoint
 							rte_add_wpt(item)
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
@@ -24646,20 +24723,20 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							if legs_data2[item][19] ~= 6 then
 								-- select item
 								if legs_data2[item][1] == "DISCONTINUITY" then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel = 0
 								else
 									item_sel = item
 									entry = legs_data2[item][1]
 								end
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
 							else
 								item_sel = item
@@ -24667,7 +24744,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel = 0
 					end
 				else
@@ -24689,13 +24766,13 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 								rte_paste(item_sel)
 								calc_rte_enable2 = 1
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							end
 							entry = ""
 							item_sel = 0
 							legs_delete = 1
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- entry item
@@ -24714,7 +24791,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							rte_paste(item_sel)
 							calc_rte_enable2 = 1
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 						entry = ""
 						item_sel = 0
@@ -24730,7 +24807,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 			if strlen == 0 then
 				n = calc_mac(simDR_cg)
 				if n < 6 or n > 36 then	-- CG min and max
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				else
 					cg = string.format("%4.1f", n)
 					if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
@@ -24757,10 +24834,10 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					B738DR_calc_trim = 1
 				else
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 6 or n > 36 then	-- CG min and max
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							cg = string.format("%4.1f", n)
 							if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
@@ -24807,7 +24884,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					end
 					entry = ""
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		elseif page_perf == 1 then
@@ -24840,10 +24917,10 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					B738DR_calc_trim = 1
 				else
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < weight_min or n > weight_max then	-- ZFW min and max
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							zfw = string.format("%5.1f", n)
 							if units == 0 then
@@ -24922,10 +24999,10 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 				elseif strlen == 5 and string.sub(entry, 1, 2) == "FL" then
 					local n = tonumber(string.sub(entry, 3, 5))
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 10 or n > 410 then	-- FLxxx min and max
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							forec_alt_1_num = n * 100
 							if forec_alt_1_num > B738DR_trans_lvl then
@@ -24942,11 +25019,11 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 				else
 					local n = tonumber(entry)
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if strlen == 3 then
 							if n < 10 or n > 410 then	-- FLxxx min and max
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_1_num = n * 100
 								if forec_alt_1_num > B738DR_trans_lvl then
@@ -24961,7 +25038,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							end
 						else
 							if n < 1000 or n > 41000 then	-- Alt min and max
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_1_num = n
 								if forec_alt_1_num > B738DR_trans_lvl then
@@ -24981,7 +25058,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 			-- CRZ min speed kts/mach
 			local strlen = string.len(entry)
 			if strlen == 0 then
-				 entry = INVALID_INPUT
+				 add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					crz_min_kts = "   "
@@ -24991,7 +25068,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					if strlen > 2 and  strlen < 6 and string.sub(entry, 1, 2) == "/." then		-- only mach
 						local n = tonumber(string.sub(entry, 2, strlen))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(crz_max_mach)
 							if nn == nil then
@@ -25000,7 +25077,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 								nn = nn / 1000
 							end
 							if n < 0.4 or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								n = n * 1000
 								crz_min_mach = string.format("%03d", n)
@@ -25010,14 +25087,14 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					elseif strlen == 3 then			-- only kts
 						local n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(crz_max_kts)
 							if nn == nil then
 								nn = 340
 							end
 							if n < 100 or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								crz_min_kts = string.format("%03d", n)
 								entry = ""
@@ -25026,19 +25103,19 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					elseif strlen > 5 and strlen < 9 and string.sub(entry, 4, 5) == "/." then 	-- kts and mach
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(crz_max_kts)
 							if nn == nil then
 								nn = 340
 							end
 							if n < 100 or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local kts = string.format("%03d", n)
 									n = tonumber(string.sub(entry, 5, strlen))
 									if n == nil then
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										nn = tonumber(crz_max_mach)
 										if nn == nil then
@@ -25047,7 +25124,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 											nn = nn / 1000
 										end
 										if n < 0.4 or n > nn then
-											entry = INVALID_INPUT
+											add_fmc_msg(INVALID_INPUT, 1)
 										else
 											n = n * 1000
 											crz_min_kts = kts
@@ -25058,7 +25135,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -25100,13 +25177,13 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						ref_nav_exec = 1
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		elseif page_offset == 1 and offset_dist ~= 0 then
 			local strlen = string.len(entry)
 			if strlen == 0 then
-				entry = INVALID_INPUT
+				add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					offset_start = 0
@@ -25115,7 +25192,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 				elseif strlen < 6 then
 					offset_check1(entry)
 					if offset_start == 0 then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						entry = ""
 						offset_act = 1
@@ -25125,7 +25202,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						end
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		elseif page_climb == 1 then
@@ -25154,7 +25231,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						-- SPD/ALT
 						n = entry_spd_alt(entry, 100, 340, 100, 41000, 18000)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							B738DR_fmc_climb_r_speed1 = output_num1		-- speed
 							B738DR_fmc_climb_r_alt1 = output_num2		-- altitude
@@ -25164,7 +25241,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					end
 				end
 			else
-				entry = INVALID_INPUT
+				add_fmc_msg(INVALID_INPUT, 1)
 			end
 			
 		elseif page_descent == 1 then
@@ -25193,7 +25270,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						-- SPD/ALT
 						n = entry_spd_alt(entry, 100, 340, 100, 41000, 18000)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							B738DR_fmc_descent_r_speed1 = output_num1		-- speed
 							B738DR_fmc_descent_r_alt1 = output_num2		-- altitude
@@ -25203,7 +25280,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					end
 				end
 			else
-				entry = INVALID_INPUT
+				add_fmc_msg(INVALID_INPUT, 1)
 			end
 		elseif page_xtras_others == 4 then
 			if simDR_yaw_nz <= 0 then
@@ -25393,10 +25470,10 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						entry = ""
 						hold_exec = 1
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		-- elseif page_xtras_fmod == 1 then
@@ -25485,10 +25562,10 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						-- distance
 						ii = tonumber(string.sub(entry, 2, -1))
 						if ii == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if ii <= 0 or ii > 511 then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								fix_data[act_page][11] = ii
 								fix_data[act_page][10] = -1
@@ -25500,10 +25577,10 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						-- radial
 						ii = tonumber(string.sub(entry, 1, -2))
 						if ii == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if ii < 0 or ii > 359 then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								fix_data[act_page][10] = ii
 								fix_data[act_page][11] = -1
@@ -25515,10 +25592,10 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						-- radial
 						ii = tonumber(entry)
 						if ii == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if ii < 0 or ii > 359 then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								fix_data[act_page][10] = ii
 								fix_data[act_page][11] = -1
@@ -25528,7 +25605,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						end
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		elseif page_legs == 1 then
@@ -25557,11 +25634,11 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						-- add waypoint last
 						rte_add_wpt(item)
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					item_sel = 0
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 				-- if item == tmp_tmp and item_sel == 0 then
 					-- if wpt_lat_lon(entry) == true then
@@ -25573,7 +25650,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 					-- end
 					-- item_sel = 0
 				-- else
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- end
 			else
 				if entry == ">DELETE" then
@@ -25605,7 +25682,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 							-- add waypoint
 							rte_add_wpt(item)
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
@@ -25624,20 +25701,20 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 							if legs_data2[item][19] ~= 6 then
 								-- select item
 								if legs_data2[item][1] == "DISCONTINUITY" then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel = 0
 								else
 									item_sel = item
 									entry = legs_data2[item][1]
 								end
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
 							else
 								item_sel = item
@@ -25645,7 +25722,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel = 0
 					end
 				else
@@ -25667,13 +25744,13 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 								rte_paste(item_sel)
 								calc_rte_enable2 = 1
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							end
 							entry = ""
 							item_sel = 0
 							legs_delete = 1
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- entry item
@@ -25692,7 +25769,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 							rte_paste(item_sel)
 							calc_rte_enable2 = 1
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 						entry = ""
 						item_sel = 0
@@ -25762,10 +25839,10 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 				elseif strlen == 5 and string.sub(entry, 1, 2) == "FL" then
 					local n = tonumber(string.sub(entry, 3, 5))
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 10 or n > 410 then	-- FLxxx min and max
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							forec_alt_2_num = n * 100
 							if forec_alt_2_num >= B738DR_trans_lvl then
@@ -25782,11 +25859,11 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 				else
 					local n = tonumber(entry)
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if strlen == 3 then
 							if n < 10 or n > 410 then	-- FLxxx min and max
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_2_num = n * 100
 								if forec_alt_2_num > B738DR_trans_lvl then
@@ -25801,7 +25878,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 							end
 						else
 							if n < 1000 or n > 41000 then	-- Alt min and max
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_2_num = n
 								if forec_alt_2_num > B738DR_trans_lvl then
@@ -25830,10 +25907,10 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 					entry = ""
 				else
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 0 or n > 99.9 then	-- Reserves min and max
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							reserves = string.format("%4.1f", n)
 							if units == 0 then
@@ -25909,10 +25986,10 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 							if n_str == "C" then 
 								n = tonumber(string.sub(entry, 1, strlen-1))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < -40 or n > 70 then	-- Celsius min and max
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										oat_unit = "`C"
 										if oat_set == 0 then
@@ -25954,10 +26031,10 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 							elseif n_str == "F" then
 								n = tonumber(string.sub(entry, 1, strlen-1))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < -40 or n > 158 then	-- Fahrenheit min and max
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										oat_unit = "`F"
 										if oat_set == 0 then
@@ -25999,10 +26076,10 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 							else
 								n = tonumber(string.sub(entry, 1, strlen))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < -40 or n > 70 then	-- Celsius min and max
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										oat_unit = "`C"
 										if oat_set == 0 then
@@ -26045,7 +26122,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 							
 							
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					end
 				end
@@ -26053,7 +26130,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 			-- DES min speed kts/mach
 			local strlen = string.len(entry)
 			if strlen == 0 then
-				 entry = INVALID_INPUT
+				 add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					des_min_kts = "   "
@@ -26063,7 +26140,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 					if strlen > 2 and  strlen < 6 and string.sub(entry, 1, 2) == "/." then		-- only mach
 						local n = tonumber(string.sub(entry, 2, strlen))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(des_max_mach)
 							if nn == nil then
@@ -26072,7 +26149,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 								nn = nn / 1000
 							end
 							if n < 0.4 or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								n = n * 1000
 								des_min_mach = string.format("%03d", n)
@@ -26082,14 +26159,14 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 					elseif strlen == 3 then			-- only kts
 						local n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(des_max_kts)
 							if nn == nil then
 								nn = 340
 							end
 							if n < 100 or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								des_min_kts = string.format("%03d", n)
 								entry = ""
@@ -26098,19 +26175,19 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 					elseif strlen > 5 and strlen < 9 and string.sub(entry, 4, 5) == "/." then 	-- kts and mach
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(des_max_kts)
 							if nn == nil then
 								nn = 340
 							end
 							if n < 100 or n > nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local kts = string.format("%03d", n)
 									n = tonumber(string.sub(entry, 5, strlen))
 									if n == nil then
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										nn = tonumber(des_max_mach)
 										if nn == nil then
@@ -26119,7 +26196,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 											nn = nn / 1000
 										end
 										if n < 0.4 or n > nn then
-											entry = INVALID_INPUT
+											add_fmc_msg(INVALID_INPUT, 1)
 										else
 											n = n * 1000
 											des_min_kts = kts
@@ -26130,7 +26207,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -26138,7 +26215,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 		elseif page_offset == 1 and offset_dist ~= 0 then
 			local strlen = string.len(entry)
 			if strlen == 0 then
-				entry = INVALID_INPUT
+				add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					offset_end = 0
@@ -26146,7 +26223,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 				elseif strlen < 6 and offset_start ~= 0 then
 					offset_check2(entry)
 					if offset_end == 0 then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						entry = ""
 						offset_act = 1
@@ -26156,7 +26233,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						end
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		end
@@ -26342,7 +26419,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 						entry = ""
 						hold_exec = 1
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				elseif strlen == 4 then
 					-- format XX.X
@@ -26380,10 +26457,10 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 						entry = ""
 						hold_exec = 1
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		-- elseif page_xtras_fmod == 1 then
@@ -26471,11 +26548,11 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 						-- add waypoint last
 						rte_add_wpt(item)
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					item_sel = 0
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 				-- if item == tmp_tmp and item_sel == 0 then
 					-- if wpt_lat_lon(entry) == true then
@@ -26491,7 +26568,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 					-- end
 					-- item_sel = 0
 				-- else
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- end
 			else
 				if entry == ">DELETE" then
@@ -26522,7 +26599,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 							-- add waypoint
 							rte_add_wpt(item)
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
@@ -26543,20 +26620,20 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 							if legs_data2[item][19] ~= 6 then
 								-- select item
 								if legs_data2[item][1] == "DISCONTINUITY" then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel = 0
 								else
 									item_sel = item
 									entry = legs_data2[item][1]
 								end
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
 							else
 								item_sel = item
@@ -26564,7 +26641,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel = 0
 					end
 				else
@@ -26586,14 +26663,14 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 								rte_paste(item_sel)
 								calc_rte_enable2 = 1
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							end
 							entry = ""
 							item_sel = 0
 							item_sel_via = 0
 							legs_delete = 1
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 							item_sel = 0
 							item_sel_via = 0
 						end
@@ -26614,7 +26691,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 							rte_paste(item_sel)
 							calc_rte_enable2 = 1
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 						entry = ""
 						item_sel = 0
@@ -26684,10 +26761,10 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 					entry = ""
 				else
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 0 or n > 500 then	-- Cost Index min and max
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							cost_index = string.format("%3d", n)
 							B738_calc_vnav_spd()
@@ -26766,10 +26843,10 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 				elseif strlen == 5 and string.sub(entry, 1, 2) == "FL" then
 					n = tonumber(string.sub(entry, 3, 5))
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 10 or n > 410 then	-- FLxxx min and max
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							forec_alt_3_num = n * 100
 							if forec_alt_3_num > B738DR_trans_lvl then
@@ -26786,11 +26863,11 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 				else
 					n = tonumber(entry)
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if strlen == 3 then
 							if n < 10 or n > 410 then	-- FLxxx min and max
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_3_num = n * 100
 								if forec_alt_3_num > B738DR_trans_lvl then
@@ -26805,7 +26882,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 							end
 						else
 							if n < 1000 or n > 41000 then	-- Alt min and max
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_3_num = n
 								if forec_alt_3_num > B738DR_trans_lvl then
@@ -27202,7 +27279,7 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 							-- hold_exec = 1
 							-- act_page = 1
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					end
 				end
@@ -27365,7 +27442,7 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 				else
 					kk = tonumber(entry)
 					if kk == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if units == 0 then
 							ll = kk * 2.54
@@ -27374,7 +27451,7 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 							kk = kk * 0.3937
 						end
 						if ll < -130 or ll > 266.6 then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							cg_set_m = ll / 100
 							cg_set_in = kk
@@ -27707,7 +27784,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 						elseif entry == "" and des_icao ~= "****" then
 							entry = des_icao
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					end
 				end
@@ -27774,9 +27851,9 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 				
 				-- item = (act_page - 1) * 5 + offset - 1 + button
 				-- if item > legs_num then
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- elseif legs_data[item][1] == "DISCONTINUITY" then
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- elseif entry == ">DELETE" then
 					-- legs_data[item][4] = 0
 					-- legs_data[item][5] = 0
@@ -27791,7 +27868,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 						-- if n == nil then
 							-- n = entry_alt(entry, 100, 41000, 1, 18000)
 							-- if n == nil then
-								-- entry = INVALID_INPUT
+								-- add_fmc_msg(INVALID_INPUT, 1)
 							-- else
 								-- if string.sub(output_str, -1, -1) == "A" then
 									-- nn = 43
@@ -27816,7 +27893,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 						-- -- SPD/ALT
 						-- n = entry_spd_alt(entry, 100, 340, 100, 41000, 18000)
 						-- if n == nil then
-							-- entry = INVALID_INPUT
+							-- add_fmc_msg(INVALID_INPUT, 1)
 						-- else
 							-- legs_data[item][4] = output_num1		-- speed
 							-- if string.sub(output_str2, -1, -1) == "A" then
@@ -27890,7 +27967,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 						entry = ""
 						hold_exec = 1
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				elseif strlen == 4 then
 					-- format XXX/
@@ -27918,7 +27995,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 						entry = ""
 						hold_exec = 1
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				elseif strlen == 3 then
 					-- format XXX
@@ -27932,7 +28009,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 						end
 					end
 					if ww == 1 then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						-- if hold_exec == 0 then
 							-- edit_hold()
@@ -27967,7 +28044,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 						end
 					end
 					if ww == 1 then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						-- if hold_exec == 0 then
 							-- edit_hold()
@@ -27980,13 +28057,13 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 						hold_exec = 1
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		elseif page_ref_nav_data == 1 then
 			local strlen = string.len(entry)
 			if strlen == 0 or strlen > 4 then
-				entry = INVALID_INPUT
+				add_fmc_msg(INVALID_INPUT, 1)
 			else
 				nav_data_type = 1 -- navaid
 				nav_data_find(entry)
@@ -28005,13 +28082,13 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 				else
 					local n = tonumber(entry)
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n > 99 and n < 170 then
 							v1_set = entry
 							entry = ""
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					end
 				end
@@ -28079,10 +28156,10 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 				elseif strlen == 5 and string.sub(entry, 1, 2) == "FL" then
 					local n = tonumber(string.sub(entry, 3, 5))
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 10 or n > 410 then	-- Cruise level FLxxx min and max
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							crz_alt_num = n * 100
 							if crz_alt_num >= B738DR_trans_alt then
@@ -28112,11 +28189,11 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 				else
 					local n = tonumber(entry)
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if strlen == 3 then
 							if n < 10 or n > 410 then	-- Cruise level FLxxx min and max
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								crz_alt_num = n * 100
 								if crz_alt_num >= B738DR_trans_alt then
@@ -28144,7 +28221,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 							end
 						else
 							if n < 1000 or n > 41000 then	-- Cruise alt min and max
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								crz_alt_num = n
 								if crz_alt_num >= B738DR_trans_alt then
@@ -28204,7 +28281,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 				else
 					kk = tonumber(entry)
 					if kk == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if units == 0 then
 							ll = ((simDR_fuel_weight / 1000) * 2.204) + kk + 91.3
@@ -28218,7 +28295,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 									run_after_time(gpu_test_reset, 1.5)
 								end
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							end
 						else
 							ll = (simDR_fuel_weight / 1000) + kk + 41.4
@@ -28232,7 +28309,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 									run_after_time(gpu_test_reset, 1.5)
 								end
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							end
 						end
 					end
@@ -28260,18 +28337,18 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n < 0 or n > 359 then		-- wind heading 0 - 359
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local wind_dir = string.format("%03d", n)
 								n = tonumber(string.sub(entry, 5, strlen))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < 1 or n > 199 then	-- wind speed 1 - 199
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
 										if item + 1 <= legs_num2 + 1 then
@@ -28300,7 +28377,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -28386,7 +28463,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 					-- entry = ""
 				else
 					if string.len(entry) > 8 then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						flt_num = entry
 						entry = ""
@@ -28456,9 +28533,9 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 				
 				-- item = (act_page - 1) * 5 + offset - 1 + button
 				-- if item > legs_num then
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- elseif legs_data[item][1] == "DISCONTINUITY" then
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- elseif entry == ">DELETE" then
 					-- legs_data[item][4] = 0
 					-- legs_data[item][5] = 0
@@ -28473,7 +28550,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 						-- if n == nil then
 							-- n = entry_alt(entry, 100, 41000, 1, 18000)
 							-- if n == nil then
-								-- entry = INVALID_INPUT
+								-- add_fmc_msg(INVALID_INPUT, 1)
 							-- else
 								-- if string.sub(output_str, -1, -1) == "A" then
 									-- nn = 43
@@ -28498,7 +28575,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 						-- -- SPD/ALT
 						-- n = entry_spd_alt(entry, 100, 340, 100, 41000, 18000)
 						-- if n == nil then
-							-- entry = INVALID_INPUT
+							-- add_fmc_msg(INVALID_INPUT, 1)
 						-- else
 							-- legs_data[item][4] = output_num1		-- speed
 							-- if string.sub(output_str2, -1, -1) == "A" then
@@ -28531,13 +28608,13 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 				else
 					local n = tonumber(entry)
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n > 99 and n < 170 then
 							vr_set = entry
 							entry = ""
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					end
 				end
@@ -28577,10 +28654,10 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 						if string.sub(entry, 1, 1) == "/" then
 							n = tonumber(string.sub(entry, 2, 5))
 							if n == nil then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								if n < 0 or n > 1355 then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									forec_qnh = "  " .. string.sub(entry, 2, 5)
 									entry = ""
@@ -28596,16 +28673,16 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 								end
 							end
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					elseif strlen == 6 then		-- QNH /XX.XX in hg
 						if string.sub(entry, 1, 1) == "/" and string.sub(entry, 4, 4) == "." then
 							n = tonumber(string.sub(entry, 2, 6))
 							if n == nil then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								if n < 0 or n > 40.0 then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									forec_qnh = " " .. string.sub(entry, 2, 6)
 									entry = ""
@@ -28619,10 +28696,10 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 								end
 							end
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -28651,18 +28728,18 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n < 0 or n > 359 then		-- wind heading 0 - 359
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local wind_dir = string.format("%03d", n)
 								n = tonumber(string.sub(entry, 5, strlen))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < 1 or n > 199 then	-- wind speed 1 - 199
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										crz_wind_dir = wind_dir
 										crz_wind_spd = string.format("%3d", n)
@@ -28672,7 +28749,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -28680,7 +28757,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 			-- CLB max speed kts/mach
 			local strlen = string.len(entry)
 			if strlen == 0 then
-				 entry = INVALID_INPUT
+				 add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					clb_max_kts = "   "
@@ -28690,7 +28767,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 					if strlen > 2 and  strlen < 6 and string.sub(entry, 1, 2) == "/." then		-- only mach
 						local n = tonumber(string.sub(entry, 2, strlen))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(clb_min_mach)
 							if nn == nil then
@@ -28699,7 +28776,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 								nn = nn / 1000
 							end
 							if n > 0.82 or n < nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								n = n * 1000
 								clb_max_mach = string.format("%03d", n)
@@ -28709,14 +28786,14 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 					elseif strlen == 3 then			-- only kts
 						local n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(clb_min_kts)
 							if nn == nil then
 								nn = 100
 							end
 							if n > 340  or n < nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								clb_max_kts = string.format("%03d", n)
 								entry = ""
@@ -28725,19 +28802,19 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 					elseif strlen > 5 and strlen < 9 and string.sub(entry, 4, 5) == "/." then 	-- kts and mach
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(clb_min_kts)
 							if nn == nil then
 								nn = 100
 							end
 							if n > 340 or n < nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local kts = string.format("%03d", n)
 									n = tonumber(string.sub(entry, 5, strlen))
 									if n == nil then
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										nn = tonumber(clb_min_mach)
 										if nn == nil then
@@ -28746,7 +28823,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 											nn = nn / 1000
 										end
 										if n > 0.82 or n < nn then
-											entry = INVALID_INPUT
+											add_fmc_msg(INVALID_INPUT, 1)
 										else
 											n = n * 1000
 											clb_max_kts = kts
@@ -28757,7 +28834,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -28796,18 +28873,18 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n < 0 or n > 359 then		-- wind heading 0 - 359
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local wind_dir = string.format("%03d", n)
 								n = tonumber(string.sub(entry, 5, strlen))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < 1 or n > 199 then	-- wind speed 1 - 199
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
 										if item + 1 <= legs_num2 + 1 then
@@ -28836,7 +28913,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -28911,7 +28988,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 			if act_page == 1 then
 				--save route
 				if string.len(entry) == 0 or string.len(entry) > 12 then
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				else
 					save_fpln()
 					co_route = entry
@@ -28975,9 +29052,9 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 				
 				-- item = (act_page - 1) * 5 + offset - 1 + button
 				-- if item > legs_num then
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- elseif legs_data[item][1] == "DISCONTINUITY" then
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- elseif entry == ">DELETE" then
 					-- legs_data[item][4] = 0
 					-- legs_data[item][5] = 0
@@ -28992,7 +29069,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 						-- if n == nil then
 							-- n = entry_alt(entry, 100, 41000, 1, 18000)
 							-- if n == nil then
-								-- entry = INVALID_INPUT
+								-- add_fmc_msg(INVALID_INPUT, 1)
 							-- else
 								-- if string.sub(output_str, -1, -1) == "A" then
 									-- nn = 43
@@ -29017,7 +29094,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 						-- -- SPD/ALT
 						-- n = entry_spd_alt(entry, 100, 340, 100, 41000, 18000)
 						-- if n == nil then
-							-- entry = INVALID_INPUT
+							-- add_fmc_msg(INVALID_INPUT, 1)
 						-- else
 							-- legs_data[item][4] = output_num1		-- speed
 							-- if string.sub(output_str2, -1, -1) == "A" then
@@ -29051,13 +29128,13 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 				else
 					local n = tonumber(entry)
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n > 99 and n < 170 then
 							v2_set = entry
 							entry = ""
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					end
 				end
@@ -29119,7 +29196,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 						ref_nav_exec = 1
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		elseif page_takeoff == 2 then
@@ -29133,10 +29210,10 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 				elseif strlen > 2 and strlen < 5 then
 					local n = tonumber(entry)
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 400 or n > 9999 then	-- ACCEL HT AGL min and max
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							accel_alt = string.format("%4d", n)
 							entry = ""
@@ -29144,10 +29221,10 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 						end
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			else
-				entry = INVALID_INPUT
+				add_fmc_msg(INVALID_INPUT, 1)
 			end
 		elseif page_descent_forecast == 1 then
 			-- entry WIND LAYER 1
@@ -29161,18 +29238,18 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n < 0 or n > 359 then		-- wind heading 0 - 359
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local wind_dir = string.format("%03d", n)
 								n = tonumber(string.sub(entry, 5, strlen))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < 1 or n > 199 then	-- wind speed 1 - 199
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										forec_dir_1 = wind_dir
 										forec_spd_1 = string.format("%03d", n)
@@ -29182,7 +29259,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -29204,12 +29281,12 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 						if n == nil and strlen > 1 then
 							n = tonumber(string.sub(entry, 1, strlen-1))
 							if n == nil then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								n_str = string.sub(entry, strlen, strlen)
 								if n_str == "C" then 
 									if n < -40 or n > 70 then	-- ISA DEV Celsius min and max
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										isa_dev_c = string.format("%3d", n)
 										n = (n * 9 / 5) + 32
@@ -29225,7 +29302,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 									end
 								elseif n_str == "F" then
 									if n < -40 or n > 158 then	-- ISA DEV Fahrenheit min and max
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										isa_dev_f = string.format("%3d", n)
 										n = (n - 32) * 5 / 9
@@ -29240,16 +29317,16 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 										entry = ""
 									end
 								else
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								end
 							end
 						else
 							if n == nil then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								if B738DR_fmc_units == 0 then
 									if n < -40 or n > 158 then	-- ISA DEV Fahrenheit min and max
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										isa_dev_f = string.format("%3d", n)
 										n = (n - 32) * 5 / 9
@@ -29265,7 +29342,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 									end
 								else
 									if n < -40 or n > 70 then	-- ISA DEV Celsius min and max
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										isa_dev_c = string.format("%3d", n)
 										n = (n * 9 / 5) + 32
@@ -29283,7 +29360,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -29291,7 +29368,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 			-- CRZ max speed kts/mach
 			local strlen = string.len(entry)
 			if strlen == 0 then
-				 entry = INVALID_INPUT
+				 add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					crz_max_kts = "   "
@@ -29301,7 +29378,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 					if strlen > 2 and  strlen < 6 and string.sub(entry, 1, 2) == "/." then		-- only mach
 						local n = tonumber(string.sub(entry, 2, strlen))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(crz_min_mach)
 							if nn == nil then
@@ -29310,7 +29387,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 								nn = nn / 1000
 							end
 							if n > 0.82 or n < nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								n = n * 1000
 								crz_max_mach = string.format("%03d", n)
@@ -29320,14 +29397,14 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 					elseif strlen == 3 then			-- only kts
 						local n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(crz_min_kts)
 							if nn == nil then
 								nn = 100
 							end
 							if n > 340  or n < nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								crz_max_kts = string.format("%03d", n)
 								entry = ""
@@ -29336,19 +29413,19 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 					elseif strlen > 5 and strlen < 9 and string.sub(entry, 4, 5) == "/." then 	-- kts and mach
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(crz_min_kts)
 							if nn == nil then
 								nn = 100
 							end
 							if n > 340 or n < nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local kts = string.format("%03d", n)
 									n = tonumber(string.sub(entry, 5, strlen))
 									if n == nil then
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										nn = tonumber(crz_min_mach)
 										if nn == nil then
@@ -29357,7 +29434,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 											nn = nn / 1000
 										end
 										if n > 0.82 or n < nn then
-											entry = INVALID_INPUT
+											add_fmc_msg(INVALID_INPUT, 1)
 										else
 											n = n * 1000
 											crz_max_kts = kts
@@ -29367,7 +29444,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -29391,7 +29468,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 				else
 					kk = tonumber(entry)
 					if kk == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if units == 0 then
 							ll = ((simDR_payload_weight / 1000) * 2.204) + kk + 91.3
@@ -29416,7 +29493,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 									run_after_time(gpu_test_reset, 1.5)
 								end
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							end
 						else
 							ll = (simDR_payload_weight / 1000) + kk + 41.4
@@ -29441,7 +29518,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 								end
 								entry = ""
 							else
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							end
 						end
 					end
@@ -29475,18 +29552,18 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n < 0 or n > 359 then		-- wind heading 0 - 359
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local wind_dir = string.format("%03d", n)
 								n = tonumber(string.sub(entry, 5, strlen))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < 1 or n > 199 then	-- wind speed 1 - 199
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
 										if item + 1 <= legs_num2 + 1 then
@@ -29515,7 +29592,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -29655,7 +29732,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 						irs_pos = entry
 						entry = ""
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -29677,18 +29754,18 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n < 0 or n > 359 then		-- wind heading 0 - 359
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local wind_dir = string.format("%03d", n)
 								n = tonumber(string.sub(entry, 5, strlen))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < 1 or n > 199 then	-- wind speed 1 - 199
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										forec_dir_2 = wind_dir
 										forec_spd_2 = string.format("%03d", n)
@@ -29698,7 +29775,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -29717,18 +29794,18 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 							app_flap = flp
 							entry = ""
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						local n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if vref_15 ~= "---" and vref_40 ~= "---" then
 								local flp_max = tonumber(vref_15)
 								local flp_min = tonumber(vref_40)
 								if n > flp_max or n < flp_min then	-- SPEED min and max
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									app_spd = string.format("%3d", n)
 									entry = ""
@@ -29740,13 +29817,13 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 					if string.sub(entry, 1, 1) == "/" then
 						local n = tonumber(string.sub(entry, 2, 4))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if vref_15 ~= "---" and vref_40 ~= "---" then
 								local flp_max = tonumber(vref_15)
 								local flp_min = tonumber(vref_40)
 								if n > flp_max or n < flp_min then	-- SPEED min and max
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									app_spd = string.format("%3d", n)
 									entry = ""
@@ -29754,7 +29831,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				elseif strlen == 6 then
 					if string.sub(entry, 3, 3) == "/" then
@@ -29762,13 +29839,13 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 						if flp == "15" or flp == "30" or flp == "40" then
 							local n = tonumber(string.sub(entry, 4, 6))
 							if n == nil then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								if vref_15 ~= "---" and vref_40 ~= "---" then
 									local flp_max = tonumber(vref_15)
 									local flp_min = tonumber(vref_40)
 									if n > flp_max or n < flp_min then	-- SPEED min and max
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										app_flap = flp
 										app_spd = string.format("%3d", n)
@@ -29777,13 +29854,13 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 								end
 							end
 						else
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			end
 		elseif page_perf == 1 and disable_PERF_4R == 0 then
@@ -29804,16 +29881,16 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 						if n == nil and strlen > 1 then
 							n = tonumber(string.sub(entry, 1, strlen-1))
 							if n == nil then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								n = tonumber(string.sub(entry, 1, strlen-1))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									n_str = string.sub(entry, strlen, strlen)
 									if n_str == "C" then 
 										if n < -70 or n > 70 then	-- T/C OAT Celsius min and max
-											entry = INVALID_INPUT
+											add_fmc_msg(INVALID_INPUT, 1)
 										else
 											tc_oat_c = string.format("%3d", n)
 											n = (n * 9 / 5) + 32
@@ -29829,7 +29906,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 										end
 									elseif n_str == "F" then
 										if n < -94 or n > 158 then	-- T/C OAT Fahrenheit min and max
-											entry = INVALID_INPUT
+											add_fmc_msg(INVALID_INPUT, 1)
 										else
 											tc_oat_f = string.format("%3d", n)
 											n = (n - 32) * 5 / 9
@@ -29844,17 +29921,17 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 											entry = ""
 										end
 									else
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									end
 								end
 							end
 						else
 							if n == nil then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								if B738DR_fmc_units == 0 then
 									if n < -94 or n > 158 then	-- T/C OAT Fahrenheit min and max
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										tc_oat_f = string.format("%3d", n)
 										n = (n - 32) * 5 / 9
@@ -29870,7 +29947,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 									end
 								else
 									if n < -70 or n > 70 then	-- T/C OAT Celsius min and max
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										tc_oat_c = string.format("%3d", n)
 										n = (n * 9 / 5) + 32
@@ -29888,7 +29965,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -29896,7 +29973,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 			-- DES max speed kts/mach
 			local strlen = string.len(entry)
 			if strlen == 0 then
-				 entry = INVALID_INPUT
+				 add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					des_max_kts = "   "
@@ -29906,7 +29983,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 					if strlen > 2 and  strlen < 6 and string.sub(entry, 1, 2) == "/." then		-- only mach
 						local n = tonumber(string.sub(entry, 2, strlen))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(des_min_mach)
 							if nn == nil then
@@ -29915,7 +29992,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 								nn = nn / 1000
 							end
 							if n > 0.82 or n < nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								n = n * 1000
 								des_max_mach = string.format("%03d", n)
@@ -29925,14 +30002,14 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 					elseif strlen == 3 then			-- only kts
 						local n = tonumber(entry)
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(des_min_kts)
 							if nn == nil then
 								nn = 100
 							end
 							if n > 340  or n < nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								des_max_kts = string.format("%03d", n)
 								entry = ""
@@ -29941,19 +30018,19 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 					elseif strlen > 5 and strlen < 9 and string.sub(entry, 4, 5) == "/." then 	-- kts and mach
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							local nn = tonumber(des_min_kts)
 							if nn == nil then
 								nn = 100
 							end
 							if n > 340 or n < nn then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local kts = string.format("%03d", n)
 									n = tonumber(string.sub(entry, 5, strlen))
 									if n == nil then
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										nn = tonumber(des_min_mach)
 										if nn == nil then
@@ -29962,7 +30039,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 											nn = nn / 1000
 										end
 										if n > 0.82 or n < nn then
-											entry = INVALID_INPUT
+											add_fmc_msg(INVALID_INPUT, 1)
 										else
 											n = n * 1000
 											des_max_kts = kts
@@ -29973,7 +30050,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -30002,18 +30079,18 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n < 0 or n > 359 then		-- wind heading 0 - 359
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local wind_dir = string.format("%03d", n)
 								n = tonumber(string.sub(entry, 5, strlen))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < 1 or n > 199 then	-- wind speed 1 - 199
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
 										if item + 1 <= legs_num2 + 1 then
@@ -30042,7 +30119,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -30148,9 +30225,9 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 				
 				-- item = (act_page - 1) * 5 + offset - 1 + button
 				-- if item > legs_num then
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- elseif legs_data[item][1] == "DISCONTINUITY" then
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- elseif entry == ">DELETE" then
 					-- legs_data[item][4] = 0
 					-- legs_data[item][5] = 0
@@ -30165,7 +30242,7 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 						-- if n == nil then
 							-- n = entry_alt(entry, 100, 41000, 1, 18000)
 							-- if n == nil then
-								-- entry = INVALID_INPUT
+								-- add_fmc_msg(INVALID_INPUT, 1)
 							-- else
 								-- if string.sub(output_str, -1, -1) == "A" then
 									-- nn = 43
@@ -30190,7 +30267,7 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 						-- -- SPD/ALT
 						-- n = entry_spd_alt(entry, 100, 340, 100, 41000, 18000)
 						-- if n == nil then
-							-- entry = INVALID_INPUT
+							-- add_fmc_msg(INVALID_INPUT, 1)
 						-- else
 							-- legs_data[item][4] = output_num1		-- speed
 							-- if string.sub(output_str2, -1, -1) == "A" then
@@ -30221,10 +30298,10 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 				elseif strlen > 2 and strlen < 5 then
 					local n = tonumber(entry)
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 800 or n > 9999 then	-- THR RED ALT AGL min and max
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							clb_alt = string.format("%4d", n)
 							entry = ""
@@ -30232,10 +30309,10 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 						end
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			else
-				entry = INVALID_INPUT
+				add_fmc_msg(INVALID_INPUT, 1)
 			end
 		elseif page_approach == 1 then
 			-- WIND CORR
@@ -30247,20 +30324,20 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 				elseif strlen < 3 then
 					local n = tonumber(entry)
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 5 or n > 20 then	-- WIND CORR min and max
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							wind_corr = string.format("%02d", n)
 							entry = ""
 						end
 					end
 				else
-					entry = INVALID_INPUT
+					add_fmc_msg(INVALID_INPUT, 1)
 				end
 			else
-				--entry = INVALID_INPUT
+				--add_fmc_msg(INVALID_INPUT, 1)
 				if wind_corr == "--" then
 					entry = 5
 				else
@@ -30279,18 +30356,18 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n < 0 or n > 359 then		-- wind heading 0 - 359
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local wind_dir = string.format("%03d", n)
 								n = tonumber(string.sub(entry, 5, strlen))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < 1 or n > 199 then	-- wind speed 1 - 199
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										forec_dir_3 = wind_dir
 										forec_spd_3 = string.format("%03d", n)
@@ -30300,7 +30377,7 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -30332,10 +30409,10 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 					entry = ""
 				else
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 1000 or n > 99999 then	-- Trans alt min and max
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							trans_alt = string.format("%5d", n)
 							if crz_alt ~= "*****" then
@@ -30399,7 +30476,7 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 							ref_nav_exec = 1
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -30410,18 +30487,18 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 			local strlen = string.len(entry)
 			local n = tonumber(entry)
 			if strlen == 0 then
-				 entry = INVALID_INPUT
+				 add_fmc_msg(INVALID_INPUT, 1)
 			else
 				if entry == ">DELETE" then
 					irs_hdg = "---`"
 					entry = ""
 				else
 					if n == nil then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						if n < 0 or n > 359 or strlen ~= 3 then	-- HDG min and max
 							-- TO DO INHIBIT FRAC NUMBER
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							irs_hdg = string.format("%03d", n)
 							irs_hdg = irs_hdg .. "`"
@@ -30455,18 +30532,18 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n < 0 or n > 359 then		-- wind heading 0 - 359
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								local wind_dir = string.format("%03d", n)
 								n = tonumber(string.sub(entry, 5, strlen))
 								if n == nil then
-									entry = INVALID_INPUT
+									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									if n < 1 or n > 199 then	-- wind speed 1 - 199
-										entry = INVALID_INPUT
+										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
 										if item + 1 <= legs_num2 + 1 then
@@ -30495,7 +30572,7 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
 			end
@@ -30614,10 +30691,10 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 				if legs_intdir == 1 then
 					if strlen == 3 then
 						if n == nil then
-							entry = INVALID_INPUT
+							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							if n < 0 or n > 359 then
-								entry = INVALID_INPUT
+								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								legs_intdir_crs2 = n
 								legs_intdir_crs_mod = legs_intdir_crs2
@@ -30625,7 +30702,7 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 							end
 						end
 					else
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				else
 					if B738DR_capt_map_mode == 3 then
@@ -30876,7 +30953,7 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 			if ref_nav_wpt == "-----" and ref_nav_navaid == "----" and ref_nav_apt == "----" then
 				if ref_nav_new == "*****" then
 					if strlen == 0 or strlen > 5 then
-						entry = INVALID_INPUT
+						add_fmc_msg(INVALID_INPUT, 1)
 					else
 						ref_nav_new = entry
 						nav_data_idx2 = 0
@@ -32535,7 +32612,7 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 					if hold_term == 0 then
 					
 						-- if new_hold_inbd == "---" then
-							-- entry = INVALID_INPUT
+							-- add_fmc_msg(INVALID_INPUT, 1)
 						-- else
 							-- if new_hold == 0 then
 								-- rte_edit_hold(hold_idx)
@@ -35111,7 +35188,7 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 			-- if hold_exec == 1 then
 				
 				-- if new_hold_inbd == "---" then
-					-- entry = INVALID_INPUT
+					-- add_fmc_msg(INVALID_INPUT, 1)
 				-- else
 					-- if new_hold == 0 then
 						-- rte_edit_hold(hold_idx)
@@ -36782,7 +36859,7 @@ function B738_fmc_pos_init()
 		-- line1_s = "                        "
 		line2_x = "REF AIRPORT             "
 		--line2_l = ref_icao .. "                    "
-		line2_l = ref_icao
+		line2_l = ref_icao2
 		if ref_icao_pos ~= "               " then
 			line2_l = line2_l .. "  ".. pos_to_str(ref_icao_pos)
 		end
@@ -36905,6 +36982,7 @@ function B738_fmc_rte_init()
 		local temp_str = ""
 		local temp_num = 0
 		local temp_num2 = 0
+		local temp_string = ""
 		
 		local max_page_fpln = 0
 		
@@ -37156,9 +37234,18 @@ function B738_fmc_rte_init()
 		
 		max_page = math.max(max_page_fpln, 1)
 		
-		line0_s = "                    " .. string.format("%1d",act_page)
+		-- line0_s = "                    " .. string.format("%1d",act_page)
+		-- line0_s = line0_s .. "/"
+		-- line0_s = line0_s .. string.format("%1d",max_page)
+		
+		line0_s = string.format("%2d",act_page)
 		line0_s = line0_s .. "/"
-		line0_s = line0_s .. string.format("%1d",max_page)
+		if max_page > 9 then
+			line0_s = line0_s .. string.format("%2d",max_page)
+		else
+			line0_s = line0_s .. string.format("%1d",max_page)
+		end
+		line0_s = spaces_before(line0_s, 23)
 		
 		-- line5_s = "                        "
 		--line6_x = "------------------------"
@@ -39871,9 +39958,18 @@ function B738_fmc_legs()
 			end
 		end
 		line0_l = line0_l .. "RTE   LEGS        "
-		line0_s = "                    " .. string.format("%1d",act_page)
+		-- line0_s = "                    " .. string.format("%1d",act_page)
+		-- line0_s = line0_s .. "/"
+		-- line0_s = line0_s .. string.format("%1d",max_page)
+		
+		line0_s = string.format("%2d",act_page)
 		line0_s = line0_s .. "/"
-		line0_s = line0_s .. string.format("%1d",max_page)
+		if max_page > 9 then
+			line0_s = line0_s .. string.format("%2d",max_page)
+		else
+			line0_s = line0_s .. string.format("%1d",max_page)
+		end
+		line0_s = spaces_before(line0_s, 23)
 		
 		-- RNP
 		if legs_num > 1 and string.sub(line6_l, 1, 1) == " " then
@@ -40528,9 +40624,15 @@ function B738_fmc_legs2()
 			end
 		end
 		line0_l = line0_l .. "RTE   LEGS        "
-		line0_s = "                    " .. string.format("%1d",act_page)
+		--line0_s = "                    " .. string.format("%1d",act_page)
+		line0_s = string.format("%2d",act_page)
 		line0_s = line0_s .. "/"
-		line0_s = line0_s .. string.format("%1d",max_page)
+		if max_page > 9 then
+			line0_s = line0_s .. string.format("%2d",max_page)
+		else
+			line0_s = line0_s .. string.format("%1d",max_page)
+		end
+		line0_s = spaces_before(line0_s, 23)
 		
 		-- RNP
 		if legs_num > 1 and string.sub(line6_l, 1, 1) == " " then
@@ -45052,28 +45154,14 @@ function B738_last_pos()
 
 end
 
-
 function airport_pos()
 
-	local position_min = ""
-	local position_deg = ""
-	local position = ""
-	local temp_deg = 0
-	local temp_min = 0
-	local airport_lat_deg = 0
-	local airport_lat_min = 0
-	local airport_lon_deg = 0
-	local airport_lon_min = 0
-	local airport_lat_ns = 0
-	local airport_lon_ew = 0
 	local temp_i = 0
 	
 	local nd_x = 0
 	local idx_rec = 0
 	
-	if ref_icao == "----" then
-		ref_icao_pos = "               "
-	else
+	if ref_icao ~= "----" then
 		
 		icao_latitude = 0
 		icao_longitude = 0
@@ -45092,22 +45180,67 @@ function airport_pos()
 					end
 				end
 			end
+		end
+	end
+
+end
+
+function airport_pos2()
+
+	local position_min = ""
+	local position_deg = ""
+	local position = ""
+	local temp_deg = 0
+	local temp_min = 0
+	local airport_lat_deg = 0
+	local airport_lat_min = 0
+	local airport_lon_deg = 0
+	local airport_lon_min = 0
+	local airport_lat_ns = 0
+	local airport_lon_ew = 0
+	local temp_i = 0
+	
+	local nd_x = 0
+	local idx_rec = 0
+	
+	local icao_latitude2 = 0
+	local icao_longitude2 = 0
+	
+	if ref_icao2 == "----" then
+		ref_icao_pos = "               "
+	else
 		
-			local lat = (math.abs(icao_latitude))
+		
+		if apt_data_num > 0 then
+			nd_x = string.byte(string.sub(ref_icao2, 1, 1))
+			if (nd_x >= 48 and nd_x <= 57) or (nd_x >= 65 and nd_x <= 90) then
+				if idx_apt[nd_x][99999] > 0 then
+					for temp_i = 1, idx_apt[nd_x][99999] do
+						idx_rec = idx_apt[nd_x][temp_i]
+						if ref_icao2 == apt_data[idx_rec][1] then
+							icao_latitude2 = apt_data[idx_rec][2]
+							icao_longitude2 = apt_data[idx_rec][3]
+							break
+						end
+					end
+				end
+			end
+		
+			local lat = (math.abs(icao_latitude2))
 			local lat_min_dec = (math.fmod(lat,1.0)*600)
 			airport_lat_deg = (math.floor(lat))
 			airport_lat_min = (string.format("%06.3f",lat_min_dec))
 			airport_lat_ns = 0
-			if icao_latitude < 0 then
+			if icao_latitude2 < 0 then
 				airport_lat_ns = 1
 			end
 			
-			local lon = (math.abs(icao_longitude))
+			local lon = (math.abs(icao_longitude2))
 			local lon_min_dec = (math.fmod(lon,1.0)*600)
 			airport_lon_deg = (math.floor(lon))
 			airport_lon_min = (string.format("%06.3f",lon_min_dec))
 			airport_lon_ew = 0
-			if icao_longitude < 0 then
+			if icao_longitude2 < 0 then
 				airport_lon_ew = 1
 			end
 			
@@ -59033,9 +59166,15 @@ function B738_vnav_pth3()
 				end
 			end
 		else
-			B738DR_autopilot_pfd_mode = 1 	-- ILS
-			B738DR_pfd_vert_path = 0
-			pfd_ils()
+			if B738DR_nav_type == 4 then
+				B738DR_autopilot_pfd_mode = 0	-- none
+				pfd_cpt_nav_txt1 = ""
+				pfd_cpt_nav_txt2 = ""
+			else
+				B738DR_autopilot_pfd_mode = 1 	-- ILS
+				B738DR_pfd_vert_path = 0
+				pfd_ils()
+			end
 		end
 	else
 		if B738DR_gp_active == 0 then
@@ -59050,8 +59189,14 @@ function B738_vnav_pth3()
 				end
 			else
 				if horz_active == 1 then
-					B738DR_autopilot_pfd_mode = 3 	-- LOC/VNAV
-					pfd_loc()
+					if B738DR_nav_type == 4 then
+						B738DR_autopilot_pfd_mode = 0	-- none
+						pfd_cpt_nav_txt1 = ""
+						pfd_cpt_nav_txt2 = ""
+					else
+						B738DR_autopilot_pfd_mode = 3 	-- LOC/VNAV
+						pfd_loc()
+					end
 				else
 					B738DR_autopilot_pfd_mode = 2 	-- LNAV/VNAV
 					pfd_rnav()
@@ -59079,12 +59224,24 @@ function B738_vnav_pth3()
 					pfd_rnav()
 					B738DR_pfd_vert_path = 0
 				elseif loc_gp_engaged == 1 then
-					B738DR_autopilot_pfd_mode = 3 	-- LOC/GP
-					pfd_loc()
-					B738DR_pfd_vert_path = 0
+					if B738DR_nav_type == 4 then
+						B738DR_autopilot_pfd_mode = 0	-- none
+						pfd_cpt_nav_txt1 = ""
+						pfd_cpt_nav_txt2 = ""
+					else
+						B738DR_autopilot_pfd_mode = 3 	-- LOC/GP
+						pfd_loc()
+						B738DR_pfd_vert_path = 0
+					end
 				else
-					B738DR_autopilot_pfd_mode = 3 	-- LOC/VNAV (GP)
-					pfd_loc()
+					if B738DR_nav_type == 4 then
+						B738DR_autopilot_pfd_mode = 0	-- none
+						pfd_cpt_nav_txt1 = ""
+						pfd_cpt_nav_txt2 = ""
+					else
+						B738DR_autopilot_pfd_mode = 3 	-- LOC/VNAV (GP)
+						pfd_loc()
+					end
 				end
 			end
 		end
@@ -59125,9 +59282,15 @@ function B738_vnav_pth3()
 				end
 			end
 		else
-			B738DR_autopilot_pfd_mode_fo = 1 	-- ILS
-			B738DR_pfd_vert_path_fo = 0
-			pfd_fo_ils()
+			if B738DR_nav_type_fo == 4 then
+				B738DR_autopilot_pfd_mode_fo = 0	-- none
+				pfd_fo_nav_txt1 = ""
+				pfd_fo_nav_txt2 = ""
+			else
+				B738DR_autopilot_pfd_mode_fo = 1 	-- ILS
+				B738DR_pfd_vert_path_fo = 0
+				pfd_fo_ils()
+			end
 		end
 	else
 		if B738DR_gp_active == 0 then
@@ -59142,8 +59305,14 @@ function B738_vnav_pth3()
 				end
 			else
 				if horz_active == 1 then
-					B738DR_autopilot_pfd_mode_fo = 3 	-- LOC/VNAV
-					pfd_fo_loc()
+					if B738DR_nav_type_fo == 4 then
+						B738DR_autopilot_pfd_mode_fo = 0	-- none
+						pfd_fo_nav_txt1 = ""
+						pfd_fo_nav_txt2 = ""
+					else
+						B738DR_autopilot_pfd_mode_fo = 3 	-- LOC/VNAV
+						pfd_fo_loc()
+					end
 				else
 					B738DR_autopilot_pfd_mode_fo = 2 	-- LNAV/VNAV
 					pfd_fo_rnav()
@@ -59170,12 +59339,24 @@ function B738_vnav_pth3()
 					pfd_fo_rnav()
 					B738DR_pfd_vert_path_fo = 0
 				elseif loc_gp_engaged == 1 then
-					B738DR_autopilot_pfd_mode_fo = 3 	-- LOC/GP
-					pfd_fo_loc()
-					B738DR_pfd_vert_path_fo = 0
+					if B738DR_nav_type_fo == 4 then
+						B738DR_autopilot_pfd_mode_fo = 0	-- none
+						pfd_fo_nav_txt1 = ""
+						pfd_fo_nav_txt2 = ""
+					else
+						B738DR_autopilot_pfd_mode_fo = 3 	-- LOC/GP
+						pfd_fo_loc()
+						B738DR_pfd_vert_path_fo = 0
+					end
 				else
-					B738DR_autopilot_pfd_mode_fo = 3 	-- LOC/VNAV (GP)
-					pfd_fo_loc()
+					if B738DR_nav_type_fo == 4 then
+						B738DR_autopilot_pfd_mode_fo = 0	-- none
+						pfd_fo_nav_txt1 = ""
+						pfd_fo_nav_txt2 = ""
+					else
+						B738DR_autopilot_pfd_mode_fo = 3 	-- LOC/VNAV (GP)
+						pfd_fo_loc()
+					end
 				end
 			end
 		end
@@ -59210,6 +59391,7 @@ function B738_fmc_calc()
 	local time_zulu = 0
 	local tmp_wpt_eta2 = 0
 	local tmp_wpt_eta3 = 0
+	local tmp_wpt_eta4 = ""
 	local distance = 0
 	
 	local relative_brg = 0
@@ -59308,43 +59490,6 @@ function B738_fmc_calc()
 		legs_num_old = legs_num
 		-----------------------------
 		
-		-- if offset > 0 and offset <= legs_num then
-			-- if legs_num > 0 and legs_num2 > 1 and rte_exec == 0 then
-				-- B738DR_fpln_active = 1
-				-- B738DR_fpln_active_fo = 1
-				-- if nav_mode == 1 then
-					-- temp_txt = des_icao
-				-- else
-					-- temp_txt = legs_data[offset][1]
-				-- end
-				-- if string.len(temp_txt) > 5 then
-					-- temp_txt = string.sub(temp_txt, 1, 5)
-				-- end
-				-- B738DR_fpln_nav_id = temp_txt
-			-- else
-				-- B738DR_fpln_active = 0
-				-- B738DR_fpln_active_fo = 0
-				-- B738DR_fpln_nav_id = ""
-			-- end
-			-- time_zulu = legs_data[offset][13]
-			-- if time_zulu > 0 then
-				-- tmp_wpt_eta2 = math.floor(time_zulu)
-				-- tmp_wpt_eta3 = ((time_zulu - tmp_wpt_eta2) * 60) % 60
-				-- tmp_wpt_eta2 = tmp_wpt_eta2 + (tmp_wpt_eta3/100)
-			-- else
-				-- time_zulu = simDR_zulu_hours + (simDR_zulu_minutes/60) + (simDR_zulu_seconds/3600)
-				-- tmp_wpt_eta2 = math.floor(time_zulu)
-				-- tmp_wpt_eta3 = ((time_zulu - tmp_wpt_eta2) * 60) % 60
-				-- tmp_wpt_eta2 = tmp_wpt_eta2 + (tmp_wpt_eta3/100)
-			-- end
-			-- B738DR_fms_id_eta = tmp_wpt_eta2
-		-- else
-			-- B738DR_fpln_nav_id = ""
-			-- B738DR_fms_id_eta = 0
-			-- B738DR_fpln_active = 0
-			-- B738DR_fpln_active_fo = 0
-		-- end
-		
 		if offset > 0 and offset <= legs_num + 1 then
 			if legs_num > 1 and legs_num2 > 1 then --and rte_exec == 0 then
 				B738DR_fpln_active = 1
@@ -59371,18 +59516,16 @@ function B738_fmc_calc()
 			end
 			if time_zulu > 0 then
 				tmp_wpt_eta2 = math.floor(time_zulu)
-				tmp_wpt_eta3 = ((time_zulu - tmp_wpt_eta2) * 60) % 60
-				tmp_wpt_eta2 = tmp_wpt_eta2 + (tmp_wpt_eta3/100)
+				tmp_wpt_eta3 = (time_zulu - tmp_wpt_eta2) * 60
+				tmp_wpt_eta4 = string.format("%02d", tmp_wpt_eta2) .. string.format("%04.1f", tmp_wpt_eta3)
 			else
-				time_zulu = simDR_zulu_hours + (simDR_zulu_minutes/60) + (simDR_zulu_seconds/3600)
-				tmp_wpt_eta2 = math.floor(time_zulu)
-				tmp_wpt_eta3 = ((time_zulu - tmp_wpt_eta2) * 60) % 60
-				tmp_wpt_eta2 = tmp_wpt_eta2 + (tmp_wpt_eta3/100)
+				tmp_wpt_eta4 = string.format("%02d", simDR_zulu_hours) .. string.format("%02d", simDR_zulu_minutes)
+				tmp_wpt_eta4 = tmp_wpt_eta4 .. "." .. string.format("%1d", simDR_zulu_seconds/60)
 			end
-			B738DR_fms_id_eta = tmp_wpt_eta2
+			B738DR_fms_id_eta = tmp_wpt_eta4
 		else
 			B738DR_fpln_nav_id = ""
-			B738DR_fms_id_eta = 0
+			B738DR_fms_id_eta = ""
 			B738DR_fpln_active = 0
 			B738DR_fpln_active_fo = 0
 		end
@@ -62161,6 +62304,7 @@ ref_rwy = "-----"
 des_rwy = "----"
 	ref_gate_x = "-----"
 	co_route_x = "------------"
+ref_icao2 = "----"
 
 gw = "***.*"
 gw_calc = "***.*"
@@ -62650,6 +62794,7 @@ temp_ils4 = ""
 
 	ref_icao = "----"
 	ref_gate = "-----"
+	ref_icao2 = "----"
 
 	gw = "***.*"
 	gw_calc = "***.*"
@@ -63270,7 +63415,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25l"
+	version = "v3.25m"
 
 end
 

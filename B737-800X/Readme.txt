@@ -77,7 +77,20 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
-3.25L:
+3.25m:
+------
+Fixed typo bugs, graphics bugs and system correction:
+- round fuel tank display: less spacing between big and small digit
+- INVALID ENTRY not delete contents of scratchpad
+- DEP airport not automatically copy to RTE page
+- Chronometer needle changed to LCD segments
+- fixed bug with VREF on FO PFD
+- fixed FAULT/INOP switch (annunciates)
+- fixed Cargo test switch (annunciates)
+- fixed deviation info if tumed VOR
+- fixed autoland
+
+3.25l:
 ------
 - fixed graphic bugs (Green arc, acf icon on FO ND,...)
 - corrected some systems

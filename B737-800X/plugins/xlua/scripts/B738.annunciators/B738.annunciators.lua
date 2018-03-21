@@ -2653,7 +2653,7 @@ B738DR_audio_panel_obs_mic6_light = B738DR_audio_panel_obs_mic6_pos * brightness
 	
 	fire_fault_inop_annun = 0									-- CARGO FIRE TEST BUTTON
 	if B738DR_fire_test_switch_pos == -1 then
-	fire_fault_inop_annun = 1
+		fire_fault_inop_annun = 1
 	end
 	
 	B738DR_fire_fault_inop_annun = fire_fault_inop_annun * brightness_level
@@ -2743,8 +2743,9 @@ B738DR_audio_panel_obs_mic6_light = B738DR_audio_panel_obs_mic6_pos * brightness
 		or eng1_ovht == 1
 		or eng2_ovht == 1
 		--or cargo_fire_annuns == 1
-		or B738DR_cargo_fire_test_button_pos == 1 
-		or B738DR_fire_test_switch_pos == 1 then
+		--or B738DR_cargo_fire_test_button_pos == 1 
+		or B738DR_fire_test_switch_pos == 1 
+		or B738DR_fire_test_switch_pos == -1 then
 		--or fire_panel_annuns_test == 1 then
 		ovht_det_six_pack = 1
 	end

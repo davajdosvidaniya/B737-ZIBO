@@ -112,11 +112,12 @@ B738DR_clock_fo_et_hours                        = create_dataref("laminar/B738/c
 B738DR_clock_captain_chrono_mode             	= create_dataref("laminar/B738/clock/captain/chrono_mode", "number")
 B738DR_clock_captain_chrono_seconds          	= create_dataref("laminar/B738/clock/captain/chrono_seconds", "number")
 B738DR_clock_captain_chrono_minutes          	= create_dataref("laminar/B738/clock/captain/chrono_minutes", "number")
+B738DR_clock_captain_chrono_seconds_n          	= create_dataref("laminar/B738/clock/captain/chrono_seconds_needle", "number")
 
 B738DR_clock_fo_chrono_mode              	 	= create_dataref("laminar/B738/clock/fo/chrono_mode", "number")
 B738DR_clock_fo_chrono_seconds           	 	= create_dataref("laminar/B738/clock/fo/chrono_seconds", "number")
 B738DR_clock_fo_chrono_minutes           	 	= create_dataref("laminar/B738/clock/fo/chrono_minutes", "number")
-
+B738DR_clock_fo_chrono_seconds_n           	 	= create_dataref("laminar/B738/clock/fo/chrono_seconds_needle", "number")
 
 B738DR_clock_captain_CHR						= create_dataref("laminar/B738/clock/captain/chr", "number")
 B738DR_clock_captain_TIME						= create_dataref("laminar/B738/clock/captain/time", "number")
@@ -556,6 +557,7 @@ function B738_captain_clock_chrono_timer()
             B738DR_clock_captain_chrono_minutes = 0.0
         end
     end
+	B738DR_clock_captain_chrono_seconds_n = math.floor(B738DR_clock_captain_chrono_seconds)
    
 end
    
@@ -613,6 +615,7 @@ function B738_captain_clock()
     elseif B738DR_clock_captain_chrono_mode == B738_RESET then
         B738DR_clock_captain_chrono_seconds = 0
         B738DR_clock_captain_chrono_minutes = 0
+		B738DR_clock_captain_chrono_seconds_n = 0
     end
 	
 	if simDR_stdby_batt_on == 1 or simDR_batt_on == 1 then
@@ -647,6 +650,7 @@ function B738_fo_clock_chrono_timer()
             B738DR_clock_fo_chrono_minutes = 0.0
         end
     end
+	B738DR_clock_fo_chrono_seconds_n = math.floor(B738DR_clock_fo_chrono_seconds)
 
 end
 
@@ -702,6 +706,7 @@ function B738_fo_clock()
     elseif B738DR_clock_fo_chrono_mode == B738_RESET then
         B738DR_clock_fo_chrono_seconds = 0
         B738DR_clock_fo_chrono_minutes = 0
+		B738DR_clock_fo_chrono_seconds_n = 0
     end
 	
 	if simDR_stdby_batt_on == 1 or simDR_batt_on == 1 then
