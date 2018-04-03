@@ -77,6 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25o:
+------
+- add calculate descent path by wind
+- fixed small bugs
+- tested with xplane 11.20b3
+
 3.25n:
 ------
 - new VNAV descent path code

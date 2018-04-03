@@ -814,7 +814,7 @@ ed_fix_found2 = {}
 ed_fix_alt2 = {}
 ed_fix_vpa2 = {}
 
-dist_dest = 0
+--dist_dest = 0
 dist_tc = 0
 time_tc = 0
 dist_td = 0
@@ -1351,6 +1351,12 @@ ff_sample = 0
 	
 	flight_phase_old = 0
 	
+	vnav_des_table_dist = {}
+	vnav_des_table_alt = {}
+	vnav_des_table_num = 0
+	vnav_des_table_dist2 = {}
+	vnav_des_table_alt2 = {}
+	vnav_des_table_num2 = 0
 
 	
 --*************************************************************************************--
@@ -2548,9 +2554,9 @@ B738_legs_num			= create_dataref("laminar/B738/vnav/legs_num", "number")
 B738_legs_num_before	= create_dataref("laminar/B738/vnav/legs_num_before", "number")
 B738_legs_num_first		= create_dataref("laminar/B738/vnav/legs_num_first", "number")
 
-
 B738DR_fpln_dist		= create_dataref("laminar/B738/FMS/fpln_dist", "number")
---dist_dest				= create_dataref("laminar/B738/FMS/fpln_dist", "number")
+dist_dest				= create_dataref("laminar/B738/FMS/dist_dest", "number")
+time_dest				= create_dataref("laminar/B738/FMS/time_dest", "string")
 
 B738DR_vnav_desc_spd_disable = create_dataref("laminar/B738/fms/vnav_desc_spd_disable", "number")
 
@@ -11012,7 +11018,8 @@ function dec_lat_lon(dec_mode, dec_idx)
 				crs2 = crs2 - 360
 			end
 			
-			if crs2 > -45 and crs2 < 45 then
+			--if crs2 > -45 and crs2 < 45 then
+			if crs2 > -90 and crs2 < 90 then
 				
 				calc_brg_brg(dec_prev_lat, dec_prev_lon, math.rad(crs1), lat1, lon1, math.rad(dec_next_brg))
 				
@@ -28392,6 +28399,12 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
+			else
+				if legs_data2[item][39] ~= "" then
+					entry = string.sub(legs_data2[item][39], 1, 3) .. string.sub(legs_data2[item][39], -4, -1)
+				elseif legs_data2[item][38] ~= "" then
+					entry = string.sub(legs_data2[item][38], 1, 3) .. string.sub(legs_data2[item][38], -4, -1)
+				end
 			end
 		elseif page_xtras_others == 4 then
 			if simDR_pitch_nz < 0.30 then
@@ -28927,6 +28940,12 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
+				end
+			else
+				if legs_data2[item][39] ~= "" then
+					entry = string.sub(legs_data2[item][39], 1, 3) .. string.sub(legs_data2[item][39], -4, -1)
+				elseif legs_data2[item][38] ~= "" then
+					entry = string.sub(legs_data2[item][38], 1, 3) .. string.sub(legs_data2[item][38], -4, -1)
 				end
 			end
 		end
@@ -29607,6 +29626,12 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
+			else
+				if legs_data2[item][39] ~= "" then
+					entry = string.sub(legs_data2[item][39], 1, 3) .. string.sub(legs_data2[item][39], -4, -1)
+				elseif legs_data2[item][38] ~= "" then
+					entry = string.sub(legs_data2[item][38], 1, 3) .. string.sub(legs_data2[item][38], -4, -1)
+				end
 			end
 		end
 		
@@ -30134,6 +30159,12 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
 				end
+			else
+				if legs_data2[item][39] ~= "" then
+					entry = string.sub(legs_data2[item][39], 1, 3) .. string.sub(legs_data2[item][39], -4, -1)
+				elseif legs_data2[item][38] ~= "" then
+					entry = string.sub(legs_data2[item][38], 1, 3) .. string.sub(legs_data2[item][38], -4, -1)
+				end
 			end
 		end
 		
@@ -30586,6 +30617,12 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
+				end
+			else
+				if legs_data2[item][39] ~= "" then
+					entry = string.sub(legs_data2[item][39], 1, 3) .. string.sub(legs_data2[item][39], -4, -1)
+				elseif legs_data2[item][38] ~= "" then
+					entry = string.sub(legs_data2[item][38], 1, 3) .. string.sub(legs_data2[item][38], -4, -1)
 				end
 			end
 		end
@@ -39599,7 +39636,10 @@ function B738_fmc_legs()
 								right_line[ii] = right_line[ii] .. "/----- "
 								line_m[ii] = line_m[ii] .. "       "
 							else
-								if legs_data2[jj][11] > B738DR_trans_alt then
+								if legs_data2[jj][11] > B738DR_trans_alt and jj <= td_idx then
+									temp_string = string.format("%05d",legs_data2[jj][11])
+									temp_string = " FL" .. string.sub(temp_string, 1, 3)
+								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][11])
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
 								else
@@ -39611,7 +39651,10 @@ function B738_fmc_legs()
 							end
 						else
 							if jj ~= B738DR_rest_wpt_alt_idx then
-								if legs_data2[jj][5] > B738DR_trans_alt then
+								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
+									temp_string = string.format("%05d",legs_data2[jj][5])
+									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 								else
@@ -39627,7 +39670,10 @@ function B738_fmc_legs()
 								end
 								line_m[ii] = line_m[ii] .. "       "
 							else
-								if legs_data2[jj][5] > B738DR_trans_alt then
+								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
+									temp_string = string.format("%05d",legs_data2[jj][5])
+									temp_string = " FL" .. string.sub(temp_string, 1, 3)
+								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
 								else
@@ -39758,7 +39804,10 @@ function B738_fmc_legs()
 								right_line[ii] = right_line[ii] .. "/----- "
 								line_m[ii] = line_m[ii] .. "       "
 							else
-								if legs_data2[jj][11] > B738DR_trans_alt then
+								if legs_data2[jj][11] > B738DR_trans_alt and jj <= td_idx then
+									temp_string = string.format("%05d",legs_data2[jj][11])
+									temp_string = " FL" .. string.sub(temp_string, 1, 3)
+								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][11])
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
 								else
@@ -39770,7 +39819,10 @@ function B738_fmc_legs()
 							end
 						else
 							if jj ~= B738DR_rest_wpt_alt_idx then
-								if legs_data2[jj][5] > B738DR_trans_alt then
+								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
+									temp_string = string.format("%05d",legs_data2[jj][5])
+									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 								else
@@ -39786,7 +39838,10 @@ function B738_fmc_legs()
 								end
 								line_m[ii] = line_m[ii] .. "       "
 							else
-								if legs_data2[jj][5] > B738DR_trans_alt then
+								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
+									temp_string = string.format("%05d",legs_data2[jj][5])
+									temp_string = " FL" .. string.sub(temp_string, 1, 3)
+								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
 								else
@@ -40273,7 +40328,10 @@ function B738_fmc_legs2()
 								right_line[ii] = right_line[ii] .. "/----- "
 								line_m[ii] = line_m[ii] .. "       "
 							else
-								if legs_data2[jj][11] > B738DR_trans_alt then
+								if legs_data2[jj][11] > B738DR_trans_alt and jj <= td_idx then
+									temp_string = string.format("%05d",legs_data2[jj][11])
+									temp_string = " FL" .. string.sub(temp_string, 1, 3)
+								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][11])
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
 								else
@@ -40285,7 +40343,10 @@ function B738_fmc_legs2()
 							end
 						else
 							if jj ~= B738DR_rest_wpt_alt_idx then
-								if legs_data2[jj][5] > B738DR_trans_alt then
+								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
+									temp_string = string.format("%05d",legs_data2[jj][5])
+									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 								else
@@ -40301,9 +40362,12 @@ function B738_fmc_legs2()
 								end
 								line_m[ii] = line_m[ii] .. "       "
 							else
-								if legs_data2[jj][5] > B738DR_trans_alt then
+								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
+								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+									temp_string = string.format("%05d",legs_data2[jj][5])
+									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 								else
 									temp_string = " " .. string.format("%5d",legs_data2[jj][5])
 								end
@@ -40432,7 +40496,10 @@ function B738_fmc_legs2()
 								right_line[ii] = right_line[ii] .. "/----- "
 								line_m[ii] = line_m[ii] .. "       "
 							else
-								if legs_data2[jj][11] > B738DR_trans_alt then
+								if legs_data2[jj][11] > B738DR_trans_alt and jj <= td_idx then
+									temp_string = string.format("%05d",legs_data2[jj][11])
+									temp_string = " FL" .. string.sub(temp_string, 1, 3)
+								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][11])
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
 								else
@@ -40444,7 +40511,10 @@ function B738_fmc_legs2()
 							end
 						else
 							if jj ~= B738DR_rest_wpt_alt_idx then
-								if legs_data2[jj][5] > B738DR_trans_alt then
+								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
+									temp_string = string.format("%05d",legs_data2[jj][5])
+									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 								else
@@ -40460,9 +40530,12 @@ function B738_fmc_legs2()
 								end
 								line_m[ii] = line_m[ii] .. "       "
 							else
-								if legs_data2[jj][5] > B738DR_trans_alt then
+								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
+								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+									temp_string = string.format("%05d",legs_data2[jj][5])
+									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 								else
 									temp_string = " " .. string.format("%5d",legs_data2[jj][5])
 								end
@@ -47641,16 +47714,16 @@ function B738_displ_wpt()
 							if nd_x < 0 then
 								if nd_y == 0 then
 									nd_y0 = 0
-									nd_x0 = -11
+									nd_x0 = -10
 								elseif nd_y > 0 then
 									nd_x = -nd_x
-									nd_x0 = (nd_x / nd_y) * 11
+									nd_x0 = (nd_x / nd_y) * 10
 									nd_x0 = -nd_x0
 									nd_y0 = 11
 								else
 									nd_x = -nd_x
 									nd_y = -nd_y
-									nd_x0 = (nd_x / nd_y) * 11
+									nd_x0 = (nd_x / nd_y) * 10
 									nd_x0 = -nd_x0
 									nd_y0 = -11
 								end
@@ -47659,11 +47732,11 @@ function B738_displ_wpt()
 									nd_y0 = 0
 									nd_x0 = 11
 								elseif nd_y > 0 then
-									nd_x0 = (nd_x / nd_y) * 11
+									nd_x0 = (nd_x / nd_y) * 10
 									nd_y0 = 11
 								else
 									nd_y = -nd_y
-									nd_x0 = (nd_x / nd_y) * 11
+									nd_x0 = (nd_x / nd_y) * 10
 									nd_y0 = -11
 								end
 							end
@@ -49174,13 +49247,13 @@ function B738_displ_wpt()
 									nd_x0 = -11
 								elseif nd_y > 0 then
 									nd_x = -nd_x
-									nd_x0 = (nd_x / nd_y) * 11
+									nd_x0 = (nd_x / nd_y) * 10
 									nd_x0 = -nd_x0
 									nd_y0 = 11
 								else
 									nd_x = -nd_x
 									nd_y = -nd_y
-									nd_x0 = (nd_x / nd_y) * 11
+									nd_x0 = (nd_x / nd_y) * 10
 									nd_x0 = -nd_x0
 									nd_y0 = -11
 								end
@@ -49189,11 +49262,11 @@ function B738_displ_wpt()
 									nd_y0 = 0
 									nd_x0 = 11
 								elseif nd_y > 0 then
-									nd_x0 = (nd_x / nd_y) * 11
+									nd_x0 = (nd_x / nd_y) * 10
 									nd_y0 = 11
 								else
 									nd_y = -nd_y
-									nd_x0 = (nd_x / nd_y) * 11
+									nd_x0 = (nd_x / nd_y) * 10
 									nd_y0 = -11
 								end
 							end
@@ -50341,6 +50414,7 @@ function wind_pth(wpt_brg, wind_over, wind_pred)
 	
 	local tmp_wind_spd = 0
 	local tmp_wind_dir = 0
+	local result = 0
 	
 	if wind_over == "" then
 		if wind_pred ~= "" then
@@ -50355,12 +50429,14 @@ function wind_pth(wpt_brg, wind_over, wind_pred)
 	local wc_speed = 0
 	if tmp_wind_spd > 0 then
 		wc_speed = tonumber(tmp_wind_spd) * math.cos(math.rad(Angle180(tonumber(tmp_wind_dir)))-wpt_brg)
+		
+		wc_speed = math.min(wc_speed, 200)
+		wc_speed = math.max(wc_speed, -200)
+		
+		result = B738_rescale(-200, 1.15, 200, 0.85, wc_speed)
+	else
+		result = 1
 	end
-	
-	wc_speed = math.min(wc_speed, 200)
-	wc_speed = math.max(wc_speed, -200)
-	
-	result = B738_rescale(-200, 1.1, 200, 0.9, wc_speed)
 	
 	return	result
 end
@@ -50444,6 +50520,8 @@ function B738_vnav_calc()
 	
 	local pom5 = 0
 	local pom6 = 0
+	local wind_temp = 0
+	local wind_temp_old = 0
 	
 	if vnav_update == 1 then
 	
@@ -50659,7 +50737,8 @@ function B738_vnav_calc()
 								-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
 								-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
 								-- temp_brg = math.atan2(nd_y, nd_x)
-								temp_brg = math.rad((math.deg(legs_data[n][2]) + 180) % 360)
+								--temp_brg = math.rad((math.deg(legs_data[n][2]) + 180) % 360)
+								temp_brg = legs_data[n][2] + 3.1415926535
 							end
 						end
 						
@@ -50745,7 +50824,7 @@ function B738_vnav_calc()
 				ed_alt = legs_data[ed_found][5]
 				-- ed_dist = (crz_alt_num - ed_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
 				-- ed_dist = ed_dist * 0.00016458		-- NM
-				ed_dist = calc_vnav_pth_dist(ed_alt, crz_alt_num, gw_app_kgs, 1)
+				ed_dist = calc_vnav_pth_dist(ed_alt, crz_alt_num)
 				ed_vpa = econ_des_vpa
 			end
 			
@@ -50760,7 +50839,7 @@ function B738_vnav_calc()
 					ed_alt = math.floor((des_icao_alt + 1000)/100) * 100
 					-- ed_dist = (crz_alt_num - ed_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
 					-- ed_dist = ed_dist * 0.00016458		-- NM
-					ed_dist = calc_vnav_pth_dist(ed_alt, crz_alt_num, gw_app_kgs, 1)
+					ed_dist = calc_vnav_pth_dist(ed_alt, crz_alt_num)
 					ed_vpa = econ_des_vpa
 					if legs_data[ed_found][1] == nil then
 						skip_vpa = 1
@@ -50772,6 +50851,7 @@ function B738_vnav_calc()
 					-----------------------------------------------------------
 					-- find T/D , econ vnav descent path
 					-----------------------------------------------------------
+					create_vpth_table(gw_app_kgs)
 					last_wpt_idx = 0
 					for ii = ed_found, 2, -1 do
 						
@@ -50782,8 +50862,27 @@ function B738_vnav_calc()
 							calc_wpt_alt = ed_alt
 						else
 							--calc_wpt_alt = calc_wpt_alt + ((legs_data[ii+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
-							--wind_temp = wind_pth(legs_data[ii][2], legs_data[ii][39], legs_data[ii][38])
-							calc_wpt_alt = calc_vnav_pth_alt(ed_alt , td_dist - legs_data[ii][3], gw_app_kgs, 1)
+							wind_temp = wind_pth(legs_data[ii][2], legs_data[ii][39], legs_data[ii][38])
+							
+							-- if legs_restr_spd_n > 0 then
+								-- for xx = legs_restr_spd_n, 1, -1 do
+									-- if legs_restr_spd[rest_idx_spd][2] <= first_star_idx then
+										-- break
+									-- elseif legs_restr_spd[rest_idx_spd][2] <= first_app_idx then
+										-- break
+									-- end
+									-- if legs_restr_spd[rest_idx_spd][2] <= ii then
+										-- find previous des speed
+										-- calculate delta speed
+										-- calculate 
+										-- wind_temp = wind_temp * 1
+										-- break
+									-- end
+								-- end
+							-- end
+							
+							modify_vpth_table(calc_wpt_alt, wind_temp)
+							calc_wpt_alt = calc_vnav_pth_alt(ed_alt , td_dist - legs_data[ii][3])
 						end
 						if calc_wpt_alt > crz_alt_num then
 							calc_wpt_alt = crz_alt_num
@@ -50807,7 +50906,8 @@ function B738_vnav_calc()
 								-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
 								-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
 								-- temp_brg = math.atan2(nd_y, nd_x)
-								temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
+								--temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
+								temp_brg = legs_data[ii][2] + 3.1415926535
 							end
 							
 							td_dist = legs_data[ii][3] - (td_dist - ed_dist)
@@ -50917,7 +51017,7 @@ function B738_vnav_calc()
 								if ed_fix_num == 1 then
 									-- ed_dist = (crz_alt_num - ed_fix_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
 									-- ed_dist = ed_dist * 0.00016458		-- NM
-									ed_dist = calc_vnav_pth_dist(ed_fix_alt, crz_alt_num, gw_app_kgs, 1)
+									ed_dist = calc_vnav_pth_dist(ed_fix_alt, crz_alt_num)
 									n = 2	--jj
 									ed_fix_vpa2[ed_fix_num] = econ_des_vpa
 								else
@@ -50953,7 +51053,9 @@ function B738_vnav_calc()
 									else
 										-- calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2[ed_fix_num])))) * 6076.11549) -- ft
 										if ed_fix_num == 1 then
-											calc_wpt_alt = calc_vnav_pth_alt(ed_fix_alt, td_dist - legs_data[kk][3], gw_app_kgs, 1)
+											wind_temp = wind_pth(legs_data[kk][2], legs_data[kk][39], legs_data[kk][38])
+											modify_vpth_table(calc_wpt_alt, wind_temp)
+											calc_wpt_alt = calc_vnav_pth_alt(ed_fix_alt, td_dist - legs_data[kk][3])
 										else
 											calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2[ed_fix_num])))) * 6076.11549) -- ft
 										end
@@ -50981,7 +51083,8 @@ function B738_vnav_calc()
 												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
 												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
 												-- temp_brg = math.atan2(nd_y, nd_x)
-												temp_brg = math.rad((math.deg(legs_data[kk][2]) + 180) % 360)
+												--temp_brg = math.rad((math.deg(legs_data[kk][2]) + 180) % 360)
+												temp_brg = legs_data[kk][2] + 3.1415926535
 											end
 										-- end
 										td_dist = legs_data[kk][3] - (td_dist - ed_dist)
@@ -51146,7 +51249,7 @@ function B738_vnav_calc()
 								if first_restrict == 0 then
 									-- ed_dist = (crz_alt_num - ed_fix_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
 									-- ed_dist = ed_dist * 0.00016458		-- NM
-									ed_dist = calc_vnav_pth_dist(ed_fix_alt, crz_alt_num, gw_app_kgs, 1)
+									ed_dist = calc_vnav_pth_dist(ed_fix_alt, crz_alt_num)
 									n = 2	--jj
 									ed_fix_vpa2[ed_fix_num] = econ_des_vpa
 									td_dist = 0
@@ -51189,7 +51292,9 @@ function B738_vnav_calc()
 									else
 										-- calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2[ed_fix_num])))) * 6076.11549) -- ft
 										if ed_fix_num == 1 then
-											calc_wpt_alt = calc_vnav_pth_alt(ed_fix_alt, td_dist - legs_data[kk][3], gw_app_kgs, 1)
+											wind_temp = wind_pth(legs_data[kk][2], legs_data[kk][39], legs_data[kk][38])
+											modify_vpth_table(calc_wpt_alt, wind_temp)
+											calc_wpt_alt = calc_vnav_pth_alt(ed_fix_alt, td_dist - legs_data[kk][3])
 										else
 											calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2[ed_fix_num])))) * 6076.11549) -- ft
 										end
@@ -51226,7 +51331,8 @@ function B738_vnav_calc()
 												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
 												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
 												-- temp_brg = math.atan2(nd_y, nd_x)
-												temp_brg =  math.rad((math.deg(legs_data[kk][2]) + 180) % 360)
+												--temp_brg =  math.rad((math.deg(legs_data[kk][2]) + 180) % 360)
+												temp_brg = legs_data[kk][2] + 3.1415926535
 											end
 										td_dist = legs_data[kk][3] - (td_dist - ed_dist)
 										td_idx = kk 	-- before idx
@@ -51415,7 +51521,8 @@ function B738_vnav_calc()
 												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
 												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
 												-- temp_brg = math.atan2(nd_y, nd_x)
-												temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
+												--temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
+												temp_brg = legs_data[ii][2] + 3.1415926535
 											end
 											
 											decel_dist = 6.7 -- before dist (6.7NM)
@@ -51451,15 +51558,24 @@ function B738_vnav_calc()
 													-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
 													-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
 													-- temp_brg = math.atan2(nd_y, nd_x)
-													temp_brg = math.rad((math.deg(legs_data[ii-1][2]) + 180) % 360)
+													--temp_brg = math.rad((math.deg(legs_data[ii-1][2]) + 180) % 360)
+													temp_brg = legs_data[ii-1][2] + 3.1415926535
 												end
 											
 												decel_idx = ii - 1
 												lat_wpt = math.rad(legs_data[ii-1][7])
 												lon_wpt = math.rad(legs_data[ii-1][8])
-												decel_dist = 6.7 - legs_data[ii][3]
-												if legs_data[ii-1][3] < decel_dist then
-													decel_dist = legs_data[ii-1][3] - 0.3
+												if legs_data[ii-1][4] ~= 0 then
+													decel_idx = ii
+													decel_dist = legs_data[ii][3] - 0.3
+													if legs_intdir_act ~= 1 or pom5 ~= offset2 then
+														temp_brg = legs_data[ii][2] + 3.1415926535
+													end
+												else
+													decel_dist = 6.7 - legs_data[ii][3]
+													if legs_data[ii-1][3] < decel_dist then
+														decel_dist = legs_data[ii-1][3] - 0.3
+													end
 												end
 											else
 												decel_dist = legs_data[ii][3] - 0.3 -- 0.3 NM before
@@ -51478,7 +51594,8 @@ function B738_vnav_calc()
 													-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
 													-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
 													-- temp_brg = math.atan2(nd_y, nd_x)
-													temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
+													--temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
+													temp_brg = legs_data[ii][2] + 3.1415926535
 												end
 											
 												decel_idx = ii
@@ -51502,7 +51619,8 @@ function B738_vnav_calc()
 												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
 												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
 												-- temp_brg = math.atan2(nd_y, nd_x)
-												temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
+												--temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
+												temp_brg = legs_data[ii][2] + 3.1415926535
 											end
 											
 											decel_idx = ii
@@ -51814,6 +51932,8 @@ function B738_vnav_calc_mod()
 	local spd_vvi_corr = 0
 	
 	local pom5 = 0
+	local wind_temp = 0
+	local wind_temp_old = 0
 	
 	local vnav_upd_enable = 0
 	if legs_num == 1 and legs_num2 > 1 then
@@ -52129,7 +52249,7 @@ function B738_vnav_calc_mod()
 				ed_alt_mod = legs_data2[ed_found_mod][5]
 				-- ed_dist_mod = (crz_alt_num - ed_alt_mod) / math.tan(math.rad(econ_des_vpa))		-- ft
 				-- ed_dist_mod = ed_dist_mod * 0.00016458		-- NM
-				ed_dist_mod = calc_vnav_pth_dist(ed_alt_mod, crz_alt_num, gw_app_kgs, 1)
+				ed_dist_mod = calc_vnav_pth_dist2(ed_alt_mod, crz_alt_num)
 				ed_vpa_mod = econ_des_vpa
 			end
 			
@@ -52143,7 +52263,7 @@ function B738_vnav_calc_mod()
 					ed_alt_mod = math.floor((des_icao_alt + 1000)/100) * 100
 					-- ed_dist_mod = (crz_alt_num - ed_alt_mod) / math.tan(math.rad(econ_des_vpa))		-- ft
 					-- ed_dist_mod = ed_dist_mod * 0.00016458		-- NM
-					ed_dist_mod = calc_vnav_pth_dist(ed_alt_mod, crz_alt_num, gw_app_kgs, 1)
+					ed_dist_mod = calc_vnav_pth_dist2(ed_alt_mod, crz_alt_num)
 					ed_vpa_mod = econ_des_vpa
 					if legs_data2[ed_found_mod][1] == nil then
 						skip_vpa = 1
@@ -52156,6 +52276,7 @@ function B738_vnav_calc_mod()
 					-- find T/D , econ vnav descent path
 					-----------------------------------------------------------
 					last_wpt_idx = 0
+					create_vpth_table2(gw_app_kgs)
 					for ii = ed_found_mod, 2, -1 do
 						
 						if legs_data2[ii][1] ~= "VECTOR" then
@@ -52165,7 +52286,9 @@ function B738_vnav_calc_mod()
 							calc_wpt_alt = ed_alt_mod
 						else
 							--calc_wpt_alt = calc_wpt_alt + ((legs_data2[ii+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
-							calc_wpt_alt = calc_vnav_pth_alt(ed_alt_mod , td_dist_mod - legs_data2[ii][3], gw_app_kgs, 1)
+							wind_temp = wind_pth(legs_data2[ii][2], legs_data2[ii][39], legs_data2[ii][38])
+							modify_vpth_table2(calc_wpt_alt, wind_temp)
+							calc_wpt_alt = calc_vnav_pth_alt2(ed_alt_mod , td_dist_mod - legs_data2[ii][3])
 						end
 						if calc_wpt_alt > crz_alt_num then
 							calc_wpt_alt = crz_alt_num
@@ -52293,7 +52416,7 @@ function B738_vnav_calc_mod()
 								if ed_fix_num_mod == 1 then
 									-- ed_dist_mod = (crz_alt_num - ed_fix_alt_mod) / math.tan(math.rad(econ_des_vpa))		-- ft
 									-- ed_dist_mod = ed_dist_mod * 0.00016458		-- NM
-									ed_dist = calc_vnav_pth_dist(ed_fix_alt_mod, crz_alt_num, gw_app_kgs, 1)
+									ed_dist_mod = calc_vnav_pth_dist2(ed_fix_alt_mod, crz_alt_num)
 									n = 2	--jj
 									ed_fix_vpa2_mod[ed_fix_num_mod] = econ_des_vpa
 								else
@@ -52329,7 +52452,9 @@ function B738_vnav_calc_mod()
 									else
 										--calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2_mod[ed_fix_num_mod])))) * 6076.11549) -- ft
 										if ed_fix_num_mod == 1 then
-											calc_wpt_alt = calc_vnav_pth_alt(ed_fix_alt_mod, td_dist_mod - legs_data2[kk][3], gw_app_kgs, 1)
+											wind_temp = wind_pth(legs_data2[kk][2], legs_data2[kk][39], legs_data2[kk][38])
+											modify_vpth_table2(calc_wpt_alt, wind_temp)
+											calc_wpt_alt = calc_vnav_pth_alt2(ed_fix_alt_mod, td_dist_mod - legs_data2[kk][3])
 										else
 											calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2_mod[ed_fix_num_mod])))) * 6076.11549) -- ft
 										end
@@ -52452,7 +52577,7 @@ function B738_vnav_calc_mod()
 								if first_restrict == 0 then
 									-- ed_dist_mod = (crz_alt_num - ed_fix_alt_mod) / math.tan(math.rad(econ_des_vpa))		-- ft
 									-- ed_dist_mod = ed_dist_mod * 0.00016458		-- NM
-									ed_dist_mod = calc_vnav_pth_dist(ed_fix_alt_mod, crz_alt_num, gw_app_kgs, 1)
+									ed_dist_mod = calc_vnav_pth_dist2(ed_fix_alt_mod, crz_alt_num)
 									n = 2	--jj
 									ed_fix_vpa2_mod[ed_fix_num_mod] = econ_des_vpa
 									td_dist_mod = 0
@@ -52492,7 +52617,9 @@ function B738_vnav_calc_mod()
 									else
 										-- calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2_mod[ed_fix_num_mod])))) * 6076.11549) -- ft
 										if ed_fix_num == 1 then
-											calc_wpt_alt = calc_vnav_pth_alt(ed_fix_alt_mod, td_dist - legs_data2[kk][3], gw_app_kgs, 1)
+											wind_temp = wind_pth(legs_data2[kk][2], legs_data2[kk][39], legs_data2[kk][38])
+											modify_vpth_table2(calc_wpt_alt, wind_temp)
+											calc_wpt_alt = calc_vnav_pth_alt2(ed_fix_alt_mod, td_dist - legs_data2[kk][3])
 										else
 											calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2_mod[ed_fix_num_mod])))) * 6076.11549) -- ft
 										end
@@ -58650,8 +58777,9 @@ function pfd_fo_rnav()
 
 end
 
+
 -- calculate dist by alt
-function calc_vnav_pth_dist(x_alt01, x_alt02, x_gw_str, x_idx)
+function calc_vnav_pth_dist(x_alt01, x_alt02)
 	
 	local ii = 0
 	local x_alt1 = 0
@@ -58659,115 +58787,57 @@ function calc_vnav_pth_dist(x_alt01, x_alt02, x_gw_str, x_idx)
 	local x_dist1 = 0
 	local x_dist2 = 0
 	local result_tmp = 0
-	local result_tmp2 = 0
 	local result = 0
-	local tmp_des_spd = math.min(B738DR_fmc_descent_speed, 290)
-	tmp_des_spd = math.max(B738DR_fmc_descent_speed, 265)
-	local x_idx_des_spd = B738_rescale(265, 1.15, 290, 0.9, tmp_des_spd)
-	local x_gw = tonumber(x_gw_str)
-	if x_gw == nil then
-		x_gw = 40
-	end
-	local x_gw00 = math.min ( 70, x_gw)
-	x_gw00 = math.max ( 40, x_gw00)
 	
-	x_gw2 = math.min ( 70, roundUpToIncrement(x_gw00, 10 ))
-	x_gw2 = math.max ( 40, x_gw2)
-	x_gw1 = math.min (70, x_gw2 - 10)
-	x_gw1 = math.max ( 40, x_gw1)
-	
-	-- landing gw min
-	-- min alt
-	for ii = 1, 18 do
-		if x_alt01 <= vnav_des_alt[ii] then
-			x_dist2 = vnav_des_dist[x_gw1][ii] * x_idx * x_idx_des_spd
-			x_alt2 = vnav_des_alt[ii]
-			if ii > 1 then
-				x_dist1 = vnav_des_dist[x_gw1][ii-1] * x_idx * x_idx_des_spd
-				x_alt1 = vnav_des_alt[ii-1]
+	if vnav_des_table_num > 0 then
+		-- min alt
+		for ii = 1, vnav_des_table_num do
+			if x_alt01 <= vnav_des_table_alt[ii] then
+				x_dist2 = vnav_des_table_dist[ii]
+				x_alt2 = vnav_des_table_alt[ii]
+				if ii > 1 then
+					x_dist1 = vnav_des_table_dist[ii-1]
+					x_alt1 = vnav_des_table_alt[ii-1]
+				end
+				break
 			end
-			break
 		end
-	end
-	
-	result_tmp = B738_rescale(x_alt1, x_dist1, x_alt2, x_dist2, x_alt01)
-	
-	-- max alt
-	x_alt1 = 0
-	x_alt2 = 0
-	x_dist1 = 0
-	x_dist2 = 0
-	for ii = 1, 18 do
-		if x_alt02 <= vnav_des_alt[ii] then
-			x_dist2 = vnav_des_dist[x_gw1][ii] * x_idx * x_idx_des_spd
-			x_alt2 = vnav_des_alt[ii]
-			if ii > 1 then
-				x_dist1 = vnav_des_dist[x_gw1][ii-1] * x_idx * x_idx_des_spd
-				x_alt1 = vnav_des_alt[ii-1]
+
+		result_tmp = B738_rescale(x_alt1, x_dist1, x_alt2, x_dist2, x_alt01)
+
+		-- max alt
+		x_alt1 = 0
+		x_alt2 = 0
+		x_dist1 = 0
+		x_dist2 = 0
+		for ii = 1, vnav_des_table_num do
+			if x_alt02 <= vnav_des_table_alt[ii] then
+				x_dist2 = vnav_des_table_dist[ii]
+				x_alt2 = vnav_des_table_alt[ii]
+				if ii > 1 then
+					x_dist1 = vnav_des_table_dist[ii-1]
+					x_alt1 = vnav_des_table_alt[ii-1]
+				end
+				break
 			end
-			break
 		end
-	end
-	
-	result_tmp2 = B738_rescale(x_alt1, x_dist1, x_alt2, x_dist2, x_alt02)
-	
-	result_tmp2 = result_tmp2 - result_tmp
-	if result_tmp2 < 0 then
-		result_tmp2 = 0
-	end
-	
-	-- landing gw max
-	-- min alt
-	x_alt1 = 0
-	x_alt2 = 0
-	x_dist1 = 0
-	x_dist2 = 0
-	for ii = 1, 18 do
-		if x_alt01 <= vnav_des_alt[ii] then
-			x_dist2 = vnav_des_dist[x_gw2][ii] * x_idx * x_idx_des_spd
-			x_alt2 = vnav_des_alt[ii]
-			if ii > 1 then
-				x_dist1 = vnav_des_dist[x_gw2][ii-1] * x_idx * x_idx_des_spd
-				x_alt1 = vnav_des_alt[ii-1]
-			end
-			break
+
+		result = B738_rescale(x_alt1, x_dist1, x_alt2, x_dist2, x_alt02)
+
+		result = result - result_tmp
+		if result < 0 then
+			result = 0
 		end
-	end
-	
-	result_tmp = B738_rescale(x_alt1, x_dist1, x_alt2, x_dist2, x_alt01)
-	
-	-- max alt
-	x_alt1 = 0
-	x_alt2 = 0
-	x_dist1 = 0
-	x_dist2 = 0
-	for ii = 1, 18 do
-		if x_alt02 <= vnav_des_alt[ii] then
-			x_dist2 = vnav_des_dist[x_gw2][ii] * x_idx * x_idx_des_spd
-			x_alt2 = vnav_des_alt[ii]
-			if ii > 1 then
-				x_dist1 = vnav_des_dist[x_gw2][ii-1] * x_idx * x_idx_des_spd
-				x_alt1 = vnav_des_alt[ii-1]
-			end
-			break
-		end
-	end
-	
-	result = B738_rescale(x_alt1, x_dist1, x_alt2, x_dist2, x_alt02)
-	
-	result = result - result_tmp
-	if result < 0 then
+	else
 		result = 0
 	end
-	
-	result = B738_rescale(x_gw1, result_tmp2, x_gw2, result, x_gw00)
 	
 	return result
 	
 end
 
 -- calculate alt by distance
-function calc_vnav_pth_alt(x_alt01, x_dist, x_gw_str, x_idx)
+function calc_vnav_pth_alt(x_alt01, x_dist)
 	
 	local ii = 0
 	local x_dist00 = 0
@@ -58775,11 +58845,45 @@ function calc_vnav_pth_alt(x_alt01, x_dist, x_gw_str, x_idx)
 	local x_dist2 = 0
 	local x_alt1 = 0
 	local x_alt2 = 0
+	local result = 0
+	
+	if vnav_des_table_num > 0 then
+	
+		x_dist00 = calc_vnav_pth_dist(0, x_alt01)
+		x_dist00 = x_dist00 + x_dist
+		
+		for ii = 1, vnav_des_table_num do
+			if x_dist00 <= vnav_des_table_dist[ii] then
+				x_dist2 = vnav_des_table_dist[ii]
+				x_alt2 = vnav_des_table_alt[ii]
+				if ii > 1 then
+					x_dist1 = vnav_des_table_dist[ii-1]
+					x_alt1 = vnav_des_table_alt[ii-1]
+				end
+				break
+			end
+		end
+		
+		if x_dist2 == 0 then
+			result = 41000
+		else
+			result = B738_rescale(x_dist1, x_alt1, x_dist2, x_alt2, x_dist00)
+		end
+	
+	else
+		result = 0
+	end
+	
+	return result
+end
+
+function create_vpth_table(x_gw_str)
+	
+	local ii = 0
+	local x_dist1 = 0
+	local x_dist2 = 0
 	local x_gw1 = 0
 	local x_gw2 = 0
-	local tmp_pom = 0
-	local result_tmp = 0
-	local result = 0
 	local tmp_des_spd = math.min(B738DR_fmc_descent_speed, 290)
 	tmp_des_spd = math.max(B738DR_fmc_descent_speed, 265)
 	local x_idx_des_spd = B738_rescale(265, 1.15, 290, 0.9, tmp_des_spd)
@@ -58795,57 +58899,195 @@ function calc_vnav_pth_alt(x_alt01, x_dist, x_gw_str, x_idx)
 	x_gw1 = math.min (70, x_gw2 - 10)
 	x_gw1 = math.max ( 40, x_gw1)
 	
-	x_dist00 = calc_vnav_pth_dist(0, x_alt01, x_gw_str, 1)
-	x_dist00 = x_dist00 + x_dist
-	
-	-- min landing gw
+	vnav_des_table_dist = {}
+	vnav_des_table_alt = {}
+	vnav_des_table_num = 0
 	for ii = 1, 18 do
-		tmp_pom = vnav_des_dist[x_gw1][ii] * x_idx * x_idx_des_spd
-		if x_dist00 <= tmp_pom then
-			x_dist2 = tmp_pom
-			x_alt2 = vnav_des_alt[ii]
-			if ii > 1 then
-				x_dist1 = vnav_des_dist[x_gw1][ii-1] * x_idx * x_idx_des_spd
-				x_alt1 = vnav_des_alt[ii-1]
+		x_dist1 = vnav_des_dist[x_gw1][ii]
+		x_dist2 = vnav_des_dist[x_gw2][ii]
+		if vnav_des_alt[ii] >= 11000 then
+			x_dist1 = x_dist1 * x_idx_des_spd
+			x_dist2 = x_dist2 * x_idx_des_spd
+		end
+		vnav_des_table_dist[ii] = B738_rescale(x_gw1, x_dist1, x_gw2, x_dist2, x_gw00)
+		vnav_des_table_alt[ii] = vnav_des_alt[ii]
+		vnav_des_table_num = vnav_des_table_num + 1
+	end
+	
+end
+
+function modify_vpth_table(x_alt01, x_idx)
+	
+	local ii = 0
+	local jj = 0
+	
+	if vnav_des_table_num > 0 and x_idx ~= 1 then
+		for ii = 1, vnav_des_table_num do
+			if x_alt01 < vnav_des_alt[ii] then
+				for jj = ii, vnav_des_table_num do
+					vnav_des_table_dist[jj] = vnav_des_table_dist[jj] * x_idx
+				end
+				break
 			end
-			break
 		end
 	end
 	
-	if x_dist2 == 0 then
-		result_tmp = 41000
-	else
-		result_tmp = B738_rescale(x_dist1, x_alt1, x_dist2, x_alt2, x_dist00)
-	end
+end
+
+
+-- calculate dist by alt
+function calc_vnav_pth_dist2(x_alt01, x_alt02)
 	
-	-- max landing gw
-	x_dist1 = 0
-	x_dist2 = 0
-	x_alt1 = 0
-	x_alt2 = 0
+	local ii = 0
+	local x_alt1 = 0
+	local x_alt2 = 0
+	local x_dist1 = 0
+	local x_dist2 = 0
+	local result_tmp = 0
+	local result = 0
 	
-	for ii = 1, 18 do
-		tmp_pom = vnav_des_dist[x_gw2][ii] * x_idx * x_idx_des_spd
-		if x_dist00 <= tmp_pom then
-			x_dist2 = tmp_pom
-			x_alt2 = vnav_des_alt[ii]
-			if ii > 1 then
-				x_dist1 = vnav_des_dist[x_gw2][ii-1] * x_idx * x_idx_des_spd
-				x_alt1 = vnav_des_alt[ii-1]
+	if vnav_des_table_num2 > 0 then
+		-- min alt
+		for ii = 1, vnav_des_table_num2 do
+			if x_alt01 <= vnav_des_table_alt2[ii] then
+				x_dist2 = vnav_des_table_dist2[ii]
+				x_alt2 = vnav_des_table_alt2[ii]
+				if ii > 1 then
+					x_dist1 = vnav_des_table_dist2[ii-1]
+					x_alt1 = vnav_des_table_alt2[ii-1]
+				end
+				break
 			end
-			break
 		end
-	end
-	
-	if x_dist2 == 0 then
-		result = 41000
+
+		result_tmp = B738_rescale(x_alt1, x_dist1, x_alt2, x_dist2, x_alt01)
+
+		-- max alt
+		x_alt1 = 0
+		x_alt2 = 0
+		x_dist1 = 0
+		x_dist2 = 0
+		for ii = 1, vnav_des_table_num2 do
+			if x_alt02 <= vnav_des_table_alt2[ii] then
+				x_dist2 = vnav_des_table_dist2[ii]
+				x_alt2 = vnav_des_table_alt2[ii]
+				if ii > 1 then
+					x_dist1 = vnav_des_table_dist2[ii-1]
+					x_alt1 = vnav_des_table_alt2[ii-1]
+				end
+				break
+			end
+		end
+
+		result = B738_rescale(x_alt1, x_dist1, x_alt2, x_dist2, x_alt02)
+
+		result = result - result_tmp
+		if result < 0 then
+			result = 0
+		end
 	else
-		result = B738_rescale(x_dist1, x_alt1, x_dist2, x_alt2, x_dist00)
+		result = 0
 	end
-	
-	result = B738_rescale(x_gw1, result_tmp, x_gw2, result, x_gw00)
 	
 	return result
+	
+end
+
+-- calculate alt by distance
+function calc_vnav_pth_alt2(x_alt01, x_dist)
+	
+	local ii = 0
+	local x_dist00 = 0
+	local x_dist1 = 0
+	local x_dist2 = 0
+	local x_alt1 = 0
+	local x_alt2 = 0
+	local result = 0
+	
+	if vnav_des_table_num2 > 0 then
+	
+		x_dist00 = calc_vnav_pth_dist2(0, x_alt01)
+		x_dist00 = x_dist00 + x_dist
+		
+		for ii = 1, vnav_des_table_num2 do
+			if x_dist00 <= vnav_des_table_dist2[ii] then
+				x_dist2 = vnav_des_table_dist2[ii]
+				x_alt2 = vnav_des_table_alt2[ii]
+				if ii > 1 then
+					x_dist1 = vnav_des_table_dist2[ii-1]
+					x_alt1 = vnav_des_table_alt2[ii-1]
+				end
+				break
+			end
+		end
+		
+		if x_dist2 == 0 then
+			result = 41000
+		else
+			result = B738_rescale(x_dist1, x_alt1, x_dist2, x_alt2, x_dist00)
+		end
+	
+	else
+		result = 0
+	end
+	
+	return result
+end
+
+function create_vpth_table2(x_gw_str)
+	
+	local ii = 0
+	local x_dist1 = 0
+	local x_dist2 = 0
+	local x_gw1 = 0
+	local x_gw2 = 0
+	local tmp_des_spd = math.min(B738DR_fmc_descent_speed, 290)
+	tmp_des_spd = math.max(B738DR_fmc_descent_speed, 265)
+	local x_idx_des_spd = B738_rescale(265, 1.15, 290, 0.9, tmp_des_spd)
+	local x_gw = tonumber(x_gw_str)
+	if x_gw == nil then
+		x_gw = 40
+	end
+	local x_gw00 = math.min ( 70, x_gw)
+	x_gw00 = math.max ( 40, x_gw00)
+	
+	x_gw2 = math.min ( 70, roundUpToIncrement(x_gw00, 10 ))
+	x_gw2 = math.max ( 40, x_gw2)
+	x_gw1 = math.min (70, x_gw2 - 10)
+	x_gw1 = math.max ( 40, x_gw1)
+	
+	vnav_des_table_dist2 = {}
+	vnav_des_table_alt2 = {}
+	vnav_des_table_num2 = 0
+	for ii = 1, 18 do
+		x_dist1 = vnav_des_dist[x_gw1][ii]
+		x_dist2 = vnav_des_dist[x_gw2][ii]
+		if vnav_des_alt[ii] >= 11000 then
+			x_dist1 = x_dist1 * x_idx_des_spd
+			x_dist2 = x_dist2 * x_idx_des_spd
+		end
+		vnav_des_table_dist2[ii] = B738_rescale(x_gw1, x_dist1, x_gw2, x_dist2, x_gw00)
+		vnav_des_table_alt2[ii] = vnav_des_alt[ii]
+		vnav_des_table_num2 = vnav_des_table_num2 + 1
+	end
+	
+end
+
+function modify_vpth_table2(x_alt01, x_idx)
+	
+	local ii = 0
+	local jj = 0
+	
+	if vnav_des_table_num2 > 0 and x_idx ~= 1 then
+		for ii = 1, vnav_des_table_num2 do
+			if x_alt01 < vnav_des_alt[ii] then
+				for jj = ii, vnav_des_table_num2 do
+					vnav_des_table_dist2[jj] = vnav_des_table_dist2[jj] * x_idx
+				end
+				break
+			end
+		end
+	end
 	
 end
 
@@ -58990,7 +59232,7 @@ function B738_vnav_pth3()
 					end
 					ed_to_dist = dist
 					if not_idle_pth == 0 then
-						B738DR_vnav_pth_alt = calc_vnav_pth_alt(ed_alt_temp, dist, gw_app_kgs, 1)	-- 50000 kgs
+						B738DR_vnav_pth_alt = calc_vnav_pth_alt(ed_alt_temp, dist)
 					else
 						B738DR_vnav_pth_alt = ed_alt_temp + ((dist * (math.tan(math.rad(descent_vpa)))) * 6076.11549) -- ft
 					end
@@ -59552,6 +59794,7 @@ function B738_fmc_calc()
 	
 	
 	dist_dest = 0
+	time_dest = ""
 	dist_tc = 0
 	time_tc = 0
 	dist_td = 0
@@ -61248,6 +61491,8 @@ function B738_fmc_calc()
 		local calc_fuel = 0
 		local fuel_flow = 0
 		local ff_phase = 0
+		local tmp_wpt_eta2 = 0
+		local tmp_wpt_eta3 = 0
 		
 		if crz_alt_num > 0 and perf_exec > 0 and ref_icao ~= "----" and des_icao ~= "****" then
 			time_calc_enable = 1
@@ -61409,6 +61654,14 @@ function B738_fmc_calc()
 							else
 								legs_data[n][13] = time_temp
 								legs_data[n][40] = calc_fuel
+							end
+							-- calc time dataref
+							if legs_data[legs_num+1][13] == 0 then
+								time_dest = ""
+							else
+								tmp_wpt_eta2 = math.floor(legs_data[legs_num+1][13])
+								tmp_wpt_eta3 = (legs_data[legs_num+1][13] - tmp_wpt_eta2) * 60
+								time_dest = string.format("%02d", tmp_wpt_eta2) .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2) .. "z"
 							end
 						end
 					end
@@ -63253,6 +63506,7 @@ temp_ils4 = ""
 	ed_fix_alt2 = {}
 	ed_fix_vpa2 = {}
 	dist_dest = 0
+	time_dest = ""
 	dist_tc = 0
 	time_tc = 0
 	dist_td = 0
@@ -63547,7 +63801,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25n"
+	version = "v3.25o"
 
 end
 

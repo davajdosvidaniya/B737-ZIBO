@@ -349,6 +349,7 @@ gpws_bank_angle1 = 0
 gpws_bank_angle2 = 0
 gpws_last_peak_altitude = 0
 gpws_goaround = 0
+gpws_takeoff = 0
 cut_horn_gear_disable = 0
 gpws_test_phase = 0
 gpws_aural = 0
@@ -9535,6 +9536,12 @@ function B738_gpws()
 		if simDR_radio_height_pilot_ft < 30 or simDR_radio_height_pilot_ft > 2450 then
 			gpws_disable = 1
 		end
+		if simDR_radio_height_pilot_ft > 2450 then
+			gpws_takeoff = 2
+		end
+		if simDR_radio_height_pilot_ft < 30 then
+			gpws_takeoff = 0
+		end
 		
 		if B738DR_enable_gpwstest_long == 1 then
 			-- long test
@@ -9756,7 +9763,11 @@ function B738_gpws()
 			else
 				gpws_goaround = 0
 			end
-			if B738DR_flight_phase == 0 or gpws_goaround == 1 then
+			if B738DR_flight_phase < 2 and gpws_takeoff == 0 then
+				gpws_takeoff = 1
+			end
+			
+			if gpws_takeoff == 1 or gpws_goaround == 1 then
 				if simDR_radio_height_pilot_ft < 1330 then
 					gpws_mode = 3
 					gpws_calc_vvi = B738_rescale(30, 8, 1500, 120, simDR_radio_height_pilot_ft)
@@ -9778,8 +9789,11 @@ function B738_gpws()
 				if gpws_last_peak_altitude < simDR_altitude_pilot then
 					gpws_last_peak_altitude = simDR_altitude_pilot
 				end
+				if simDR_fpm < 0 and gpws_warning == DONT_SINK then
+					gpws_last_peak_altitude = simDR_altitude_pilot
+				end
 			else
-				gpws_last_peak_altitude = simDR_altitude_pilot
+				gpws_last_peak_altitude = 0	--simDR_altitude_pilot
 			end
 			if gpws_mode == 4 then
 				-- MODE 4
@@ -10289,7 +10303,7 @@ function B738_gpws()
 		B738DR_pfd_pull_up = 0
 		B738DR_pfd_windshear = 0
 		B738DR_glide_slope_annun = 0
-		gpws_last_peak_altitude = simDR_altitude_pilot
+		gpws_last_peak_altitude = 0	--simDR_altitude_pilot
 		B738DR_gpws_test_running = 0
 		gpws_aural = 0
 		gpws_aural_phase = 0
@@ -11903,8 +11917,9 @@ B738_init_engineMGMT_fltStart()
 	gpws_bank_angle2 = 0
 	clear_gpws_flag()
 	B738DR_pfd_pull_up = 0
-	gpws_last_peak_altitude = simDR_altitude_pilot
+	gpws_last_peak_altitude = 0	--simDR_altitude_pilot
 	gpws_goaround = 0
+	gpws_takeoff = 0
 	gpws_aural = 0
 	gpws_aural_phase = 0
 	gpws_warning = 0

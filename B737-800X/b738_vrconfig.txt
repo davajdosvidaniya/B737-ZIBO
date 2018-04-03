@@ -69,37 +69,37 @@ BEGIN_MANIP manip_axis_knob sim/cockpit2/switches/generic_lights_switch[12]
 END_MANIP
 
 BEGIN_MANIP manip_axis_knob laminar/B738/pressurization/knobs/landing_alt
-	DRAG_GAIN 10
+	DEG_PER_ACTION 10
 END_MANIP
 BEGIN_MANIP manip_axis_knob sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
-	DRAG_GAIN 10
+	DEG_PER_ACTION 10
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/knob/eng1_start_right laminar/B738/knob/eng1_start_left
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/knob/eng2_start_right laminar/B738/knob/eng2_start_left
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/knob/left_wiper_up laminar/B738/knob/left_wiper_dn
-	DRAG_GAIN 30
+	DEG_PER_ACTION 30
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/knob/right_wiper_up laminar/B738/knob/right_wiper_dn
-	DRAG_GAIN 30
+	DEG_PER_ACTION 30
 END_MANIP
 
 
 BEGIN_MANIP manip_axis_knob laminar/B738/air/cont_cab_temp/rheostat
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP manip_axis_knob laminar/B738/air/fwd_cab_temp/rheostat
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP manip_axis_knob laminar/B738/air/aft_cab_temp/rheostat
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_switch_ud laminar/B738/spring_toggle_switch/APU_start_pos_up laminar/B738/spring_toggle_switch/APU_start_pos_dn
@@ -130,17 +130,17 @@ BEGIN_MANIP manip_cmnd_switch_ud laminar/B738/toggle_switch/window_ovht_test_up 
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/EFIS_control/capt/map_range_up laminar/B738/EFIS_control/capt/map_range_dn
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 END_MANIP
 BEGIN_MANIP manip_cmnd_knob laminar/B738/EFIS_control/fo/map_range_up laminar/B738/EFIS_control/fo/map_range_dn
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/EFIS_control/capt/map_mode_up laminar/B738/EFIS_control/capt/map_mode_dn
-	DRAG_GAIN 30
+	DEG_PER_ACTION 30
 END_MANIP
 BEGIN_MANIP manip_cmnd_knob laminar/B738/EFIS_control/fo/map_mode_up laminar/B738/EFIS_control/fo/map_mode_dn
-	DRAG_GAIN 30
+	DEG_PER_ACTION 30
 END_MANIP
 
 BEGIN MANIP_manip_cmnd	laminar/B738/toggle_switch/yaw_dumper
@@ -152,60 +152,60 @@ BEGIN_MANIP manip_cmnd_switch_ud laminar/B738/toggle_switch/fuel_flow_up laminar
 END_MANIP
 
 BEGIN_MANIP manip_axis_knob laminar/B738/electric/instrument_brightness[0]
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP manip_axis_knob laminar/B738/electric/instrument_brightness[1]
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP manip_axis_knob laminar/B738/electric/instrument_brightness[2]
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP manip_axis_knob laminar/B738/electric/instrument_brightness[3]
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP manip_axis_knob laminar/B738/electric/instrument_brightness[4]
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP manip_axis_knob laminar/B738/electric/instrument_brightness[5]
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP manip_axis_knob laminar/B738/electric/instrument_brightness[10]
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP manip_axis_knob laminar/B738/electric/instrument_brightness[11]
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 
 BEGIN_MANIP manip_axis_knob laminar/B738/electric/panel_brightness[0]
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP manip_axis_knob laminar/B738/electric/panel_brightness[1]
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP manip_axis_knob laminar/B738/electric/panel_brightness[2]
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP manip_axis_knob laminar/B738/electric/panel_brightness[3]
-	DRAG_GAIN 8
+	DEG_PER_ACTION 8
 END_MANIP
 
 
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/autopilot/course_pilot_up laminar/B738/autopilot/course_pilot_dn
-	DRAG_GAIN 5
+	DEG_PER_ACTION 5
 END_MANIP
 BEGIN_MANIP manip_cmnd_knob laminar/B738/autopilot/course_copilot_up laminar/B738/autopilot/course_copilot_dn
-	DRAG_GAIN 5
+	DEG_PER_ACTION 5
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob sim/autopilot/airspeed_up sim/autopilot/airspeed_down
-	DRAG_GAIN 5
+	DEG_PER_ACTION 5
 END_MANIP
 BEGIN_MANIP manip_cmnd_knob laminar/B738/autopilot/altitude_up laminar/B738/autopilot/altitude_dn
-	DRAG_GAIN 5
+	DEG_PER_ACTION 5
 END_MANIP
 BEGIN_MANIP manip_cmnd_knob laminar/B738/autopilot/heading_up laminar/B738/autopilot/heading_dn
-	DRAG_GAIN 5
+	DEG_PER_ACTION 5
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_switch_ud sim/autopilot/vertical_speed_down sim/autopilot/vertical_speed_up
@@ -213,48 +213,48 @@ BEGIN_MANIP manip_cmnd_switch_ud sim/autopilot/vertical_speed_down sim/autopilot
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/pfd/dh_pilot_up laminar/B738/pfd/dh_pilot_dn
-	DRAG_GAIN 3
+	DEG_PER_ACTION 3
 END_MANIP
 BEGIN_MANIP manip_cmnd_knob laminar/B738/pfd/dh_copilot_up laminar/B738/pfd/dh_copilot_dn
-	DRAG_GAIN 3
+	DEG_PER_ACTION 3
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/knob/ac_power_up laminar/B738/knob/ac_power_dn
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 END_MANIP
 BEGIN_MANIP manip_cmnd_knob laminar/B738/knob/dc_power_up laminar/B738/knob/dc_power_dn
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/knob/autobrake_up laminar/B738/knob/autobrake_dn
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/toggle_switch/crossfeed_valve_on laminar/B738/toggle_switch/crossfeed_valve_off
-	DRAG_GAIN 60
+	DEG_PER_ACTION 60
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/toggle_switch/dspl_source_right laminar/B738/toggle_switch/dspl_source_left
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/toggle_switch/irs_dspl_sel_right laminar/B738/toggle_switch/irs_dspl_sel_left
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/toggle_switch/irs_L_right laminar/B738/toggle_switch/irs_L_left
-	DRAG_GAIN 20
+	DEG_PER_ACTION 20
 END_MANIP
 BEGIN_MANIP manip_cmnd_knob laminar/B738/toggle_switch/irs_R_right laminar/B738/toggle_switch/irs_R_left
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/toggle_switch/air_valve_ctrl_right laminar/B738/toggle_switch/air_valve_ctrl_left
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_knob laminar/B738/toggle_switch/air_temp_source_right laminar/B738/toggle_switch/air_temp_source_left
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_switch_lr laminar/B738/toggle_switch/fire_test_rgt laminar/B738/toggle_switch/fire_test_lft
@@ -278,16 +278,16 @@ BEGIN_MANIP manip_cmnd_switch_ud laminar/B738/toggle_switch/ap_disconnect_test2_
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_switch_lr laminar/B738/toggle_switch/flt_dk_door_right laminar/B738/toggle_switch/flt_dk_door_left
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 	HOLD_MANIP
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_switch_lr sim/flight_controls/aileron_trim_right sim/flight_controls/aileron_trim_left
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 	HOLD_MANIP
 END_MANIP
 
 BEGIN_MANIP manip_cmnd_switch_lr sim/flight_controls/rudder_trim_right sim/flight_controls/rudder_trim_left
-	DRAG_GAIN 25
+	DEG_PER_ACTION 25
 	HOLD_MANIP
 END_MANIP

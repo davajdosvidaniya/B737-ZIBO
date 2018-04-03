@@ -8422,7 +8422,7 @@ function B738_vnav6()
 							end
 						end
 						
-						if vnav_desc_spd == 0 then
+						-- if vnav_desc_spd == 0 then
 						
 							if simDR_airspeed_is_mach == 0 then
 								if B738DR_rest_wpt_spd > 0 then
@@ -8474,13 +8474,13 @@ function B738_vnav6()
 								vnav_speed_trg = B738DR_fmc_descent_speed_mach
 							end
 						
-						else
-							if simDR_airspeed_is_mach == 0 then
-								vnav_speed_trg = B738DR_fmc_descent_speed
-							else
-								vnav_speed_trg = B738DR_fmc_descent_speed_mach
-							end
-						end
+						-- else
+							-- if simDR_airspeed_is_mach == 0 then
+								-- vnav_speed_trg = B738DR_fmc_descent_speed
+							-- else
+								-- vnav_speed_trg = B738DR_fmc_descent_speed_mach
+							-- end
+						-- end
 
 					end
 				end
@@ -8599,14 +8599,14 @@ function B738_vnav6()
 			
 			if B738DR_ap_spd_interv_status == 0 then
 				
-				if vnav_speed_trg ~= 340 then
+				-- if vnav_speed_trg ~= 340 then
 					simDR_airspeed_dial = vnav_speed_trg
-					vnav_speed_trg_old = vnav_speed_trg
-				else
-					if vnav_speed_trg_old ~= 0 then
-						simDR_airspeed_dial = vnav_speed_trg_old
-					end
-				end
+					-- vnav_speed_trg_old = vnav_speed_trg
+				-- else
+					-- if vnav_speed_trg_old ~= 0 then
+						-- simDR_airspeed_dial = vnav_speed_trg_old
+					-- end
+				-- end
 				
 				if simDR_autopilot_altitude_mode ~= 6 and (B738DR_flight_phase < 2 or B738DR_missed_app_act > 0) then
 					if init_climb == 0 and (B738DR_flight_phase < 2 or B738DR_missed_app_act > 0) then
