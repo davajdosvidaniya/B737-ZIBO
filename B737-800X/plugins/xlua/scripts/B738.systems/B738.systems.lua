@@ -9789,7 +9789,8 @@ function B738_gpws()
 				if gpws_last_peak_altitude < simDR_altitude_pilot then
 					gpws_last_peak_altitude = simDR_altitude_pilot
 				end
-				if simDR_fpm < 0 and gpws_warning == DONT_SINK then
+				--if simDR_fpm < 0 and gpws_warning == DONT_SINK then
+				if gpws_warning == DONT_SINK then
 					gpws_last_peak_altitude = simDR_altitude_pilot
 				end
 			else

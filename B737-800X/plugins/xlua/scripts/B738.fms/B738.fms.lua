@@ -1358,6 +1358,9 @@ ff_sample = 0
 	vnav_des_table_alt2 = {}
 	vnav_des_table_num2 = 0
 
+	--vnav_alt_err_ratio = 0
+	vnav_alt_err_ratio_old = 0
+
 	
 --*************************************************************************************--
 --** 				             FIND X-PLANE DATAREFS            			    	 **--
@@ -3081,6 +3084,8 @@ B738DR_nd_apt				= create_dataref("laminar/B738/nd/disable_apt", "number")
 
 B738DR_last_pos_lat			= create_dataref("laminar/B738/irs/last_pos_lat", "number")
 B738DR_last_pos_lon			= create_dataref("laminar/B738/irs/last_pos_lon", "number")
+
+vnav_alt_err_ratio			= create_dataref("laminar/B738/fms/vnav_alt_err_ratio", "number")
 
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
@@ -19942,6 +19947,35 @@ function dump_leg()
 		file_navdata2:close()
 	end
 end
+
+function dump_leg_mod()
+	local vvv = 0
+	local fms_line = ""
+	
+	local file_name2 = "legs.txt"
+	local file_navdata2 = io.open(file_name2, "w")
+	
+	if file_navdata2 ~= nil then
+		if legs_num > 0 then
+			for vvv = 1, legs_num + 1 do
+				fms_line = legs_data[vvv][1] .. "," .. tostring(legs_data[vvv][5]) .. ","
+				if legs_data[vvv][6] == 43 then
+					fms_line = fms_line .. "A,"
+				elseif legs_data[vvv][6] == 45 then
+					fms_line = fms_line .. "B,"
+				else
+					fms_line = fms_line .. " ,"
+				end
+				fms_line = fms_line .. tostring(legs_data[vvv][11]) .. "\n"
+				file_navdata2:write(fms_line)
+			end
+		end
+		file_navdata2:close()
+	end
+	B738DR_fms_test = 0
+end
+
+
 
 function dump_leg4()
 	local vvv = 0
@@ -50923,6 +50957,11 @@ function B738_vnav_calc()
 						end
 					end
 					
+					----------------------------------
+					if B738DR_fms_test == 1 then
+						dump_leg_mod()
+						--B738DR_fms_test = 0
+					end
 					
 					-----------------------------------------------------------
 					-- find fixed altitude restrict between T/C and T/D
@@ -51020,6 +51059,7 @@ function B738_vnav_calc()
 									ed_dist = calc_vnav_pth_dist(ed_fix_alt, crz_alt_num)
 									n = 2	--jj
 									ed_fix_vpa2[ed_fix_num] = econ_des_vpa
+									create_vpth_table(gw_app_kgs)
 								else
 									n = ed_fix_found2[(ed_fix_num-1)] + 1
 									
@@ -51098,9 +51138,11 @@ function B738_vnav_calc()
 										td_lon = temp_lon
 										break
 									end
-									if ed_fix_num > 1 and calc_wpt_alt > ed_fix_alt2[ed_fix_num-1] then
-										legs_data[kk][11] = ed_fix_alt2[ed_fix_num-1]
-										break
+									if ed_fix_num > 1 then
+										if calc_wpt_alt > ed_fix_alt2[ed_fix_num-1] then
+											legs_data[kk][11] = ed_fix_alt2[ed_fix_num-1]
+											break
+										end
 									end
 								end
 								
@@ -51143,6 +51185,11 @@ function B738_vnav_calc()
 						
 					end
 					
+					--------------------------------
+					if B738DR_fms_test == 2 then
+						dump_leg_mod()
+						--B738DR_fms_test = 0
+					end
 					
 					-----------------------------------------------------------
 					-- find above/below altitude restrict between T/C and T/D
@@ -51221,17 +51268,7 @@ function B738_vnav_calc()
 								ed_fix_num = ed_fix_num + 1
 								ed_fix_found2[ed_fix_num] = ed_fix_found
 								
-								-- if ed_fix_num == 1 then
-									-- td_dist = 0
-									-- td_idx = 0
-								-- end
-								
-								-- if legs_restr_alt[ii][4] == 45 then		-- Below
-									-- ed_fix_alt = legs_restr_alt[ii][3] - 500
-								-- else
-									ed_fix_alt = legs_restr_alt[ii][3]
-								-- end
-								
+								ed_fix_alt = legs_restr_alt[ii][3]
 								ed_fix_alt2[ed_fix_num] = ed_fix_alt
 								
 								
@@ -51254,6 +51291,7 @@ function B738_vnav_calc()
 									ed_fix_vpa2[ed_fix_num] = econ_des_vpa
 									td_dist = 0
 									td_idx = 0
+									create_vpth_table(gw_app_kgs)
 								else
 									--n = ed_fix_found2[(ed_fix_num-1)] + 1
 									n = first_restrict + 1
@@ -51299,19 +51337,35 @@ function B738_vnav_calc()
 											calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2[ed_fix_num])))) * 6076.11549) -- ft
 										end
 									end
+									if first_restrict > 0 then
+										if calc_wpt_alt > legs_data[first_restrict][5] then
+											calc_wpt_alt = legs_data[first_restrict][5]
+										end
+									end
 									if calc_wpt_alt > crz_alt_num then
 										calc_wpt_alt = crz_alt_num
 									end
-									if kk == n and ed_fix_num > 1 then
-										pom6 = ed_fix_found2[ed_fix_num-1]
-										if legs_data[pom6][4] ~= 43 and legs_data[pom6][4] ~= 45 then
-											legs_data[kk][11] = ed_fix_alt2[(ed_fix_num-1)]
-										else
-											legs_data[kk][11] = calc_wpt_alt
-										end
-									else
+									-- if kk == n and ed_fix_num > 1 then
+										
+										-- if first_restrict > 0 then
+											-- if legs_data[first_restrict][4] ~= 43 and legs_data[first_restrict][4] ~= 45 then
+												-- legs_data[kk][11] = legs_data[first_restrict][5]	--ed_fix_alt2[first_restrict]
+											-- else
+												-- legs_data[kk][11] = calc_wpt_alt
+											-- end
+										-- else
+											-- legs_data[kk][11] = calc_wpt_alt
+										-- end
+										
+										-- pom6 = ed_fix_found2[ed_fix_num-1]
+										-- if legs_data[pom6][4] ~= 43 and legs_data[pom6][4] ~= 45 then
+											-- legs_data[kk][11] = ed_fix_alt2[(ed_fix_num-1)]
+										-- else
+											-- legs_data[kk][11] = calc_wpt_alt
+										-- end
+									-- else
 										legs_data[kk][11] = calc_wpt_alt
-									end
+									-- end
 									--legs_data[kk][11] = calc_wpt_alt
 									last_wpt_idx = kk
 									
@@ -51351,12 +51405,19 @@ function B738_vnav_calc()
 									-- end
 								end
 								
+									----------------------------------
+									if B738DR_fms_test == 4 and ed_fix_num == B738DR_fms_test3 then
+										dump_leg_mod()
+										B738DR_fms_test3 = first_restrict
+										--B738DR_fms_test = 0
+									end
+									----------------------------------
 								-----------------------------------
 								-- correct vnav path FROM restrict
 								-----------------------------------
 								first_restrict = find_alt_restrict(ed_fix_found+1, ed_found)
 								
-								if first_restrict ~= 0 and first_restrict ~= ed_found then
+								if first_restrict ~= 0 then	--and first_restrict ~= ed_found then
 									--if first_restrict > ed_fix_found + 1 then
 										n = first_restrict
 										
@@ -51394,6 +51455,14 @@ function B738_vnav_calc()
 												-- break
 											-- end
 										end
+									
+									----------------------------------
+									if B738DR_fms_test == 5 and ed_fix_num == B738DR_fms_test3 then
+										dump_leg_mod()
+										--B738DR_fms_test = 0
+									end
+									----------------------------------
+									
 									--end
 								end
 								
@@ -51402,6 +51471,8 @@ function B738_vnav_calc()
 							
 						end
 					end
+					
+					
 					
 					-- order E/D restrict data
 					if ed_fix_num > 1 then
@@ -51444,19 +51515,19 @@ function B738_vnav_calc()
 						end
 						ed_vpa = nd_y
 						
-						for kk = ed_found, n, -1 do
+						-- for kk = ed_found, n, -1 do
 							
-							if kk == ed_found then
-								calc_wpt_alt = ed_alt
-							else
-								--calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
-								calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_vpa)))) * 6076.11549) -- ft
-							end
-							if calc_wpt_alt > crz_alt_num then
-								calc_wpt_alt = crz_alt_num
-							end
-							legs_data[kk][11] = calc_wpt_alt
-						end
+							-- if kk == ed_found then
+								-- calc_wpt_alt = ed_alt
+							-- else
+								-- --calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
+								-- calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_vpa)))) * 6076.11549) -- ft
+							-- end
+							-- if calc_wpt_alt > crz_alt_num then
+								-- calc_wpt_alt = crz_alt_num
+							-- end
+							-- legs_data[kk][11] = calc_wpt_alt
+						-- end
 						
 					end
 					
@@ -51757,6 +51828,15 @@ function B738_vnav_calc()
 				end
 			end
 		end
+		
+		
+		----------------------------------
+		if B738DR_fms_test == 3 then
+			dump_leg_mod()
+			--B738DR_fms_test = 0
+		end
+		----------------------------------
+		
 		
 	else
 		if legs_num > 1 then
@@ -52322,6 +52402,10 @@ function B738_vnav_calc_mod()
 						end
 					end
 					
+					-- if B738DR_fms_test == 1 then
+						-- dump_leg_mod()
+						-- B738DR_fms_test = 0
+					-- end
 					
 					-----------------------------------------------------------
 					-- find fixed altitude restrict between T/C and T/D
@@ -52419,6 +52503,7 @@ function B738_vnav_calc_mod()
 									ed_dist_mod = calc_vnav_pth_dist2(ed_fix_alt_mod, crz_alt_num)
 									n = 2	--jj
 									ed_fix_vpa2_mod[ed_fix_num_mod] = econ_des_vpa
+									create_vpth_table2(gw_app_kgs)
 								else
 									n = ed_fix_found2_mod[(ed_fix_num_mod-1)] + 1
 									
@@ -52462,7 +52547,30 @@ function B738_vnav_calc_mod()
 									if calc_wpt_alt > crz_alt_num then
 										calc_wpt_alt = crz_alt_num
 									end
+									
 									legs_data2[kk][11] = calc_wpt_alt
+									
+									
+									-- if kk == n and ed_fix_num_mod > 1 then
+										
+										-- if first_restrict > 0 then
+											-- if legs_data2[first_restrict][4] ~= 43 and legs_data2[first_restrict][4] ~= 45 then
+												-- legs_data2[kk][11] = ed_fix_alt2[first_restrict]
+											-- else
+												-- legs_data2[kk][11] = calc_wpt_alt
+											-- end
+										-- else
+											-- legs_data2[kk][11] = calc_wpt_alt
+										-- end
+										
+									-- else
+										-- legs_data2[kk][11] = calc_wpt_alt
+									-- end
+									--last_wpt_idx = kk
+									
+									
+									
+									
 									last_wpt_idx = kk
 									
 									if td_dist_mod > ed_dist_mod and ed_fix_num_mod == 1 then
@@ -52515,6 +52623,14 @@ function B738_vnav_calc_mod()
 						end
 						
 					end
+					
+					
+					----------------------------------------
+					
+					-- if B738DR_fms_test == 1 then
+						-- dump_leg_mod()
+						-- B738DR_fms_test = 0
+					-- end
 					
 					
 					-----------------------------------------------------------
@@ -52582,6 +52698,7 @@ function B738_vnav_calc_mod()
 									ed_fix_vpa2_mod[ed_fix_num_mod] = econ_des_vpa
 									td_dist_mod = 0
 									td_idx_mod = 0
+									create_vpth_table2(gw_app_kgs)
 								else
 									n = first_restrict + 1
 									--calc vpa
@@ -52616,12 +52733,17 @@ function B738_vnav_calc_mod()
 										calc_wpt_alt = ed_fix_alt_mod
 									else
 										-- calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2_mod[ed_fix_num_mod])))) * 6076.11549) -- ft
-										if ed_fix_num == 1 then
+										if ed_fix_num_mod == 1 then
 											wind_temp = wind_pth(legs_data2[kk][2], legs_data2[kk][39], legs_data2[kk][38])
 											modify_vpth_table2(calc_wpt_alt, wind_temp)
-											calc_wpt_alt = calc_vnav_pth_alt2(ed_fix_alt_mod, td_dist - legs_data2[kk][3])
+											calc_wpt_alt = calc_vnav_pth_alt2(ed_fix_alt_mod, td_dist_mod - legs_data2[kk][3])
 										else
 											calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2_mod[ed_fix_num_mod])))) * 6076.11549) -- ft
+										end
+									end
+									if first_restrict > 0 then
+										if calc_wpt_alt > legs_data2[first_restrict][5] then
+											calc_wpt_alt = legs_data2[first_restrict][5]
 										end
 									end
 									if calc_wpt_alt > crz_alt_num then
@@ -52661,7 +52783,7 @@ function B738_vnav_calc_mod()
 								-----------------------------------
 								first_restrict = find_alt_restrict_mod(ed_fix_found_mod+1, ed_found_mod)
 								
-								if first_restrict ~= 0 and first_restrict ~= ed_found_mod then
+								if first_restrict ~= 0 then --and first_restrict ~= ed_found_mod then
 										n = first_restrict
 										
 										-- calculate vnav path
@@ -52739,19 +52861,19 @@ function B738_vnav_calc_mod()
 						end
 						ed_vpa = nd_y
 						
-						for kk = ed_found_mod, n, -1 do
+						-- for kk = ed_found_mod, n, -1 do
 							
-							if kk == ed_found_mod then
-								calc_wpt_alt = ed_alt
-							else
-								--calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
-								calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_vpa)))) * 6076.11549) -- ft
-							end
-							if calc_wpt_alt > crz_alt_num then
-								calc_wpt_alt = crz_alt_num
-							end
-							legs_data2[kk][11] = calc_wpt_alt
-						end
+							-- if kk == ed_found_mod then
+								-- calc_wpt_alt = ed_alt
+							-- else
+								-- --calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
+								-- calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_vpa)))) * 6076.11549) -- ft
+							-- end
+							-- if calc_wpt_alt > crz_alt_num then
+								-- calc_wpt_alt = crz_alt_num
+							-- end
+							-- legs_data2[kk][11] = calc_wpt_alt
+						-- end
 						
 					end
 					
@@ -53138,6 +53260,9 @@ function find_alt_restrict(rest_from, rest_to)
 				break
 			end
 		end
+		if rest_to == ed_found and finded_rest_idx == 0 then
+			finded_rest_idx = ed_found
+		end
 	else
 		for ii = rest_from, rest_to, -1 do
 			if legs_data[ii][17] > 9 then
@@ -53158,27 +53283,6 @@ function find_alt_restrict_mod(rest_from, rest_to)
 	
 	if rest_from < rest_to then
 		for ii = rest_from, rest_to do
-			-- if legs_data2[ii][17] > 9 then
-				-- finded_rest_idx = ii
-				-- break
-			-- end
-			-- if legs_data2[ii][17] > 199 then
-				-- if legs_data2[ii][17] > 209 then
-					-- finded_rest_idx = ii
-					-- break
-				-- end
-			-- elseif legs_data2[ii][17] > 99 then
-				-- if legs_data2[ii][17] > 109 then
-					-- finded_rest_idx = ii
-					-- break
-				-- end
-			-- else
-				-- if legs_data2[ii][17] > 9 then
-					-- finded_rest_idx = ii
-					-- break
-				-- end
-			-- end
-			
 			jj = legs_data2[ii][17]
 			while jj > 99 do
 				jj = jj - 100
@@ -53188,28 +53292,11 @@ function find_alt_restrict_mod(rest_from, rest_to)
 				break
 			end
 		end
+		if rest_to == ed_found_mod and finded_rest_idx == 0 then
+			finded_rest_idx = ed_found_mod
+		end
 	else
 		for ii = rest_from, rest_to, -1 do
-			-- if legs_data2[ii][17] > 9 then
-				-- finded_rest_idx = ii
-				-- break
-			-- end
-			-- if legs_data2[ii][17] > 199 then
-				-- if legs_data2[ii][17] > 209 then
-					-- finded_rest_idx = ii
-					-- break
-				-- end
-			-- elseif legs_data2[ii][17] > 99 then
-				-- if legs_data2[ii][17] > 109 then
-					-- finded_rest_idx = ii
-					-- break
-				-- end
-			-- else
-				-- if legs_data2[ii][17] > 9 then
-					-- finded_rest_idx = ii
-					-- break
-				-- end
-			-- end
 			jj = legs_data2[ii][17]
 			while jj > 99 do
 				jj = jj - 100
@@ -59091,6 +59178,13 @@ function modify_vpth_table2(x_alt01, x_idx)
 	
 end
 
+function calc_err_ratio()
+	
+	vnav_alt_err_ratio = B738DR_vnav_alt_err - vnav_alt_err_ratio_old
+	vnav_alt_err_ratio_old = B738DR_vnav_alt_err
+	
+end
+
 function B738_vnav_pth3()
 
 	local n = 0
@@ -59130,6 +59224,7 @@ function B738_vnav_pth3()
 	local gp_disable = 0
 	local vnav_app_active = 0
 	local not_idle_pth = 0
+	local idle_pth_idx = 0
 	
 	if ref_icao == "----" or des_icao == "****" then
 		legs_num = 0
@@ -59192,11 +59287,12 @@ function B738_vnav_pth3()
 					ed_found_temp = ed_fix_found2[n]
 					ed_alt_temp = ed_fix_alt2[n]
 					descent_vpa = ed_fix_vpa2[n]
-					if n > 1 then
-						not_idle_pth = 1
-					end
+					idle_pth_idx = n
 					break
 				end
+			end
+			if idle_pth_idx == 0 or idle_pth_idx > 1 then
+				not_idle_pth = 1
 			end
 		end
 		
@@ -59247,29 +59343,56 @@ function B738_vnav_pth3()
 							B738DR_vnav_err_pfd = B738DR_vnav_alt_err
 						end
 					end
-					-- if B738DR_vnav_err_pfd >    previous B738DR_rest_wpt_alt    then
-						-- B738DR_vnav_err_pfd = previous B738DR_rest_wpt_alt
-					-- end
 					
 					nd_vert_path = 1
-					B738DR_vnav_vvi_corr = (B738DR_vnav_alt_err - 55) * B738DR_vvi_const	-- correction -55
-					vnav_vvi_trg = (simDR_ground_spd * (math.tan(math.rad(descent_vpa))) * 6076.11549 / 60)  -- ft / min
-					vnav_vvi_trg = -vnav_vvi_trg + B738DR_vnav_vvi_corr
+					-- B738DR_vnav_vvi_corr = (B738DR_vnav_alt_err - 55) * B738DR_vvi_const	-- correction -55
+					-- vnav_vvi_trg = (simDR_ground_spd * (math.tan(math.rad(descent_vpa))) * 6076.11549 / 60)  -- ft / min
+					-- vnav_vvi_trg = -vnav_vvi_trg + B738DR_vnav_vvi_corr
+					-- vnav_vvi_trg = vnav_vvi_trg / 1000
+					-- vnav_vvi_trg = math.max (vnav_vvi_trg, -2.5)
+					-- vnav_vvi_trg = math.min (vnav_vvi_trg, 0)
+					-- vnav_vvi_tmp = B738DR_vnav_vvi / 1000
+					-- if B738DR_altitude_mode == 5 and simDR_autopilot_altitude_mode ~= 6 then -- VNAV
+						-- vnav_vvi_tmp = B738_set_anim_value2(vnav_vvi_tmp, vnav_vvi_trg, -2.5, 0, 2, 0.02)
+						-- B738DR_vnav_vvi = vnav_vvi_tmp * 1000
+					-- else
+						-- B738DR_vnav_vvi = 0
+					-- end
+					
+					--vnav_alt_err
+					
+					if B738DR_vnav_alt_err < 0 then
+						vnav_alt_cor = B738DR_vnav_alt_err / 100
+						vnav_alt_cor = -vnav_alt_cor
+						vnav_alt_cor = math.min(10, vnav_alt_cor)
+						vnav_alt_cor = math.max(0, vnav_alt_cor)
+						vnav_alt_cor = -B738_rescale(0, 0, 10, 2800, vnav_alt_cor)
+					else
+						vnav_alt_cor = B738DR_vnav_alt_err / 100
+						vnav_alt_cor = math.min(10, vnav_alt_cor)
+						vnav_alt_cor = math.max(0, vnav_alt_cor)
+						vnav_alt_cor = B738_rescale(0, 0, 10, 2800, vnav_alt_cor)
+					end
+					
+					B738DR_vnav_vvi_corr = vnav_alt_cor - (-vnav_alt_err_ratio * 60)
+					
+					vnav_vvi_trg = simDR_vvi_fpm_pilot + B738DR_vnav_vvi_corr
 					vnav_vvi_trg = vnav_vvi_trg / 1000
-					vnav_vvi_trg = math.max (vnav_vvi_trg, -2.5)
+					vnav_vvi_trg = math.max (vnav_vvi_trg, -2.7)
 					vnav_vvi_trg = math.min (vnav_vvi_trg, 0)
 					vnav_vvi_tmp = B738DR_vnav_vvi / 1000
+					
 					if B738DR_altitude_mode == 5 and simDR_autopilot_altitude_mode ~= 6 then -- VNAV
-						vnav_vvi_tmp = B738_set_anim_value2(vnav_vvi_tmp, vnav_vvi_trg, -2.5, 0, 2, 0.02)
+						vnav_vvi_tmp = B738_set_anim_value2(vnav_vvi_tmp, vnav_vvi_trg, -2.7, 0, 2, 0.02)
 						B738DR_vnav_vvi = vnav_vvi_tmp * 1000
 					else
 						B738DR_vnav_vvi = 0
 					end
 					
-					if B738DR_vnav_vvi < -2500 then		-- max vvi -2400
-						B738DR_vnav_vvi= -2500
+					if B738DR_vnav_vvi < -2700 then		-- max descent vvi -2500
+						B738DR_vnav_vvi= -2700
 					end
-					if B738DR_vnav_vvi > 0 then		-- min vvi -200
+					if B738DR_vnav_vvi > 0 then		-- min descent vvi 0
 						B738DR_vnav_vvi = 0
 					end
 				end
@@ -63801,7 +63924,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25o"
+	version = "v3.25q"
 
 end
 
@@ -63931,6 +64054,9 @@ function B738_ff_approx()
 	end
 	-- ff_approx = (ff_total + ff_total_old) / 2
 	-- ff_total_old = ff_total
+	
+	calc_err_ratio()
+	
 end
 
 function B738_gw_approach()
@@ -64070,6 +64196,7 @@ function flight_start()
 	if is_timer_scheduled(B738_gw_approach) == false then
 		run_at_interval(B738_gw_approach, 5)
 	end
+	
 	
 end
 

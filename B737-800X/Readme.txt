@@ -77,6 +77,16 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25q:
+------
+- add own autothrottle code (basic code - preview version)
+
+3.25p:
+------
+- new code for control descent path
+- fixed bug in calculate descent path
+
+
 3.25o:
 ------
 - add calculate descent path by wind
