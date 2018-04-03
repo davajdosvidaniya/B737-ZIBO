@@ -3416,6 +3416,7 @@ end
 function B738_brake_smoothly_CMDhandler(phase, duration)
 	if phase == 0 then
 		brake_smoothly_status = 1
+		B738DR_parking_brake_pos = 0
 	elseif phase == 2 then
 		brake_smoothly_status = 0
 	end

@@ -2561,6 +2561,7 @@ B738DR_nosewheel		= create_dataref("laminar/B738/effects/nosewheel", "number")
 B738DR_fpln_format		= create_dataref("laminar/B738/fms/fpln_format", "number")
 B738DR_track_up			= create_dataref("laminar/B738/fms/track_up", "number")
 B738DR_baro_in_hpa		= create_dataref("laminar/B738/fms/baro_in_hpa", "number")
+B738DR_min_baro_radio	= create_dataref("laminar/B738/fms/min_baro_radio", "number")
 
 B738_legs_num			= create_dataref("laminar/B738/vnav/legs_num", "number")
 B738_legs_num_before	= create_dataref("laminar/B738/vnav/legs_num_before", "number")
@@ -10266,6 +10267,23 @@ function nd_calc_brg(req_lat, req_lon, req_lat2, req_lon2)
 	
 end
 
+function nd_calc_brg_rad(req_lat, req_lon, req_lat2, req_lon2)
+	
+	local nd_lat = math.rad(req_lat)
+	local nd_lon = math.rad(req_lon)
+	
+	local nd_lat2 = math.rad(req_lat2)
+	local nd_lon2 = math.rad(req_lon2)
+	
+	local nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+	local nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+	local nd_hdg = math.atan2(nd_y, nd_x)
+	-- nd_hdg = math.deg(nd_hdg)
+	-- nd_hdg = (nd_hdg + 360) % 360
+	
+	return nd_hdg
+	
+end
 
 function find_sid_app_idx()
 
@@ -11976,8 +11994,12 @@ function B738_calc_rte()
 						or legs_data[calc_rte_act][19] == 2 or legs_data[calc_rte_act][19] == 4 then
 							legs_data[calc_rte_act][7] = des_runway_lat
 							legs_data[calc_rte_act][8] = des_runway_lon
-							legs_data[calc_rte_act][2] = nd_calc_brg(legs_data[calc_rte_act-1][7], legs_data[calc_rte_act-1][8], legs_data[calc_rte_act][7], legs_data[calc_rte_act][8])
-							legs_data[calc_rte_act][2] = math.rad(legs_data[calc_rte_act][2])
+							
+							-- legs_data[calc_rte_act][2] = nd_calc_brg(legs_data[calc_rte_act-1][7], legs_data[calc_rte_act-1][8], legs_data[calc_rte_act][7], legs_data[calc_rte_act][8])
+							-- legs_data[calc_rte_act][2] = math.rad(legs_data[calc_rte_act][2])
+							
+							legs_data[calc_rte_act][2] = nd_calc_brg_rad(legs_data[calc_rte_act-1][7], legs_data[calc_rte_act-1][8], legs_data[calc_rte_act][7], legs_data[calc_rte_act][8])
+							
 							legs_data[calc_rte_act][18] = legs_data[calc_rte_act][2] - mag_variation_rad(math.rad(legs_data[calc_rte_act][7]), math.rad(legs_data[calc_rte_act][8]))
 							legs_data[calc_rte_act][3] = nd_calc_dist2(legs_data[calc_rte_act-1][7], legs_data[calc_rte_act-1][8], legs_data[calc_rte_act][7], legs_data[calc_rte_act][8])
 						else
@@ -12000,7 +12022,8 @@ function B738_calc_rte()
 			elseif legs_data[calc_rte_act][31] == "HM" or legs_data[calc_rte_act][31] == "HA" or legs_data[calc_rte_act][31] == "HF" then
 				legs_data[calc_rte_act][2] = legs_data[calc_rte_act][18] + mag_variation_rad(math.rad(legs_data[calc_rte_act][7]), math.rad(legs_data[calc_rte_act][8]))
 			elseif string.sub(legs_data[calc_rte_act][1], 1, 2) ~= "RW" or calc_rte_act ~= 2 then
-				legs_data[calc_rte_act][2] = math.rad(nd_calc_brg(legs_data[calc_rte_act-1][7], legs_data[calc_rte_act-1][8], legs_data[calc_rte_act][7], legs_data[calc_rte_act][8]))
+				-- legs_data[calc_rte_act][2] = math.rad(nd_calc_brg(legs_data[calc_rte_act-1][7], legs_data[calc_rte_act-1][8], legs_data[calc_rte_act][7], legs_data[calc_rte_act][8]))
+				legs_data[calc_rte_act][2] = nd_calc_brg_rad(legs_data[calc_rte_act-1][7], legs_data[calc_rte_act-1][8], legs_data[calc_rte_act][7], legs_data[calc_rte_act][8])
 				if legs_data[calc_rte_act][31] == "TF" or legs_data[calc_rte_act][31] == "IF" then
 					delta_crs = (nd_calc_brg(legs_data[calc_rte_act][7], legs_data[calc_rte_act][8], legs_data[calc_rte_act-1][7], legs_data[calc_rte_act-1][8]) + 180) % 360
 					delta_crs = (delta_crs - math.deg(legs_data[calc_rte_act][2]) + 360) % 360
@@ -12113,8 +12136,9 @@ function B738_calc_rte2()
 							or legs_data2[calc_rte_act2][19] == 2 or legs_data2[calc_rte_act2][19] == 4 then
 								legs_data2[calc_rte_act2][7] = des_runway_lat
 								legs_data2[calc_rte_act2][8] = des_runway_lon
-								legs_data2[calc_rte_act2][2] = nd_calc_brg(legs_data2[calc_rte_act2-1][7], legs_data2[calc_rte_act2-1][8], legs_data2[calc_rte_act2][7], legs_data2[calc_rte_act2][8])
-								legs_data2[calc_rte_act2][2] = math.rad(legs_data2[calc_rte_act2][2])
+								-- legs_data2[calc_rte_act2][2] = nd_calc_brg(legs_data2[calc_rte_act2-1][7], legs_data2[calc_rte_act2-1][8], legs_data2[calc_rte_act2][7], legs_data2[calc_rte_act2][8])
+								-- legs_data2[calc_rte_act2][2] = math.rad(legs_data2[calc_rte_act2][2])
+								legs_data2[calc_rte_act2][2] = nd_calc_brg_rad(legs_data2[calc_rte_act2-1][7], legs_data2[calc_rte_act2-1][8], legs_data2[calc_rte_act2][7], legs_data2[calc_rte_act2][8])
 								legs_data2[calc_rte_act2][18] = legs_data2[calc_rte_act2][2] - mag_variation_rad(math.rad(legs_data2[calc_rte_act2][7]), math.rad(legs_data2[calc_rte_act2][8]))
 								legs_data2[calc_rte_act2][3] = nd_calc_dist2(legs_data2[calc_rte_act2-1][7], legs_data2[calc_rte_act2-1][8], legs_data2[calc_rte_act2][7], legs_data2[calc_rte_act2][8])
 							else
@@ -12135,8 +12159,8 @@ function B738_calc_rte2()
 				elseif legs_data2[calc_rte_act2][31] == "HM" or legs_data2[calc_rte_act2][31] == "HA" or legs_data2[calc_rte_act2][31] == "HF" then
 					legs_data2[calc_rte_act2][2] = legs_data2[calc_rte_act2][18] + mag_variation_rad(math.rad(legs_data2[calc_rte_act2][7]), math.rad(legs_data2[calc_rte_act2][8]))
 				elseif string.sub(legs_data2[calc_rte_act2][1], 1, 2) ~= "RW" or calc_rte_act2 ~= 2 then
-				--else
-					legs_data2[calc_rte_act2][2] = math.rad(nd_calc_brg(legs_data2[calc_rte_act2-1][7], legs_data2[calc_rte_act2-1][8], legs_data2[calc_rte_act2][7], legs_data2[calc_rte_act2][8]))
+					-- legs_data2[calc_rte_act2][2] = math.rad(nd_calc_brg(legs_data2[calc_rte_act2-1][7], legs_data2[calc_rte_act2-1][8], legs_data2[calc_rte_act2][7], legs_data2[calc_rte_act2][8]))
+					legs_data2[calc_rte_act2][2] = nd_calc_brg_rad(legs_data2[calc_rte_act2-1][7], legs_data2[calc_rte_act2-1][8], legs_data2[calc_rte_act2][7], legs_data2[calc_rte_act2][8])
 					if legs_data2[calc_rte_act2][31] == "TF" or legs_data2[calc_rte_act2][31] == "IF" then
 						delta_crs = (nd_calc_brg(legs_data2[calc_rte_act2][7], legs_data2[calc_rte_act2][8], legs_data2[calc_rte_act2-1][7], legs_data2[calc_rte_act2-1][8]) + 180) % 360
 						delta_crs = (delta_crs - math.deg(legs_data2[calc_rte_act2][2]) + 360) % 360
@@ -18423,6 +18447,7 @@ function B738_default_others_config()
 	units = 0
 	B738DR_track_up = 1
 	B738DR_baro_in_hpa = 0
+	B738DR_min_baro_radio = 0
 	B738DR_kill_effect = 0
 	
 	simDR_pitch_nz = 0
@@ -18989,6 +19014,18 @@ function B738_load_config()
 								B738DR_baro_in_hpa = 1
 							else
 								B738DR_baro_in_hpa = 0
+							end
+						end
+					end
+				elseif string.sub(fms_line, 1, 16) == "MIN BARO RADIO =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							if temp_fmod == 1 then
+								B738DR_min_baro_radio = 1
+							else
+								B738DR_min_baro_radio = 0
 							end
 						end
 					end
@@ -19665,6 +19702,8 @@ function B738_save_config()
 		fms_line = "TRACK UP       = " .. string.format("%2d", B738DR_track_up) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "BARO IN HPA    = " .. string.format("%2d", B738DR_baro_in_hpa) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "MIN BARO RADIO = " .. string.format("%2d", B738DR_min_baro_radio) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "WINDSH.EFFECTS = " .. string.format("%2d", B738DR_kill_effect) .. "\n"
 		file_navdata:write(fms_line)
@@ -25598,12 +25637,10 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 				B738DR_fuelgauge = 0
 			end
 		elseif page_xtras_others == 3 then
-			if B738DR_kill_effect == 0 then
-				B738DR_kill_effect = 1
-			elseif B738DR_kill_effect == 1 then
-				B738DR_kill_effect = 2
+			if B738DR_min_baro_radio == 0 then
+				B738DR_min_baro_radio = 1
 			else
-				B738DR_kill_effect = 0
+				B738DR_min_baro_radio = 0
 			end
 		elseif page_arr == 1 then
 			if des_star2 == "------" then
@@ -26591,6 +26628,14 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 				B738DR_nosewheel = 3
 			else
 				B738DR_nosewheel = 0
+			end
+		elseif page_xtras_others == 3 then
+			if B738DR_kill_effect == 0 then
+				B738DR_kill_effect = 1
+			elseif B738DR_kill_effect == 1 then
+				B738DR_kill_effect = 2
+			else
+				B738DR_kill_effect = 0
 			end
 		elseif page_arr == 1 then
 			if des_star2 == "------" then
@@ -36807,19 +36852,29 @@ function B738_fmc_xtras_others()
 			line3_g = "    HPA                 "
 			line3_s = " IN                     "
 		end
-		line4_x = " WINDSHIELD EFFECTS     "
-		if B738DR_kill_effect == 0 then
-			line4_l = "<  /  /                 "
-			line4_g = " ON                     "
-			line4_s = "    XE OFF              "
-		elseif B738DR_kill_effect == 1 then
-			line4_l = "<  /  /                 "
-			line4_g = "    XE                  "
-			line4_s = " ON    OFF              "
+		line4_x = " MINIMUMS BARO/RADIO    "
+		if B738DR_min_baro_radio == 0 then
+			line4_l = "<     /                 "
+			line4_g = " RADIO                  "
+			line4_s = "       BARO             "
 		else
-			line4_l = "<  /  /                 "
-			line4_g = "       OFF              "
-			line4_s = " ON XE                  "
+			line4_l = "<     /                 "
+			line4_g = "       BARO             "
+			line4_s = " RADIO                  "
+		end
+		line5_x = " WINDSHIELD EFFECTS     "
+		if B738DR_kill_effect == 0 then
+			line5_l = "<  /  /                 "
+			line5_g = " ON                     "
+			line5_s = "    XE OFF              "
+		elseif B738DR_kill_effect == 1 then
+			line5_l = "<  /  /                 "
+			line5_g = "    XE                  "
+			line5_s = " ON    OFF              "
+		else
+			line5_l = "<  /  /                 "
+			line5_g = "       OFF              "
+			line5_s = " ON XE                  "
 		end
 		line6_l = "<DEFAULT           BACK>"
 	elseif page_xtras_others == 4 then
@@ -44080,15 +44135,15 @@ function B738_fmc_progress()
 					line5_l = tmp_wpt_eta .. " /"
 					line5_l = line5_l .. string.format("%4d", dist_tc)
 					line5_l = line5_l .. "          "
-					if fuel_tc <= 0 then
-						line5_l = line5_l .. "--.-"
-					else
-						if units == 0 then
-							line5_l = line5_l .. string.format("%4.1f", (fuel_tc / 1000) * 2.204)
-						else
-							line5_l = line5_l .. string.format("%4.1f", (fuel_tc / 1000))
-						end
-					end
+					-- if fuel_tc <= 0 then
+						-- line5_l = line5_l .. "--.-"
+					-- else
+						-- if units == 0 then
+							-- line5_l = line5_l .. string.format("%4.1f", (fuel_tc / 1000) * 2.204)
+						-- else
+							-- line5_l = line5_l .. string.format("%4.1f", (fuel_tc / 1000))
+						-- end
+					-- end
 					--line5_l = "1355 / 32           --.-"
 					line5_s = "    Z     NM            "
 				elseif B738DR_flight_phase < 5 then
@@ -44100,21 +44155,16 @@ function B738_fmc_progress()
 						line5_l = tmp_wpt_eta .. " /"
 						line5_l = line5_l .. string.format("%4d", dist_td)
 						line5_l = line5_l .. "          "
-						if fuel_td <= 0 then
-							line5_l = line5_l .. "--.-"
-						else
-							if units == 0 then
-								line5_l = line5_l .. string.format("%4.1f", (fuel_td / 1000) * 2.204)
-							else
-								line5_l = line5_l .. string.format("%4.1f", (fuel_td / 1000))
-							end
-						end
-						--line5_l = "1355 / 32           --.-"
+						-- if fuel_td <= 0 then
+							-- line5_l = line5_l .. "--.-"
+						-- else
+							-- if units == 0 then
+								-- line5_l = line5_l .. string.format("%4.1f", (fuel_td / 1000) * 2.204)
+							-- else
+								-- line5_l = line5_l .. string.format("%4.1f", (fuel_td / 1000))
+							-- end
+						-- end
 						line5_s = "    Z     NM            "
-					-- else
-						-- line5_x = ""
-						-- line5_l = ""
-						-- line5_s = ""
 					end
 				else
 					if offset <= ed_found then
@@ -44125,27 +44175,18 @@ function B738_fmc_progress()
 						line5_l = tmp_wpt_eta .. " /"
 						line5_l = line5_l .. string.format("%4d", dist_ed)
 						line5_l = line5_l .. "          "
-						if fuel_ed <= 0 then
-							line5_l = line5_l .. "--.-"
-						else
-							if units == 0 then
-								line5_l = line5_l .. string.format("%4.1f", (fuel_ed / 1000) * 2.204)
-							else
-								line5_l = line5_l .. string.format("%4.1f", (fuel_ed / 1000))
-							end
-						end
-						--line5_l = "1355 / 32           --.-"
+						-- if fuel_ed <= 0 then
+							-- line5_l = line5_l .. "--.-"
+						-- else
+							-- if units == 0 then
+								-- line5_l = line5_l .. string.format("%4.1f", (fuel_ed / 1000) * 2.204)
+							-- else
+								-- line5_l = line5_l .. string.format("%4.1f", (fuel_ed / 1000))
+							-- end
+						-- end
 						line5_s = "    Z     NM            "
-					-- else
-						-- line5_x = ""
-						-- line5_l = ""
-						-- line5_s = ""
 					end
 				end
-			-- else
-				-- line5_x = ""
-				-- line5_l = ""
-				-- line5_s = ""
 			end
 			
 		else
@@ -44164,6 +44205,13 @@ function B738_fmc_progress()
 			-- line5_l = ""
 			-- line5_s = ""
 		end
+		
+		-- FUEL QTY
+		if line5_l == "" then
+			line5_l = "                    "
+			line5_x = "                FUEL QTY"
+		end
+		line5_l = line5_l .. fuel_weight
 		
 		-- WIND
 		if simDR_wind_spd > 0.5 then
@@ -46863,8 +46911,8 @@ end
 
 function B738_displ_acf()
 	
-	local nd_lat_acf = math.rad(ndx_lat)
-	local nd_lon_acf = math.rad(ndx_lon)
+	local nd_lat_acf = ndx_lat
+	local nd_lon_acf = ndx_lon
 	local nd_lat = 0
 	local nd_lon = 0
 	local mag_hdg = 0
@@ -46893,30 +46941,45 @@ function B738_displ_acf()
 		
 		-- CAPTAIN
 		if B738DR_capt_map_mode == 3 then
+			-- if legs_step == 0 then
+				-- nd_lat = math.rad(legs_data2[1][7])
+				-- nd_lon = math.rad(legs_data2[1][8])
+			-- else
+				-- nd_lat = math.rad(legs_data2[legs_step][7])
+				-- nd_lon = math.rad(legs_data2[legs_step][8])
+			-- end
 			if legs_step == 0 then
-				nd_lat = math.rad(legs_data2[1][7])
-				nd_lon = math.rad(legs_data2[1][8])
+				nd_lat = legs_data2[1][7]
+				nd_lon = legs_data2[1][8]
 			else
-				nd_lat = math.rad(legs_data2[legs_step][7])
-				nd_lon = math.rad(legs_data2[legs_step][8])
+				nd_lat = legs_data2[legs_step][7]
+				nd_lon = legs_data2[legs_step][8]
 			end
 			mag_hdg = -simDR_mag_variation
 		
-			nd_lat2 = nd_lat_acf
-			nd_lon2 = nd_lon_acf
+			-- nd_lat2 = nd_lat_acf
+			-- nd_lon2 = nd_lon_acf
 			
-			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+			-- nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+			
+			-- if nd_dis < 645 then
+				
+				-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+				-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+				-- nd_hdg = math.atan2(nd_y, nd_x)
+				-- nd_hdg = math.deg(nd_hdg)
+				-- nd_hdg = (nd_hdg + 360) % 360
+				
+				-- delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
+				
+			
+			nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat_acf, nd_lon_acf)
 			
 			if nd_dis < 645 then
 				
-				nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-				nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-				nd_hdg = math.atan2(nd_y, nd_x)
-				nd_hdg = math.deg(nd_hdg)
-				nd_hdg = (nd_hdg + 360) % 360
-				
-				delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
-				
+				nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat_acf, nd_lon_acf)
+				delta_hdg = calc_rel_brg(nd_hdg, mag_hdg)
+					
 				if delta_hdg >= 0 and delta_hdg <= 90 then
 					-- right
 					delta_hdg = 90 - delta_hdg
@@ -46985,31 +47048,46 @@ function B738_displ_acf()
 		-- FIRST OFFICER
 		if B738DR_fo_map_mode == 3 then
 			
+			-- if legs_step2 == 0 then
+				-- nd_lat = math.rad(legs_data2[1][7])
+				-- nd_lon = math.rad(legs_data2[1][8])
+			-- else
+				-- nd_lat = math.rad(legs_data2[legs_step2][7])
+				-- nd_lon = math.rad(legs_data2[legs_step2][8])
+			-- end
 			if legs_step2 == 0 then
-				nd_lat = math.rad(legs_data2[1][7])
-				nd_lon = math.rad(legs_data2[1][8])
+				nd_lat = legs_data2[1][7]
+				nd_lon = legs_data2[1][8]
 			else
-				nd_lat = math.rad(legs_data2[legs_step2][7])
-				nd_lon = math.rad(legs_data2[legs_step2][8])
+				nd_lat = legs_data2[legs_step2][7]
+				nd_lon = legs_data2[legs_step2][8]
 			end
 			
 			mag_hdg = -simDR_mag_variation
 		
-			nd_lat2 = nd_lat_acf
-			nd_lon2 = nd_lon_acf
+			-- nd_lat2 = nd_lat_acf
+			-- nd_lon2 = nd_lon_acf
 			
-			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+			-- nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+			
+			-- if nd_dis < 645 then
+				
+				-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+				-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+				-- nd_hdg = math.atan2(nd_y, nd_x)
+				-- nd_hdg = math.deg(nd_hdg)
+				-- nd_hdg = (nd_hdg + 360) % 360
+				
+				-- delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
+				
+			
+			nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat_acf, nd_lon_acf)
 			
 			if nd_dis < 645 then
 				
-				nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-				nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-				nd_hdg = math.atan2(nd_y, nd_x)
-				nd_hdg = math.deg(nd_hdg)
-				nd_hdg = (nd_hdg + 360) % 360
-				
-				delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
-				
+				nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat_acf, nd_lon_acf)
+				delta_hdg = calc_rel_brg(nd_hdg, mag_hdg)
+					
 				if delta_hdg >= 0 and delta_hdg <= 90 then
 					-- right
 					delta_hdg = 90 - delta_hdg
@@ -47081,13 +47159,20 @@ function B738_displ_acf()
 	
 end
 
+
+function calc_rel_brg(x_brg1, x_brg2)
+	
+	return ((x_brg1 - x_brg2) + 720) % 360
+	
+end
+
 function B738_displ_wpt()
 
 
-	-- local nd_lat = math.rad(simDR_latitude) 
-	-- local nd_lon = math.rad(simDR_longitude) 
-	local nd_lat = math.rad(ndx_lat)
-	local nd_lon = math.rad(ndx_lon)
+	-- local nd_lat = math.rad(ndx_lat)
+	-- local nd_lon = math.rad(ndx_lon)
+	local nd_lat = ndx_lat
+	local nd_lon = ndx_lon
 	local mag_hdg = 0
 	local nd_lat2 = 0
 	local nd_lon2 = 0
@@ -47096,6 +47181,7 @@ function B738_displ_wpt()
 	local nd_y = 0
 	local nd_hdg = 0
 	local delta_hdg = 0
+	local delta_hdg_calc = 0
 	local nd_on_off = 0
 	local nd_zoom = 0
 	local nd_corr = 0
@@ -47139,6 +47225,8 @@ function B738_displ_wpt()
 	local hold_obj = 0
 	local hold_obj_fo = 0
 	
+	local prev_obj_draw = 0
+	
 	B738DR_rte_show_act = 0
 	B738DR_rte_fo_show_act = 0
 	
@@ -47166,20 +47254,21 @@ function B738_displ_wpt()
 		
 		-- CAPTAIN
 		if B738DR_capt_map_mode == 3 then
-			if legs_step == 0 then
-				nd_lat = math.rad(legs_data2[1][7])
-				nd_lon = math.rad(legs_data2[1][8])
-			else
-				nd_lat = math.rad(legs_data2[legs_step][7])
-				nd_lon = math.rad(legs_data2[legs_step][8])
-			end
 			-- if legs_step == 0 then
-				-- nd_lat = math.rad(legs_data[1][7])
-				-- nd_lon = math.rad(legs_data[1][8])
+				-- nd_lat = math.rad(legs_data2[1][7])
+				-- nd_lon = math.rad(legs_data2[1][8])
 			-- else
-				-- nd_lat = math.rad(legs_data[legs_step][7])
-				-- nd_lon = math.rad(legs_data[legs_step][8])
+				-- nd_lat = math.rad(legs_data2[legs_step][7])
+				-- nd_lon = math.rad(legs_data2[legs_step][8])
 			-- end
+			if legs_step == 0 then
+				nd_lat = legs_data2[1][7]
+				nd_lon = legs_data2[1][8]
+			else
+				nd_lat = legs_data2[legs_step][7]
+				nd_lon = legs_data2[legs_step][8]
+			end
+			
 			mag_hdg = -simDR_mag_variation
 			if offset == 1 then
 				wpt_from = 1
@@ -47220,27 +47309,40 @@ function B738_displ_wpt()
 		if nav_disable == 0 then
 			for n = wpt_from, wpt_to do
 			
-			if legs_data[n][1] ~= "DISCONTINUITY" then --and legs_data[n][1] ~= "VECTOR" then
+			-- if legs_data[n][1] ~= "DISCONTINUITY" then --and legs_data[n][1] ~= "VECTOR" then
 				
-				if last_lat == 0 and last_lon == 0 then
-					nd_lat2 = math.rad(legs_data[n][7])
-					nd_lon2 = math.rad(legs_data[n][8])
-				else
-					nd_lat2 = math.rad(legs_data[n][7])
-					nd_lon2 = math.rad(legs_data[n][8])
-				end
+				-- if last_lat == 0 and last_lon == 0 then
+					-- nd_lat2 = math.rad(legs_data[n][7])
+					-- nd_lon2 = math.rad(legs_data[n][8])
+				-- else
+					-- nd_lat2 = math.rad(legs_data[n][7])
+					-- nd_lon2 = math.rad(legs_data[n][8])
+				-- end
 				
-				nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+				-- nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+				
+				-- if nd_dis < 645 then
+					
+					-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+					-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+					-- nd_hdg = math.atan2(nd_y, nd_x)
+					-- nd_hdg = math.deg(nd_hdg)
+					-- nd_hdg = (nd_hdg + 360) % 360
+					
+					-- delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
+					
+			if legs_data[n][1] ~= "DISCONTINUITY" then
+				
+				nd_lat2 = legs_data[n][7]
+				nd_lon2 = legs_data[n][8]
+				
+				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
 				if nd_dis < 645 then
 					
-					nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-					nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-					nd_hdg = math.atan2(nd_y, nd_x)
-					nd_hdg = math.deg(nd_hdg)
-					nd_hdg = (nd_hdg + 360) % 360
-					
-					delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
+					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					delta_hdg = calc_rel_brg(nd_hdg, mag_hdg)
+					delta_hdg_calc = delta_hdg
 					
 					if delta_hdg >= 0 and delta_hdg <= 90 then
 						-- right
@@ -47297,16 +47399,6 @@ function B738_displ_wpt()
 					
 					nd_x = nd_x * nd_zoom		-- zoom
 					nd_y = nd_y * nd_zoom		-- zoom
-					if B738DR_capt_map_mode == 3 then
-						nd_y = nd_y + 4.1	-- adjust center
-					elseif B738DR_capt_map_mode == 0 and B738DR_capt_exp_map_mode == 0 then
-						nd_y = nd_y + 4.1	-- adjust center
-					else
-						if B738DR_capt_map_mode == 3 then
-							nd_y = nd_y + 4.1	-- adjust
-						end
-					end
-					
 					-- if nd_x < -8.0 or nd_x > 8.0 then
 						-- nd_on_off = 0
 					-- end
@@ -47339,6 +47431,16 @@ function B738_displ_wpt()
 						end
 					end
 					
+					if B738DR_capt_map_mode == 3 then
+						nd_y = nd_y + 4.1	-- adjust center
+					elseif B738DR_capt_map_mode == 0 and B738DR_capt_exp_map_mode == 0 then
+						nd_y = nd_y + 4.1	-- adjust center
+					else
+						if B738DR_capt_map_mode == 3 then
+							nd_y = nd_y + 4.1	-- adjust
+						end
+					end
+					
 					if nd_on_off == 1 then
 						-- WAYPOINTS and ROUTE
 						if obj < max_obj then	-- max number displayed objects
@@ -47362,7 +47464,7 @@ function B738_displ_wpt()
 										B738DR_rte_x[obj] = nd_x
 										B738DR_rte_y[obj] = nd_y
 										if B738DR_missed_app_act == 0 and (n+1) >= first_miss_app_idx and (n+1) <= last_miss_app_idx then
-											B738DR_rte_edit[obj] = 2
+											B738DR_rte_edit[obj] = 2	-- blue
 										else
 											B738DR_rte_edit[obj] = 0
 										end
@@ -47445,15 +47547,24 @@ function B738_displ_wpt()
 											rte_act_enable = 1
 										end
 									else
-										if n <= legs_step and obj == 0 and n > 1 then
-											rte_act_enable = 1
-											B738DR_rte_show_act = 1
-											B738DR_rte_x_act = nd_x
-											B738DR_rte_y_act = nd_y
-											B738DR_rte_rot_act = (math.deg(legs_data[n][2]) - mag_hdg + 180) % 360
-											rte_dist = legs_data[n][3] * nd_zoom
-											rte_dist = math.min(rte_dist, 15)
-											B738DR_rte_dist_act = rte_dist
+										if n > 1 and prev_obj_draw == 0 then
+											if n == legs_step then
+												rte_act_enable = 1
+												B738DR_rte_show_act = 1
+												B738DR_rte_x_act = nd_x
+												B738DR_rte_y_act = nd_y
+												B738DR_rte_rot_act = (math.deg(legs_data[n][2]) - mag_hdg + 180) % 360
+												B738DR_rte_dist_act = 15
+											elseif n < legs_step and n >= offset then
+												rte_act_enable = 1
+												B738DR_rte_show_act = 1
+												B738DR_rte_x_act = nd_x
+												B738DR_rte_y_act = nd_y
+												B738DR_rte_rot_act = (math.deg(legs_data[n][2]) - mag_hdg + 180) % 360
+												rte_dist = legs_data[n][3] * nd_zoom
+												rte_dist = math.min(rte_dist, 15)
+												B738DR_rte_dist_act = rte_dist
+											end
 										end
 									end
 									if n == offset then
@@ -47802,56 +47913,130 @@ function B738_displ_wpt()
 							obj = obj + 1
 						end
 					else
-						--rte_act_enable = 1
+						-- draw actual path if wpt_offset is offscale
 						if obj == 0 and n == offset and rte_plan_mode == 0 and legs_num > 1 then
-							if nd_x < 0 then
-								if nd_y == 0 then
-									nd_y0 = 0
-									nd_x0 = -10
-								elseif nd_y > 0 then
-									nd_x = -nd_x
-									nd_x0 = (nd_x / nd_y) * 10
-									nd_x0 = -nd_x0
-									nd_y0 = 11
-								else
-									nd_x = -nd_x
-									nd_y = -nd_y
-									nd_x0 = (nd_x / nd_y) * 10
-									nd_x0 = -nd_x0
-									nd_y0 = -11
-								end
+							
+							if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+								nd_zoom = 2
+								nd_dis = 6
+							elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+								nd_zoom = 1
+								nd_dis = 11
+							elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+								nd_zoom = 0.5
+								nd_dis = 21
+							elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+								nd_zoom = 0.25
+								nd_dis = 41
+							elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+								nd_zoom = 0.125
+								nd_dis = 82
+							elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
+								nd_zoom = 0.0625
+								nd_dis = 162
+							elseif B738DR_efis_map_range_capt == 6 then	-- 320 NM
+								nd_zoom = 0.03125
+								nd_dis = 322
+							else	-- 640 NM
+								nd_zoom = 0.015625
+							end
+							
+							delta_hdg = delta_hdg_calc
+							if delta_hdg >= 0 and delta_hdg <= 90 then
+								-- right
+								delta_hdg = 90 - delta_hdg
+								delta_hdg = math.rad(delta_hdg)
+								nd_y = nd_dis * math.sin(delta_hdg)
+								nd_x = nd_dis * math.cos(delta_hdg)
+							elseif delta_hdg < 0 and delta_hdg >= -90 then
+								-- left
+								delta_hdg = 90 + delta_hdg
+								delta_hdg = math.rad(delta_hdg)
+								nd_y = nd_dis * math.sin(delta_hdg)
+								nd_x = -nd_dis * math.cos(delta_hdg)
+							elseif delta_hdg >= 90 then
+								delta_hdg = delta_hdg - 90
+								delta_hdg = math.rad(delta_hdg)
+								nd_y = -nd_dis * math.sin(delta_hdg)
+								nd_x = nd_dis * math.cos(delta_hdg)
+							elseif delta_hdg <= -90 then
+								delta_hdg = -90 - delta_hdg
+								delta_hdg = math.rad(delta_hdg)
+								nd_y = -nd_dis * math.sin(delta_hdg)
+								nd_x = -nd_dis * math.cos(delta_hdg)
+							end
+							
+							nd_x = nd_x * nd_zoom		-- zoom
+							nd_y = nd_y * nd_zoom		-- zoom
+							if B738DR_capt_map_mode == 3 then
+								nd_y = nd_y + 4.1	-- adjust center
+							elseif B738DR_capt_map_mode == 0 and B738DR_capt_exp_map_mode == 0 then
+								nd_y = nd_y + 4.1	-- adjust center
 							else
-								if nd_y == 0 then
-									nd_y0 = 0
-									nd_x0 = 11
-								elseif nd_y > 0 then
-									nd_x0 = (nd_x / nd_y) * 10
-									nd_y0 = 11
-								else
-									nd_y = -nd_y
-									nd_x0 = (nd_x / nd_y) * 10
-									nd_y0 = -11
+								if B738DR_capt_map_mode == 3 then
+									nd_y = nd_y + 4.1	-- adjust
 								end
 							end
+							
 							rte_act_enable = 1
 							B738DR_rte_show_act = 1
-							B738DR_rte_x_act = nd_x0
-							B738DR_rte_y_act = nd_y0
+							B738DR_rte_x_act = nd_x
+							B738DR_rte_y_act = nd_y
+						
+						-- if obj == 0 and n == offset and rte_plan_mode == 0 and legs_num > 1 then
+							-- if nd_x < 0 then
+								-- if nd_y == 0 then
+									-- nd_y0 = 0
+									-- nd_x0 = -10
+								-- elseif nd_y > 0 then
+									-- nd_x = -nd_x
+									-- nd_x0 = (nd_x / nd_y) * 10
+									-- nd_x0 = -nd_x0
+									-- nd_y0 = 11
+								-- else
+									-- nd_x = -nd_x
+									-- nd_y = -nd_y
+									-- nd_x0 = (nd_x / nd_y) * 10
+									-- nd_x0 = -nd_x0
+									-- nd_y0 = -11
+								-- end
+							-- else
+								-- if nd_y == 0 then
+									-- nd_y0 = 0
+									-- nd_x0 = 11
+								-- elseif nd_y > 0 then
+									-- nd_x0 = (nd_x / nd_y) * 10
+									-- nd_y0 = 11
+								-- else
+									-- nd_y = -nd_y
+									-- nd_x0 = (nd_x / nd_y) * 10
+									-- nd_y0 = -11
+								-- end
+							-- end
+							
+							-- rte_act_enable = 1
+							-- B738DR_rte_show_act = 1
+							-- B738DR_rte_x_act = nd_x0
+							-- B738DR_rte_y_act = nd_y0
+							
 							if legs_intdir_act == 0 then
 								B738DR_rte_rot_act = (math.deg(legs_data[n][2]) - mag_hdg + 180) % 360
 							else
 								B738DR_rte_rot_act = (simDR_fmc_trk - mag_hdg + 180) % 360
 							end
-							if n == offset then
-								rte_dist = 15
-							else
-								rte_dist = legs_data[n][3] * nd_zoom
-								rte_dist = math.min(rte_dist, 15)
-							end
-							B738DR_rte_dist_act = rte_dist
+							B738DR_rte_dist_act = 15
+							
+							-- if n == offset then
+								-- rte_dist = 15
+							-- else
+								-- rte_dist = legs_data[n][3] * nd_zoom
+								-- rte_dist = math.min(rte_dist, 15)
+							-- end
+							-- B738DR_rte_dist_act = rte_dist
 							
 						end
 					end
+					prev_obj_draw = nd_on_off
 				end
 			
 			end
@@ -47875,27 +48060,39 @@ function B738_displ_wpt()
 			
 			for n = wpt_from, wpt_to do
 			
-			if legs_data2[n][1] ~= "DISCONTINUITY" then --and calc_rte_enable2 == 0 then --and legs_data[n][1] ~= "VECTOR" then
+			-- if legs_data2[n][1] ~= "DISCONTINUITY" then --and calc_rte_enable2 == 0 then --and legs_data[n][1] ~= "VECTOR" then
 				
-				if last_lat == 0 and last_lon == 0 then
-					nd_lat2 = math.rad(legs_data2[n][7])
-					nd_lon2 = math.rad(legs_data2[n][8])
-				else
-					nd_lat2 = math.rad(legs_data2[n][7])
-					nd_lon2 = math.rad(legs_data2[n][8])
-				end
+				-- if last_lat == 0 and last_lon == 0 then
+					-- nd_lat2 = math.rad(legs_data2[n][7])
+					-- nd_lon2 = math.rad(legs_data2[n][8])
+				-- else
+					-- nd_lat2 = math.rad(legs_data2[n][7])
+					-- nd_lon2 = math.rad(legs_data2[n][8])
+				-- end
 				
-				nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+				-- nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+				
+				-- if nd_dis < 645 then
+					
+					-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+					-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+					-- nd_hdg = math.atan2(nd_y, nd_x)
+					-- nd_hdg = math.deg(nd_hdg)
+					-- nd_hdg = (nd_hdg + 360) % 360
+					
+					-- delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
+					
+			if legs_data2[n][1] ~= "DISCONTINUITY" then
+				
+				nd_lat2 = legs_data2[n][7]
+				nd_lon2 = legs_data2[n][8]
+				
+				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
 				if nd_dis < 645 then
 					
-					nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-					nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-					nd_hdg = math.atan2(nd_y, nd_x)
-					nd_hdg = math.deg(nd_hdg)
-					nd_hdg = (nd_hdg + 360) % 360
-					
-					delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
+					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					delta_hdg = calc_rel_brg(nd_hdg, mag_hdg)
 					
 					if delta_hdg >= 0 and delta_hdg <= 90 then
 						-- right
@@ -47952,6 +48149,51 @@ function B738_displ_wpt()
 					
 					nd_x = nd_x * nd_zoom		-- zoom
 					nd_y = nd_y * nd_zoom		-- zoom
+					
+					-- if B738DR_capt_map_mode == 3 then
+						-- nd_y = nd_y + 4.1	-- adjust center
+					-- elseif B738DR_capt_map_mode == 0 and B738DR_capt_exp_map_mode == 0 then
+						-- nd_y = nd_y + 4.1	-- adjust center
+					-- else
+						-- if B738DR_capt_map_mode == 3 then
+							-- nd_y = nd_y + 4.1	-- adjust
+						-- end
+					-- end
+					
+					-- if nd_x < -8.0 or nd_x > 8.0 then
+						-- nd_on_off = 0
+					-- end
+					-- if nd_y > 11.0 or nd_y < -2 then
+						-- nd_on_off = 0
+					-- end
+					
+					
+					if n < legs_num2 then
+						if B738DR_efis_map_range_capt == 0 and
+							(legs_data2[n+1][31] == "HA" or legs_data2[n+1][31] == "HF" or legs_data2[n+1][31] == "HM") then
+							if nd_x < -22.0 or nd_x > 22.0 then
+								nd_on_off = 0
+							end
+							if nd_y > 22.0 or nd_y < -22.0 then
+								nd_on_off = 0
+							end
+						else
+							if nd_x < -15.0 or nd_x > 15.0 then
+								nd_on_off = 0
+							end
+							if nd_y > 15.0 or nd_y < -15.0 then
+								nd_on_off = 0
+							end
+						end
+					else
+						if nd_x < -15.0 or nd_x > 15.0 then
+							nd_on_off = 0
+						end
+						if nd_y > 15.0 or nd_y < -15.0 then
+							nd_on_off = 0
+						end
+					end
+					
 					if B738DR_capt_map_mode == 3 then
 						nd_y = nd_y + 4.1	-- adjust center
 					elseif B738DR_capt_map_mode == 0 and B738DR_capt_exp_map_mode == 0 then
@@ -47962,24 +48204,10 @@ function B738_displ_wpt()
 						end
 					end
 					
-					if nd_x < -8.0 or nd_x > 8.0 then
-						nd_on_off = 0
-					end
-					if nd_y > 11.0 or nd_y < -2 then
-						nd_on_off = 0
-					end
+					
+					
 					
 					if n > 0 then
-						-- if n ~= legs_intdir_idx or legs_intdir ~= 1 then
-							-- if legs_data2[n][17] < 100 then
-								-- nd_on_off = 0
-							-- end
-						-- else
-							-- B738DR_rte_edit_show_act = 0
-						-- end
-						-- if n == legs_intdir_idx and legs_intdir == 1 then
-							-- -- ignore check [17]
-						-- else
 						if legs_num > 1 then
 							if n ~= legs_intdir_idx or legs_intdir ~= 1 then
 								if legs_data2[n][17] < 100 then
@@ -48144,6 +48372,7 @@ function B738_displ_wpt()
 									else
 										B738DR_rte_edit_show_act = 0
 									end
+										
 								end
 								if n == offset then
 									if hold_obj < 5 then
@@ -48575,29 +48804,29 @@ function B738_displ_wpt()
 		-- FIRST OFFICER
 		nav_disable = 0
 		nd_on_off = 0
-		-- nd_lat = math.rad(simDR_latitude) 
-		-- nd_lon = math.rad(simDR_longitude) 
-		nd_lat = math.rad(ndx_lat)
-		nd_lon = math.rad(ndx_lon)
+		prev_obj_draw = 0
+		-- nd_lat = math.rad(ndx_lat)
+		-- nd_lon = math.rad(ndx_lon)
+		nd_lat = ndx_lat
+		nd_lon = ndx_lon
 		if B738DR_fo_map_mode == 3 then
 			
-			--nav_disable = 1
-			--rte_plan_mode = 0
+			-- if legs_step2 == 0 then
+				-- nd_lat = math.rad(legs_data2[1][7])
+				-- nd_lon = math.rad(legs_data2[1][8])
+			-- else
+				-- nd_lat = math.rad(legs_data2[legs_step2][7])
+				-- nd_lon = math.rad(legs_data2[legs_step2][8])
+			-- end
+			
 			if legs_step2 == 0 then
-				nd_lat = math.rad(legs_data2[1][7])
-				nd_lon = math.rad(legs_data2[1][8])
+				nd_lat = legs_data2[1][7]
+				nd_lon = legs_data2[1][8]
 			else
-				nd_lat = math.rad(legs_data2[legs_step2][7])
-				nd_lon = math.rad(legs_data2[legs_step2][8])
+				nd_lat = legs_data2[legs_step2][7]
+				nd_lon = legs_data2[legs_step2][8]
 			end
 			
-			-- if legs_step2 == 0 then
-				-- nd_lat = math.rad(legs_data[1][7])
-				-- nd_lon = math.rad(legs_data[1][8])
-			-- else
-				-- nd_lat = math.rad(legs_data[legs_step2][7])
-				-- nd_lon = math.rad(legs_data[legs_step2][8])
-			-- end
 			mag_hdg = -simDR_mag_variation
 			if offset == 1 then
 				wpt_from = 1
@@ -48639,51 +48868,41 @@ function B738_displ_wpt()
 		if nav_disable == 0 then
 			for n = wpt_from, wpt_to do
 			
-			if legs_data[n][1] ~= "DISCONTINUITY" then --and legs_data[n][1] ~= "VECTOR" then
+			-- if legs_data[n][1] ~= "DISCONTINUITY" then --and legs_data[n][1] ~= "VECTOR" then
 				
-				if last_lat == 0 and last_lon == 0 then
-					nd_lat2 = math.rad(legs_data[n][7])
-					nd_lon2 = math.rad(legs_data[n][8])
-				else
-					-- if n == (offset - 1) and rte_plan_mode == 0 then
-						
-						-- nd_lat = last_lat
-						-- nd_lon = last_lon
-						-- nd_lat2 = math.rad(legs_data[offset][7])
-						-- nd_lon2 = math.rad(legs_data[offset][8])
-						
-						-- nd_x = (nd_lon2 - nd_lon) * math.cos((nd_lat + nd_lat2)/2)
-						-- nd_y = nd_lat2 - nd_lat
-						-- nd_dist_dir = math.sqrt(nd_x*nd_x + nd_y*nd_y) * 3440.064795	--nm
-						
-						-- nd_lat = math.rad(simDR_latitude) 
-						-- nd_lon = math.rad(simDR_longitude) 
-						-- nd_lat2 = last_lat
-						-- nd_lon2 = last_lon
-					-- else
-						nd_lat2 = math.rad(legs_data[n][7])
-						nd_lon2 = math.rad(legs_data[n][8])
-					-- end
-				end
+				-- if last_lat == 0 and last_lon == 0 then
+					-- nd_lat2 = math.rad(legs_data[n][7])
+					-- nd_lon2 = math.rad(legs_data[n][8])
+				-- else
+					-- nd_lat2 = math.rad(legs_data[n][7])
+					-- nd_lon2 = math.rad(legs_data[n][8])
+				-- end
 				
-				--nd_lat2 = math.rad(nd_lat2)
-				--nd_lon2 = math.rad(nd_lon2)
+				-- nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
 				
-				-- nd_x = (nd_lon2 - nd_lon) * math.cos((nd_lat + nd_lat2)/2)
-				-- nd_y = nd_lat2 - nd_lat
-				-- nd_dis = math.sqrt(nd_x*nd_x + nd_y*nd_y) * 3440.064795	--nm
+				-- if nd_dis < 645 then
+					
+					-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+					-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+					-- nd_hdg = math.atan2(nd_y, nd_x)
+					-- nd_hdg = math.deg(nd_hdg)
+					-- nd_hdg = (nd_hdg + 360) % 360
+					
+					-- delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
+					
+			if legs_data[n][1] ~= "DISCONTINUITY" then
 				
-				nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+				nd_lat2 = legs_data[n][7]
+				nd_lon2 = legs_data[n][8]
+				
+				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
 				if nd_dis < 645 then
 					
-					nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-					nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-					nd_hdg = math.atan2(nd_y, nd_x)
-					nd_hdg = math.deg(nd_hdg)
-					nd_hdg = (nd_hdg + 360) % 360
+					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					delta_hdg = calc_rel_brg(nd_hdg, mag_hdg)
 					
-					delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
+					delta_hdg_calc = delta_hdg
 					
 					if delta_hdg >= 0 and delta_hdg <= 90 then
 						-- right
@@ -48740,15 +48959,6 @@ function B738_displ_wpt()
 					
 					nd_x = nd_x * nd_zoom		-- zoom
 					nd_y = nd_y * nd_zoom		-- zoom
-					if B738DR_fo_map_mode == 3 then
-						nd_y = nd_y + 4.1	-- adjust center
-					elseif B738DR_fo_map_mode == 0 and B738DR_fo_exp_map_mode == 0 then
-						nd_y = nd_y + 4.1	-- adjust center
-					else
-						if B738DR_fo_map_mode == 3 then
-							nd_y = nd_y + 4.1	-- adjust
-						end
-					end
 					
 					if n < legs_num then
 						if B738DR_efis_map_range_fo == 0 and
@@ -48773,6 +48983,16 @@ function B738_displ_wpt()
 						end
 						if nd_y > 15.0 or nd_y < -15.0 then
 							nd_on_off = 0
+						end
+					end
+					
+					if B738DR_fo_map_mode == 3 then
+						nd_y = nd_y + 4.1	-- adjust center
+					elseif B738DR_fo_map_mode == 0 and B738DR_fo_exp_map_mode == 0 then
+						nd_y = nd_y + 4.1	-- adjust center
+					else
+						if B738DR_fo_map_mode == 3 then
+							nd_y = nd_y + 4.1	-- adjust
 						end
 					end
 					
@@ -48885,16 +49105,37 @@ function B738_displ_wpt()
 											rte_act_enable_fo = 1
 										end
 									else
-										if n <= legs_step2 and obj2 == 0 and n > 1 then
-											rte_act_enable_fo = 1
-											B738DR_rte_fo_show_act = 1
-											B738DR_rte_fo_x_act = nd_x
-											B738DR_rte_fo_y_act = nd_y
-											B738DR_rte_fo_rot_act = (math.deg(legs_data[n][2]) - mag_hdg + 180) % 360
-											rte_dist = legs_data[n][3] * nd_zoom
-											rte_dist = math.min(rte_dist, 15)
-											B738DR_rte_fo_dist_act = rte_dist
+										-- if n <= legs_step2 and obj2 == 0 and n > 1 then
+											-- rte_act_enable_fo = 1
+											-- B738DR_rte_fo_show_act = 1
+											-- B738DR_rte_fo_x_act = nd_x
+											-- B738DR_rte_fo_y_act = nd_y
+											-- B738DR_rte_fo_rot_act = (math.deg(legs_data[n][2]) - mag_hdg + 180) % 360
+											-- rte_dist = legs_data[n][3] * nd_zoom
+											-- rte_dist = math.min(rte_dist, 15)
+											-- B738DR_rte_fo_dist_act = rte_dist
+										-- end
+										
+										if n > 1 and prev_obj_draw == 0 then
+											if n == legs_step2 then
+												rte_act_enable_fo = 1
+												B738DR_rte_fo_show_act = 1
+												B738DR_rte_fo_y_act = nd_x
+												B738DR_rte_y_act = nd_y
+												B738DR_rte_fo_rot_act = (math.deg(legs_data[n][2]) - mag_hdg + 180) % 360
+												B738DR_rte_fo_dist_act = 15
+											elseif n < legs_step2 and n >= offset then
+												rte_act_enable_fo = 1
+												B738DR_rte_fo_show_act = 1
+												B738DR_rte_fo_y_act = nd_x
+												B738DR_rte_y_act = nd_y
+												B738DR_rte_fo_rot_act = (math.deg(legs_data[n][2]) - mag_hdg + 180) % 360
+												rte_dist = legs_data[n][3] * nd_zoom
+												rte_dist = math.min(rte_dist, 15)
+												B738DR_rte_fo_dist_act = rte_dist
+											end
 										end
+										
 									end
 									if n == offset then
 										if hold_obj_fo < 5 then
@@ -49340,56 +49581,141 @@ function B738_displ_wpt()
 							obj2 = obj2 + 1
 						end
 					else
-						--rte_act_enable = 1
-						if obj2 == 0 and n == offset and rte_plan_mode == 0 then
-							if nd_x < 0 then
-								if nd_y == 0 then
-									nd_y0 = 0
-									nd_x0 = -11
-								elseif nd_y > 0 then
-									nd_x = -nd_x
-									nd_x0 = (nd_x / nd_y) * 10
-									nd_x0 = -nd_x0
-									nd_y0 = 11
-								else
-									nd_x = -nd_x
-									nd_y = -nd_y
-									nd_x0 = (nd_x / nd_y) * 10
-									nd_x0 = -nd_x0
-									nd_y0 = -11
-								end
+						
+						
+						-- draw actual path if wpt_offset is offscale
+						if obj2 == 0 and n == offset and rte_plan_mode == 0 and legs_num > 1 then
+							
+							if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+								nd_zoom = 2
+								nd_dis = 6
+							elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+								nd_zoom = 1
+								nd_dis = 11
+							elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+								nd_zoom = 0.5
+								nd_dis = 21
+							elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+								nd_zoom = 0.25
+								nd_dis = 41
+							elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+								nd_zoom = 0.125
+								nd_dis = 82
+							elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
+								nd_zoom = 0.0625
+								nd_dis = 162
+							elseif B738DR_efis_map_range_fo == 6 then	-- 320 NM
+								nd_zoom = 0.03125
+								nd_dis = 322
+							else	-- 640 NM
+								nd_zoom = 0.015625
+							end
+							
+							delta_hdg = delta_hdg_calc
+							if delta_hdg >= 0 and delta_hdg <= 90 then
+								-- right
+								delta_hdg = 90 - delta_hdg
+								delta_hdg = math.rad(delta_hdg)
+								nd_y = nd_dis * math.sin(delta_hdg)
+								nd_x = nd_dis * math.cos(delta_hdg)
+							elseif delta_hdg < 0 and delta_hdg >= -90 then
+								-- left
+								delta_hdg = 90 + delta_hdg
+								delta_hdg = math.rad(delta_hdg)
+								nd_y = nd_dis * math.sin(delta_hdg)
+								nd_x = -nd_dis * math.cos(delta_hdg)
+							elseif delta_hdg >= 90 then
+								delta_hdg = delta_hdg - 90
+								delta_hdg = math.rad(delta_hdg)
+								nd_y = -nd_dis * math.sin(delta_hdg)
+								nd_x = nd_dis * math.cos(delta_hdg)
+							elseif delta_hdg <= -90 then
+								delta_hdg = -90 - delta_hdg
+								delta_hdg = math.rad(delta_hdg)
+								nd_y = -nd_dis * math.sin(delta_hdg)
+								nd_x = -nd_dis * math.cos(delta_hdg)
+							end
+							
+							nd_x = nd_x * nd_zoom		-- zoom
+							nd_y = nd_y * nd_zoom		-- zoom
+							
+							if B738DR_fo_map_mode == 3 then
+								nd_y = nd_y + 4.1	-- adjust center
+							elseif B738DR_fo_map_mode == 0 and B738DR_fo_exp_map_mode == 0 then
+								nd_y = nd_y + 4.1	-- adjust center
 							else
-								if nd_y == 0 then
-									nd_y0 = 0
-									nd_x0 = 11
-								elseif nd_y > 0 then
-									nd_x0 = (nd_x / nd_y) * 10
-									nd_y0 = 11
-								else
-									nd_y = -nd_y
-									nd_x0 = (nd_x / nd_y) * 10
-									nd_y0 = -11
+								if B738DR_fo_map_mode == 3 then
+									nd_y = nd_y + 4.1	-- adjust
 								end
 							end
+							
 							rte_act_enable_fo = 1
 							B738DR_rte_fo_show_act = 1
-							B738DR_rte_fo_x_act = nd_x0
-							B738DR_rte_fo_y_act = nd_y0
+							B738DR_rte_fo_x_act = nd_x
+							B738DR_rte_fo_y_act = nd_y
+						
 							if legs_intdir_act == 0 then
 								B738DR_rte_fo_rot_act = (math.deg(legs_data[n][2]) - mag_hdg + 180) % 360
 							else
 								B738DR_rte_fo_rot_act = (simDR_fmc_trk - mag_hdg + 180) % 360
 							end
-							if n == offset then
-								rte_dist = 15
-							else
-								rte_dist = legs_data[n][3] * nd_zoom
-								rte_dist = math.min(rte_dist, 15)
-							end
-							B738DR_rte_fo_dist_act = rte_dist
-							
+							B738DR_rte_fo_dist_act = 15
 						end
+						
+						
+						-- --rte_act_enable = 1
+						-- if obj2 == 0 and n == offset and rte_plan_mode == 0 then
+							-- if nd_x < 0 then
+								-- if nd_y == 0 then
+									-- nd_y0 = 0
+									-- nd_x0 = -11
+								-- elseif nd_y > 0 then
+									-- nd_x = -nd_x
+									-- nd_x0 = (nd_x / nd_y) * 10
+									-- nd_x0 = -nd_x0
+									-- nd_y0 = 11
+								-- else
+									-- nd_x = -nd_x
+									-- nd_y = -nd_y
+									-- nd_x0 = (nd_x / nd_y) * 10
+									-- nd_x0 = -nd_x0
+									-- nd_y0 = -11
+								-- end
+							-- else
+								-- if nd_y == 0 then
+									-- nd_y0 = 0
+									-- nd_x0 = 11
+								-- elseif nd_y > 0 then
+									-- nd_x0 = (nd_x / nd_y) * 10
+									-- nd_y0 = 11
+								-- else
+									-- nd_y = -nd_y
+									-- nd_x0 = (nd_x / nd_y) * 10
+									-- nd_y0 = -11
+								-- end
+							-- end
+							-- rte_act_enable_fo = 1
+							-- B738DR_rte_fo_show_act = 1
+							-- B738DR_rte_fo_x_act = nd_x0
+							-- B738DR_rte_fo_y_act = nd_y0
+							-- if legs_intdir_act == 0 then
+								-- B738DR_rte_fo_rot_act = (math.deg(legs_data[n][2]) - mag_hdg + 180) % 360
+							-- else
+								-- B738DR_rte_fo_rot_act = (simDR_fmc_trk - mag_hdg + 180) % 360
+							-- end
+							-- if n == offset then
+								-- rte_dist = 15
+							-- else
+								-- rte_dist = legs_data[n][3] * nd_zoom
+								-- rte_dist = math.min(rte_dist, 15)
+							-- end
+							-- B738DR_rte_fo_dist_act = rte_dist
+							
+						-- end
 					end
+					
+					prev_obj_draw = nd_on_off
+					
 				end
 			
 			end
@@ -49412,27 +49738,39 @@ function B738_displ_wpt()
 			
 			for n = wpt_from, wpt_to do
 			
-			if legs_data2[n][1] ~= "DISCONTINUITY" then --and calc_rte_enable2 == 0 then --and legs_data[n][1] ~= "VECTOR" then
+			-- if legs_data2[n][1] ~= "DISCONTINUITY" then --and calc_rte_enable2 == 0 then --and legs_data[n][1] ~= "VECTOR" then
 				
-				if last_lat == 0 and last_lon == 0 then
-					nd_lat2 = math.rad(legs_data2[n][7])
-					nd_lon2 = math.rad(legs_data2[n][8])
-				else
-					nd_lat2 = math.rad(legs_data2[n][7])
-					nd_lon2 = math.rad(legs_data2[n][8])
-				end
+				-- if last_lat == 0 and last_lon == 0 then
+					-- nd_lat2 = math.rad(legs_data2[n][7])
+					-- nd_lon2 = math.rad(legs_data2[n][8])
+				-- else
+					-- nd_lat2 = math.rad(legs_data2[n][7])
+					-- nd_lon2 = math.rad(legs_data2[n][8])
+				-- end
 				
-				nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+				-- nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+				
+				-- if nd_dis < 645 then
+					
+					-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+					-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+					-- nd_hdg = math.atan2(nd_y, nd_x)
+					-- nd_hdg = math.deg(nd_hdg)
+					-- nd_hdg = (nd_hdg + 360) % 360
+					
+					-- delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
+					
+			if legs_data2[n][1] ~= "DISCONTINUITY" then
+				
+				nd_lat2 = legs_data2[n][7]
+				nd_lon2 = legs_data2[n][8]
+				
+				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
 				if nd_dis < 645 then
 					
-					nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-					nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-					nd_hdg = math.atan2(nd_y, nd_x)
-					nd_hdg = math.deg(nd_hdg)
-					nd_hdg = (nd_hdg + 360) % 360
-					
-					delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
+					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					delta_hdg = calc_rel_brg(nd_hdg, mag_hdg)
 					
 					if delta_hdg >= 0 and delta_hdg <= 90 then
 						-- right
@@ -49489,6 +49827,40 @@ function B738_displ_wpt()
 					
 					nd_x = nd_x * nd_zoom		-- zoom
 					nd_y = nd_y * nd_zoom		-- zoom
+					
+					-- if nd_x < -8.0 or nd_x > 8.0 then
+						-- nd_on_off = 0
+					-- end
+					-- if nd_y > 11.0 or nd_y < -2 then
+						-- nd_on_off = 0
+					-- end
+					
+					if n < legs_num2 then
+						if B738DR_efis_map_range_fo == 0 and
+							(legs_data2[n+1][31] == "HA" or legs_data2[n+1][31] == "HF" or legs_data2[n+1][31] == "HM") then
+							if nd_x < -22.0 or nd_x > 22.0 then
+								nd_on_off = 0
+							end
+							if nd_y > 22.0 or nd_y < -22.0 then
+								nd_on_off = 0
+							end
+						else
+							if nd_x < -15.0 or nd_x > 15.0 then
+								nd_on_off = 0
+							end
+							if nd_y > 15.0 or nd_y < -15.0 then
+								nd_on_off = 0
+							end
+						end
+					else
+						if nd_x < -15.0 or nd_x > 15.0 then
+							nd_on_off = 0
+						end
+						if nd_y > 15.0 or nd_y < -15.0 then
+							nd_on_off = 0
+						end
+					end
+					
 					if B738DR_fo_map_mode == 3 then
 						nd_y = nd_y + 4.1	-- adjust center
 					elseif B738DR_fo_map_mode == 0 and B738DR_fo_exp_map_mode == 0 then
@@ -49497,13 +49869,6 @@ function B738_displ_wpt()
 						if B738DR_fo_map_mode == 3 then
 							nd_y = nd_y + 4.1	-- adjust
 						end
-					end
-					
-					if nd_x < -8.0 or nd_x > 8.0 then
-						nd_on_off = 0
-					end
-					if nd_y > 11.0 or nd_y < -2 then
-						nd_on_off = 0
 					end
 					
 					if n > 0 then
@@ -49702,6 +50067,29 @@ function B738_displ_wpt()
 									else
 										B738DR_rte_fo_edit_show_act = 0
 									end
+									
+									
+										if n > 1 and prev_obj_draw == 0 then
+											if n == legs_step then
+												rte_act_enable = 1
+												B738DR_rte_show_act = 1
+												B738DR_rte_x_act = nd_x
+												B738DR_rte_y_act = nd_y
+												B738DR_rte_rot_act = (math.deg(legs_data[n][2]) - mag_hdg + 180) % 360
+												B738DR_rte_dist_act = 15
+											elseif n < legs_step and n >= offset then
+												rte_act_enable = 1
+												B738DR_rte_show_act = 1
+												B738DR_rte_x_act = nd_x
+												B738DR_rte_y_act = nd_y
+												B738DR_rte_rot_act = (math.deg(legs_data[n][2]) - mag_hdg + 180) % 360
+												rte_dist = legs_data[n][3] * nd_zoom
+												rte_dist = math.min(rte_dist, 15)
+												B738DR_rte_dist_act = rte_dist
+											end
+										end
+									
+									
 								end
 								if n == offset then
 									if hold_obj_fo < 5 then
@@ -50722,7 +51110,7 @@ function B738_vnav_calc()
 				calc_wpt_alt = rest_alt
 			end
 			
-			if calc_wpt_alt < 10000 then
+			if calc_wpt_alt <= 10000 then
 				calc_wpt_spd = math.min(calc_wpt_spd, rest_spd, B738DR_fmc_climb_speed, 250)
 			else
 				calc_wpt_spd = math.min(calc_wpt_spd, rest_spd, B738DR_fmc_climb_speed)
@@ -50883,7 +51271,7 @@ function B738_vnav_calc()
 				
 				-- check restricts SPD
 				if n > offset2 or ground_air ~= 0 then
-					if calc_wpt_alt < 10000 then
+					if calc_wpt_alt <= 10000 then
 						calc_wpt_spd = math.min(rest_spd, B738DR_fmc_climb_speed, 250)
 					elseif calc_wpt_alt > 26000 and rest_spd == 340 then
 						calc_wpt_spd = B738DR_fmc_climb_speed_mach
@@ -51867,7 +52255,7 @@ function B738_vnav_calc()
 									calc_wpt_spd = B738DR_fmc_descent_speed_mach
 								end
 							end
-							if calc_wpt_alt < 10000 then
+							if calc_wpt_alt <= 10000 then
 								if calc_wpt_spd > 250 then
 									calc_wpt_spd = 250
 								end
@@ -51891,7 +52279,7 @@ function B738_vnav_calc()
 			else
 				calc_wpt_spd = B738DR_fmc_cruise_speed_mach
 			end
-			if calc_wpt_alt < 10000 then
+			if calc_wpt_alt <= 10000 then
 				if calc_wpt_spd > 250 then
 					calc_wpt_spd = 250
 				end
@@ -52278,7 +52666,7 @@ function B738_vnav_calc_mod()
 				calc_wpt_alt = rest_alt
 			end
 			
-			if calc_wpt_alt < 10000 then
+			if calc_wpt_alt <= 10000 then
 				calc_wpt_spd = math.min(calc_wpt_spd, rest_spd, B738DR_fmc_climb_speed, 250)
 			else
 				calc_wpt_spd = math.min(calc_wpt_spd, rest_spd, B738DR_fmc_climb_speed)
@@ -52418,7 +52806,7 @@ function B738_vnav_calc_mod()
 				
 				-- check restricts SPD
 				if n > offset2 or ground_air ~= 0 then
-					if calc_wpt_alt < 10000 then
+					if calc_wpt_alt <= 10000 then
 						calc_wpt_spd = math.min(rest_spd, B738DR_fmc_climb_speed, 250)
 					elseif calc_wpt_alt > 26000 and rest_spd == 340 then
 						calc_wpt_spd = B738DR_fmc_climb_speed_mach
@@ -53191,7 +53579,7 @@ function B738_vnav_calc_mod()
 									calc_wpt_spd = B738DR_fmc_descent_speed_mach
 								end
 							end
-							if calc_wpt_alt < 10000 then
+							if calc_wpt_alt <= 10000 then
 								if calc_wpt_spd > 250 then
 									calc_wpt_spd = 250
 								end
@@ -53215,7 +53603,7 @@ function B738_vnav_calc_mod()
 			else
 				calc_wpt_spd = B738DR_fmc_cruise_speed_mach
 			end
-			if calc_wpt_alt < 10000 then
+			if calc_wpt_alt <= 10000 then
 				if calc_wpt_spd > 250 then
 					calc_wpt_spd = 250
 				end
@@ -53460,10 +53848,10 @@ end
 
 
 function B738_displ_tc()
-	-- local ils_lat = math.rad(simDR_latitude) 
-	-- local ils_lon = math.rad(simDR_longitude) 
-	local ils_lat = math.rad(ndx_lat)
-	local ils_lon = math.rad(ndx_lon)
+	-- local ils_lat = math.rad(ndx_lat)
+	-- local ils_lon = math.rad(ndx_lon)
+	local ils_lat = ndx_lat
+	local ils_lon = ndx_lon
 	local mag_hdg = 0
 	local delta_ils_hdg = 0
 	local ils_hdg = 0
@@ -53488,25 +53876,23 @@ function B738_displ_tc()
 		
 		-- CAPTAIN
 		if B738DR_capt_map_mode == 3 then
+			-- if legs_step == 0 then
+				-- ils_lat = math.rad(legs_data2[1][7])
+				-- ils_lon = math.rad(legs_data2[1][8])
+			-- else
+				-- ils_lat = math.rad(legs_data2[legs_step][7])
+				-- ils_lon = math.rad(legs_data2[legs_step][8])
+			-- end
 			if legs_step == 0 then
-				ils_lat = math.rad(legs_data2[1][7])
-				ils_lon = math.rad(legs_data2[1][8])
+				ils_lat = legs_data2[1][7]
+				ils_lon = legs_data2[1][8]
 			else
-				ils_lat = math.rad(legs_data2[legs_step][7])
-				ils_lon = math.rad(legs_data2[legs_step][8])
+				ils_lat = legs_data2[legs_step][7]
+				ils_lon = legs_data2[legs_step][8]
 			end
+			
 			mag_hdg = -simDR_mag_variation
 			rte_plan_mode = 1
-		-- -- CAPTAIN
-		-- if B738DR_capt_map_mode == 3 then
-			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data[1][7])
-				-- ils_lon = math.rad(legs_data[1][8])
-			-- else
-				-- ils_lat = math.rad(legs_data[legs_step][7])
-				-- ils_lon = math.rad(legs_data[legs_step][8])
-			-- end
-			-- mag_hdg = -simDR_mag_variation
 		elseif B738DR_capt_map_mode == 2 then
 			-- if B738DR_capt_map_mode < 2 then
 				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
@@ -53535,25 +53921,35 @@ function B738_displ_tc()
 		end
 			
 			
+		-- if ils_disable == 0 then
+			
+			-- B738DR_tc_lat = math.deg(tc_lat)
+			-- B738DR_tc_lon = math.deg(tc_lon)
+			
+			-- -- Calculate distance
+			-- -- ils_x = (tc_lon - ils_lon) * math.cos((ils_lat + tc_lat)/2)
+			-- -- ils_y = tc_lat - ils_lat
+			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(tc_lat), math.deg(tc_lon))
+			
+			-- ils_y = math.sin(tc_lon - ils_lon) * math.cos(tc_lat)
+			-- ils_x = math.cos(ils_lat) * math.sin(tc_lat) - math.sin(ils_lat) * math.cos(tc_lat) * math.cos(tc_lon - ils_lon)
+			-- ils_hdg = math.atan2(ils_y, ils_x)
+			-- ils_hdg = math.deg(ils_hdg)
+			-- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			
 		if ils_disable == 0 then
 			
 			B738DR_tc_lat = math.deg(tc_lat)
 			B738DR_tc_lon = math.deg(tc_lon)
 			
-			-- Calculate distance
-			-- ils_x = (tc_lon - ils_lon) * math.cos((ils_lat + tc_lat)/2)
-			-- ils_y = tc_lat - ils_lat
-			-- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(tc_lat), math.deg(tc_lon))
 			
-			ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(tc_lat), math.deg(tc_lon))
-			
-			ils_y = math.sin(tc_lon - ils_lon) * math.cos(tc_lat)
-			ils_x = math.cos(ils_lat) * math.sin(tc_lat) - math.sin(ils_lat) * math.cos(tc_lat) * math.cos(tc_lon - ils_lon)
-			ils_hdg = math.atan2(ils_y, ils_x)
-			ils_hdg = math.deg(ils_hdg)
-			ils_hdg = (ils_hdg + 360) % 360
-			
-			delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(tc_lat), math.deg(tc_lon))
+			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
 			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
 				-- right
@@ -53648,10 +54044,12 @@ function B738_displ_tc()
 		rte_plan_mode = 0
 		ils_disable = 0
 		ils_on_off = 0
-		-- ils_lat = math.rad(simDR_latitude) 
-		-- ils_lon = math.rad(simDR_longitude) 
-		ils_lat = math.rad(ndx_lat)
-		ils_lon = math.rad(ndx_lon)
+		-- ils_lat = math.rad(ndx_lat)
+		-- ils_lon = math.rad(ndx_lon)
+		
+		ils_lat = ndx_lat
+		ils_lon = ndx_lon
+		
 		if B738DR_fo_map_mode == 3 then
 			-- temporary
 			ils_disable = 1
@@ -53690,23 +54088,30 @@ function B738_displ_tc()
 		end
 			
 			
+		-- if ils_disable == 0 then
+			
+			
+			-- -- Calculate distance
+			-- -- ils_x = (tc_lon - ils_lon) * math.cos((ils_lat + tc_lat)/2)
+			-- -- ils_y = tc_lat - ils_lat
+			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(tc_lat), math.deg(tc_lon))
+			
+			-- ils_y = math.sin(tc_lon - ils_lon) * math.cos(tc_lat)
+			-- ils_x = math.cos(ils_lat) * math.sin(tc_lat) - math.sin(ils_lat) * math.cos(tc_lat) * math.cos(tc_lon - ils_lon)
+			-- ils_hdg = math.atan2(ils_y, ils_x)
+			-- ils_hdg = math.deg(ils_hdg)
+			-- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			
 		if ils_disable == 0 then
 			
+			ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(tc_lat), math.deg(tc_lon))
 			
-			-- Calculate distance
-			-- ils_x = (tc_lon - ils_lon) * math.cos((ils_lat + tc_lat)/2)
-			-- ils_y = tc_lat - ils_lat
-			-- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(tc_lat), math.deg(tc_lon))
-			
-			ils_y = math.sin(tc_lon - ils_lon) * math.cos(tc_lat)
-			ils_x = math.cos(ils_lat) * math.sin(tc_lat) - math.sin(ils_lat) * math.cos(tc_lat) * math.cos(tc_lon - ils_lon)
-			ils_hdg = math.atan2(ils_y, ils_x)
-			ils_hdg = math.deg(ils_hdg)
-			ils_hdg = (ils_hdg + 360) % 360
-			
-			delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(tc_lat), math.deg(tc_lon))
+			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
 			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
 				-- right
@@ -53807,10 +54212,10 @@ function B738_displ_tc()
 end
 
 function B738_displ_decel()
-	-- local ils_lat = math.rad(simDR_latitude) 
-	-- local ils_lon = math.rad(simDR_longitude) 
-	local ils_lat = math.rad(ndx_lat)
-	local ils_lon = math.rad(ndx_lon)
+	-- local ils_lat = math.rad(ndx_lat)
+	-- local ils_lon = math.rad(ndx_lon)
+	local ils_lat = ndx_lat
+	local ils_lon = ndx_lon
 	local mag_hdg = 0
 	local delta_ils_hdg = 0
 	local ils_hdg = 0
@@ -53831,25 +54236,23 @@ function B738_displ_decel()
 		
 		-- CAPTAIN
 		if B738DR_capt_map_mode == 3 then
+			-- if legs_step == 0 then
+				-- ils_lat = math.rad(legs_data2[1][7])
+				-- ils_lon = math.rad(legs_data2[1][8])
+			-- else
+				-- ils_lat = math.rad(legs_data2[legs_step][7])
+				-- ils_lon = math.rad(legs_data2[legs_step][8])
+			-- end
 			if legs_step == 0 then
-				ils_lat = math.rad(legs_data2[1][7])
-				ils_lon = math.rad(legs_data2[1][8])
+				ils_lat = legs_data2[1][7]
+				ils_lon = legs_data2[1][8]
 			else
-				ils_lat = math.rad(legs_data2[legs_step][7])
-				ils_lon = math.rad(legs_data2[legs_step][8])
+				ils_lat = legs_data2[legs_step][7]
+				ils_lon = legs_data2[legs_step][8]
 			end
+			
 			mag_hdg = -simDR_mag_variation
 			rte_plan_mode = 1
-		-- -- CAPTAIN
-		-- if B738DR_capt_map_mode == 3 then
-			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data[1][7])
-				-- ils_lon = math.rad(legs_data[1][8])
-			-- else
-				-- ils_lat = math.rad(legs_data[legs_step][7])
-				-- ils_lon = math.rad(legs_data[legs_step][8])
-			-- end
-			-- mag_hdg = -simDR_mag_variation
 		elseif B738DR_capt_map_mode == 2 then
 			-- if B738DR_capt_map_mode < 2 then
 				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
@@ -53875,27 +54278,37 @@ function B738_displ_decel()
 		end
 			
 			
-		if ils_disable == 0 then
+		-- if ils_disable == 0 then
 			
+			
+			-- B738DR_decel_lat = math.deg(decel_lat)
+			-- B738DR_decel_lon = math.deg(decel_lon)
+			
+			-- -- Calculate distance
+			
+			-- -- ils_x = (decel_lon - ils_lon) * math.cos((ils_lat + decel_lat)/2)
+			-- -- ils_y = decel_lat - ils_lat
+			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(decel_lat), math.deg(decel_lon))
+			
+			-- ils_y = math.sin(decel_lon - ils_lon) * math.cos(decel_lat)
+			-- ils_x = math.cos(ils_lat) * math.sin(decel_lat) - math.sin(ils_lat) * math.cos(decel_lat) * math.cos(decel_lon - ils_lon)
+			-- ils_hdg = math.atan2(ils_y, ils_x)
+			-- ils_hdg = math.deg(ils_hdg)
+			-- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			
+	if ils_disable == 0 then
 			
 			B738DR_decel_lat = math.deg(decel_lat)
 			B738DR_decel_lon = math.deg(decel_lon)
 			
-			-- Calculate distance
+			ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(decel_lat), math.deg(decel_lon))
 			
-			-- ils_x = (decel_lon - ils_lon) * math.cos((ils_lat + decel_lat)/2)
-			-- ils_y = decel_lat - ils_lat
-			-- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(decel_lat), math.deg(decel_lon))
-			
-			ils_y = math.sin(decel_lon - ils_lon) * math.cos(decel_lat)
-			ils_x = math.cos(ils_lat) * math.sin(decel_lat) - math.sin(ils_lat) * math.cos(decel_lat) * math.cos(decel_lon - ils_lon)
-			ils_hdg = math.atan2(ils_y, ils_x)
-			ils_hdg = math.deg(ils_hdg)
-			ils_hdg = (ils_hdg + 360) % 360
-			
-			delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(decel_lat), math.deg(decel_lon))
+			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
 			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
 				-- right
@@ -53987,22 +54400,16 @@ function B738_displ_decel()
 		rte_plan_mode = 0
 		ils_disable = 0
 		ils_on_off = 0
-		-- ils_lat = math.rad(simDR_latitude) 
-		-- ils_lon = math.rad(simDR_longitude) 
-		ils_lat = math.rad(ndx_lat) 
-		ils_lon = math.rad(ndx_lon) 
+		--ils_lat = math.rad(ndx_lat) 
+		--ils_lon = math.rad(ndx_lon) 
+		
+		ils_lat = ndx_lat 
+		ils_lon = ndx_lon 
+		
 		if B738DR_fo_map_mode == 3 then
 			-- temporary
 			ils_disable = 1
 			rte_plan_mode = 1
-			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data[1][7])
-				-- ils_lon = math.rad(legs_data[1][8])
-			-- else
-				-- ils_lat = math.rad(legs_data[legs_step][7])
-				-- ils_lon = math.rad(legs_data[legs_step][8])
-			-- end
-			-- mag_hdg = -simDR_mag_variation
 		elseif B738DR_fo_map_mode == 2 then
 			-- if B738DR_fo_map_mode < 2 then
 				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
@@ -54029,24 +54436,31 @@ function B738_displ_decel()
 		end
 			
 			
+		-- if ils_disable == 0 then
+			
+			
+			-- -- Calculate distance
+			
+			-- -- ils_x = (decel_lon - ils_lon) * math.cos((ils_lat + decel_lat)/2)
+			-- -- ils_y = decel_lat - ils_lat
+			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(decel_lat), math.deg(decel_lon))
+			
+			-- ils_y = math.sin(decel_lon - ils_lon) * math.cos(decel_lat)
+			-- ils_x = math.cos(ils_lat) * math.sin(decel_lat) - math.sin(ils_lat) * math.cos(decel_lat) * math.cos(decel_lon - ils_lon)
+			-- ils_hdg = math.atan2(ils_y, ils_x)
+			-- ils_hdg = math.deg(ils_hdg)
+			-- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			
 		if ils_disable == 0 then
 			
+			ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(decel_lat), math.deg(decel_lon))
 			
-			-- Calculate distance
-			
-			-- ils_x = (decel_lon - ils_lon) * math.cos((ils_lat + decel_lat)/2)
-			-- ils_y = decel_lat - ils_lat
-			-- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(decel_lat), math.deg(decel_lon))
-			
-			ils_y = math.sin(decel_lon - ils_lon) * math.cos(decel_lat)
-			ils_x = math.cos(ils_lat) * math.sin(decel_lat) - math.sin(ils_lat) * math.cos(decel_lat) * math.cos(decel_lon - ils_lon)
-			ils_hdg = math.atan2(ils_y, ils_x)
-			ils_hdg = math.deg(ils_hdg)
-			ils_hdg = (ils_hdg + 360) % 360
-			
-			delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(decel_lat), math.deg(decel_lon))
+			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
 			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
 				-- right
@@ -54144,10 +54558,10 @@ function B738_displ_decel()
 end
 
 function B738_displ_td()
-	-- local ils_lat = math.rad(simDR_latitude) 
-	-- local ils_lon = math.rad(simDR_longitude) 
-	local ils_lat = math.rad(ndx_lat)
-	local ils_lon = math.rad(ndx_lon)
+	-- local ils_lat = math.rad(ndx_lat)
+	-- local ils_lon = math.rad(ndx_lon)
+	local ils_lat = ndx_lat
+	local ils_lon = ndx_lon
 	local mag_hdg = 0
 	local delta_ils_hdg = 0
 	local ils_hdg = 0
@@ -54168,26 +54582,25 @@ function B738_displ_td()
 		
 		-- CAPTAIN
 		if B738DR_capt_map_mode == 3 then
+			-- if legs_step == 0 then
+				-- ils_lat = math.rad(legs_data2[1][7])
+				-- ils_lon = math.rad(legs_data2[1][8])
+			-- else
+				-- ils_lat = math.rad(legs_data2[legs_step][7])
+				-- ils_lon = math.rad(legs_data2[legs_step][8])
+			-- end
+			
 			if legs_step == 0 then
-				ils_lat = math.rad(legs_data2[1][7])
-				ils_lon = math.rad(legs_data2[1][8])
+				ils_lat = legs_data2[1][7]
+				ils_lon = legs_data2[1][8]
 			else
-				ils_lat = math.rad(legs_data2[legs_step][7])
-				ils_lon = math.rad(legs_data2[legs_step][8])
+				ils_lat = legs_data2[legs_step][7]
+				ils_lon = legs_data2[legs_step][8]
 			end
+			
 			mag_hdg = -simDR_mag_variation
 			rte_plan_mode = 1
 			
-		-- -- CAPTAIN
-		-- if B738DR_capt_map_mode == 3 then
-			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data[1][7])
-				-- ils_lon = math.rad(legs_data[1][8])
-			-- else
-				-- ils_lat = math.rad(legs_data[legs_step][7])
-				-- ils_lon = math.rad(legs_data[legs_step][8])
-			-- end
-			-- mag_hdg = -simDR_mag_variation
 		elseif B738DR_capt_map_mode == 2 then
 			-- if B738DR_capt_map_mode < 2 then
 				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
@@ -54214,27 +54627,37 @@ function B738_displ_td()
 		end
 			
 			
-		if ils_disable == 0 then
+		-- if ils_disable == 0 then
 			
+			
+			-- B738DR_td_lat = math.deg(td_lat)
+			-- B738DR_td_lon = math.deg(td_lon)
+			
+			-- -- Calculate distance
+			
+			-- -- ils_x = (td_lon - ils_lon) * math.cos((ils_lat + td_lat)/2)
+			-- -- ils_y = td_lat - ils_lat
+			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(td_lat), math.deg(td_lon))
+			
+			-- ils_y = math.sin(td_lon - ils_lon) * math.cos(td_lat)
+			-- ils_x = math.cos(ils_lat) * math.sin(td_lat) - math.sin(ils_lat) * math.cos(td_lat) * math.cos(td_lon - ils_lon)
+			-- ils_hdg = math.atan2(ils_y, ils_x)
+			-- ils_hdg = math.deg(ils_hdg)
+			-- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			
+		if ils_disable == 0 then
 			
 			B738DR_td_lat = math.deg(td_lat)
 			B738DR_td_lon = math.deg(td_lon)
 			
-			-- Calculate distance
+			ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(td_lat), math.deg(td_lon))
 			
-			-- ils_x = (td_lon - ils_lon) * math.cos((ils_lat + td_lat)/2)
-			-- ils_y = td_lat - ils_lat
-			-- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(td_lat), math.deg(td_lon))
-			
-			ils_y = math.sin(td_lon - ils_lon) * math.cos(td_lat)
-			ils_x = math.cos(ils_lat) * math.sin(td_lat) - math.sin(ils_lat) * math.cos(td_lat) * math.cos(td_lon - ils_lon)
-			ils_hdg = math.atan2(ils_y, ils_x)
-			ils_hdg = math.deg(ils_hdg)
-			ils_hdg = (ils_hdg + 360) % 360
-			
-			delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(td_lat), math.deg(td_lon))
+			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
 			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
 				-- right
@@ -54330,22 +54753,14 @@ function B738_displ_td()
 		rte_plan_mode = 0
 		ils_disable = 0
 		ils_on_off = 0
-		-- ils_lat = math.rad(simDR_latitude) 
-		-- ils_lon = math.rad(simDR_longitude) 
-		ils_lat = math.rad(ndx_lat) 
-		ils_lon = math.rad(ndx_lon) 
+		-- ils_lat = math.rad(ndx_lat) 
+		-- ils_lon = math.rad(ndx_lon) 
+		ils_lat = ndx_lat 
+		ils_lon = ndx_lon 
 		if B738DR_fo_map_mode == 3 then
 			-- temporary
 			ils_disable = 1
 			rte_plan_mode = 1
-			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data[1][7])
-				-- ils_lon = math.rad(legs_data[1][8])
-			-- else
-				-- ils_lat = math.rad(legs_data[legs_step][7])
-				-- ils_lon = math.rad(legs_data[legs_step][8])
-			-- end
-			-- mag_hdg = -simDR_mag_variation
 		elseif B738DR_fo_map_mode == 2 then
 			-- if B738DR_fo_map_mode < 2 then
 				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
@@ -54373,24 +54788,31 @@ function B738_displ_td()
 		end
 			
 			
+		-- if ils_disable == 0 then
+			
+			
+			-- -- Calculate distance
+			
+			-- -- ils_x = (td_lon - ils_lon) * math.cos((ils_lat + td_lat)/2)
+			-- -- ils_y = td_lat - ils_lat
+			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(td_lat), math.deg(td_lon))
+			
+			-- ils_y = math.sin(td_lon - ils_lon) * math.cos(td_lat)
+			-- ils_x = math.cos(ils_lat) * math.sin(td_lat) - math.sin(ils_lat) * math.cos(td_lat) * math.cos(td_lon - ils_lon)
+			-- ils_hdg = math.atan2(ils_y, ils_x)
+			-- ils_hdg = math.deg(ils_hdg)
+			-- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			
 		if ils_disable == 0 then
 			
+			ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(td_lat), math.deg(td_lon))
 			
-			-- Calculate distance
-			
-			-- ils_x = (td_lon - ils_lon) * math.cos((ils_lat + td_lat)/2)
-			-- ils_y = td_lat - ils_lat
-			-- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(td_lat), math.deg(td_lon))
-			
-			ils_y = math.sin(td_lon - ils_lon) * math.cos(td_lat)
-			ils_x = math.cos(ils_lat) * math.sin(td_lat) - math.sin(ils_lat) * math.cos(td_lat) * math.cos(td_lon - ils_lon)
-			ils_hdg = math.atan2(ils_y, ils_x)
-			ils_hdg = math.deg(ils_hdg)
-			ils_hdg = (ils_hdg + 360) % 360
-			
-			delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(td_lat), math.deg(td_lon))
+			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
 			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
 				-- right
@@ -54498,10 +54920,10 @@ function B738_displ_rnw()
 
 	local ils_lat2 = 0
 	local ils_lon2 = 0
-	-- local ils_lat = math.rad(simDR_latitude) 
-	-- local ils_lon = math.rad(simDR_longitude) 
-	local ils_lat = math.rad(ndx_lat)
-	local ils_lon = math.rad(ndx_lon)
+	-- local ils_lat = math.rad(ndx_lat)
+	-- local ils_lon = math.rad(ndx_lon)
+	local ils_lat = ndx_lat
+	local ils_lon = ndx_lon
 	local mag_hdg = 0
 	local delta_ils_hdg = 0
 	local ils_hdg = 0
@@ -54530,23 +54952,22 @@ function B738_displ_rnw()
 		-- -- elseif simDR_efis_sub_mode == 4 then
 			-- -- ils_disable = 1
 		if B738DR_capt_map_mode == 3 then
+			-- if legs_step == 0 then
+				-- ils_lat = math.rad(legs_data2[1][7])
+				-- ils_lon = math.rad(legs_data2[1][8])
+			-- else
+				-- ils_lat = math.rad(legs_data2[legs_step][7])
+				-- ils_lon = math.rad(legs_data2[legs_step][8])
+			-- end
 			if legs_step == 0 then
-				ils_lat = math.rad(legs_data2[1][7])
-				ils_lon = math.rad(legs_data2[1][8])
+				ils_lat = legs_data2[1][7]
+				ils_lon = legs_data2[1][8]
 			else
-				ils_lat = math.rad(legs_data2[legs_step][7])
-				ils_lon = math.rad(legs_data2[legs_step][8])
+				ils_lat = legs_data2[legs_step][7]
+				ils_lon = legs_data2[legs_step][8]
 			end
 			mag_hdg = -simDR_mag_variation
 			rte_plan_mode = 1
-			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data[1][7])
-				-- ils_lon = math.rad(legs_data[1][8])
-			-- else
-				-- ils_lat = math.rad(legs_data[legs_step][7])
-				-- ils_lon = math.rad(legs_data[legs_step][8])
-			-- end
-			-- mag_hdg = -simDR_mag_variation
 		elseif B738DR_capt_map_mode == 2 then
 			if B738DR_track_up == 0 then
 				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
@@ -54570,24 +54991,31 @@ function B738_displ_rnw()
 			-- ils_disable = 1
 		-- end
 			
+		-- if ils_disable == 0 then
+			
+			-- ils_lat2 = math.rad(des_runway_lat)
+			-- ils_lon2 = math.rad(des_runway_lon)
+			
+			-- -- ils_x = (ils_lon2 - ils_lon) * math.cos((ils_lat + ils_lat2)/2)
+			-- -- ils_y = ils_lat2 - ils_lat
+			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), des_runway_lat, des_runway_lon)
+			
+			-- ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
+			-- ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
+			-- ils_hdg = math.atan2(ils_y, ils_x)
+			-- ils_hdg = math.deg(ils_hdg)
+			-- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			
 		if ils_disable == 0 then
 			
-			ils_lat2 = math.rad(des_runway_lat)
-			ils_lon2 = math.rad(des_runway_lon)
+			ils_dis = nd_calc_dist2(ils_lat, ils_lon, des_runway_lat, des_runway_lon)
 			
-			-- ils_x = (ils_lon2 - ils_lon) * math.cos((ils_lat + ils_lat2)/2)
-			-- ils_y = ils_lat2 - ils_lat
-			-- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), des_runway_lat, des_runway_lon)
-			
-			ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
-			ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
-			ils_hdg = math.atan2(ils_y, ils_x)
-			ils_hdg = math.deg(ils_hdg)
-			ils_hdg = (ils_hdg + 360) % 360
-			
-			delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			ils_hdg = nd_calc_brg(ils_lat, ils_lon, des_runway_lat, des_runway_lon)
+			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
 			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
 				-- right
@@ -54695,12 +55123,19 @@ function B738_displ_rnw()
 		-- -- elseif simDR_efis_sub_mode == 4 then
 			-- -- ils_disable = 1
 		if B738DR_capt_map_mode == 3 then
+			-- if legs_step == 0 then
+				-- ils_lat = math.rad(legs_data2[1][7])
+				-- ils_lon = math.rad(legs_data2[1][8])
+			-- else
+				-- ils_lat = math.rad(legs_data2[legs_step][7])
+				-- ils_lon = math.rad(legs_data2[legs_step][8])
+			-- end
 			if legs_step == 0 then
-				ils_lat = math.rad(legs_data2[1][7])
-				ils_lon = math.rad(legs_data2[1][8])
+				ils_lat = legs_data2[1][7]
+				ils_lon = legs_data2[1][8]
 			else
-				ils_lat = math.rad(legs_data2[legs_step][7])
-				ils_lon = math.rad(legs_data2[legs_step][8])
+				ils_lat = legs_data2[legs_step][7]
+				ils_lon = legs_data2[legs_step][8]
 			end
 			mag_hdg = -simDR_mag_variation
 		elseif B738DR_capt_map_mode == 2 then
@@ -54723,22 +55158,29 @@ function B738_displ_rnw()
 			ils_disable = 1
 		end
 			
+		-- if ils_disable == 0 and ref_runway_lenght > 0 then
+			
+			-- ils_lat2 = math.rad(ref_runway_lat)
+			-- ils_lon2 = math.rad(ref_runway_lon)
+			
+			-- ils_x = (ils_lon2 - ils_lon) * math.cos((ils_lat + ils_lat2)/2)
+			-- ils_y = ils_lat2 - ils_lat
+			-- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
+			-- ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
+			-- ils_hdg = math.atan2(ils_y, ils_x)
+			-- ils_hdg = math.deg(ils_hdg)
+			-- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			
 		if ils_disable == 0 and ref_runway_lenght > 0 then
 			
-			ils_lat2 = math.rad(ref_runway_lat)
-			ils_lon2 = math.rad(ref_runway_lon)
+			ils_dis = nd_calc_dist2(ils_lat, ils_lon, ref_runway_lat, ref_runway_lon)
 			
-			ils_x = (ils_lon2 - ils_lon) * math.cos((ils_lat + ils_lat2)/2)
-			ils_y = ils_lat2 - ils_lat
-			ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
-			ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
-			ils_hdg = math.atan2(ils_y, ils_x)
-			ils_hdg = math.deg(ils_hdg)
-			ils_hdg = (ils_hdg + 360) % 360
-			
-			delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			ils_hdg = nd_calc_brg(ils_lat, ils_lon, ref_runway_lat, ref_runway_lon)
+			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
 			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
 				-- right
@@ -54840,23 +55282,24 @@ function B738_displ_rnw()
 		rte_plan_mode = 0
 		ils_disable = 0
 		ils_on_off = 0
-		-- ils_lat = math.rad(simDR_latitude) 
-		-- ils_lon = math.rad(simDR_longitude) 
-		ils_lat = math.rad(ndx_lat) 
-		ils_lon = math.rad(ndx_lon) 
-		-- if B738DR_fo_map_mode < 2 then
-			-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-			-- -- if simDR_efis_map_mode == 0 then
-			-- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
-				-- ils_disable = 1
-			-- end
+		-- ils_lat = math.rad(ndx_lat) 
+		-- ils_lon = math.rad(ndx_lon) 
+		ils_lat = ndx_lat 
+		ils_lon = ndx_lon 
 		if B738DR_fo_map_mode == 3 then
+			-- if legs_step2 == 0 then
+				-- ils_lat = math.rad(legs_data2[1][7])
+				-- ils_lon = math.rad(legs_data2[1][8])
+			-- else
+				-- ils_lat = math.rad(legs_data2[legs_step2][7])
+				-- ils_lon = math.rad(legs_data2[legs_step2][8])
+			-- end
 			if legs_step2 == 0 then
-				ils_lat = math.rad(legs_data2[1][7])
-				ils_lon = math.rad(legs_data2[1][8])
+				ils_lat = legs_data2[1][7]
+				ils_lon = legs_data2[1][8]
 			else
-				ils_lat = math.rad(legs_data2[legs_step2][7])
-				ils_lon = math.rad(legs_data2[legs_step2][8])
+				ils_lat = legs_data2[legs_step2][7]
+				ils_lon = legs_data2[legs_step2][8]
 			end
 			mag_hdg = -simDR_mag_variation
 			-- temporary
@@ -54894,24 +55337,31 @@ function B738_displ_rnw()
 		end
 			
 			
+		-- if ils_disable == 0 then
+			
+			-- ils_lat2 = math.rad(des_runway_lat)
+			-- ils_lon2 = math.rad(des_runway_lon)
+			
+			-- -- ils_x = (ils_lon2 - ils_lon) * math.cos((ils_lat + ils_lat2)/2)
+			-- -- ils_y = ils_lat2 - ils_lat
+			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), des_runway_lat, des_runway_lon)
+			
+			-- ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
+			-- ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
+			-- ils_hdg = math.atan2(ils_y, ils_x)
+			-- ils_hdg = math.deg(ils_hdg)
+			-- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			
 		if ils_disable == 0 then
 			
-			ils_lat2 = math.rad(des_runway_lat)
-			ils_lon2 = math.rad(des_runway_lon)
+			ils_dis = nd_calc_dist2(ils_lat, ils_lon, des_runway_lat, des_runway_lon)
 			
-			-- ils_x = (ils_lon2 - ils_lon) * math.cos((ils_lat + ils_lat2)/2)
-			-- ils_y = ils_lat2 - ils_lat
-			-- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), des_runway_lat, des_runway_lon)
-			
-			ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
-			ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
-			ils_hdg = math.atan2(ils_y, ils_x)
-			ils_hdg = math.deg(ils_hdg)
-			ils_hdg = (ils_hdg + 360) % 360
-			
-			delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			ils_hdg = nd_calc_brg(ils_lat, ils_lon, des_runway_lat, des_runway_lon)
+			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
 			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
 				-- right
@@ -55019,12 +55469,19 @@ function B738_displ_rnw()
 		-- -- elseif simDR_efis_sub_mode == 4 then
 			-- -- ils_disable = 1
 		if B738DR_fo_map_mode == 3 then
+			-- if legs_step2 == 0 then
+				-- ils_lat = math.rad(legs_data2[1][7])
+				-- ils_lon = math.rad(legs_data2[1][8])
+			-- else
+				-- ils_lat = math.rad(legs_data2[legs_step2][7])
+				-- ils_lon = math.rad(legs_data2[legs_step2][8])
+			-- end
 			if legs_step2 == 0 then
-				ils_lat = math.rad(legs_data2[1][7])
-				ils_lon = math.rad(legs_data2[1][8])
+				ils_lat = legs_data2[1][7]
+				ils_lon = legs_data2[1][8]
 			else
-				ils_lat = math.rad(legs_data2[legs_step2][7])
-				ils_lon = math.rad(legs_data2[legs_step2][8])
+				ils_lat = legs_data2[legs_step2][7]
+				ils_lon = legs_data2[legs_step2][8]
 			end
 			mag_hdg = -simDR_mag_variation
 		elseif B738DR_fo_map_mode == 2 then
@@ -55051,22 +55508,29 @@ function B738_displ_rnw()
 			ils_disable = 1
 		end
 			
+		-- if ils_disable == 0 and ref_runway_lenght > 0 then
+			
+			-- ils_lat2 = math.rad(ref_runway_lat)
+			-- ils_lon2 = math.rad(ref_runway_lon)
+			
+			-- ils_x = (ils_lon2 - ils_lon) * math.cos((ils_lat + ils_lat2)/2)
+			-- ils_y = ils_lat2 - ils_lat
+			-- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
+			-- ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
+			-- ils_hdg = math.atan2(ils_y, ils_x)
+			-- ils_hdg = math.deg(ils_hdg)
+			-- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			
 		if ils_disable == 0 and ref_runway_lenght > 0 then
 			
-			ils_lat2 = math.rad(ref_runway_lat)
-			ils_lon2 = math.rad(ref_runway_lon)
+			ils_dis = nd_calc_dist2(ils_lat, ils_lon, ref_runway_lat, ref_runway_lon)
 			
-			ils_x = (ils_lon2 - ils_lon) * math.cos((ils_lat + ils_lat2)/2)
-			ils_y = ils_lat2 - ils_lat
-			ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
-			ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
-			ils_hdg = math.atan2(ils_y, ils_x)
-			ils_hdg = math.deg(ils_hdg)
-			ils_hdg = (ils_hdg + 360) % 360
-			
-			delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			ils_hdg = nd_calc_brg(ils_lat, ils_lon, ref_runway_lat, ref_runway_lon)
+			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
 			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
 				-- right
@@ -55178,10 +55642,10 @@ function B738_displ_fix()
 	
 	local ils_lat2 = 0
 	local ils_lon2 = 0
-	-- local ils_lat = math.rad(simDR_latitude) 
-	-- local ils_lon = math.rad(simDR_longitude) 
-	local ils_lat = math.rad(ndx_lat)
-	local ils_lon = math.rad(ndx_lon)
+	-- local ils_lat = math.rad(ndx_lat)
+	-- local ils_lon = math.rad(ndx_lon)
+	local ils_lat = ndx_lat
+	local ils_lon = ndx_lon
 	local mag_hdg = 0
 	local delta_ils_hdg = 0
 	local ils_hdg = 0
@@ -55216,19 +55680,27 @@ function B738_displ_fix()
 			
 			for ii = 1, fix_data_num do
 			
-				ils_lat2 = math.rad(fix_data[ii][3])
-				ils_lon2 = math.rad(fix_data[ii][4])
+				-- ils_lat2 = math.rad(fix_data[ii][3])
+				-- ils_lon2 = math.rad(fix_data[ii][4])
 				
-				ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), fix_data[ii][3], fix_data[ii][4])
+				-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), fix_data[ii][3], fix_data[ii][4])
 				
-				ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
-				ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
-				ils_hdg = math.atan2(ils_y, ils_x)
-				ils_hdg = math.deg(ils_hdg)
-				ils_hdg = (ils_hdg + 360) % 360
+				-- ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
+				-- ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
+				-- ils_hdg = math.atan2(ils_y, ils_x)
+				-- ils_hdg = math.deg(ils_hdg)
+				-- ils_hdg = (ils_hdg + 360) % 360
 				
-				delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+				-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
 				
+				ils_lat2 =fix_data[ii][3]
+				ils_lon2 = fix_data[ii][4]
+					
+				ils_dis = nd_calc_dist2(ils_lat, ils_lon, ils_lat2, ils_lon2)
+				
+				ils_hdg = nd_calc_brg(ils_lat, ils_lon, ils_lat2, ils_lon2)
+				delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
+			
 				if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
 					-- right
 					ils_on_off = 1
@@ -55512,19 +55984,27 @@ function B738_displ_fix()
 			
 			for ii = 1, fix_data_num do
 			
-				ils_lat2 = math.rad(fix_data[ii][3])
-				ils_lon2 = math.rad(fix_data[ii][4])
+				-- ils_lat2 = math.rad(fix_data[ii][3])
+				-- ils_lon2 = math.rad(fix_data[ii][4])
 				
-				ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), fix_data[ii][3], fix_data[ii][4])
+				-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), fix_data[ii][3], fix_data[ii][4])
 				
-				ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
-				ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
-				ils_hdg = math.atan2(ils_y, ils_x)
-				ils_hdg = math.deg(ils_hdg)
-				ils_hdg = (ils_hdg + 360) % 360
+				-- ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
+				-- ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
+				-- ils_hdg = math.atan2(ils_y, ils_x)
+				-- ils_hdg = math.deg(ils_hdg)
+				-- ils_hdg = (ils_hdg + 360) % 360
 				
-				delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+				-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
 				
+				ils_lat2 =fix_data[ii][3]
+				ils_lon2 = fix_data[ii][4]
+					
+				ils_dis = nd_calc_dist2(ils_lat, ils_lon, ils_lat2, ils_lon2)
+				
+				ils_hdg = nd_calc_brg(ils_lat, ils_lon, ils_lat2, ils_lon2)
+				delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
+			
 				if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
 					-- right
 					ils_on_off = 1
@@ -60065,8 +60545,10 @@ function B738_fmc_calc()
 
 	local ii = 0
 	local jj = 0
-	local nd_lat = math.rad(simDR_latitude) 
-	local nd_lon = math.rad(simDR_longitude) 
+	-- local nd_lat = math.rad(simDR_latitude) 
+	-- local nd_lon = math.rad(simDR_longitude) 
+	local nd_lat = simDR_latitude
+	local nd_lon = simDR_longitude
 	local nd_lat2 = 0
 	local nd_lon2 = 0
 	local nd_dis = 0
@@ -60192,8 +60674,8 @@ function B738_fmc_calc()
 				else
 					temp_txt = legs_data[offset][1]
 				end
-				if string.len(temp_txt) > 5 then
-					temp_txt = string.sub(temp_txt, 1, 5)
+				if string.len(temp_txt) > 6 then
+					temp_txt = string.sub(temp_txt, 1, 6)
 				end
 				B738DR_fpln_nav_id = temp_txt
 			else
@@ -60283,10 +60765,11 @@ function B738_fmc_calc()
 		elseif nav_mode ~= 99 then
 		
 			if offset == 1 then
-				nd_lat2 = math.rad(legs_data[offset][7])
-				nd_lon2 = math.rad(legs_data[offset][8])
+				nd_lat2 = legs_data[offset][7]
+				nd_lon2 = legs_data[offset][8]
 				
-				nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+				--nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
 				if nd_dis < 4.0 then
 					offset = offset + 1
@@ -60299,10 +60782,10 @@ function B738_fmc_calc()
 			
 			elseif offset <= legs_num then
 				--B738DR_fms_test1 = 100
-					nd_lat2 = math.rad(legs_data[offset][7])
-					nd_lon2 = math.rad(legs_data[offset][8])
+					nd_lat2 = legs_data[offset][7]
+					nd_lon2 = legs_data[offset][8]
 					
-					nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+					nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 					
 					if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
 						dist_thrshld = 0.2	--next wpt
@@ -60324,7 +60807,7 @@ function B738_fmc_calc()
 								af_lon0 = legs_data[offset+1][24]
 								
 								nd_x = math.deg(legs_data[offset+1][2])
-								nd_y = nd_calc_brg(math.deg(nd_lat), math.deg(nd_lon), af_lat0, af_lon0)
+								nd_y = nd_calc_brg(nd_lat, nd_lon, af_lat0, af_lon0)
 								relative_brg = (nd_x - nd_y + 360) % 360
 								if relative_brg > 180 then
 									relative_brg = relative_brg - 360
@@ -60887,7 +61370,7 @@ function B738_fmc_calc()
 									af_dist = tonumber(legs_data[offset][22])
 									
 									nd_x = simDR_mag_hdg
-									nd_y = nd_calc_brg(math.deg(nd_lat), math.deg(nd_lon), af_lat, af_lon)
+									nd_y = nd_calc_brg(nd_lat, nd_lon, af_lat, af_lon)
 									relative_brg = (nd_x - nd_y + 360) % 360
 									if relative_brg > 180 then
 										relative_brg = relative_brg - 360
@@ -60963,12 +61446,12 @@ function B738_fmc_calc()
 			
 			B738DR_radii_turn_act = 0
 			-- navigation to next waypoint
-			nd_lat2 = math.rad(legs_data[offset][7])
-			nd_lon2 = math.rad(legs_data[offset][8])
+			nd_lat2 = legs_data[offset][7]
+			nd_lon2 = legs_data[offset][8]
 				
 			simDR_fmc_trk_turn = legs_data[offset][21]
 			
-			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+			nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 			
 			if legs_intdir_act == 0 then
 				if legs_data[offset][31] == "CF" then
@@ -60996,7 +61479,7 @@ function B738_fmc_calc()
 				B738DR_wpt_path = legs_data[offset][31]
 			else
 				if legs_intdir_crs == -1 then
-					simDR_fmc_trk = nd_calc_brg(math.deg(nd_lat), math.deg(nd_lon), legs_data[offset][7], legs_data[offset][8])
+					simDR_fmc_trk = nd_calc_brg(nd_lat, nd_lon, legs_data[offset][7], legs_data[offset][8])
 					B738DR_wpt_path = "DF"
 				else
 					simDR_fmc_trk = (legs_intdir_crs - simDR_mag_variation + 360) % 360
@@ -61008,11 +61491,13 @@ function B738_fmc_calc()
 			--nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
 			
 			
-			nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-			nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-			nd_hdg = math.atan2(nd_y, nd_x)
-			nd_hdg = math.deg(nd_hdg)
-			nd_hdg = (nd_hdg + 360) % 360
+			-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+			-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+			-- nd_hdg = math.atan2(nd_y, nd_x)
+			-- nd_hdg = math.deg(nd_hdg)
+			-- nd_hdg = (nd_hdg + 360) % 360
+			
+			nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
 			
 			true_brg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 			true_hdg = simDR_mag_hdg
@@ -61061,16 +61546,18 @@ function B738_fmc_calc()
 			B738DR_radii_turn_act = 0
 			-- navigation to destination ICAO
 			B738DR_wpt_path = ""
-			nd_lat2 = math.rad(legs_data[legs_num+1][7])
-			nd_lon2 = math.rad(legs_data[legs_num+1][8])
+			nd_lat2 = legs_data[legs_num+1][7]
+			nd_lon2 = legs_data[legs_num+1][8]
 			
-			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+			nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 			
-			nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-			nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-			nd_hdg = math.atan2(nd_y, nd_x)
-			nd_hdg = math.deg(nd_hdg)
-			nd_hdg = (nd_hdg + 360) % 360
+			-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+			-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+			-- nd_hdg = math.atan2(nd_y, nd_x)
+			-- nd_hdg = math.deg(nd_hdg)
+			-- nd_hdg = (nd_hdg + 360) % 360
+			
+			nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
 			
 			--simDR_fmc_trk = nd_calc_brg(math.deg(nd_lat), math.deg(nd_lon), legs_data[offset][7], legs_data[offset][8])
 			simDR_fmc_trk = math.deg(legs_data[legs_num+1][2])
@@ -61301,16 +61788,18 @@ function B738_fmc_calc()
 					simDR_fmc_trk_turn = -1
 					B738DR_wpt_path = "CF"
 					
-					nd_lat2 = math.rad(legs_data[offset][7])
-					nd_lon2 = math.rad(legs_data[offset][8])
+					nd_lat2 = legs_data[offset][7]
+					nd_lon2 = legs_data[offset][8]
 					simDR_fmc_trk = (hold_crs1 - simDR_mag_variation + 360) % 360
-					nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+					nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 					
-					nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-					nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-					nd_hdg = math.atan2(nd_y, nd_x)
-					nd_hdg = math.deg(nd_hdg)
-					nd_hdg = (nd_hdg + 360) % 360
+					-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+					-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+					-- nd_hdg = math.atan2(nd_y, nd_x)
+					-- nd_hdg = math.deg(nd_hdg)
+					-- nd_hdg = (nd_hdg + 360) % 360
+					
+					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
 					
 					true_brg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 					true_hdg = simDR_mag_hdg
@@ -61354,7 +61843,7 @@ function B738_fmc_calc()
 				simDR_fmc_trk_turn = -1
 				B738DR_wpt_path = "RF"
 				-- calculate Hold radius distance
-				nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), hold_lat1, hold_lon1)
+				nd_dis = nd_calc_dist2(nd_lat, nd_lon, hold_lat1, hold_lon1)
 				if legs_data[offset][21] == 0 then
 					-- left
 					simDR_fmc_trk_turn2 = 2
@@ -61371,7 +61860,7 @@ function B738_fmc_calc()
 					B738DR_xtrack = -999
 				end
 				
-				nd_hdg = nd_calc_brg(math.deg(nd_lat), math.deg(nd_lon), hold_lat1, hold_lon1)
+				nd_hdg = nd_calc_brg(nd_lat, nd_lon, hold_lat1, hold_lon1)
 				if simDR_fmc_trk_turn2 == 2 then
 					-- left
 					nd_hdg = (nd_hdg + 90) % 360
@@ -61395,7 +61884,7 @@ function B738_fmc_calc()
 				simDR_fmc_dist2 = 0
 				
 				--relative_brg = (simDR_fmc_crs - simDR_mag_hdg + 360) % 360
-				nd_hdg = nd_calc_brg(math.deg(nd_lat), math.deg(nd_lon), hold_opposite_lat, hold_opposite_lon)
+				nd_hdg = nd_calc_brg(nd_lat, nd_lon, hold_opposite_lat, hold_opposite_lon)
 				true_brg = (nd_hdg + simDR_mag_variation + 360) % 360
 				relative_brg = (true_brg - simDR_mag_hdg + 360) % 360
 				if relative_brg > 180 then
@@ -61423,18 +61912,20 @@ function B738_fmc_calc()
 				simDR_fmc_trk_turn = -1
 				B738DR_wpt_path = "CF"
 				
-				nd_lat2 = math.rad(hold_opposite_lat)
-				nd_lon2 = math.rad(hold_opposite_lon)
+				nd_lat2 = hold_opposite_lat
+				nd_lon2 = hold_opposite_lon
 				simDR_fmc_trk = (hold_crs2 - simDR_mag_variation + 360) % 360
-				nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
 				simDR_fmc_trk2 = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 				
-				nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-				nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-				nd_hdg = math.atan2(nd_y, nd_x)
-				nd_hdg = math.deg(nd_hdg)
-				nd_hdg = (nd_hdg + 360) % 360
+				-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+				-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+				-- nd_hdg = math.atan2(nd_y, nd_x)
+				-- nd_hdg = math.deg(nd_hdg)
+				-- nd_hdg = (nd_hdg + 360) % 360
+				
+				nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
 				true_brg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 				true_hdg = simDR_mag_hdg
@@ -61486,7 +61977,7 @@ function B738_fmc_calc()
 				simDR_fmc_trk_turn = -1
 				B738DR_wpt_path = "RF"
 				-- calculate Hold radius distance
-				nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), hold_lat2, hold_lon2)
+				nd_dis = nd_calc_dist2(nd_lat, nd_lon, hold_lat2, hold_lon2)
 				if legs_data[offset][21] == 0 then
 					-- left
 					simDR_fmc_trk_turn2 = 2
@@ -61503,7 +61994,7 @@ function B738_fmc_calc()
 					B738DR_xtrack = -999
 				end
 				
-				nd_hdg = nd_calc_brg(math.deg(nd_lat), math.deg(nd_lon), hold_lat2, hold_lon2)
+				nd_hdg = nd_calc_brg(nd_lat, nd_lon, hold_lat2, hold_lon2)
 				if simDR_fmc_trk_turn2 == 2 then
 					-- left
 					nd_hdg = (nd_hdg + 90) % 360
@@ -61527,7 +62018,7 @@ function B738_fmc_calc()
 				simDR_fmc_dist2 = 0
 				
 				--relative_brg = (simDR_fmc_crs - simDR_mag_hdg + 360) % 360
-				nd_hdg = nd_calc_brg(math.deg(nd_lat), math.deg(nd_lon), legs_data[offset][7], legs_data[offset][8])
+				nd_hdg = nd_calc_brg(nd_lat, nd_lon, legs_data[offset][7], legs_data[offset][8])
 				true_brg = (nd_hdg + simDR_mag_variation + 360) % 360
 				relative_brg = (true_brg - simDR_mag_hdg + 360) % 360
 				if relative_brg > 180 then
@@ -61553,7 +62044,7 @@ function B738_fmc_calc()
 			B738DR_fmc_bank_angle = 6
 			B738DR_radii_turn_act = 0
 			-- calculate AF distance
-			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), af_lat, af_lon)
+			nd_dis = nd_calc_dist2(nd_lat, nd_lon, af_lat, af_lon)
 			if legs_data[offset][21] == 2 then
 				B738DR_xtrack = nd_dis - af_dist
 			else
@@ -61567,13 +62058,13 @@ function B738_fmc_calc()
 			end
 			
 			-- calculate next waypoint
-			nd_lat2 = math.rad(legs_data[offset][7])
-			nd_lon2 = math.rad(legs_data[offset][8])
+			nd_lat2 = legs_data[offset][7]
+			nd_lon2 = legs_data[offset][8]
 				
 			simDR_fmc_trk_turn = af_turn
 			simDR_fmc_trk_turn2 = legs_data[offset][21]
 			B738DR_wpt_path = legs_data[offset][31]
-			nd_hdg = nd_calc_brg(math.deg(nd_lat), math.deg(nd_lon), af_lat, af_lon)
+			nd_hdg = nd_calc_brg(nd_lat, nd_lon, af_lat, af_lon)
 			
 			if legs_data[offset][21] == 2 then
 				-- left
@@ -61585,12 +62076,14 @@ function B738_fmc_calc()
 			simDR_fmc_trk = nd_hdg
 			simDR_fmc_trk2 = (nd_hdg + simDR_mag_variation + 360) % 360
 			
-			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
-			nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-			nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-			nd_hdg = math.atan2(nd_y, nd_x)
-			nd_hdg = math.deg(nd_hdg)
-			nd_hdg = (nd_hdg + 360) % 360
+			-- nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+			-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+			-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+			-- nd_hdg = math.atan2(nd_y, nd_x)
+			-- nd_hdg = math.deg(nd_hdg)
+			-- nd_hdg = (nd_hdg + 360) % 360
+			
+			nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
 			
 			true_brg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 			true_hdg = simDR_mag_hdg
@@ -61646,15 +62139,17 @@ function B738_fmc_calc()
 			simDR_fmc_trk = af_finish_crs
 			simDR_fmc_trk2 = (af_finish_crs + simDR_mag_variation + 360) % 360
 			
-			nd_lat2 = math.rad(legs_data[offset][7])
-			nd_lon2 = math.rad(legs_data[offset][8])
-			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+			nd_lat2 = legs_data[offset][7]
+			nd_lon2 = legs_data[offset][8]
+			nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 			
-			nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-			nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-			nd_hdg = math.atan2(nd_y, nd_x)
-			nd_hdg = math.deg(nd_hdg)
-			nd_hdg = (nd_hdg + 360) % 360
+			-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+			-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+			-- nd_hdg = math.atan2(nd_y, nd_x)
+			-- nd_hdg = math.deg(nd_hdg)
+			-- nd_hdg = (nd_hdg + 360) % 360
+			
+			nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
 			
 			true_brg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 			true_hdg = simDR_mag_hdg
@@ -61688,7 +62183,7 @@ function B738_fmc_calc()
 		elseif nav_mode == 5 then
 		
 			-- calculate Radii distance
-			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), radii_lat, radii_lon)
+			nd_dis = nd_calc_dist2(nd_lat, nd_lon, radii_lat, radii_lon)
 			
 			if radii_turn_dir == 2 then
 				B738DR_xtrack = nd_dis - radii_dist
@@ -61704,12 +62199,12 @@ function B738_fmc_calc()
 			simDR_fmc_trk_turn2 = radii_turn_dir
 			
 			-- calculate next waypoint
-			nd_lat2 = math.rad(legs_data[offset][7])
-			nd_lon2 = math.rad(legs_data[offset][8])
+			nd_lat2 = legs_data[offset][7]
+			nd_lon2 = legs_data[offset][8]
 				
 			simDR_fmc_trk_turn = -1 --radii_turn_dir	--legs_data[offset][21]
 			B738DR_wpt_path = legs_data[offset][31]
-			nd_hdg = nd_calc_brg(math.deg(nd_lat), math.deg(nd_lon), radii_lat, radii_lon)
+			nd_hdg = nd_calc_brg(nd_lat, nd_lon, radii_lat, radii_lon)
 			
 			--if legs_data[offset][21] == 0 then
 			if radii_turn_dir == 2 then
@@ -61722,12 +62217,14 @@ function B738_fmc_calc()
 			simDR_fmc_trk = nd_hdg
 			simDR_fmc_trk2 = (nd_hdg + simDR_mag_variation + 360) % 360
 			
-			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
-			nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-			nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-			nd_hdg = math.atan2(nd_y, nd_x)
-			nd_hdg = math.deg(nd_hdg)
-			nd_hdg = (nd_hdg + 360) % 360
+			-- nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+			-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+			-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+			-- nd_hdg = math.atan2(nd_y, nd_x)
+			-- nd_hdg = math.deg(nd_hdg)
+			-- nd_hdg = (nd_hdg + 360) % 360
+			
+			nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
 			
 			true_brg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 			true_hdg = simDR_mag_hdg
