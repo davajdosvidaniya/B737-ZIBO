@@ -18949,6 +18949,8 @@ function B738_load_config()
 								B738DR_nosewheel = 1
 							elseif temp_fmod == 2 then
 								B738DR_nosewheel = 2
+							elseif temp_fmod == 3 then
+								B738DR_nosewheel = 3
 							else
 								B738DR_nosewheel = 0
 							end
@@ -26585,6 +26587,8 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 				B738DR_nosewheel = 1
 			elseif B738DR_nosewheel == 1 then
 				B738DR_nosewheel = 2
+			elseif B738DR_nosewheel == 2 then
+				B738DR_nosewheel = 3
 			else
 				B738DR_nosewheel = 0
 			end
@@ -36748,17 +36752,21 @@ function B738_fmc_xtras_others()
 		end
 		line5_x = " NOSEWHEEL AXIS         "
 		if B738DR_nosewheel == 0 then
-			line5_l = "<  /   /                "
+			line5_l = "<  /   /    /           "
 			line5_g = " ON                     "
-			line5_s = "    YAW ROLL            "
+			line5_s = "    YAW ROLL VR         "
 		elseif B738DR_nosewheel == 1 then
-			line5_l = "<  /   /                "
+			line5_l = "<  /   /    /           "
 			line5_g = "    YAW                 "
-			line5_s = " ON     ROLL            "
-		else
-			line5_l = "<  /   /                "
+			line5_s = " ON     ROLL VR         "
+		elseif B738DR_nosewheel == 2 then
+			line5_l = "<  /   /    /           "
 			line5_g = "        ROLL            "
-			line5_s = " ON YAW                 "
+			line5_s = " ON YAW      VR         "
+		elseif B738DR_nosewheel == 3 then
+			line5_l = "<  /   /    /           "
+			line5_g = "             VR         "
+			line5_s = " ON YAW ROLL            "
 		end
 		-- line6_x = "                        "
 		line6_l = "<DEFAULT           BACK>"
@@ -48782,68 +48790,76 @@ function B738_displ_wpt()
 									B738DR_rte_fo_show[obj2] = 0
 									rte_act_enable_fo = 1
 								else
-									B738DR_rte_fo_show[obj2] = 1
-									B738DR_rte_fo_x[obj2] = nd_x
-									B738DR_rte_fo_y[obj2] = nd_y
+									-- B738DR_rte_fo_show[obj2] = 1
+									-- B738DR_rte_fo_x[obj2] = nd_x
+									-- B738DR_rte_fo_y[obj2] = nd_y
 									
-									if B738DR_missed_app_act == 0 and (n+1) >= first_miss_app_idx and (n+1) <= last_miss_app_idx then
-										B738DR_rte_fo_edit[obj2] = 2
+									if legs_num == 1 then
+										B738DR_rte_fo_show[obj2] = 0
 									else
-										B738DR_rte_fo_edit[obj2] = 0
-									end
-									
-									if legs_intdir_act == 0 then
-										if legs_data[n+1][1] == "VECTOR" then
-											--B738DR_rte_rot[obj] = (math.deg(legs_data[n+1][2]) - mag_hdg - simDR_mag_variation + 360) % 360
-											B738DR_rte_fo_rot[obj2] = (math.deg(legs_data[n+1][2]) - mag_hdg + 360) % 360
-											rte_dist = 15
-										else
-											B738DR_rte_fo_rot[obj2] = (math.deg(legs_data[n+1][2]) - mag_hdg ) % 360
-											rte_dist = legs_data[n+1][3] * nd_zoom
-											rte_dist = math.min(rte_dist, 15)
-										end
-									else
-										if legs_data[n+1][1] == "VECTOR" then
-											B738DR_rte_fo_rot[obj2] = (math.deg(legs_data[n+1][2]) - mag_hdg + 360) % 360
-											rte_dist = 15
-										else
-											B738DR_rte_fo_rot[obj2] = (math.deg(legs_data[n+1][2]) - mag_hdg ) % 360
-											rte_dist = legs_data[n+1][3] * nd_zoom
-											rte_dist = math.min(rte_dist, 15)
-										end
-									end
-									if n == legs_num and first_miss_app_idx > 0 then
-										rte_dist = 0
-									end
-									B738DR_rte_fo_dist[obj2] = rte_dist
-									--if hold_obj_fo < 5 and n ~= offset then
-									if hold_obj_fo < 5 then
+										B738DR_rte_fo_show[obj2] = 1
+										B738DR_rte_fo_x[obj2] = nd_x
+										B738DR_rte_fo_y[obj2] = nd_y
 										
-										if legs_data[n+1][31] == "HA" or legs_data[n+1][31] == "HF" or legs_data[n+1][31] == "HM" then
+										if B738DR_missed_app_act == 0 and (n+1) >= first_miss_app_idx and (n+1) <= last_miss_app_idx then
+											B738DR_rte_fo_edit[obj2] = 2
+										else
+											B738DR_rte_fo_edit[obj2] = 0
+										end
 										
-											if B738DR_missed_app_act == 0 and (n+1) >= first_miss_app_idx and (n+1) <= last_miss_app_idx then
-												rte_dist = 30	-- blue
+										if legs_intdir_act == 0 then
+											if legs_data[n+1][1] == "VECTOR" then
+												--B738DR_rte_rot[obj] = (math.deg(legs_data[n+1][2]) - mag_hdg - simDR_mag_variation + 360) % 360
+												B738DR_rte_fo_rot[obj2] = (math.deg(legs_data[n+1][2]) - mag_hdg + 360) % 360
+												rte_dist = 15
 											else
-												rte_dist = 0
+												B738DR_rte_fo_rot[obj2] = (math.deg(legs_data[n+1][2]) - mag_hdg ) % 360
+												rte_dist = legs_data[n+1][3] * nd_zoom
+												rte_dist = math.min(rte_dist, 15)
 											end
-										
-										--if legs_data[n+1][31] == "HA" or legs_data[n+1][31] == "HF" or legs_data[n+1][31] == "HM" then
-											B738DR_hold_fo_x[hold_obj_fo] = nd_x
-											B738DR_hold_fo_y[hold_obj_fo] = nd_y
-											B738DR_hold_fo_crs[hold_obj_fo] = ((tonumber(legs_data[n+1][29]) / 10) - mag_hdg + 360) % 360
-											if B738DR_efis_map_range_fo == 0 then	-- 5 NM
-												B738DR_hold_fo_type[hold_obj_fo] = legs_data[n+1][21] + 1 + rte_dist
-												B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(n+1)
-											elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
-												B738DR_hold_fo_type[hold_obj_fo] = legs_data[n+1][21] + 3 + rte_dist
-												B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(n+1)
-											elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
-												B738DR_hold_fo_type[hold_obj_fo] = legs_data[n+1][21] + 5 + rte_dist
-												B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(n+1)
-											elseif B738DR_efis_map_range_fo >= 3 then	-- 40 NM
-												B738DR_hold_fo_type[hold_obj_fo] = legs_data[n+1][21] + 7 + rte_dist
+										else
+											if legs_data[n+1][1] == "VECTOR" then
+												B738DR_rte_fo_rot[obj2] = (math.deg(legs_data[n+1][2]) - mag_hdg + 360) % 360
+												rte_dist = 15
+											else
+												B738DR_rte_fo_rot[obj2] = (math.deg(legs_data[n+1][2]) - mag_hdg ) % 360
+												rte_dist = legs_data[n+1][3] * nd_zoom
+												rte_dist = math.min(rte_dist, 15)
 											end
-											hold_obj_fo = hold_obj_fo + 1
+										end
+										if n == legs_num and first_miss_app_idx > 0 then
+											rte_dist = 0
+										end
+										B738DR_rte_fo_dist[obj2] = rte_dist
+										--if hold_obj_fo < 5 and n ~= offset then
+										if hold_obj_fo < 5 then
+											
+											if legs_data[n+1][31] == "HA" or legs_data[n+1][31] == "HF" or legs_data[n+1][31] == "HM" then
+											
+												if B738DR_missed_app_act == 0 and (n+1) >= first_miss_app_idx and (n+1) <= last_miss_app_idx then
+													rte_dist = 30	-- blue
+												else
+													rte_dist = 0
+												end
+											
+											--if legs_data[n+1][31] == "HA" or legs_data[n+1][31] == "HF" or legs_data[n+1][31] == "HM" then
+												B738DR_hold_fo_x[hold_obj_fo] = nd_x
+												B738DR_hold_fo_y[hold_obj_fo] = nd_y
+												B738DR_hold_fo_crs[hold_obj_fo] = ((tonumber(legs_data[n+1][29]) / 10) - mag_hdg + 360) % 360
+												if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+													B738DR_hold_fo_type[hold_obj_fo] = legs_data[n+1][21] + 1 + rte_dist
+													B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(n+1)
+												elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+													B738DR_hold_fo_type[hold_obj_fo] = legs_data[n+1][21] + 3 + rte_dist
+													B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(n+1)
+												elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+													B738DR_hold_fo_type[hold_obj_fo] = legs_data[n+1][21] + 5 + rte_dist
+													B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(n+1)
+												elseif B738DR_efis_map_range_fo >= 3 then	-- 40 NM
+													B738DR_hold_fo_type[hold_obj_fo] = legs_data[n+1][21] + 7 + rte_dist
+												end
+												hold_obj_fo = hold_obj_fo + 1
+											end
 										end
 									end
 								end
@@ -49544,6 +49560,7 @@ function B738_displ_wpt()
 										--end
 										B738DR_rte_fo_x[obj2] = nd_x
 										B738DR_rte_fo_y[obj2] = nd_y
+										
 										if legs_num == 1 then
 											B738DR_rte_fo_edit[obj2] = 2	-- 0-active, 1-mod, 2-not active
 										else
@@ -64078,7 +64095,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25u"
+	version = "v3.25v"
 
 end
 

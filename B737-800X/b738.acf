@@ -192,7 +192,7 @@ P _gear/1/_lonE -4.0
 P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 112094.945312500
-P _gear/1/_stat_def 0.724378884
+P _gear/1/_stat_def 0.724378943
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -226,7 +226,7 @@ P _gear/2/_lonE -4.0
 P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 112094.945312500
-P _gear/2/_stat_def 0.724378884
+P _gear/2/_stat_def 0.724378943
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -44406,7 +44406,6 @@ GROUP CLOCKS
 END_GROUP
 GROUP SLATS
   LOCKED
-  GROUP_OPEN
   gen_rotary Inbd Transit Left
     POS 1501.000000 457.000000
     IMAGE Slat Indicator/transit_light_left_inbd
@@ -97041,6 +97040,7 @@ GROUP PFD Captain
 
   GROUP Tapes
     LOCKED
+    GROUP_OPEN
     GROUP ALT TAPE
       LOCKED
       gen_pointer ALT1
@@ -97593,6 +97593,38 @@ GROUP PFD Captain
         IMAGE PFD/spd_80
         DATAREF laminar/B738/pfd/spd_80
         SHOW_EQUAL 1.000000 laminar/B738/pfd/spd_80_show
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 0
+        BUS_SRC 3
+        KEY_FRAME 40.000000 0.000000 1.000000
+        KEY_FRAME 45.000000 0.000000 1.000000
+        KEY_FRAME 90.000000 135.000000
+        IS_DRAGGABLE 0
+        IS_VERTICAL 1
+        OFFSET 0.000000
+
+    END_GROUP
+    GROUP 25 OFFSET
+      LOCKED
+      GROUP_ANIMATE_MODE TRANSLATE
+      GROUP_WIDTH 84
+      GROUP_HEIGHT 358
+      DATAREF sim/cockpit2/gauges/indicators/airspeed_kts_pilot
+      POS 62.000000 9.000000
+      CLIP
+      KEY_FRAME 40.000000 0.000000 1.000000
+      KEY_FRAME 45.000000 0.000000 1.000000
+      KEY_FRAME 90.000000 -135.000000 1.000000
+      KEY_FRAME 450.000000 -1215.000000 1.000000
+      KEY_FRAME 451.000000 -1215.000000
+      IS_VERTICAL 1
+      OFFSET 0.000000
+      gen_pointer 25 BUG
+        POS 88.000000 9.000000
+        IMAGE PFD/flaps_25
+        DATAREF laminar/B738/pfd/flaps_25
+        SHOW_EQUAL 1.000000 laminar/B738/pfd/flaps_25_show
         LOCKED
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 0
@@ -100659,6 +100691,7 @@ gen_rotary EFIS disagree 2
 
 GROUP PFD First Officer
   LOCKED
+  GROUP_OPEN
   gen_rotary Grey Background 2
     POS 265.000000 551.000000
     IMAGE PFD/grey_background
@@ -100697,6 +100730,7 @@ GROUP PFD First Officer
 
   GROUP Tapes 2
     LOCKED
+    GROUP_OPEN
     GROUP ALT TAPE 2
       LOCKED
       gen_pointer ALT1 2
@@ -101247,6 +101281,38 @@ GROUP PFD First Officer
         IMAGE PFD/spd_80
         DATAREF laminar/B738/pfd/spd_80
         SHOW_EQUAL 1.000000 laminar/B738/pfd/spd_80_show
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 1
+        BUS_SRC 3
+        KEY_FRAME 40.000000 0.000000 1.000000
+        KEY_FRAME 45.000000 0.000000 1.000000
+        KEY_FRAME 90.000000 135.000000
+        IS_DRAGGABLE 0
+        IS_VERTICAL 1
+        OFFSET 0.000000
+
+    END_GROUP
+    GROUP 25 OFFSET 2
+      LOCKED
+      GROUP_ANIMATE_MODE TRANSLATE
+      GROUP_WIDTH 84
+      GROUP_HEIGHT 358
+      DATAREF sim/cockpit2/gauges/indicators/airspeed_kts_copilot
+      POS 62.000000 521.000000
+      CLIP
+      KEY_FRAME 40.000000 0.000000 1.000000
+      KEY_FRAME 45.000000 0.000000 1.000000
+      KEY_FRAME 90.000000 -135.000000 1.000000
+      KEY_FRAME 450.000000 -1215.000000 1.000000
+      KEY_FRAME 451.000000 -1215.000000
+      IS_VERTICAL 1
+      OFFSET 0.000000
+      gen_pointer 25 BUG 2
+        POS 88.000000 521.000000
+        IMAGE PFD/flaps_25
+        DATAREF laminar/B738/pfd/flaps_25
+        SHOW_EQUAL 1.000000 laminar/B738/pfd/flaps_25_show
         LOCKED
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 1
@@ -103314,7 +103380,6 @@ GROUP Marker Beacons
 END_GROUP
 GROUP FO AP Annuns
   LOCKED
-  GROUP_OPEN
   gen_rotary THR rectangle
     POS 142.000000 749.000000
     IMAGE PFD/thr_modes
@@ -106643,7 +106708,6 @@ END_GROUP
 GROUP Display light test
   SHOW_GREATER 1.000000 laminar/B738/dspl_light_test
   HIDE
-  GROUP_OPEN
   gen_rotary AP TEST2
     POS 1873.000000 688.000000
     IMAGE Standby/ap_test2

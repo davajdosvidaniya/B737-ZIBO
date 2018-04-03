@@ -372,6 +372,8 @@ right_adf_old = 0
 change_adf_nav2 = 0
 first_time_num = 0
 
+brake_smoothly_status = 0
+
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
 --*************************************************************************************--
@@ -887,12 +889,16 @@ B738DR_track_up_active		= find_dataref("laminar/B738/fms/track_up_active")
 B738DR_irs_source 			= find_dataref("laminar/B738/toggle_switch/irs_source")
 B738DR_irs_left 			= find_dataref("laminar/B738/toggle_switch/irs_left")
 B738DR_irs_right 			= find_dataref("laminar/B738/toggle_switch/irs_right")
-B738DR_irs_align_fail_right	= find_dataref("laminar/B738/annunciator/irs_align_fail_right")
-B738DR_irs_align_fail_left	= find_dataref("laminar/B738/annunciator/irs_align_fail_left")
+-- B738DR_irs_align_fail_right	= find_dataref("laminar/B738/annunciator/irs_align_fail_right")
+-- B738DR_irs_align_fail_left	= find_dataref("laminar/B738/annunciator/irs_align_fail_left")
 alignment_left_remain		= find_dataref("laminar/B738/irs/alignment_left_remain")
 alignment_right_remain		= find_dataref("laminar/B738/irs/alignment_right_remain")
 B738DR_irs_align_left		= find_dataref("laminar/B738/annunciator/irs_align_left")
 B738DR_irs_align_right		= find_dataref("laminar/B738/annunciator/irs_align_right")
+B738DR_irs_align_fail_1		= find_dataref("laminar/B738/annunciator/irs/align_fail_left")
+B738DR_irs_align_fail_2		= find_dataref("laminar/B738/annunciator/irs/align_fail_right")
+
+
 
 B738DR_source_off_bus1		= find_dataref("laminar/B738/annunciator/source_off1")
 B738DR_source_off_bus2		= find_dataref("laminar/B738/annunciator/source_off2")
@@ -3407,6 +3413,15 @@ function B738_park_brake_reg_CMDhandler(phase, duration)
 	end
 end
 
+function B738_brake_smoothly_CMDhandler(phase, duration)
+	if phase == 0 then
+		brake_smoothly_status = 1
+	elseif phase == 2 then
+		brake_smoothly_status = 0
+	end
+end
+
+
 function B738_fuel_pump_lft1_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_fuel_tank_pos_lft1 == 0 then
@@ -4338,6 +4353,8 @@ B738CMD_fdr_cover		= create_command("laminar/B738/toggle_switch/fdr_cover", "Cov
 B738CMD_fdr				= create_command("laminar/B738/toggle_switch/fdr", "FDR", B738_fdr_CMDhandler)
 
 B738CMD_gear_lock_override 		= create_command("laminar/B738/gear_lock/override", "Gear Lock Override", B738_gear_lock_override_CMDhandler)
+
+B738CMD_brake_smoothly 		= create_command("laminar/B738/brake_smoothly", "Brake smoothly", B738_brake_smoothly_CMDhandler)
 
 --*************************************************************************************--
 --** 				             X-PLANE COMMAND HANDLERS               	    	 **--
@@ -6183,6 +6200,8 @@ function yaw_damp_off()
 		B738DR_yaw_damper_switch_pos = 0
 end
 
+
+
 function B738_yaw_damp()
 
 	local yaw_damp_hydr = 1
@@ -6217,7 +6236,7 @@ function B738_yaw_damp()
 				irs_off = 1
 			end
 		end
-		if B738DR_irs_align_fail_left == 1 then
+		if B738DR_irs_align_fail_1 == 1 then
 			irs_off = 1
 		end
 	elseif B738DR_irs_source == 0 then
@@ -6238,7 +6257,7 @@ function B738_yaw_damp()
 				irs_off = 1
 			end
 		end
-		if B738DR_irs_align_fail_left == 1 and B738DR_irs_align_fail_right == 1 then
+		if B738DR_irs_align_fail_1 == 1 and B738DR_irs_align_fail_2 == 1 then
 			irs_off = 1
 		end
 	elseif B738DR_irs_source == 1 then
@@ -6256,7 +6275,7 @@ function B738_yaw_damp()
 				irs_off = 1
 			end
 		end
-		if B738DR_irs_align_fail_right == 1 then
+		if B738DR_irs_align_fail_2 == 1 then
 			irs_off = 1
 		end
 	end
@@ -9017,6 +9036,8 @@ function B738_nose_steer()
 	local steer_spd = 0
 	local brake_max2 = 0
 	local gear_rot_brake = 0
+	local brake_smoothly_left = 0
+	local brake_smoothly_right = 0
 	
 	local throttle_used = math.max(simDR_throttle_used_ratio[0], simDR_throttle_used_ratio[1])
 	throttle_used = math.min(throttle_used, 0.5)
@@ -9052,6 +9073,16 @@ function B738_nose_steer()
 			simDR_steer_ovr = 0
 			simDR_toe_brakes_ovr = 0
 		else
+			if brake_smoothly_status == 0 then
+				left_brake = 0
+				right_brake = 0
+			else
+				brake_smoothly_left = left_brake * 100
+				brake_smoothly_right = right_brake * 100
+				left_brake = B738_set_animation_rate(brake_smoothly_left, TOE_BRAKE_FORCE * 100, 0, 100, 0.15) / 100
+				right_brake = B738_set_animation_rate(brake_smoothly_right, TOE_BRAKE_FORCE * 100, 0, 100, 0.15) / 100
+			end
+			
 			if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1
 			or simDR_on_ground_2 == 1 then
 				
@@ -9062,8 +9093,10 @@ function B738_nose_steer()
 					nose_steer_deg_trg = simDR_steer_cmd
 				elseif B738DR_nosewheel == 1 then
 					nose_steer_deg_trg = B738_rescale(-1, -steer_limit, 1, steer_limit, simDR_yoke_hdg_ratio)
-				else
+				elseif B738DR_nosewheel == 2 then
 					nose_steer_deg_trg = B738_rescale(-1, -steer_limit, 1, steer_limit, simDR_yoke_roll2_ratio)
+				else
+					nose_steer_deg_trg = simDR_steer_cmd
 				end
 				
 				if simDR_ground_speed > 23 then
@@ -9075,12 +9108,15 @@ function B738_nose_steer()
 					end
 				end
 				
-				if B738DR_nosewheel > 0 then
+				if B738DR_nosewheel == 0 then
+					simDR_steer_ovr = 0
+				elseif B738DR_nosewheel == 3 then
+					simDR_steer_ovr = 1
+				--if B738DR_nosewheel > 0 then
+				else
 					simDR_steer_ovr = 1
 					--simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, 0.028)
 					simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, steer_speed)
-				else
-					simDR_steer_ovr = 0
 				end
 				
 				if simDR_steer_cmd < 0 then
@@ -11972,7 +12008,7 @@ B738_init_engineMGMT_fltStart()
 	simDR_adf2_power = 2
 	first_time_num = 0
 	steer_speed = 0.110	--0.028
-	
+	brake_smoothly_status = 0
 	
 end
 

@@ -13450,8 +13450,13 @@ function B738_N1_thrust_manage4()
 				
 				eng1_N1_thrust_trg = eng1_N1_thrust_cur + control_N1(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug)
 				eng2_N1_thrust_trg = eng2_N1_thrust_cur + control_N1(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug)
-				eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 0.36)	--0.5
-				eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, eng2_N1_thrust_trg, 0.0, 1.04, 0.36)	--0.5
+				if at_mode_eng == 3 then
+					eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 0.38)
+					eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, eng2_N1_thrust_trg, 0.0, 1.04, 0.38)
+				else
+					eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 0.5)
+					eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, eng2_N1_thrust_trg, 0.0, 1.04, 0.5)
+				end
 				
 				simDR_throttle1_use = eng1_N1_thrust_cur
 				simDR_throttle2_use = eng2_N1_thrust_cur

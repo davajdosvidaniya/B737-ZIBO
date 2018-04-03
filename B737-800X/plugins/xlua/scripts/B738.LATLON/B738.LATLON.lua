@@ -193,6 +193,10 @@ B738DR_irs_left2_show		= create_dataref("laminar/B738/irs_left2_show", "number")
 B738DR_irs_right1_show		= create_dataref("laminar/B738/irs_right1_show", "number")
 B738DR_irs_right2_show		= create_dataref("laminar/B738/irs_right2_show", "number")
 
+
+B738DR_irs_align_fail_1		= create_dataref("laminar/B738/annunciator/irs/align_fail_left", "number")
+B738DR_irs_align_fail_2		= create_dataref("laminar/B738/annunciator/irs/align_fail_right", "number")
+
 -- ANNUNANCIATES
 B738DR_irs_align_fail_right		= create_dataref("laminar/B738/annunciator/irs_align_fail_right", "number")
 B738DR_irs_align_fail_left		= create_dataref("laminar/B738/annunciator/irs_align_fail_left", "number")
@@ -1780,6 +1784,8 @@ function after_physics()
 			B738DR_irs_dc_fail_left = irs_dc_fail_left
 			B738DR_irs_dc_fail_right = irs_dc_fail_right
 		end
+		B738DR_irs_align_fail_1 = irs_align_fail_left
+		B738DR_irs_align_fail_2 = irs_align_fail_right
 		pfd_nd()
 		turn_around_state()
 	end

@@ -1554,6 +1554,8 @@ B738DR_pfd_flaps_5			= create_dataref("laminar/B738/pfd/flaps_5", "number")
 B738DR_pfd_flaps_5_show		= create_dataref("laminar/B738/pfd/flaps_5_show", "number")
 B738DR_pfd_flaps_15			= create_dataref("laminar/B738/pfd/flaps_15", "number")
 B738DR_pfd_flaps_15_show	= create_dataref("laminar/B738/pfd/flaps_15_show", "number")
+B738DR_pfd_flaps_25			= create_dataref("laminar/B738/pfd/flaps_25", "number")
+B738DR_pfd_flaps_25_show	= create_dataref("laminar/B738/pfd/flaps_25_show", "number")
 B738DR_pfd_spd_80			= create_dataref("laminar/B738/pfd/spd_80", "number")
 B738DR_pfd_spd_80_show		= create_dataref("laminar/B738/pfd/spd_80_show", "number")
 B738DR_pfd_flaps_2			= create_dataref("laminar/B738/pfd/flaps_2", "number")
@@ -2366,6 +2368,7 @@ function B738_calc_vref()
 		B738DR_pfd_flaps_5 = B738DR_fms_vref_40 + 30
 		B738DR_pfd_flaps_10 = B738DR_fms_vref_40 + 30
 		B738DR_pfd_flaps_15 = B738DR_fms_vref_40 + 20
+		B738DR_pfd_flaps_25 = B738DR_fms_vref_40 + 10
 		
 		-- auto
 		if B738DR_spd_ref == 0 then
@@ -2403,6 +2406,7 @@ function B738_calc_vref()
 		B738DR_pfd_flaps_5 = vmax[5] - 5
 		B738DR_pfd_flaps_10 = vmax[10] - 5
 		B738DR_pfd_flaps_15 = vmax[15] - 5
+		B738DR_pfd_flaps_25 = vmax[25] - 5
 	end
 end
 
@@ -2414,6 +2418,7 @@ function B738_vspeed_bugs()
 	local flap_1_show = 0
 	local flap_5_show = 0
 	local flap_15_show = 0
+	local flap_25_show = 0
 
 	-- show V2+15 bug
 	local flaps_ratio = 0
@@ -2522,6 +2527,7 @@ function B738_vspeed_bugs()
 		flap_1_show = 0
 		flap_5_show = 0
 		flap_15_show = 0
+		flap_25_show = 0
 	else
 		if flaps > 0 then		-- flaps up > 1
 			flap_1_show = 1
@@ -2534,10 +2540,25 @@ function B738_vspeed_bugs()
 			flap_5_show = 0
 		end
 		if flaps > 0.50 then		-- flaps 10 > 15
-			flap_15_show = 1
+			if B738DR_fms_approach_flaps == 15 then
+				flap_15_show = 0
+			else
+				flap_15_show = 1
+			end
 			flap_1_show = 0
 		else
 			flap_15_show = 0
+		end
+		if flaps > 0.625 then		-- flaps 15 > 25
+			if B738DR_fms_approach_flaps == 15 then
+				flap_25_show = 0
+			else
+				flap_25_show = 1
+			end
+			flap_1_show = 0
+			flap_5_show = 0
+		else
+			flap_25_show = 0
 		end
 	end
 
@@ -2552,16 +2573,21 @@ function B738_vspeed_bugs()
 		if flaps < 0.624 then		-- flaps 15
 			flap_15_show = 0
 		end
+		if flaps < 0.749 then		-- flaps 25
+			flap_25_show = 0
+		end
 	end
 	if gw_to == 0 then
 		flap_1_show = 0
 		flap_5_show = 0
 		flap_15_show = 0
+		flap_25_show = 0
 	end
 	
 	B738DR_pfd_flaps_1_show = flap_1_show
 	B738DR_pfd_flaps_5_show = flap_5_show
 	B738DR_pfd_flaps_15_show = flap_15_show
+	B738DR_pfd_flaps_25_show = flap_25_show
 	
 	-- speed 80 kts bug
 	B738DR_pfd_spd_80 = 80
@@ -2613,11 +2639,13 @@ function B738_calc_min_max_spd()
 	local weight_index = (total_weight_lbs - 90 ) / 90
 	
 	-- minimum red/black tape, min and max maneuver lines
+	local flaps2 = 0
 	if flaps == 0 then				-- flaps 0
 		-- min_speed_0 = math.max( 116, (vmin_full[0] - 27))
 		-- min_speed = B738_rescale(0, min_speed_0, 1, vmin_full[0], weight_index)
 		max_speed = max_spd
-		next_low_flaps_spd = max_spd
+		--next_low_flaps_spd = max_spd
+		next_low_flaps_spd = max_speed + 10
 		next_hi_flaps_spd = vmax[1] - 40
 		min_speed = B738_rescale(0, 124, 1, 165, weight_index)
 	
@@ -2628,7 +2656,8 @@ function B738_calc_min_max_spd()
 		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[1], weight_index)
 		-- min_speed = B738_rescale(0.0, min_speed_1, 0.125, min_speed_2, flaps)
 		max_speed = B738_rescale(0.0, max_spd, 0.125, vmax[1], flaps)
-		next_low_flaps_spd = B738_rescale(0.0, max_spd, 0.125, B738DR_pfd_flaps_up, flaps)
+		--next_low_flaps_spd = B738_rescale(0.0, max_spd, 0.125, B738DR_pfd_flaps_up, flaps)
+		next_low_flaps_spd = B738_rescale(0.0, max_speed + 10, 0.125, max_speed - 10, flaps)
 		next_hi_flaps_spd = B738_rescale(0.0, vmax[1] - 40, 0.125, (vmax[10]-30), flaps)
 		min_speed_1 = B738_rescale(0, 124, 1, 165, weight_index)
 		min_speed_2 = B738_rescale(0, 123, 1, 163, weight_index)
@@ -2641,7 +2670,10 @@ function B738_calc_min_max_spd()
 		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[2], weight_index)
 		-- min_speed = B738_rescale(0.125, min_speed_1, 0.25, min_speed_2, flaps)
 		max_speed = B738_rescale(0.125, vmax[1], 0.25, vmax[2], flaps)
-		next_low_flaps_spd = B738_rescale(0.125, B738DR_pfd_flaps_up, 0.25, B738DR_pfd_flaps_1, flaps)
+		--next_low_flaps_spd = B738_rescale(0.125, B738DR_pfd_flaps_up, 0.25, B738DR_pfd_flaps_1, flaps)
+		flaps2 = math.min(flaps, 0.125)
+		--next_low_flaps_spd = B738_rescale(0.0, max_spd, 0.125, B738DR_pfd_flaps_up, flaps2)
+		next_low_flaps_spd = B738_rescale(0.0, max_speed + 10, 0.125, max_speed - 10, flaps2)
 		next_hi_flaps_spd = B738_rescale(0.125, (vmax[10]-30), 0.25, (vmax[15]-40), flaps)
 		min_speed_1 = B738_rescale(0, 123, 1, 163, weight_index)
 		min_speed_2 = B738_rescale(0, 122, 1, 162, weight_index)
@@ -2654,7 +2686,8 @@ function B738_calc_min_max_spd()
 		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[5], weight_index)
 		-- min_speed = B738_rescale(0.25, min_speed_1, 0.375, min_speed_2, flaps)
 		max_speed = B738_rescale(0.25, vmax[2], 0.375, vmax[5], flaps)
-		next_low_flaps_spd = B738_rescale(0.25, B738DR_pfd_flaps_1, 0.375, B738DR_pfd_flaps_2, flaps)
+		--next_low_flaps_spd = B738_rescale(0.25, B738DR_pfd_flaps_1, 0.375, B738DR_pfd_flaps_2, flaps)
+		next_low_flaps_spd = B738_rescale(0.25, max_speed - 10, 0.375, B738DR_pfd_flaps_up, flaps)
 		next_hi_flaps_spd = B738_rescale(0.25, (vmax[15]-40), 0.375, (vmax[25]-40), flaps)
 		min_speed_1 = B738_rescale(0, 122, 1, 162, weight_index)
 		min_speed_2 = B738_rescale(0, 118, 1, 158, weight_index)
@@ -2667,7 +2700,10 @@ function B738_calc_min_max_spd()
 		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[10], weight_index)
 		-- min_speed = B738_rescale(0.375, min_speed_1, 0.5, min_speed_2, flaps)
 		max_speed = B738_rescale(0.375, vmax[5], 0.5, vmax[10], flaps)
-		next_low_flaps_spd = B738_rescale(0.375, B738DR_pfd_flaps_2, 0.5, B738DR_pfd_flaps_5, flaps)
+		--next_low_flaps_spd = B738_rescale(0.375, B738DR_pfd_flaps_2, 0.5, B738DR_pfd_flaps_5, flaps)
+		flaps2 = math.min(flaps, 0.375)
+		--next_low_flaps_spd = B738_rescale(0.25, B738DR_pfd_flaps_1, 0.375, B738DR_pfd_flaps_2, flaps2)
+		next_low_flaps_spd = B738_rescale(0.25, max_spd - 10, 0.375, B738DR_pfd_flaps_up, flaps2)
 		next_hi_flaps_spd = B738_rescale(0.375, (vmax[25]-40), 0.5, (vmax[30]-40), flaps)
 		min_speed_1 = B738_rescale(0, 118, 1, 158, weight_index)
 		min_speed_2 = B738_rescale(0, 116, 1, 153, weight_index)
@@ -2680,7 +2716,8 @@ function B738_calc_min_max_spd()
 		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[15], weight_index)
 		-- min_speed = B738_rescale(0.5, min_speed_1, 0.625, min_speed_2, flaps)
 		max_speed = B738_rescale(0.5, vmax[10], 0.625, vmax[15], flaps)
-		next_low_flaps_spd = B738_rescale(0.5, B738DR_pfd_flaps_5, 0.625, B738DR_pfd_flaps_10, flaps)
+		--next_low_flaps_spd = B738_rescale(0.5, B738DR_pfd_flaps_5, 0.625, B738DR_pfd_flaps_10, flaps)
+		next_low_flaps_spd = B738_rescale(0.5, B738DR_pfd_flaps_up, 0.625, B738DR_pfd_flaps_1, flaps)
 		next_hi_flaps_spd = B738_rescale(0.5, (vmax[30]-40), 0.625, (vmax[40]-40), flaps)
 		min_speed_1 = B738_rescale(0, 116, 1, 153, weight_index)
 		min_speed_2 = B738_rescale(0, 115, 1, 148, weight_index)
@@ -2693,7 +2730,8 @@ function B738_calc_min_max_spd()
 		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[25], weight_index)
 		-- min_speed = B738_rescale(0.625, min_speed_1, 0.75, min_speed_2, flaps)
 		max_speed = B738_rescale(0.625, vmax[15], 0.75, vmax[25], flaps)
-		next_low_flaps_spd = B738_rescale(0.625, B738DR_pfd_flaps_10, 0.75, B738DR_pfd_flaps_15, flaps)
+		--next_low_flaps_spd = B738_rescale(0.625, B738DR_pfd_flaps_10, 0.75, B738DR_pfd_flaps_15, flaps)
+		next_low_flaps_spd = B738_rescale(0.625, B738DR_pfd_flaps_1, 0.75, B738DR_pfd_flaps_10, flaps)
 		next_hi_flaps_spd = B738_rescale(0.625, (vmax[40]-40), 0.75, (vmax[40]-50), flaps)
 		min_speed_1 = B738_rescale(0, 115, 1, 148, weight_index)
 		min_speed_2 = B738_rescale(0, 110, 1, 144, weight_index)
@@ -2706,7 +2744,8 @@ function B738_calc_min_max_spd()
 		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[30], weight_index)
 		-- min_speed = B738_rescale(0.75, min_speed_1, 0.875, min_speed_2, flaps)
 		max_speed = B738_rescale(0.75, vmax[25], 0.875, vmax[30], flaps)
-		next_low_flaps_spd = B738DR_pfd_flaps_15 - 10
+		--next_low_flaps_spd = B738DR_pfd_flaps_15 - 10
+		next_low_flaps_spd = B738DR_pfd_flaps_15
 		next_hi_flaps_spd = B738_rescale(0.75, (vmax[40]-50), 0.875, (vmax[40]-60), flaps)
 		min_speed_1 = B738_rescale(0, 110, 1, 144, weight_index)
 		min_speed_2 = B738_rescale(0, 109, 1, 143, weight_index)
@@ -2719,7 +2758,8 @@ function B738_calc_min_max_spd()
 		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[40], weight_index)
 		-- min_speed = B738_rescale(0.875, min_speed_1, 1.0, min_speed_2, flaps)
 		max_speed = B738_rescale(0.875, vmax[30], 1.0, vmax[40], flaps)
-		next_low_flaps_spd = B738DR_pfd_flaps_15 - 10
+		-- next_low_flaps_spd = B738DR_pfd_flaps_25 - 10
+		next_low_flaps_spd = B738DR_pfd_flaps_25
 		next_hi_flaps_spd = B738_rescale(0.875, (vmax[40]-60), 1.0, (vmax[40]-70), flaps)
 		min_speed_1 = B738_rescale(0, 109, 1, 143, weight_index)
 		min_speed_2 = B738_rescale(0, 107, 1, 141, weight_index)
@@ -2734,7 +2774,11 @@ function B738_calc_min_max_spd()
 	else
 		--min_speed_1 = max_speed - 10
 		--min_speed_2 = max_speed - 15
-		max_maneuver_speed = math.min((max_speed - 10), next_low_flaps_spd) --B738_rescale(0.0, min_speed_2, 1.0, min_speed_1, flaps)
+		if flaps >= 0.375 then
+			max_maneuver_speed = math.min((max_speed - 10), next_low_flaps_spd) --B738_rescale(0.0, min_speed_2, 1.0, min_speed_1, flaps)
+		else
+			max_maneuver_speed = next_low_flaps_spd
+		end
 	end
 
 	B738DR_pfd_min_speed = min_speed
@@ -2776,7 +2820,6 @@ function B738_calc_min_max_spd()
 			max_maneuver_speed_show = 0
 		end
 	end
-	
 	
 	if B738DR_fms_vref > 0 then		-- Vref set
 		min_maneuver_speed_show = 0

@@ -77,6 +77,14 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25v:
+------
+- corrected systems
+- fixed small bugs
+- add flap 25 bug on PFD
+- add nosewheel steer manipulator in cockpit for VR (set option NOSEWHEEL AXIS to VR)
+- add command for smoothly brake ("laminar/B738/brake_smoothly" - "Brake smoothly"- don't forget set option TOE BRAKE AXIS to OFF)
+
 3.25u:
 ------
 - corrected systems
