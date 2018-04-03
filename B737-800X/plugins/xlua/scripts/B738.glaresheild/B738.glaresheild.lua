@@ -374,6 +374,9 @@ yoke_servo = 0
 
 spd_ratio = 0
 spd_ratio_old = 0
+spd_ratio_sum = 0
+spd_ratio_num = 0
+time_spd_ratio = 0
 
 --*************************************************************************************--
 --** 					               CONSTANTS                    				 **--
@@ -12516,7 +12519,7 @@ function control_SPD()
 	local SPD_target = B738DR_mcp_speed_dial_kts
 	
 	SPD_err = SPD_target - SPD_act
-	SPD_corr2 = SPD_act + (spd_ratio * 2)
+	SPD_corr2 = SPD_act + (spd_ratio * 5.5)
 	if SPD_act < SPD_target then
 		if SPD_corr2 > SPD_target then
 			SPD_corr2 = (SPD_corr2 - SPD_target) * SIM_PERIOD * 0.25
@@ -12552,7 +12555,7 @@ function control_SPD()
 		SPD_corr = B738_rescale(0, 0, 20, 1.5, SPD_corr)	-- 3 / sec
 	end
 	
-	SPD_corr = SPD_corr - spd_ratio
+	SPD_corr = SPD_corr - (spd_ratio * 1.35)
 	SPD_corr = (SPD_corr * SIM_PERIOD * 0.90) - SPD_corr2
 	
 	local max_change = SPD_corr / SIM_PERIOD
@@ -12677,62 +12680,13 @@ function B738_N1_thrust_manage4()
 				thr2_anim = B738_rescale(0, 0, 1.04, 1, eng2_N1_thrust_cur)
 				
 			elseif at_mode_eng == 2 then	-- speed mode
-				-- thr1_target = B738_rescale(0, 0, 1, 1.04, simDR_throttle_1)
-				-- thr2_target = B738_rescale(0, 0, 1, 1.04, simDR_throttle_2)
-				-- eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, thr1_target, 0.0, 1.04, 8)
-				-- eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, thr2_target, 0.0, 1.04, 8)
-				-- simDR_throttle1_use = eng1_N1_thrust_cur
-				-- simDR_throttle2_use = eng2_N1_thrust_cur
-				-- thr1_anim = math.min(1.0, eng1_N1_thrust_cur)
-				-- thr2_anim = math.min(1.0, eng2_N1_thrust_cur)
 				lock_throttle = 1
-				-- if B738DR_n1_set_source == 0 then	-- FMC AUTO
-					-- if B738DR_fms_N1_mode == 0 or B738DR_fms_N1_mode == 13 then		-- no mode
-						-- thr1_limit = 1.04
-						-- thr2_limit = 1.04
-					-- else
-						-- thr1_limit = eng1_N1_thrust
-						-- thr2_limit = eng2_N1_thrust
-					-- end
-				-- else 
-					-- thr1_limit = eng1_N1_thrust
-					-- thr2_limit = eng2_N1_thrust
-				-- end
-				
-				-- if simDR_throttle_1 > thr1_limit then
-					-- thr1_target = thr1_limit
-				-- else
-					-- --thr1_target = simDR_throttle_1
-					-- thr1_target = B738_rescale(0, 0, 1, 1.04, simDR_throttle_1)
-				-- end
-				-- if simDR_throttle_2 > thr2_limit then
-					-- thr2_target = thr2_limit
-				-- else
-					-- --thr2_target = simDR_throttle_2
-					-- thr2_target = B738_rescale(0, 0, 1, 1.04, simDR_throttle_2)
-				-- end
 				
 				throttle_limit = control_N1()
 				throttle_limit2 = control_SPD()
-				if throttle_limit > 0 then
-					throttle_limit = 0
-				end
-				thr1_target = eng1_N1_thrust_cur + throttle_limit + throttle_limit2
-				thr2_target = eng2_N1_thrust_cur + throttle_limit + throttle_limit2
-				--B738DR_test_test = throttle_limit2
-				
-				-- if throttle_limit > 0 then
-					-- thr1_target = eng1_N1_thrust_cur + throttle_limit + throttle_limit2
-					-- thr2_target = eng2_N1_thrust_cur + throttle_limit + throttle_limit2
-				-- else
-					-- if throttle_limit2 < 0 then
-						-- thr1_target = eng1_N1_thrust_cur + throttle_limit + throttle_limit2
-						-- thr2_target = eng2_N1_thrust_cur + throttle_limit + throttle_limit2
-					-- else
-						-- thr1_target = eng1_N1_thrust_cur + throttle_limit
-						-- thr2_target = eng2_N1_thrust_cur + throttle_limit
-					-- end
-				-- end
+				throttle_limit = math.min(throttle_limit, throttle_limit2)
+				thr1_target = eng1_N1_thrust_cur + throttle_limit
+				thr2_target = eng2_N1_thrust_cur + throttle_limit
 				
 				if eng1_N1_thrust_cur == 0 and thr1_target < 0.008 then
 					thr1_target = 0
@@ -12758,52 +12712,12 @@ function B738_N1_thrust_manage4()
 				
 			elseif at_mode_eng == 9 then	-- speed mode with N1 limit
 				lock_throttle = 1
-				-- if B738DR_n1_set_source == 0 then	-- FMC AUTO
-					-- if B738DR_fms_N1_mode == 0 or B738DR_fms_N1_mode == 13 then		-- no mode
-						-- thr1_limit = 1.04
-						-- thr2_limit = 1.04
-					-- else
-						-- thr1_limit = eng1_N1_thrust
-						-- thr2_limit = eng2_N1_thrust
-					-- end
-				-- else 
-					-- thr1_limit = eng1_N1_thrust
-					-- thr2_limit = eng2_N1_thrust
-				-- end
-				-- if simDR_throttle_1 > thr1_limit then
-					-- thr1_target = thr1_limit
-				-- else
-					-- --thr1_target = simDR_throttle_1
-					-- thr1_target = B738_rescale(0, 0, 1, 1.04, simDR_throttle_1)
-				-- end
-				-- if simDR_throttle_2 > thr2_limit then
-					-- thr2_target = thr2_limit
-				-- else
-					-- --thr2_target = simDR_throttle_2
-					-- thr2_target = B738_rescale(0, 0, 1, 1.04, simDR_throttle_2)
-				-- end
 				
 				throttle_limit = control_N1()
 				throttle_limit2 = control_SPD()
-				if throttle_limit > 0 then
-					throttle_limit = 0
-				end
-				thr1_target = eng1_N1_thrust_cur + throttle_limit + throttle_limit2
-				thr2_target = eng2_N1_thrust_cur + throttle_limit + throttle_limit2
-				
-				--B738DR_test_test = throttle_limit2
-				-- if throttle_limit > 0 then
-					-- thr1_target = eng1_N1_thrust_cur + throttle_limit2
-					-- thr2_target = eng2_N1_thrust_cur + throttle_limit2
-				-- else
-					-- if throttle_limit2 < 0 then
-						-- thr1_target = eng1_N1_thrust_cur + throttle_limit2
-						-- thr2_target = eng2_N1_thrust_cur + throttle_limit2
-					-- else
-						-- thr1_target = eng1_N1_thrust_cur + throttle_limit
-						-- thr2_target = eng2_N1_thrust_cur + throttle_limit
-					-- end
-				-- end
+				throttle_limit = math.min(throttle_limit, throttle_limit2)
+				thr1_target = eng1_N1_thrust_cur + throttle_limit
+				thr2_target = eng2_N1_thrust_cur + throttle_limit
 				
 				if eng1_N1_thrust_cur == 0 and thr1_target < 0.008 then
 					thr1_target = 0
@@ -15476,6 +15390,23 @@ function B738_yoke()
 	
 end
 
+function B738_spd_ratio()
+	time_spd_ratio = time_spd_ratio + SIM_PERIOD
+	if time_spd_ratio > 1 then
+		if spd_ratio_num == 0 then
+			spd_ratio_num = 1
+		end
+		spd_ratio = spd_ratio_sum / spd_ratio_num
+		spd_ratio_old = simDR_airspeed_pilot
+		time_spd_ratio = time_spd_ratio - 1
+		spd_ratio_sum = 0
+		spd_ratio_num = 0
+	else
+		spd_ratio_sum = spd_ratio_sum + ((simDR_airspeed_pilot - spd_ratio_old) / SIM_PERIOD)
+		spd_ratio_num = spd_ratio_num + 1
+		spd_ratio_old = simDR_airspeed_pilot
+	end
+end
 
 --*************************************************************************************--
 --** 				               XLUA EVENT CALLBACKS       	        			 **--
@@ -15866,11 +15797,11 @@ function after_physics()
 		simDR_efis_map_mode = 0
 		B738_nd()
 		B738_yoke()
-		spd_ratio = (simDR_airspeed_pilot - spd_ratio_old) / SIM_PERIOD
-		spd_ratio_old = simDR_airspeed_pilot
+		B738_spd_ratio()
+		
 		--B738DR_mcp_hdg_dial_nd = B738DR_test_test
 		--B738DR_data_test = 0
-		--B738DR_test_test = SIM_PERIOD
+		B738DR_test_test = spd_ratio
 	end
 
  end

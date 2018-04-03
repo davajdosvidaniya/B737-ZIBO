@@ -77,6 +77,10 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25r:
+------
+- improved autothrottle code
+
 3.25q:
 ------
 - add own autothrottle code (basic code - preview version)

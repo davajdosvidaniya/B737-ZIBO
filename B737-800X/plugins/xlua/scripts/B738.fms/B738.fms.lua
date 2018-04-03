@@ -63924,7 +63924,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25q"
+	version = "v3.25r"
 
 end
 
