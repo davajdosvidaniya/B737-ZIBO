@@ -77,6 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25s:
+------
+- fixed holding pattern (I change LNAV code and I forget change code for HOLD)
+- chock - changed feature CHOCK (in fmc). If you set CHOCK to OFF, then parking brake is set after load plane (if plane is on the ground, of course). If you set CHOCK to ON and set TURNAROUND state, then parking brake is set after load plane, otherwise chockk are set.
+- new better A/T code
+
 3.25r:
 ------
 - improved autothrottle code
