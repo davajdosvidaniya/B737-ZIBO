@@ -383,6 +383,9 @@ time_spd_ratio = 0
 gnd_spd_ratio = 0
 gnd_spd_ratio_old = 0
 
+dspl_ctrl_pnl_old = 0
+in_hpa_cnt = 0
+
 --*************************************************************************************--
 --** 					               CONSTANTS                    				 **--
 --*************************************************************************************--
@@ -681,6 +684,7 @@ B738DR_track_up				= find_dataref("laminar/B738/fms/track_up")
 B738DR_afs_spd_limit_max 	= find_dataref("laminar/B738/FMS/afs_spd_limit_max")
 B738DR_pfd_min_speed		= find_dataref("laminar/B738/pfd/min_speed")
 
+B738DR_dspl_ctrl_pnl 		= find_dataref("laminar/B738/toggle_switch/dspl_ctrl_pnl")
 
 --*************************************************************************************--
 --** 				               FIND X-PLANE COMMANDS                   	    	 **--
@@ -849,7 +853,7 @@ B738DR_xtrack				= find_dataref("laminar/B738/fms/xtrack")
 B738DR_wpt_path				= find_dataref("laminar/B738/fms/gps_wpt_path")
 B738DR_pfd_max_speed		= find_dataref("laminar/B738/pfd/max_speed")
 
-B738DR_sync_baro			= find_dataref("laminar/B738/fms/sync_baro")
+B738DR_baro_in_hpa			= find_dataref("laminar/B738/fms/baro_in_hpa")
 
 B738DR_fms_approach_speed	= find_dataref("laminar/B738/FMS/approach_speed")
 simDR_fmc_dist				= find_dataref("laminar/B738/fms/lnav_dist_next")
@@ -911,9 +915,14 @@ B738DR_baro_std_box_pilot_show	= create_dataref("laminar/B738/EFIS/baro_std_box_
 B738DR_efis_mtrs_capt	= create_dataref("laminar/B738/EFIS_control/capt/push_button/mtrs", "number")
 B738DR_efis_fpv_capt	= create_dataref("laminar/B738/EFIS_control/capt/push_button/fpv", "number")
 
-B738DR_efis_baro_mode_capt	= create_dataref("laminar/B738/EFIS_control/capt/baro_in_hpa", "number")
+B738DR_efis_baro_mode_capt		= create_dataref("laminar/B738/EFIS_control/capt/baro_in_hpa", "number")
+B738DR_efis_baro_mode_capt_pfd	= create_dataref("laminar/B738/EFIS_control/capt/baro_in_hpa_pfd", "number")
+
 B738DR_efis_vor1_capt_pos	= create_dataref("laminar/B738/EFIS_control/capt/vor1_off_pos", "number")
 B738DR_efis_vor2_capt_pos	= create_dataref("laminar/B738/EFIS_control/capt/vor2_off_pos", "number")
+
+B738DR_efis_vor1_capt_pfd	= create_dataref("laminar/B738/EFIS_control/capt/vor1_off_pfd", "number")
+B738DR_efis_vor2_capt_pfd	= create_dataref("laminar/B738/EFIS_control/capt/vor2_off_pfd", "number")
 
 B738DR_capt_alt_mode_meters		= create_dataref("laminar/B738/PFD/capt/alt_mode_is_meters", "number")
 B738DR_capt_fpv_on				= create_dataref("laminar/B738/PFD/capt/fpv_on", "number")
@@ -951,9 +960,14 @@ B738DR_baro_std_box_copilot_show	= create_dataref("laminar/B738/EFIS/baro_std_bo
 B738DR_efis_mtrs_fo	= create_dataref("laminar/B738/EFIS_control/fo/push_button/mtrs", "number")
 B738DR_efis_fpv_fo	= create_dataref("laminar/B738/EFIS_control/fo/push_button/fpv", "number")
 
-B738DR_efis_baro_mode_fo	= create_dataref("laminar/B738/EFIS_control/fo/baro_in_hpa", "number")
+B738DR_efis_baro_mode_fo		= create_dataref("laminar/B738/EFIS_control/fo/baro_in_hpa", "number")
+B738DR_efis_baro_mode_fo_pfd 	= create_dataref("laminar/B738/EFIS_control/fo/baro_in_hpa_fo", "number")
+
 B738DR_efis_vor1_fo_pos		= create_dataref("laminar/B738/EFIS_control/fo/vor1_off_pos", "number")
 B738DR_efis_vor2_fo_pos		= create_dataref("laminar/B738/EFIS_control/fo/vor2_off_pos", "number")
+
+B738DR_efis_vor1_fo_pfd		= create_dataref("laminar/B738/EFIS_control/fo/vor1_off_pfd", "number")
+B738DR_efis_vor2_fo_pfd		= create_dataref("laminar/B738/EFIS_control/fo/vor2_off_pfd", "number")
 
 --B738DR_efis_map_range_fo 		= create_dataref("laminar/B738/EFIS/fo/map_range", "number")
 
@@ -1538,6 +1552,12 @@ B738DR_minim_capt = 			create_dataref("laminar/B738/EFIS_control/cpt/minimums", 
 
 B738DR_minim_dh_fo = 				create_dataref("laminar/B738/EFIS_control/fo/minimums_dh", "number", B738DR_minim_dh_fo_DRhandler)
 B738DR_minim_dh_capt = 				create_dataref("laminar/B738/EFIS_control/capt/minimums_dh", "number", B738DR_minim_dh_capt_DRhandler)
+
+B738DR_minim_fo_pfd = 				create_dataref("laminar/B738/EFIS_control/fo/minimums_pfd", "number", B738DR_minim_fo_DRhandler)
+B738DR_minim_capt_pfd = 			create_dataref("laminar/B738/EFIS_control/cpt/minimums_pfd", "number", B738DR_minim_capt_DRhandler)
+B738DR_minim_dh_fo_pfd = 			create_dataref("laminar/B738/EFIS_control/fo/minimums_dh_pfd", "number", B738DR_minim_dh_fo_DRhandler)
+B738DR_minim_dh_capt_pfd = 			create_dataref("laminar/B738/EFIS_control/capt/minimums_dh_pfd", "number", B738DR_minim_dh_capt_DRhandler)
+
 --*************************************************************************************--
 --** 				             CUSTOM COMMAND HANDLERS            			     **--
 --*************************************************************************************--
@@ -1547,8 +1567,19 @@ function B738_fo_minimums_up_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_minim_fo == 1 then
 			B738DR_minim_fo = 0
-			B738DR_dh_copilot = radio_dh_copilot
-			simDR_dh_copilot = B738DR_dh_copilot
+			if B738DR_dspl_ctrl_pnl > -1 then
+				B738DR_dh_copilot = radio_dh_copilot
+				simDR_dh_copilot = B738DR_dh_copilot
+			end
+		end
+		if B738DR_dspl_ctrl_pnl == 0 then
+			B738DR_minim_fo_pfd = B738DR_minim_fo
+		elseif B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_minim_capt_pfd = B738DR_minim_fo
+			B738DR_minim_fo_pfd = B738DR_minim_fo
+			simDR_dh_pilot = simDR_dh_copilot
+			B738DR_dh_pilot = B738DR_dh_copilot
+			baro_dh_pilot_disable = baro_dh_copilot_disable
 		end
 	end
 end
@@ -1557,11 +1588,22 @@ function B738_fo_minimums_dn_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_minim_fo == 0 then
 			B738DR_minim_fo = 1
-			B738DR_dh_copilot = baro_dh_copilot
-			simDR_dh_copilot = 0
-			if simDR_altitude_copilot < baro_dh_copilot then
-				baro_dh_copilot_disable = 1
+			if B738DR_dspl_ctrl_pnl > -1 then
+				B738DR_dh_copilot = baro_dh_copilot
+				simDR_dh_copilot = 0
+				if simDR_altitude_copilot < baro_dh_copilot then
+					baro_dh_copilot_disable = 1
+				end
 			end
+		end
+		if B738DR_dspl_ctrl_pnl == 0 then
+			B738DR_minim_fo_pfd = B738DR_minim_fo
+		elseif B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_minim_capt_pfd = B738DR_minim_fo
+			B738DR_minim_fo_pfd = B738DR_minim_fo
+			simDR_dh_pilot = simDR_dh_copilot
+			B738DR_dh_pilot = B738DR_dh_copilot
+			baro_dh_pilot_disable = baro_dh_copilot_disable
 		end
 	end
 end
@@ -1571,8 +1613,19 @@ function B738_cpt_minimums_up_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_minim_capt == 1 then
 			B738DR_minim_capt = 0
-			B738DR_dh_pilot = radio_dh_pilot
-			simDR_dh_pilot = B738DR_dh_pilot
+			if B738DR_dspl_ctrl_pnl < 1 then
+				B738DR_dh_pilot = radio_dh_pilot
+				simDR_dh_pilot = B738DR_dh_pilot
+			end
+		end
+		if B738DR_dspl_ctrl_pnl == 0 then
+			B738DR_minim_capt_pfd = B738DR_minim_capt
+		elseif B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_minim_capt_pfd = B738DR_minim_capt
+			B738DR_minim_fo_pfd = B738DR_minim_capt
+			simDR_dh_copilot = simDR_dh_pilot
+			B738DR_dh_copilot = B738DR_dh_pilot
+			baro_dh_copilot_disable = baro_dh_pilot_disable
 		end
 	end
 end
@@ -1581,58 +1634,177 @@ function B738_cpt_minimums_dn_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_minim_capt == 0 then
 			B738DR_minim_capt = 1
-			B738DR_dh_pilot = baro_dh_pilot
-			simDR_dh_pilot = 0
-			if simDR_altitude_pilot < baro_dh_pilot then
-				baro_dh_pilot_disable = 1
+			if B738DR_dspl_ctrl_pnl < 1 then
+				B738DR_dh_pilot = baro_dh_pilot
+				simDR_dh_pilot = 0
+				if simDR_altitude_pilot < baro_dh_pilot then
+					baro_dh_pilot_disable = 1
+				end
 			end
+		end
+		if B738DR_dspl_ctrl_pnl == 0 then
+			B738DR_minim_capt_pfd = B738DR_minim_capt
+		elseif B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_minim_capt_pfd = B738DR_minim_capt
+			B738DR_minim_fo_pfd = B738DR_minim_capt
+			simDR_dh_copilot = simDR_dh_pilot
+			B738DR_dh_copilot = B738DR_dh_pilot
+			baro_dh_copilot_disable = baro_dh_pilot_disable
 		end
 	end
 end
 
 
+function B738_ctrl_panel()
+	
+	if in_hpa_cnt == 0 then
+		in_hpa_cnt = 1
+	elseif in_hpa_cnt == 1 then
+		in_hpa_cnt = 2
+		B738DR_efis_baro_mode_capt = B738DR_baro_in_hpa
+		B738DR_efis_baro_mode_capt_pfd = B738DR_baro_in_hpa
+		B738DR_efis_baro_mode_fo = B738DR_baro_in_hpa
+		B738DR_efis_baro_mode_fo_pfd = B738DR_baro_in_hpa
+	end
+	
+	
+	if B738DR_dspl_ctrl_pnl ~= dspl_ctrl_pnl_old then
+		if B738DR_dspl_ctrl_pnl == -1 then
+			-- CTRL PNL both Captain
+			B738DR_minim_fo_pfd = B738DR_minim_capt
+			baro_dh_copilot = baro_dh_pilot
+			radio_dh_copilot = radio_dh_pilot
+			if B738DR_minim_fo_pfd == 0 then
+				B738DR_minim_fo_pfd = 1
+				B738DR_dh_copilot = baro_dh_copilot
+				simDR_dh_copilot = simDR_dh_pilot
+				if simDR_altitude_copilot < baro_dh_copilot then
+					baro_dh_copilot_disable = 1
+				end
+			else
+				B738DR_minim_fo_pfd = 0
+				B738DR_dh_copilot = radio_dh_copilot
+				simDR_dh_copilot = B738DR_dh_copilot
+			end
+			
+			B738DR_efis_fo_wxr_on = 0
+			B738DR_efis_fo_vor_on = B738DR_efis_vor_on
+			B738DR_efis_fo_fix_on = B738DR_efis_fix_on
+			B738DR_efis_fo_apt_on = B738DR_efis_apt_on
+			B738DR_efis_data_fo_status = B738DR_efis_data_capt_status
+			
+			B738DR_baro_sel_copilot_show = B738DR_baro_sel_pilot_show
+			simDR_barometer_setting_fo = simDR_barometer_setting_capt
+			B738DR_baro_set_std_copilot = B738DR_baro_set_std_pilot
+			B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_pilot
+			baro_sel_co_old = baro_sel_old
+			
+			B738DR_efis_baro_mode_fo_pfd = B738DR_efis_baro_mode_capt_pfd
+			
+			B738DR_efis_vor1_fo_pfd = B738DR_efis_vor1_capt_pfd
+			B738DR_efis_vor2_fo_pfd = B738DR_efis_vor2_capt_pfd
+			simDR_vor1_fo = simDR_vor1_capt
+			simDR_vor2_fo = simDR_vor2_capt
+			
+		elseif B738DR_dspl_ctrl_pnl == 1 then
+			-- CTRL PNL both First Officer
+			B738DR_minim_capt_pfd = B738DR_minim_fo
+			baro_dh_pilot = baro_dh_copilot
+			radio_dh_pilot = radio_dh_copilot
+			if B738DR_minim_capt_pfd == 0 then
+				B738DR_minim_capt_pfd = 1
+				B738DR_dh_pilot = baro_dh_pilot
+				simDR_dh_pilot = simDR_dh_copilot
+				if simDR_altitude_pilot < baro_dh_pilot then
+					baro_dh_pilot_disable = 1
+				end
+			else
+				B738DR_minim_capt_pfd = 0
+				B738DR_dh_pilot = radio_dh_pilot
+				simDR_dh_pilot = B738DR_dh_pilot
+			end
+			
+			B738DR_efis_wxr_on = 0
+			B738DR_efis_vor_on = B738DR_efis_fo_vor_on
+			B738DR_efis_fix_on = B738DR_efis_fo_fix_on
+			B738DR_efis_apt_on = B738DR_efis_fo_apt_on
+			B738DR_efis_data_capt_status = B738DR_efis_data_fo_status
+			
+			B738DR_baro_sel_pilot_show = B738DR_baro_sel_copilot_show
+			simDR_barometer_setting_capt = simDR_barometer_setting_fo
+			B738DR_baro_set_std_pilot = B738DR_baro_set_std_copilot
+			B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_copilot
+			baro_sel_old = baro_sel_co_old
+			
+			B738DR_efis_baro_mode_capt_pfd = B738DR_efis_baro_mode_fo_pfd
+			
+			B738DR_efis_vor1_capt_pfd = B738DR_efis_vor1_fo_pfd
+			B738DR_efis_vor2_capt_pfd = B738DR_efis_vor2_fo_pfd
+			simDR_vor1_capt = simDR_vor1_fo
+			simDR_vor2_capt = simDR_vor2_fo
+			
+		else
+			--CTRL PNL Captain and First Officer
+			B738DR_minim_fo_pfd = B738DR_minim_fo
+			B738DR_minim_capt_pfd = B738DR_minim_capt
+			B738DR_efis_baro_mode_capt_pfd = B738DR_efis_baro_mode_capt
+			B738DR_efis_baro_mode_fo_pfd = B738DR_efis_baro_mode_fo
+			B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_copilot
+			B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_pilot
+			
+			B738DR_efis_vor1_capt_pfd = B738DR_efis_vor1_capt_pos
+			B738DR_efis_vor2_capt_pfd = B738DR_efis_vor2_capt_pos
+			B738DR_efis_vor1_fo_pfd = B738DR_efis_vor1_fo_pos
+			B738DR_efis_vor2_fo_pfd = B738DR_efis_vor2_fo_pos
+			
+			if B738DR_efis_vor1_capt_pfd == 1 then
+				simDR_vor1_capt = 2
+			else
+				simDR_vor1_capt = 1
+			end
+			if B738DR_efis_vor2_capt_pfd == 1 then
+				simDR_vor2_capt = 2
+			else
+				simDR_vor2_capt = 1
+			end
+			if B738DR_efis_vor1_fo_pfd == 1 then
+				simDR_vor1_fo = 2
+			else
+				simDR_vor1_fo = 1
+			end
+			if B738DR_efis_vor2_fo_pfd == 1 then
+				simDR_vor2_fo = 2
+			else
+				simDR_vor2_fo = 1
+			end
+		end
+	end
+	dspl_ctrl_pnl_old = B738DR_dspl_ctrl_pnl
+	
+end
+
 -- CAPTAIN EFIS CONTROLS
 
 function B738_dh_pilot_up_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_minim_dh_capt = 1
-		if B738DR_minim_capt == 0 then	--radio DH
-			if B738DR_dh_pilot <= 2499 then
-				B738DR_dh_pilot = B738DR_dh_pilot + 1
-				radio_dh_pilot = B738DR_dh_pilot
-			end
-		else	-- baro DH
-			if B738DR_dh_pilot <= 14999 then
-				B738DR_dh_pilot = B738DR_dh_pilot + 1
-				baro_dh_pilot = B738DR_dh_pilot
-			end
-		end
-	elseif phase == 1 and duration > 1 then
-		B738DR_minim_dh_capt = 2
-		dh_timer = dh_timer + SIM_PERIOD
-		dh_timer2 = dh_timer2 + SIM_PERIOD
-		if dh_timer2 > DH_STEP2 then
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			B738DR_minim_dh_capt = 1
 			if B738DR_minim_capt == 0 then	--radio DH
-				if B738DR_dh_pilot <= 2490 then
-					B738DR_dh_pilot = B738DR_dh_pilot + 10
-					radio_dh_pilot = B738DR_dh_pilot
-				else
-					B738DR_dh_pilot = 2500
+				if B738DR_dh_pilot <= 2499 then
+					B738DR_dh_pilot = B738DR_dh_pilot + 1
 					radio_dh_pilot = B738DR_dh_pilot
 				end
 			else	-- baro DH
-				if B738DR_dh_pilot <= 14990 then
-					B738DR_dh_pilot = B738DR_dh_pilot + 10
-					baro_dh_pilot = B738DR_dh_pilot
-				else
-					B738DR_dh_pilot = 15000
+				if B738DR_dh_pilot <= 14999 then
+					B738DR_dh_pilot = B738DR_dh_pilot + 1
 					baro_dh_pilot = B738DR_dh_pilot
 				end
 			end
-			dh_timer = 0
-			dh_timer2 = DH_STEP2
-		else
-			if dh_timer > DH_STEP then
+		elseif phase == 1 and duration > 1 then
+			B738DR_minim_dh_capt = 2
+			dh_timer = dh_timer + SIM_PERIOD
+			dh_timer2 = dh_timer2 + SIM_PERIOD
+			if dh_timer2 > DH_STEP2 then
 				if B738DR_minim_capt == 0 then	--radio DH
 					if B738DR_dh_pilot <= 2490 then
 						B738DR_dh_pilot = B738DR_dh_pilot + 10
@@ -1651,45 +1823,67 @@ function B738_dh_pilot_up_CMDhandler(phase, duration)
 					end
 				end
 				dh_timer = 0
+				dh_timer2 = DH_STEP2
+			else
+				if dh_timer > DH_STEP then
+					if B738DR_minim_capt == 0 then	--radio DH
+						if B738DR_dh_pilot <= 2490 then
+							B738DR_dh_pilot = B738DR_dh_pilot + 10
+							radio_dh_pilot = B738DR_dh_pilot
+						else
+							B738DR_dh_pilot = 2500
+							radio_dh_pilot = B738DR_dh_pilot
+						end
+					else	-- baro DH
+						if B738DR_dh_pilot <= 14990 then
+							B738DR_dh_pilot = B738DR_dh_pilot + 10
+							baro_dh_pilot = B738DR_dh_pilot
+						else
+							B738DR_dh_pilot = 15000
+							baro_dh_pilot = B738DR_dh_pilot
+						end
+					end
+					dh_timer = 0
+				end
 			end
+		elseif phase == 2 then
+			B738DR_minim_dh_capt = 0
+			dh_timer = 0
+			dh_timer2 = 0
 		end
-	elseif phase == 2 then
-		B738DR_minim_dh_capt = 0
-		dh_timer = 0
-		dh_timer2 = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_dh_copilot = B738DR_dh_pilot
+			radio_dh_copilot = radio_dh_pilot
+			baro_dh_copilot = baro_dh_pilot
+		end
+	else
+		if phase == 0 then
+			B738DR_minim_dh_capt = 1
+		elseif phase == 1 and duration > 1 then
+			B738DR_minim_dh_capt = 2
+		elseif phase == 2 then
+			B738DR_minim_dh_capt = 0
+		end
 	end
 end
 
 function B738_dh_pilot_dn_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_minim_dh_capt = -1
-		if B738DR_dh_pilot >= 1 then
-			B738DR_dh_pilot = B738DR_dh_pilot - 1
-		end
-		if B738DR_minim_capt == 0 then	--radio DH
-			radio_dh_pilot = B738DR_dh_pilot
-		else	-- baro DH
-			baro_dh_pilot = B738DR_dh_pilot
-		end
-	elseif phase == 1 and duration > 1 then
-		B738DR_minim_dh_capt = -2
-		dh_timer = dh_timer + SIM_PERIOD
-		dh_timer2 = dh_timer2 + SIM_PERIOD
-		if dh_timer2 > DH_STEP2 then
-			if B738DR_dh_pilot >= 10 then
-				B738DR_dh_pilot = B738DR_dh_pilot - 10
-			else
-				B738DR_dh_pilot = 0
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			B738DR_minim_dh_capt = -1
+			if B738DR_dh_pilot >= 1 then
+				B738DR_dh_pilot = B738DR_dh_pilot - 1
 			end
 			if B738DR_minim_capt == 0 then	--radio DH
 				radio_dh_pilot = B738DR_dh_pilot
 			else	-- baro DH
 				baro_dh_pilot = B738DR_dh_pilot
 			end
-			dh_timer = 0
-			dh_timer2 = DH_STEP2
-		else
-			if dh_timer > DH_STEP then
+		elseif phase == 1 and duration > 1 then
+			B738DR_minim_dh_capt = -2
+			dh_timer = dh_timer + SIM_PERIOD
+			dh_timer2 = dh_timer2 + SIM_PERIOD
+			if dh_timer2 > DH_STEP2 then
 				if B738DR_dh_pilot >= 10 then
 					B738DR_dh_pilot = B738DR_dh_pilot - 10
 				else
@@ -1701,36 +1895,50 @@ function B738_dh_pilot_dn_CMDhandler(phase, duration)
 					baro_dh_pilot = B738DR_dh_pilot
 				end
 				dh_timer = 0
+				dh_timer2 = DH_STEP2
+			else
+				if dh_timer > DH_STEP then
+					if B738DR_dh_pilot >= 10 then
+						B738DR_dh_pilot = B738DR_dh_pilot - 10
+					else
+						B738DR_dh_pilot = 0
+					end
+					if B738DR_minim_capt == 0 then	--radio DH
+						radio_dh_pilot = B738DR_dh_pilot
+					else	-- baro DH
+						baro_dh_pilot = B738DR_dh_pilot
+					end
+					dh_timer = 0
+				end
 			end
+		elseif phase == 2 then
+			B738DR_minim_dh_capt = 0
+			dh_timer = 0
+			dh_timer2 = 0
 		end
-	elseif phase == 2 then
-		B738DR_minim_dh_capt = 0
-		dh_timer = 0
-		dh_timer2 = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_dh_copilot = B738DR_dh_pilot
+			radio_dh_copilot = radio_dh_pilot
+			baro_dh_copilot = baro_dh_pilot
+		end
+	else
+		if phase == 0 then
+			B738DR_minim_dh_capt = 1
+		elseif phase == 1 and duration > 1 then
+			B738DR_minim_dh_capt = 2
+		elseif phase == 2 then
+			B738DR_minim_dh_capt = 0
+		end
 	end
 end
 
 function B738_dh_pilot_up1_CMDhandler(phase, duration)
-	if phase < 2 then
-		B738DR_minim_dh_capt = 1
-		dh_timer = dh_timer + SIM_PERIOD
-		dh_timer2 = dh_timer2 + SIM_PERIOD
-		if dh_timer2 > DH_STEP2 then
-			if B738DR_minim_capt == 0 then	--radio DH
-				if B738DR_dh_pilot <= 2499 then
-					B738DR_dh_pilot = B738DR_dh_pilot + 1
-					radio_dh_pilot = B738DR_dh_pilot
-				end
-			else	-- baro DH
-				if B738DR_dh_pilot <= 14999 then
-					B738DR_dh_pilot = B738DR_dh_pilot + 1
-					baro_dh_pilot = B738DR_dh_pilot
-				end
-			end
-			dh_timer = 0
-			dh_timer2 = DH_STEP2
-		else
-			if dh_timer > DH_STEP then
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase < 2 then
+			B738DR_minim_dh_capt = 1
+			dh_timer = dh_timer + SIM_PERIOD
+			dh_timer2 = dh_timer2 + SIM_PERIOD
+			if dh_timer2 > DH_STEP2 then
 				if B738DR_minim_capt == 0 then	--radio DH
 					if B738DR_dh_pilot <= 2499 then
 						B738DR_dh_pilot = B738DR_dh_pilot + 1
@@ -1743,42 +1951,49 @@ function B738_dh_pilot_up1_CMDhandler(phase, duration)
 					end
 				end
 				dh_timer = 0
+				dh_timer2 = DH_STEP2
+			else
+				if dh_timer > DH_STEP then
+					if B738DR_minim_capt == 0 then	--radio DH
+						if B738DR_dh_pilot <= 2499 then
+							B738DR_dh_pilot = B738DR_dh_pilot + 1
+							radio_dh_pilot = B738DR_dh_pilot
+						end
+					else	-- baro DH
+						if B738DR_dh_pilot <= 14999 then
+							B738DR_dh_pilot = B738DR_dh_pilot + 1
+							baro_dh_pilot = B738DR_dh_pilot
+						end
+					end
+					dh_timer = 0
+				end
 			end
+		elseif phase == 2 then
+			B738DR_minim_dh_capt = 0
+			dh_timer = 0
+			dh_timer2 = 0
 		end
-	elseif phase == 2 then
-		B738DR_minim_dh_capt = 0
-		dh_timer = 0
-		dh_timer2 = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_dh_copilot = B738DR_dh_pilot
+			radio_dh_copilot = radio_dh_pilot
+			baro_dh_copilot = baro_dh_pilot
+		end
+	else
+		if phase < 2 then
+			B738DR_minim_dh_capt = 1
+		elseif phase == 2 then
+			B738DR_minim_dh_capt = 0
+		end
 	end
 end
 
 function B738_dh_pilot_up2_CMDhandler(phase, duration)
-	if phase < 2 then
-		B738DR_minim_dh_capt = 2
-		dh_timer = dh_timer + SIM_PERIOD
-		dh_timer2 = dh_timer2 + SIM_PERIOD
-		if dh_timer2 > DH_STEP2 then
-			if B738DR_minim_capt == 0 then	--radio DH
-				if B738DR_dh_pilot <= 2490 then
-					B738DR_dh_pilot = B738DR_dh_pilot + 10
-					radio_dh_pilot = B738DR_dh_pilot
-				else
-					B738DR_dh_pilot = 2500
-					radio_dh_pilot = B738DR_dh_pilot
-				end
-			else	-- baro DH
-				if B738DR_dh_pilot <= 14990 then
-					B738DR_dh_pilot = B738DR_dh_pilot + 10
-					baro_dh_pilot = B738DR_dh_pilot
-				else
-					B738DR_dh_pilot = 15000
-					baro_dh_pilot = B738DR_dh_pilot
-				end
-			end
-			dh_timer = 0
-			dh_timer2 = DH_STEP2
-		else
-			if dh_timer > DH_STEP then
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase < 2 then
+			B738DR_minim_dh_capt = 2
+			dh_timer = dh_timer + SIM_PERIOD
+			dh_timer2 = dh_timer2 + SIM_PERIOD
+			if dh_timer2 > DH_STEP2 then
 				if B738DR_minim_capt == 0 then	--radio DH
 					if B738DR_dh_pilot <= 2490 then
 						B738DR_dh_pilot = B738DR_dh_pilot + 10
@@ -1797,33 +2012,55 @@ function B738_dh_pilot_up2_CMDhandler(phase, duration)
 					end
 				end
 				dh_timer = 0
+				dh_timer2 = DH_STEP2
+			else
+				if dh_timer > DH_STEP then
+					if B738DR_minim_capt == 0 then	--radio DH
+						if B738DR_dh_pilot <= 2490 then
+							B738DR_dh_pilot = B738DR_dh_pilot + 10
+							radio_dh_pilot = B738DR_dh_pilot
+						else
+							B738DR_dh_pilot = 2500
+							radio_dh_pilot = B738DR_dh_pilot
+						end
+					else	-- baro DH
+						if B738DR_dh_pilot <= 14990 then
+							B738DR_dh_pilot = B738DR_dh_pilot + 10
+							baro_dh_pilot = B738DR_dh_pilot
+						else
+							B738DR_dh_pilot = 15000
+							baro_dh_pilot = B738DR_dh_pilot
+						end
+					end
+					dh_timer = 0
+				end
 			end
+		elseif phase == 2 then
+			B738DR_minim_dh_capt = 0
+			dh_timer = 0
+			dh_timer2 = 0
 		end
-	elseif phase == 2 then
-		B738DR_minim_dh_capt = 0
-		dh_timer = 0
-		dh_timer2 = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_dh_copilot = B738DR_dh_pilot
+			radio_dh_copilot = radio_dh_pilot
+			baro_dh_copilot = baro_dh_pilot
+		end
+	else
+		if phase < 2 then
+			B738DR_minim_dh_capt = 1
+		elseif phase == 2 then
+			B738DR_minim_dh_capt = 0
+		end
 	end
 end
 
 function B738_dh_pilot_dn1_CMDhandler(phase, duration)
-	if phase < 2 then
-		B738DR_minim_dh_capt = -1
-		dh_timer = dh_timer + SIM_PERIOD
-		dh_timer2 = dh_timer2 + SIM_PERIOD
-		if dh_timer2 > DH_STEP2 then
-			if B738DR_dh_pilot >= 1 then
-				B738DR_dh_pilot = B738DR_dh_pilot - 1
-			end
-			if B738DR_minim_capt == 0 then	--radio DH
-				radio_dh_pilot = B738DR_dh_pilot
-			else	-- baro DH
-				baro_dh_pilot = B738DR_dh_pilot
-			end
-			dh_timer = 0
-			dh_timer2 = DH_STEP2
-		else
-			if dh_timer > DH_STEP then
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase < 2 then
+			B738DR_minim_dh_capt = -1
+			dh_timer = dh_timer + SIM_PERIOD
+			dh_timer2 = dh_timer2 + SIM_PERIOD
+			if dh_timer2 > DH_STEP2 then
 				if B738DR_dh_pilot >= 1 then
 					B738DR_dh_pilot = B738DR_dh_pilot - 1
 				end
@@ -1833,35 +2070,46 @@ function B738_dh_pilot_dn1_CMDhandler(phase, duration)
 					baro_dh_pilot = B738DR_dh_pilot
 				end
 				dh_timer = 0
+				dh_timer2 = DH_STEP2
+			else
+				if dh_timer > DH_STEP then
+					if B738DR_dh_pilot >= 1 then
+						B738DR_dh_pilot = B738DR_dh_pilot - 1
+					end
+					if B738DR_minim_capt == 0 then	--radio DH
+						radio_dh_pilot = B738DR_dh_pilot
+					else	-- baro DH
+						baro_dh_pilot = B738DR_dh_pilot
+					end
+					dh_timer = 0
+				end
 			end
+		elseif phase == 2 then
+			B738DR_minim_dh_capt = 0
+			dh_timer = 0
+			dh_timer2 = 0
 		end
-	elseif phase == 2 then
-		B738DR_minim_dh_capt = 0
-		dh_timer = 0
-		dh_timer2 = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_dh_copilot = B738DR_dh_pilot
+			radio_dh_copilot = radio_dh_pilot
+			baro_dh_copilot = baro_dh_pilot
+		end
+	else
+		if phase < 2 then
+			B738DR_minim_dh_capt = 1
+		elseif phase == 2 then
+			B738DR_minim_dh_capt = 0
+		end
 	end
 end
 
 function B738_dh_pilot_dn2_CMDhandler(phase, duration)
-	if phase < 2 then
-		B738DR_minim_dh_capt = -2
-		dh_timer = dh_timer + SIM_PERIOD
-		dh_timer2 = dh_timer2 + SIM_PERIOD
-		if dh_timer2 > DH_STEP2 then
-			if B738DR_dh_pilot >= 10 then
-				B738DR_dh_pilot = B738DR_dh_pilot - 10
-			else
-				B738DR_dh_pilot = 0
-			end
-			if B738DR_minim_capt == 0 then	--radio DH
-				radio_dh_pilot = B738DR_dh_pilot
-			else	-- baro DH
-				baro_dh_pilot = B738DR_dh_pilot
-			end
-			dh_timer = 0
-			dh_timer2 = DH_STEP2
-		else
-			if dh_timer > DH_STEP then
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase < 2 then
+			B738DR_minim_dh_capt = -2
+			dh_timer = dh_timer + SIM_PERIOD
+			dh_timer2 = dh_timer2 + SIM_PERIOD
+			if dh_timer2 > DH_STEP2 then
 				if B738DR_dh_pilot >= 10 then
 					B738DR_dh_pilot = B738DR_dh_pilot - 10
 				else
@@ -1873,80 +2121,165 @@ function B738_dh_pilot_dn2_CMDhandler(phase, duration)
 					baro_dh_pilot = B738DR_dh_pilot
 				end
 				dh_timer = 0
+				dh_timer2 = DH_STEP2
+			else
+				if dh_timer > DH_STEP then
+					if B738DR_dh_pilot >= 10 then
+						B738DR_dh_pilot = B738DR_dh_pilot - 10
+					else
+						B738DR_dh_pilot = 0
+					end
+					if B738DR_minim_capt == 0 then	--radio DH
+						radio_dh_pilot = B738DR_dh_pilot
+					else	-- baro DH
+						baro_dh_pilot = B738DR_dh_pilot
+					end
+					dh_timer = 0
+				end
 			end
+		elseif phase == 2 then
+			B738DR_minim_dh_capt = 0
+			dh_timer = 0
+			dh_timer2 = 0
 		end
-	elseif phase == 2 then
-		B738DR_minim_dh_capt = 0
-		dh_timer = 0
-		dh_timer2 = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_dh_copilot = B738DR_dh_pilot
+			radio_dh_copilot = radio_dh_pilot
+			baro_dh_copilot = baro_dh_pilot
+		end
+	else
+		if phase < 2 then
+			B738DR_minim_dh_capt = 1
+		elseif phase == 2 then
+			B738DR_minim_dh_capt = 0
+		end
 	end
 end
 
 
 
 function B738_efis_wxr_capt_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_wxr_capt = 1
-		if B738DR_efis_wxr_on == 0 then
-			B738DR_efis_wxr_on = 1
-		else
-			B738DR_efis_wxr_on = 0
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			B738DR_efis_wxr_capt = 1
+			if B738DR_efis_wxr_on == 0 then
+				B738DR_efis_wxr_on = 1
+			else
+				B738DR_efis_wxr_on = 0
+			end
+			B738DR_efis_fo_wxr_on = 0
+			--simCMD_efis_wxr:once()
+		elseif phase == 2 then
+			B738DR_efis_wxr_capt = 0
 		end
-		B738DR_efis_fo_wxr_on = 0
-		--simCMD_efis_wxr:once()
-	elseif phase == 2 then
-		B738DR_efis_wxr_capt = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			if B738DR_efis_wxr_on == 0 then
+				B738DR_efis_fo_wxr_on = 0
+			elseif B738DR_efis_wxr_on == 1 then
+				B738DR_efis_fo_wxr_on = 0
+			end
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_wxr_capt = 1
+		elseif phase == 2 then
+			B738DR_efis_wxr_capt = 0
+		end
 	end
 end
 
 function B738_efis_sta_capt_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_sta_capt = 1
-		--simCMD_efis_sta:once()
-		if B738DR_efis_vor_on == 0 then
-			B738DR_efis_vor_on = 1
-		else
-			B738DR_efis_vor_on = 0
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			B738DR_efis_sta_capt = 1
+			--simCMD_efis_sta:once()
+			if B738DR_efis_vor_on == 0 then
+				B738DR_efis_vor_on = 1
+			else
+				B738DR_efis_vor_on = 0
+			end
+		elseif phase == 2 then
+			B738DR_efis_sta_capt = 0
 		end
-	elseif phase == 2 then
-		B738DR_efis_sta_capt = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_efis_fo_vor_on = B738DR_efis_vor_on
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_sta_capt = 1
+		elseif phase == 2 then
+			B738DR_efis_sta_capt = 0
+		end
 	end
 end
 
 function B738_efis_wpt_capt_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_wpt_capt = 1
-		if B738DR_efis_fix_on == 0 then
-			B738DR_efis_fix_on = 1
-		else
-			B738DR_efis_fix_on = 0
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			B738DR_efis_wpt_capt = 1
+			if B738DR_efis_fix_on == 0 then
+				B738DR_efis_fix_on = 1
+			else
+				B738DR_efis_fix_on = 0
+			end
+			--simCMD_efis_wpt:once()
+		elseif phase == 2 then
+			B738DR_efis_wpt_capt = 0
 		end
-		--simCMD_efis_wpt:once()
-	elseif phase == 2 then
-		B738DR_efis_wpt_capt = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_efis_fo_fix_on = B738DR_efis_fix_on
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_wpt_capt = 1
+		elseif phase == 2 then
+			B738DR_efis_wpt_capt = 0
+		end
 	end
 end
 
 function B738_efis_arpt_capt_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_arpt_capt = 1
---		simCMD_efis_arpt:once()
-		if B738DR_efis_apt_on == 0 then
-			B738DR_efis_apt_on = 1
-		else
-			B738DR_efis_apt_on = 0
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			B738DR_efis_arpt_capt = 1
+	--		simCMD_efis_arpt:once()
+			if B738DR_efis_apt_on == 0 then
+				B738DR_efis_apt_on = 1
+			else
+				B738DR_efis_apt_on = 0
+			end
+		elseif phase == 2 then
+			B738DR_efis_arpt_capt = 0
 		end
-	elseif phase == 2 then
-		B738DR_efis_arpt_capt = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_efis_fo_apt_on = B738DR_efis_apt_on
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_arpt_capt = 1
+		elseif phase == 2 then
+			B738DR_efis_arpt_capt = 0
+		end
 	end
 end
 
 function B738_efis_data_capt_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_data_capt = 1
-		B738DR_efis_data_capt_status = 1 - B738DR_efis_data_capt_status
-	elseif phase == 2 then
-		B738DR_efis_data_capt = 0
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			B738DR_efis_data_capt = 1
+			B738DR_efis_data_capt_status = 1 - B738DR_efis_data_capt_status
+		elseif phase == 2 then
+			B738DR_efis_data_capt = 0
+		end
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_efis_data_fo_status = B738DR_efis_data_capt_status
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_data_capt = 1
+		elseif phase == 2 then
+			B738DR_efis_data_capt = 0
+		end
 	end
 end
 
@@ -1956,6 +2289,7 @@ function B738_efis_pos_capt_CMDhandler(phase, duration)
 	elseif phase == 2 then
 		B738DR_efis_pos_capt = 0
 	end
+	
 end
 
 function B738_efis_terr_capt_CMDhandler(phase, duration)
@@ -1967,18 +2301,33 @@ function B738_efis_terr_capt_CMDhandler(phase, duration)
 end
 
 function B738_efis_rst_capt_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_rst_capt = 1
-		B738DR_dh_pilot = 0
-		dh_min_block_pilot = 1
-		if B738DR_minim_capt == 0 then	--radio DH
-			radio_dh_pilot = 0
-			simDR_dh_pilot = 0
-		else	-- baro DH
-			baro_dh_pilot = 0
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			B738DR_efis_rst_capt = 1
+			B738DR_dh_pilot = 0
+			dh_min_block_pilot = 1
+			if B738DR_minim_capt == 0 then	--radio DH
+				radio_dh_pilot = 0
+				simDR_dh_pilot = 0
+			else	-- baro DH
+				baro_dh_pilot = 0
+			end
+		elseif phase == 2 then
+			B738DR_efis_rst_capt = 0
 		end
-	elseif phase == 2 then
-		B738DR_efis_rst_capt = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			baro_dh_copilot = baro_dh_pilot
+			radio_dh_copilot = radio_dh_pilot
+			B738DR_dh_copilot = B738DR_dh_pilot
+			dh_min_block_copilot = dh_min_block_pilot
+			simDR_dh_copilot = simDR_dh_pilot
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_rst_capt = 1
+		elseif phase == 2 then
+			B738DR_efis_rst_capt = 0
+		end
 	end
 end
 
@@ -2024,110 +2373,229 @@ function B738_efis_tfc_capt_CMDhandler(phase, duration)
 end
 
 function B738_efis_std_capt_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_std_capt = 1
-		if B738DR_baro_set_std_pilot == 0 then
-			B738DR_baro_set_std_pilot = 1
---			B738DR_baro_sel_pilot_show = 1
-			baro_sel_old = B738DR_baro_sel_in_hg_pilot
-			simDR_barometer_setting_capt = 29.92
-		else
-			B738DR_baro_set_std_pilot = 0
---			B738DR_baro_sel_pilot_show = 0
-			simDR_barometer_setting_capt = B738DR_baro_sel_in_hg_pilot
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			B738DR_efis_std_capt = 1
+			if B738DR_baro_set_std_pilot == 0 then
+				B738DR_baro_set_std_pilot = 1
+	--			B738DR_baro_sel_pilot_show = 1
+				baro_sel_old = B738DR_baro_sel_in_hg_pilot
+				simDR_barometer_setting_capt = 29.92
+			else
+				B738DR_baro_set_std_pilot = 0
+	--			B738DR_baro_sel_pilot_show = 0
+				simDR_barometer_setting_capt = B738DR_baro_sel_in_hg_pilot
+			end
+			B738DR_baro_sel_pilot_show = 0
+		elseif phase == 2 then
+			B738DR_efis_std_capt = 0
 		end
-		B738DR_baro_sel_pilot_show = 0
-	elseif phase == 2 then
-		B738DR_efis_std_capt = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_baro_sel_copilot_show = B738DR_baro_sel_pilot_show
+			simDR_barometer_setting_fo = simDR_barometer_setting_capt
+			B738DR_baro_set_std_copilot = B738DR_baro_set_std_pilot
+			B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_pilot
+			baro_sel_co_old = baro_sel_old
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_std_capt = 1
+		elseif phase == 2 then
+			B738DR_efis_std_capt = 0
+		end
 	end
 end
 
 function B738_efis_mtrs_capt_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_mtrs_capt = 1
-		if B738DR_capt_alt_mode_meters == 0 then
-			B738DR_capt_alt_mode_meters = 1
-		elseif B738DR_capt_alt_mode_meters == 1 then
-			B738DR_capt_alt_mode_meters = 0
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			B738DR_efis_mtrs_capt = 1
+			if B738DR_capt_alt_mode_meters == 0 then
+				B738DR_capt_alt_mode_meters = 1
+			elseif B738DR_capt_alt_mode_meters == 1 then
+				B738DR_capt_alt_mode_meters = 0
+			end
+		elseif phase == 2 then
+			B738DR_efis_mtrs_capt = 0
 		end
-	elseif phase == 2 then
-		B738DR_efis_mtrs_capt = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_fo_alt_mode_meters = B738DR_capt_alt_mode_meters
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_mtrs_capt = 1
+		elseif phase == 2 then
+			B738DR_efis_mtrs_capt = 0
+		end
 	end
 end
 
 function B738_efis_fpv_capt_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_fpv_capt = 1
-		if B738DR_capt_fpv_on == 0 then
-			B738DR_capt_fpv_on = 1
-		elseif B738DR_capt_fpv_on == 1 then
-			B738DR_capt_fpv_on = 0
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			B738DR_efis_fpv_capt = 1
+			if B738DR_capt_fpv_on == 0 then
+				B738DR_capt_fpv_on = 1
+			elseif B738DR_capt_fpv_on == 1 then
+				B738DR_capt_fpv_on = 0
+			end
+		elseif phase == 2 then
+			B738DR_efis_fpv_capt = 0
 		end
-	elseif phase == 2 then
-		B738DR_efis_fpv_capt = 0
+		if B738DR_dspl_ctrl_pnl == -1 then
+			B738DR_fo_fpv_on = B738DR_capt_fpv_on
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_fpv_capt = 1
+		elseif phase == 2 then
+			B738DR_efis_fpv_capt = 0
+		end
 	end
 end
 
 function B738_efis_baro_mode_capt_up_CMDhandler(phase, duration)
-	if phase == 0 then
-		if B738DR_efis_baro_mode_capt == 0 then
-			B738DR_efis_baro_mode_capt = 1
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			if B738DR_efis_baro_mode_capt == 0 then
+				B738DR_efis_baro_mode_capt = 1
+			end
+			B738DR_efis_baro_mode_capt_pfd = B738DR_efis_baro_mode_capt
+			if B738DR_dspl_ctrl_pnl == -1 then
+				B738DR_efis_baro_mode_fo_pfd = B738DR_efis_baro_mode_capt_pfd
+			end
+		end
+	else
+		if phase == 0 then
+			if B738DR_efis_baro_mode_capt == 0 then
+				B738DR_efis_baro_mode_capt = 1
+			end
 		end
 	end
 end
 
 function B738_efis_baro_mode_capt_dn_CMDhandler(phase, duration)
-	if phase == 0 then
-		if B738DR_efis_baro_mode_capt == 1 then
-			B738DR_efis_baro_mode_capt = 0
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			if B738DR_efis_baro_mode_capt == 1 then
+				B738DR_efis_baro_mode_capt = 0
+			end
+			B738DR_efis_baro_mode_capt_pfd = B738DR_efis_baro_mode_capt
+			if B738DR_dspl_ctrl_pnl == -1 then
+				B738DR_efis_baro_mode_fo_pfd = B738DR_efis_baro_mode_capt_pfd
+			end
+		end
+	else
+		if phase == 0 then
+			if B738DR_efis_baro_mode_capt == 1 then
+				B738DR_efis_baro_mode_capt = 0
+			end
 		end
 	end
 end
 
 function B738_efis_vor1_capt_up_CMDhandler(phase, duration)
-	if phase == 0 then
-		if B738DR_efis_vor1_capt_pos == -1 then
-			B738DR_efis_vor1_capt_pos = 0
-			simDR_vor1_capt = 1
-		elseif B738DR_efis_vor1_capt_pos == 0 then
-			B738DR_efis_vor1_capt_pos = 1
-			simDR_vor1_capt = 2
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			if B738DR_efis_vor1_capt_pos == -1 then
+				B738DR_efis_vor1_capt_pos = 0
+				simDR_vor1_capt = 1
+			elseif B738DR_efis_vor1_capt_pos == 0 then
+				B738DR_efis_vor1_capt_pos = 1
+				simDR_vor1_capt = 2
+			end
+			B738DR_efis_vor1_capt_pfd = B738DR_efis_vor1_capt_pos
+			if B738DR_dspl_ctrl_pnl == -1 then
+				simDR_vor1_fo = simDR_vor1_capt
+				B738DR_efis_vor1_fo_pfd = B738DR_efis_vor1_capt_pfd
+			end
+		end
+	else
+		if phase == 0 then
+			if B738DR_efis_vor1_capt_pos == -1 then
+				B738DR_efis_vor1_capt_pos = 0
+			elseif B738DR_efis_vor1_capt_pos == 0 then
+				B738DR_efis_vor1_capt_pos = 1
+			end
 		end
 	end
 end
-			
+
 function B738_efis_vor1_capt_dn_CMDhandler(phase, duration)
-	if phase == 0 then
-		if B738DR_efis_vor1_capt_pos == 1 then
-			B738DR_efis_vor1_capt_pos = 0
-			simDR_vor1_capt = 1
-		elseif B738DR_efis_vor1_capt_pos == 0 then
-			B738DR_efis_vor1_capt_pos = -1
-			simDR_vor1_capt = 1
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			if B738DR_efis_vor1_capt_pos == 1 then
+				B738DR_efis_vor1_capt_pos = 0
+				simDR_vor1_capt = 1
+			elseif B738DR_efis_vor1_capt_pos == 0 then
+				B738DR_efis_vor1_capt_pos = -1
+				simDR_vor1_capt = 1
+			end
+			B738DR_efis_vor1_capt_pfd = B738DR_efis_vor1_capt_pos
+			if B738DR_dspl_ctrl_pnl == -1 then
+				simDR_vor1_fo = simDR_vor1_capt
+				B738DR_efis_vor1_fo_pfd = B738DR_efis_vor1_capt_pfd
+			end
+		end
+	else
+		if phase == 0 then
+			if B738DR_efis_vor1_capt_pos == 1 then
+				B738DR_efis_vor1_capt_pos = 0
+			elseif B738DR_efis_vor1_capt_pos == 0 then
+				B738DR_efis_vor1_capt_pos = -1
+			end
 		end
 	end
 end
 
 function B738_efis_vor2_capt_up_CMDhandler(phase, duration)
-	if phase == 0 then
-		if B738DR_efis_vor2_capt_pos == -1 then
-			B738DR_efis_vor2_capt_pos = 0
-			simDR_vor2_capt = 1
-		elseif B738DR_efis_vor2_capt_pos == 0 then
-			B738DR_efis_vor2_capt_pos = 1
-			simDR_vor2_capt = 2
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			if B738DR_efis_vor2_capt_pos == -1 then
+				B738DR_efis_vor2_capt_pos = 0
+				simDR_vor2_capt = 1
+			elseif B738DR_efis_vor2_capt_pos == 0 then
+				B738DR_efis_vor2_capt_pos = 1
+				simDR_vor2_capt = 2
+			end
+			B738DR_efis_vor2_capt_pfd = B738DR_efis_vor2_capt_pos
+			if B738DR_dspl_ctrl_pnl == -1 then
+				simDR_vor2_fo = simDR_vor2_capt
+				B738DR_efis_vor2_fo_pfd = B738DR_efis_vor2_capt_pfd
+			end
 		end
+	else
+			if B738DR_efis_vor2_capt_pos == -1 then
+				B738DR_efis_vor2_capt_pos = 0
+			elseif B738DR_efis_vor2_capt_pos == 0 then
+				B738DR_efis_vor2_capt_pos = 1
+			end
 	end
 end
 			
 function B738_efis_vor2_capt_dn_CMDhandler(phase, duration)
-	if phase == 0 then
-		if B738DR_efis_vor2_capt_pos == 1 then
-			B738DR_efis_vor2_capt_pos = 0
-			simDR_vor2_capt = 1
-		elseif B738DR_efis_vor2_capt_pos == 0 then
-			B738DR_efis_vor2_capt_pos = -1
-			simDR_vor2_capt = 1
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0 then
+			if B738DR_efis_vor2_capt_pos == 1 then
+				B738DR_efis_vor2_capt_pos = 0
+				simDR_vor2_capt = 1
+			elseif B738DR_efis_vor2_capt_pos == 0 then
+				B738DR_efis_vor2_capt_pos = -1
+				simDR_vor2_capt = 1
+			end
+			B738DR_efis_vor2_capt_pfd = B738DR_efis_vor2_capt_pos
+			if B738DR_dspl_ctrl_pnl == -1 then
+				simDR_vor2_fo = simDR_vor2_capt
+				B738DR_efis_vor2_fo_pfd = B738DR_efis_vor2_capt_pfd
+			end
+		end
+	else
+		if phase == 0 then
+			if B738DR_efis_vor2_capt_pos == 1 then
+				B738DR_efis_vor2_capt_pos = 0
+			elseif B738DR_efis_vor2_capt_pos == 0 then
+				B738DR_efis_vor2_capt_pos = -1
+			end
 		end
 	end
 end
@@ -2176,45 +2644,25 @@ end
 -- FIRST OFFICER EFIS CONTROLS
 
 function B738_dh_copilot_up_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_minim_dh_fo = 1
-		if B738DR_minim_fo == 0 then	--radio DH
-			if B738DR_dh_copilot <= 2499 then
-				B738DR_dh_copilot = B738DR_dh_copilot + 1
-				radio_dh_copilot = B738DR_dh_copilot
-			end
-		else	-- baro DH
-			if B738DR_dh_copilot <= 14999 then
-				B738DR_dh_copilot = B738DR_dh_copilot + 1
-				baro_dh_copilot = B738DR_dh_copilot
-			end
-		end
-	elseif phase == 1 and duration > 1 then
-		B738DR_minim_dh_fo = 2
-		dh_timer = dh_timer + SIM_PERIOD
-		dh_timer2 = dh_timer2 + SIM_PERIOD
-		if dh_timer2 > DH_STEP2 then
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			B738DR_minim_dh_fo = 1
 			if B738DR_minim_fo == 0 then	--radio DH
-				if B738DR_dh_copilot <= 2490 then
-					B738DR_dh_copilot = B738DR_dh_copilot + 10
-					radio_dh_copilot = B738DR_dh_copilot
-				else
-					B738DR_dh_copilot = 2500
+				if B738DR_dh_copilot <= 2499 then
+					B738DR_dh_copilot = B738DR_dh_copilot + 1
 					radio_dh_copilot = B738DR_dh_copilot
 				end
 			else	-- baro DH
-				if B738DR_dh_copilot <= 14990 then
-					B738DR_dh_copilot = B738DR_dh_copilot + 10
-					baro_dh_copilot = B738DR_dh_copilot
-				else
-					B738DR_dh_copilot = 15000
+				if B738DR_dh_copilot <= 14999 then
+					B738DR_dh_copilot = B738DR_dh_copilot + 1
 					baro_dh_copilot = B738DR_dh_copilot
 				end
 			end
-			dh_timer = 0
-			dh_timer2 = DH_STEP2
-		else
-			if dh_timer > DH_STEP then
+		elseif phase == 1 and duration > 1 then
+			B738DR_minim_dh_fo = 2
+			dh_timer = dh_timer + SIM_PERIOD
+			dh_timer2 = dh_timer2 + SIM_PERIOD
+			if dh_timer2 > DH_STEP2 then
 				if B738DR_minim_fo == 0 then	--radio DH
 					if B738DR_dh_copilot <= 2490 then
 						B738DR_dh_copilot = B738DR_dh_copilot + 10
@@ -2233,45 +2681,67 @@ function B738_dh_copilot_up_CMDhandler(phase, duration)
 					end
 				end
 				dh_timer = 0
+				dh_timer2 = DH_STEP2
+			else
+				if dh_timer > DH_STEP then
+					if B738DR_minim_fo == 0 then	--radio DH
+						if B738DR_dh_copilot <= 2490 then
+							B738DR_dh_copilot = B738DR_dh_copilot + 10
+							radio_dh_copilot = B738DR_dh_copilot
+						else
+							B738DR_dh_copilot = 2500
+							radio_dh_copilot = B738DR_dh_copilot
+						end
+					else	-- baro DH
+						if B738DR_dh_copilot <= 14990 then
+							B738DR_dh_copilot = B738DR_dh_copilot + 10
+							baro_dh_copilot = B738DR_dh_copilot
+						else
+							B738DR_dh_copilot = 15000
+							baro_dh_copilot = B738DR_dh_copilot
+						end
+					end
+					dh_timer = 0
+				end
 			end
+		elseif phase == 2 then
+			B738DR_minim_dh_fo = 0
+			dh_timer = 0
+			dh_timer2 = 0
 		end
-	elseif phase == 2 then
-		B738DR_minim_dh_fo = 0
-		dh_timer = 0
-		dh_timer2 = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_dh_pilot = B738DR_dh_copilot
+			radio_dh_pilot = radio_dh_copilot
+			baro_dh_pilot = baro_dh_copilot
+		end
+	else
+		if phase == 0 then
+			B738DR_minim_dh_fo = 1
+		elseif phase == 1 and duration > 1 then
+			B738DR_minim_dh_fo = 2
+		elseif phase == 2 then
+			B738DR_minim_dh_fo = 0
+		end
 	end
 end
 
 function B738_dh_copilot_dn_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_minim_dh_fo = -1
-		if B738DR_dh_copilot >= 1 then
-			B738DR_dh_copilot = B738DR_dh_copilot - 1
-		end
-		if B738DR_minim_fo == 0 then	--radio DH
-			radio_dh_copilot = B738DR_dh_copilot
-		else	-- baro DH
-			baro_dh_copilot = B738DR_dh_copilot
-		end
-	elseif phase == 1 and duration > 1 then
-		B738DR_minim_dh_fo = -2
-		dh_timer = dh_timer + SIM_PERIOD
-		dh_timer2 = dh_timer2 + SIM_PERIOD
-		if dh_timer2 > DH_STEP2 then
-			if B738DR_dh_copilot >= 10 then
-				B738DR_dh_copilot = B738DR_dh_copilot - 10
-			else
-				B738DR_dh_copilot = 0
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			B738DR_minim_dh_fo = -1
+			if B738DR_dh_copilot >= 1 then
+				B738DR_dh_copilot = B738DR_dh_copilot - 1
 			end
 			if B738DR_minim_fo == 0 then	--radio DH
 				radio_dh_copilot = B738DR_dh_copilot
 			else	-- baro DH
 				baro_dh_copilot = B738DR_dh_copilot
 			end
-			dh_timer = 0
-			dh_timer2 = DH_STEP2
-		else
-			if dh_timer > DH_STEP then
+		elseif phase == 1 and duration > 1 then
+			B738DR_minim_dh_fo = -2
+			dh_timer = dh_timer + SIM_PERIOD
+			dh_timer2 = dh_timer2 + SIM_PERIOD
+			if dh_timer2 > DH_STEP2 then
 				if B738DR_dh_copilot >= 10 then
 					B738DR_dh_copilot = B738DR_dh_copilot - 10
 				else
@@ -2283,36 +2753,50 @@ function B738_dh_copilot_dn_CMDhandler(phase, duration)
 					baro_dh_copilot = B738DR_dh_copilot
 				end
 				dh_timer = 0
+				dh_timer2 = DH_STEP2
+			else
+				if dh_timer > DH_STEP then
+					if B738DR_dh_copilot >= 10 then
+						B738DR_dh_copilot = B738DR_dh_copilot - 10
+					else
+						B738DR_dh_copilot = 0
+					end
+					if B738DR_minim_fo == 0 then	--radio DH
+						radio_dh_copilot = B738DR_dh_copilot
+					else	-- baro DH
+						baro_dh_copilot = B738DR_dh_copilot
+					end
+					dh_timer = 0
+				end
 			end
+		elseif phase == 2 then
+			B738DR_minim_dh_fo = 0
+			dh_timer = 0
+			dh_timer2 = 0
 		end
-	elseif phase == 2 then
-		B738DR_minim_dh_fo = 0
-		dh_timer = 0
-		dh_timer2 = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_dh_pilot = B738DR_dh_copilot
+			radio_dh_pilot = radio_dh_copilot
+			baro_dh_pilot = baro_dh_copilot
+		end
+	else
+		if phase == 0 then
+			B738DR_minim_dh_fo = 1
+		elseif phase == 1 and duration > 1 then
+			B738DR_minim_dh_fo = 2
+		elseif phase == 2 then
+			B738DR_minim_dh_fo = 0
+		end
 	end
 end
 
 function B738_dh_copilot_up1_CMDhandler(phase, duration)
-	if phase < 2 then
-		B738DR_minim_dh_fo = 1
-		dh_timer = dh_timer + SIM_PERIOD
-		dh_timer2 = dh_timer2 + SIM_PERIOD
-		if dh_timer2 > DH_STEP2 then
-			if B738DR_minim_fo == 0 then	--radio DH
-				if B738DR_dh_copilot <= 2499 then
-					B738DR_dh_copilot = B738DR_dh_copilot + 1
-					radio_dh_copilot = B738DR_dh_copilot
-				end
-			else	-- baro DH
-				if B738DR_dh_copilot <= 14999 then
-					B738DR_dh_copilot = B738DR_dh_copilot + 1
-					baro_dh_copilot = B738DR_dh_copilot
-				end
-			end
-			dh_timer = 0
-			dh_timer2 = DH_STEP2
-		else
-			if dh_timer > DH_STEP then
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase < 2 then
+			B738DR_minim_dh_fo = 1
+			dh_timer = dh_timer + SIM_PERIOD
+			dh_timer2 = dh_timer2 + SIM_PERIOD
+			if dh_timer2 > DH_STEP2 then
 				if B738DR_minim_fo == 0 then	--radio DH
 					if B738DR_dh_copilot <= 2499 then
 						B738DR_dh_copilot = B738DR_dh_copilot + 1
@@ -2325,42 +2809,49 @@ function B738_dh_copilot_up1_CMDhandler(phase, duration)
 					end
 				end
 				dh_timer = 0
+				dh_timer2 = DH_STEP2
+			else
+				if dh_timer > DH_STEP then
+					if B738DR_minim_fo == 0 then	--radio DH
+						if B738DR_dh_copilot <= 2499 then
+							B738DR_dh_copilot = B738DR_dh_copilot + 1
+							radio_dh_copilot = B738DR_dh_copilot
+						end
+					else	-- baro DH
+						if B738DR_dh_copilot <= 14999 then
+							B738DR_dh_copilot = B738DR_dh_copilot + 1
+							baro_dh_copilot = B738DR_dh_copilot
+						end
+					end
+					dh_timer = 0
+				end
 			end
+		elseif phase == 2 then
+			B738DR_minim_dh_fo = 0
+			dh_timer = 0
+			dh_timer2 = 0
 		end
-	elseif phase == 2 then
-		B738DR_minim_dh_fo = 0
-		dh_timer = 0
-		dh_timer2 = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_dh_pilot = B738DR_dh_copilot
+			radio_dh_pilot = radio_dh_copilot
+			baro_dh_pilot = baro_dh_copilot
+		end
+	else
+		if phase < 2 then
+			B738DR_minim_dh_fo = 1
+		elseif phase == 2 then
+			B738DR_minim_dh_fo = 0
+		end
 	end
 end
 
 function B738_dh_copilot_up2_CMDhandler(phase, duration)
-	if phase < 2 then
-		B738DR_minim_dh_fo = 2
-		dh_timer = dh_timer + SIM_PERIOD
-		dh_timer2 = dh_timer2 + SIM_PERIOD
-		if dh_timer2 > DH_STEP2 then
-			if B738DR_minim_fo == 0 then	--radio DH
-				if B738DR_dh_copilot <= 2490 then
-					B738DR_dh_copilot = B738DR_dh_copilot + 10
-					radio_dh_copilot = B738DR_dh_copilot
-				else
-					B738DR_dh_copilot = 2500
-					radio_dh_copilot = B738DR_dh_copilot
-				end
-			else	-- baro DH
-				if B738DR_dh_copilot <= 14990 then
-					B738DR_dh_copilot = B738DR_dh_copilot + 10
-					baro_dh_copilot = B738DR_dh_copilot
-				else
-					B738DR_dh_copilot = 15000
-					baro_dh_copilot = B738DR_dh_copilot
-				end
-			end
-			dh_timer = 0
-			dh_timer2 = DH_STEP2
-		else
-			if dh_timer > DH_STEP then
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase < 2 then
+			B738DR_minim_dh_fo = 2
+			dh_timer = dh_timer + SIM_PERIOD
+			dh_timer2 = dh_timer2 + SIM_PERIOD
+			if dh_timer2 > DH_STEP2 then
 				if B738DR_minim_fo == 0 then	--radio DH
 					if B738DR_dh_copilot <= 2490 then
 						B738DR_dh_copilot = B738DR_dh_copilot + 10
@@ -2379,33 +2870,55 @@ function B738_dh_copilot_up2_CMDhandler(phase, duration)
 					end
 				end
 				dh_timer = 0
+				dh_timer2 = DH_STEP2
+			else
+				if dh_timer > DH_STEP then
+					if B738DR_minim_fo == 0 then	--radio DH
+						if B738DR_dh_copilot <= 2490 then
+							B738DR_dh_copilot = B738DR_dh_copilot + 10
+							radio_dh_copilot = B738DR_dh_copilot
+						else
+							B738DR_dh_copilot = 2500
+							radio_dh_copilot = B738DR_dh_copilot
+						end
+					else	-- baro DH
+						if B738DR_dh_copilot <= 14990 then
+							B738DR_dh_copilot = B738DR_dh_copilot + 10
+							baro_dh_copilot = B738DR_dh_copilot
+						else
+							B738DR_dh_copilot = 15000
+							baro_dh_copilot = B738DR_dh_copilot
+						end
+					end
+					dh_timer = 0
+				end
 			end
+		elseif phase == 2 then
+			B738DR_minim_dh_fo = 0
+			dh_timer = 0
+			dh_timer2 = 0
 		end
-	elseif phase == 2 then
-		B738DR_minim_dh_fo = 0
-		dh_timer = 0
-		dh_timer2 = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_dh_pilot = B738DR_dh_copilot
+			radio_dh_pilot = radio_dh_copilot
+			baro_dh_pilot = baro_dh_copilot
+		end
+	else
+		if phase < 2 then
+			B738DR_minim_dh_fo = 1
+		elseif phase == 2 then
+			B738DR_minim_dh_fo = 0
+		end
 	end
 end
 
 function B738_dh_copilot_dn1_CMDhandler(phase, duration)
-	if phase < 2 then
-		B738DR_minim_dh_fo = -1
-		dh_timer = dh_timer + SIM_PERIOD
-		dh_timer2 = dh_timer2 + SIM_PERIOD
-		if dh_timer2 > DH_STEP2 then
-			if B738DR_dh_copilot >= 1 then
-				B738DR_dh_copilot = B738DR_dh_copilot - 1
-			end
-			if B738DR_minim_fo == 0 then	--radio DH
-				radio_dh_copilot = B738DR_dh_copilot
-			else	-- baro DH
-				baro_dh_copilot = B738DR_dh_copilot
-			end
-			dh_timer = 0
-			dh_timer2 = DH_STEP2
-		else
-			if dh_timer > DH_STEP then
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase < 2 then
+			B738DR_minim_dh_fo = -1
+			dh_timer = dh_timer + SIM_PERIOD
+			dh_timer2 = dh_timer2 + SIM_PERIOD
+			if dh_timer2 > DH_STEP2 then
 				if B738DR_dh_copilot >= 1 then
 					B738DR_dh_copilot = B738DR_dh_copilot - 1
 				end
@@ -2415,35 +2928,46 @@ function B738_dh_copilot_dn1_CMDhandler(phase, duration)
 					baro_dh_copilot = B738DR_dh_copilot
 				end
 				dh_timer = 0
+				dh_timer2 = DH_STEP2
+			else
+				if dh_timer > DH_STEP then
+					if B738DR_dh_copilot >= 1 then
+						B738DR_dh_copilot = B738DR_dh_copilot - 1
+					end
+					if B738DR_minim_fo == 0 then	--radio DH
+						radio_dh_copilot = B738DR_dh_copilot
+					else	-- baro DH
+						baro_dh_copilot = B738DR_dh_copilot
+					end
+					dh_timer = 0
+				end
 			end
+		elseif phase == 2 then
+			B738DR_minim_dh_fo = 0
+			dh_timer = 0
+			dh_timer2 = 0
 		end
-	elseif phase == 2 then
-		B738DR_minim_dh_fo = 0
-		dh_timer = 0
-		dh_timer2 = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_dh_pilot = B738DR_dh_copilot
+			radio_dh_pilot = radio_dh_copilot
+			baro_dh_pilot = baro_dh_copilot
+		end
+	else
+		if phase < 2 then
+			B738DR_minim_dh_fo = 1
+		elseif phase == 2 then
+			B738DR_minim_dh_fo = 0
+		end
 	end
 end
 
 function B738_dh_copilot_dn2_CMDhandler(phase, duration)
-	if phase < 2 then
-		B738DR_minim_dh_fo = -2
-		dh_timer = dh_timer + SIM_PERIOD
-		dh_timer2 = dh_timer2 + SIM_PERIOD
-		if dh_timer2 > DH_STEP2 then
-			if B738DR_dh_copilot >= 10 then
-				B738DR_dh_copilot = B738DR_dh_copilot - 10
-			else
-				B738DR_dh_copilot = 0
-			end
-			if B738DR_minim_fo == 0 then	--radio DH
-				radio_dh_copilot = B738DR_dh_copilot
-			else	-- baro DH
-				baro_dh_copilot = B738DR_dh_copilot
-			end
-			dh_timer = 0
-			dh_timer2 = DH_STEP2
-		else
-			if dh_timer > DH_STEP then
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase < 2 then
+			B738DR_minim_dh_fo = -2
+			dh_timer = dh_timer + SIM_PERIOD
+			dh_timer2 = dh_timer2 + SIM_PERIOD
+			if dh_timer2 > DH_STEP2 then
 				if B738DR_dh_copilot >= 10 then
 					B738DR_dh_copilot = B738DR_dh_copilot - 10
 				else
@@ -2455,78 +2979,163 @@ function B738_dh_copilot_dn2_CMDhandler(phase, duration)
 					baro_dh_copilot = B738DR_dh_copilot
 				end
 				dh_timer = 0
+				dh_timer2 = DH_STEP2
+			else
+				if dh_timer > DH_STEP then
+					if B738DR_dh_copilot >= 10 then
+						B738DR_dh_copilot = B738DR_dh_copilot - 10
+					else
+						B738DR_dh_copilot = 0
+					end
+					if B738DR_minim_fo == 0 then	--radio DH
+						radio_dh_copilot = B738DR_dh_copilot
+					else	-- baro DH
+						baro_dh_copilot = B738DR_dh_copilot
+					end
+					dh_timer = 0
+				end
 			end
+		elseif phase == 2 then
+			B738DR_minim_dh_fo = 0
+			dh_timer = 0
+			dh_timer2 = 0
 		end
-	elseif phase == 2 then
-		B738DR_minim_dh_fo = 0
-		dh_timer = 0
-		dh_timer2 = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_dh_pilot = B738DR_dh_copilot
+			radio_dh_pilot = radio_dh_copilot
+			baro_dh_pilot = baro_dh_copilot
+		end
+	else
+		if phase < 2 then
+			B738DR_minim_dh_fo = 1
+		elseif phase == 2 then
+			B738DR_minim_dh_fo = 0
+		end
 	end
 end
 
 function B738_efis_wxr_fo_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_wxr_fo = 1
-		if B738DR_efis_fo_wxr_on == 0 then
-			B738DR_efis_fo_wxr_on = 1
-		else
-			B738DR_efis_fo_wxr_on = 0
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			B738DR_efis_wxr_fo = 1
+			if B738DR_efis_fo_wxr_on == 0 then
+				B738DR_efis_fo_wxr_on = 1
+			else
+				B738DR_efis_fo_wxr_on = 0
+			end
+			B738DR_efis_wxr_on = 0
+			--simCMD_efis_wxr:once()
+		elseif phase == 2 then
+			B738DR_efis_wxr_fo = 0
 		end
-		B738DR_efis_wxr_on = 0
-		--simCMD_efis_wxr:once()
-	elseif phase == 2 then
-		B738DR_efis_wxr_fo = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			if B738DR_efis_fo_wxr_on == 0 then
+				B738DR_efis_wxr_on = 0
+			elseif B738DR_efis_fo_wxr_on == 1 then
+				B738DR_efis_wxr_on = 0
+			end
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_wxr_fo = 1
+		elseif phase == 2 then
+			B738DR_efis_wxr_fo = 0
+		end
 	end
 end
 
 function B738_efis_sta_fo_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_sta_fo = 1
-		if B738DR_efis_fo_vor_on == 0 then
-			B738DR_efis_fo_vor_on = 1
-		else
-			B738DR_efis_fo_vor_on = 0
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			B738DR_efis_sta_fo = 1
+			if B738DR_efis_fo_vor_on == 0 then
+				B738DR_efis_fo_vor_on = 1
+			else
+				B738DR_efis_fo_vor_on = 0
+			end
+			--simCMD_efis_sta:once()
+		elseif phase == 2 then
+			B738DR_efis_sta_fo = 0
 		end
-		--simCMD_efis_sta:once()
-	elseif phase == 2 then
-		B738DR_efis_sta_fo = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_efis_vor_on = B738DR_efis_fo_vor_on
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_sta_fo = 1
+		elseif phase == 2 then
+			B738DR_efis_sta_fo = 0
+		end
 	end
 end
 
 function B738_efis_wpt_fo_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_wpt_fo = 1
-		if B738DR_efis_fo_fix_on == 0 then
-			B738DR_efis_fo_fix_on = 1
-		else
-			B738DR_efis_fo_fix_on = 0
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			B738DR_efis_wpt_fo = 1
+			if B738DR_efis_fo_fix_on == 0 then
+				B738DR_efis_fo_fix_on = 1
+			else
+				B738DR_efis_fo_fix_on = 0
+			end
+			--simCMD_efis_wpt:once()
+		elseif phase == 2 then
+			B738DR_efis_wpt_fo = 0
 		end
-		--simCMD_efis_wpt:once()
-	elseif phase == 2 then
-		B738DR_efis_wpt_fo = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_efis_fix_on = B738DR_efis_fo_fix_on
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_wpt_fo = 1
+		elseif phase == 2 then
+			B738DR_efis_wpt_fo = 0
+		end
 	end
 end
 
 function B738_efis_arpt_fo_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_arpt_fo = 1
-		if B738DR_efis_fo_apt_on == 0 then
-			B738DR_efis_fo_apt_on = 1
-		else
-			B738DR_efis_fo_apt_on = 0
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			B738DR_efis_arpt_fo = 1
+			if B738DR_efis_fo_apt_on == 0 then
+				B738DR_efis_fo_apt_on = 1
+			else
+				B738DR_efis_fo_apt_on = 0
+			end
+			--simCMD_efis_arpt:once()
+		elseif phase == 2 then
+			B738DR_efis_arpt_fo = 0
 		end
-		--simCMD_efis_arpt:once()
-	elseif phase == 2 then
-		B738DR_efis_arpt_fo = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_efis_apt_on = B738DR_efis_fo_apt_on
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_arpt_fo = 1
+		elseif phase == 2 then
+			B738DR_efis_arpt_fo = 0
+		end
 	end
 end
 
 function B738_efis_data_fo_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_data_fo = 1
-		B738DR_efis_data_fo_status = 1 - B738DR_efis_data_fo_status
-	elseif phase == 2 then
-		B738DR_efis_data_fo = 0
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			B738DR_efis_data_fo = 1
+			B738DR_efis_data_fo_status = 1 - B738DR_efis_data_fo_status
+		elseif phase == 2 then
+			B738DR_efis_data_fo = 0
+		end
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_efis_data_capt_status = B738DR_efis_data_fo_status
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_data_fo = 1
+		elseif phase == 2 then
+			B738DR_efis_data_fo = 0
+		end
 	end
 end
 
@@ -2547,18 +3156,33 @@ function B738_efis_terr_fo_CMDhandler(phase, duration)
 end
 
 function B738_efis_rst_fo_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_rst_fo = 1
-		B738DR_dh_copilot = 0
-		dh_min_block_copilot = 1
-		if B738DR_minim_fo == 0 then	--radio DH
-			radio_dh_copilot = 0
-			simDR_dh_copilot = 0
-		else	-- baro DH
-			baro_dh_copilot = 0
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			B738DR_efis_rst_fo = 1
+			B738DR_dh_copilot = 0
+			dh_min_block_copilot = 1
+			if B738DR_minim_fo == 0 then	--radio DH
+				radio_dh_copilot = 0
+				simDR_dh_copilot = 0
+			else	-- baro DH
+				baro_dh_copilot = 0
+			end
+		elseif phase == 2 then
+			B738DR_efis_rst_fo = 0
 		end
-	elseif phase == 2 then
-		B738DR_efis_rst_fo = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			baro_dh_pilot = baro_dh_copilot
+			radio_dh_pilot = radio_dh_copilot
+			B738DR_dh_pilot = B738DR_dh_copilot
+			dh_min_block_pilot = dh_min_block_copilot
+			simDR_dh_pilot = simDR_dh_copilot
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_rst_fo = 1
+		elseif phase == 2 then
+			B738DR_efis_rst_fo = 0
+		end
 	end
 end
 
@@ -2602,110 +3226,231 @@ function B738_efis_tfc_fo_CMDhandler(phase, duration)
 end
 
 function B738_efis_std_fo_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_std_fo = 1
-		if B738DR_baro_set_std_copilot == 0 then
-			B738DR_baro_set_std_copilot = 1
-			baro_sel_co_old = B738DR_baro_sel_in_hg_copilot
-			simDR_barometer_setting_fo = 29.92
---			B738DR_baro_sel_copilot_show = 1
-		else
-			B738DR_baro_set_std_copilot = 0
---			B738DR_baro_sel_copilot_show = 0
-			simDR_barometer_setting_fo = B738DR_baro_sel_in_hg_copilot
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			B738DR_efis_std_fo = 1
+			if B738DR_baro_set_std_copilot == 0 then
+				B738DR_baro_set_std_copilot = 1
+				baro_sel_co_old = B738DR_baro_sel_in_hg_copilot
+				simDR_barometer_setting_fo = 29.92
+	--			B738DR_baro_sel_copilot_show = 1
+			else
+				B738DR_baro_set_std_copilot = 0
+	--			B738DR_baro_sel_copilot_show = 0
+				simDR_barometer_setting_fo = B738DR_baro_sel_in_hg_copilot
+			end
+			B738DR_baro_sel_copilot_show = 0
+		elseif phase == 2 then
+			B738DR_efis_std_fo = 0
 		end
-		B738DR_baro_sel_copilot_show = 0
-	elseif phase == 2 then
-		B738DR_efis_std_fo = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_baro_sel_pilot_show = B738DR_baro_sel_copilot_show
+			simDR_barometer_setting_capt = simDR_barometer_setting_fo
+			B738DR_baro_set_std_pilot = B738DR_baro_set_std_copilot
+			B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_copilot
+			baro_sel_old = baro_sel_co_old
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_std_fo = 1
+		elseif phase == 2 then
+			B738DR_efis_std_fo = 0
+		end
 	end
 end
 
 function B738_efis_mtrs_fo_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_mtrs_fo = 1
-		if B738DR_fo_alt_mode_meters == 0 then
-			B738DR_fo_alt_mode_meters = 1
-		elseif B738DR_fo_alt_mode_meters == 1 then
-			B738DR_fo_alt_mode_meters = 0
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			B738DR_efis_mtrs_fo = 1
+			if B738DR_fo_alt_mode_meters == 0 then
+				B738DR_fo_alt_mode_meters = 1
+			elseif B738DR_fo_alt_mode_meters == 1 then
+				B738DR_fo_alt_mode_meters = 0
+			end
+		elseif phase == 2 then
+			B738DR_efis_mtrs_fo = 0
 		end
-	elseif phase == 2 then
-		B738DR_efis_mtrs_fo = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_capt_alt_mode_meters = B738DR_fo_alt_mode_meters
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_mtrs_fo = 1
+		elseif phase == 2 then
+			B738DR_efis_mtrs_fo = 0
+		end
 	end
 end
 
 function B738_efis_fpv_fo_CMDhandler(phase, duration)
-	if phase == 0 then
-		B738DR_efis_fpv_fo = 1
-		if B738DR_fo_fpv_on == 0 then
-			B738DR_fo_fpv_on = 1
-		elseif B738DR_fo_fpv_on == 1 then
-			B738DR_fo_fpv_on = 0
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			B738DR_efis_fpv_fo = 1
+			if B738DR_fo_fpv_on == 0 then
+				B738DR_fo_fpv_on = 1
+			elseif B738DR_fo_fpv_on == 1 then
+				B738DR_fo_fpv_on = 0
+			end
+		elseif phase == 2 then
+			B738DR_efis_fpv_fo = 0
 		end
-	elseif phase == 2 then
-		B738DR_efis_fpv_fo = 0
+		if B738DR_dspl_ctrl_pnl == 1 then
+			B738DR_capt_fpv_on = B738DR_fo_fpv_on
+		end
+	else
+		if phase == 0 then
+			B738DR_efis_fpv_fo = 1
+		elseif phase == 2 then
+			B738DR_efis_fpv_fo = 0
+		end
 	end
 end
 
 function B738_efis_baro_mode_fo_up_CMDhandler(phase, duration)
-	if phase == 0 then
-		if B738DR_efis_baro_mode_fo == 0 then
-			B738DR_efis_baro_mode_fo = 1
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			if B738DR_efis_baro_mode_fo == 0 then
+				B738DR_efis_baro_mode_fo = 1
+			end
+			B738DR_efis_baro_mode_fo_pfd = B738DR_efis_baro_mode_fo
+			if B738DR_dspl_ctrl_pnl == 1 then
+				B738DR_efis_baro_mode_capt_pfd = B738DR_efis_baro_mode_fo_pfd
+			end
+		end
+	else
+		if phase == 0 then
+			if B738DR_efis_baro_mode_fo == 0 then
+				B738DR_efis_baro_mode_fo = 1
+			end
 		end
 	end
 end
 
 function B738_efis_baro_mode_fo_dn_CMDhandler(phase, duration)
-	if phase == 0 then
-		if B738DR_efis_baro_mode_fo == 1 then
-			B738DR_efis_baro_mode_fo = 0
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			if B738DR_efis_baro_mode_fo == 1 then
+				B738DR_efis_baro_mode_fo = 0
+			end
+			B738DR_efis_baro_mode_fo_pfd = B738DR_efis_baro_mode_fo
+			if B738DR_dspl_ctrl_pnl == 1 then
+				B738DR_efis_baro_mode_capt_pfd = B738DR_efis_baro_mode_fo_pfd
+			end
+		end
+	else
+		if phase == 0 then
+			if B738DR_efis_baro_mode_fo == 1 then
+				B738DR_efis_baro_mode_fo = 0
+			end
 		end
 	end
 end
 
 function B738_efis_vor1_fo_up_CMDhandler(phase, duration)
-	if phase == 0 then
-		if B738DR_efis_vor1_fo_pos == -1 then
-			B738DR_efis_vor1_fo_pos = 0
-			simDR_vor1_fo = 1
-		elseif B738DR_efis_vor1_fo_pos == 0 then
-			B738DR_efis_vor1_fo_pos = 1
-			simDR_vor1_fo = 2
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			if B738DR_efis_vor1_fo_pos == -1 then
+				B738DR_efis_vor1_fo_pos = 0
+				simDR_vor1_fo = 1
+			elseif B738DR_efis_vor1_fo_pos == 0 then
+				B738DR_efis_vor1_fo_pos = 1
+				simDR_vor1_fo = 2
+			end
+			B738DR_efis_vor1_fo_pfd = B738DR_efis_vor1_fo_pos
+			if B738DR_dspl_ctrl_pnl == 1 then
+				simDR_vor1_capt = simDR_vor1_fo
+				B738DR_efis_vor1_capt_pfd = B738DR_efis_vor1_fo_pfd
+			end
+		end
+	else
+		if phase == 0 then
+			if B738DR_efis_vor1_fo_pos == -1 then
+				B738DR_efis_vor1_fo_pos = 0
+			elseif B738DR_efis_vor1_fo_pos == 0 then
+				B738DR_efis_vor1_fo_pos = 1
+			end
 		end
 	end
 end
-			
+
 function B738_efis_vor1_fo_dn_CMDhandler(phase, duration)
-	if phase == 0 then
-		if B738DR_efis_vor1_fo_pos == 1 then
-			B738DR_efis_vor1_fo_pos = 0
-			simDR_vor1_fo = 1
-		elseif B738DR_efis_vor1_fo_pos == 0 then
-			B738DR_efis_vor1_fo_pos = -1
-			simDR_vor1_fo = 1
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			if B738DR_efis_vor1_fo_pos == 1 then
+				B738DR_efis_vor1_fo_pos = 0
+				simDR_vor1_fo = 1
+			elseif B738DR_efis_vor1_fo_pos == 0 then
+				B738DR_efis_vor1_fo_pos = -1
+				simDR_vor1_fo = 1
+			end
+			B738DR_efis_vor1_fo_pfd = B738DR_efis_vor1_fo_pos
+			if B738DR_dspl_ctrl_pnl == 1 then
+				simDR_vor1_capt = simDR_vor1_fo
+				B738DR_efis_vor1_capt_pfd = B738DR_efis_vor1_fo_pfd
+			end
+		end
+	else
+		if phase == 0 then
+			if B738DR_efis_vor1_fo_pos == 1 then
+				B738DR_efis_vor1_fo_pos = 0
+			elseif B738DR_efis_vor1_fo_pos == 0 then
+				B738DR_efis_vor1_fo_pos = -1
+			end
 		end
 	end
 end
 
 function B738_efis_vor2_fo_up_CMDhandler(phase, duration)
-	if phase == 0 then
-		if B738DR_efis_vor2_fo_pos == -1 then
-			B738DR_efis_vor2_fo_pos = 0
-			simDR_vor2_fo = 1
-		elseif B738DR_efis_vor2_fo_pos == 0 then
-			B738DR_efis_vor2_fo_pos = 1
-			simDR_vor2_fo = 2
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			if B738DR_efis_vor2_fo_pos == -1 then
+				B738DR_efis_vor2_fo_pos = 0
+				simDR_vor2_fo = 1
+			elseif B738DR_efis_vor2_fo_pos == 0 then
+				B738DR_efis_vor2_fo_pos = 1
+				simDR_vor2_fo = 2
+			end
+			B738DR_efis_vor2_fo_pfd = B738DR_efis_vor2_fo_pos
+			if B738DR_dspl_ctrl_pnl == 1 then
+				simDR_vor2_capt = simDR_vor2_fo
+				B738DR_efis_vor2_capt_pfd = B738DR_efis_vor2_fo_pfd
+			end
+		end
+	else
+		if phase == 0 then
+			if B738DR_efis_vor2_fo_pos == -1 then
+				B738DR_efis_vor2_fo_pos = 0
+			elseif B738DR_efis_vor2_fo_pos == 0 then
+				B738DR_efis_vor2_fo_pos = 1
+			end
 		end
 	end
 end
 			
 function B738_efis_vor2_fo_dn_CMDhandler(phase, duration)
-	if phase == 0 then
-		if B738DR_efis_vor2_fo_pos == 1 then
-			B738DR_efis_vor2_fo_pos = 0
-			simDR_vor2_fo = 1
-		elseif B738DR_efis_vor2_fo_pos == 0 then
-			B738DR_efis_vor2_fo_pos = -1
-			simDR_vor2_fo = 1
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0 then
+			if B738DR_efis_vor2_fo_pos == 1 then
+				B738DR_efis_vor2_fo_pos = 0
+				simDR_vor2_fo = 1
+			elseif B738DR_efis_vor2_fo_pos == 0 then
+				B738DR_efis_vor2_fo_pos = -1
+				simDR_vor2_fo = 1
+			end
+			B738DR_efis_vor2_fo_pfd = B738DR_efis_vor2_fo_pos
+			if B738DR_dspl_ctrl_pnl == 1 then
+				simDR_vor2_capt = simDR_vor2_fo
+				B738DR_efis_vor2_capt_pfd = B738DR_efis_vor2_fo_pfd
+			end
+		end
+	else
+		if phase == 0 then
+			if B738DR_efis_vor2_fo_pos == 1 then
+				B738DR_efis_vor2_fo_pos = 0
+			elseif B738DR_efis_vor2_fo_pos == 0 then
+				B738DR_efis_vor2_fo_pos = -1
+			end
 		end
 	end
 end
@@ -4428,113 +5173,141 @@ end
 
 -- baro_pilot_up_active / baro_pilot_dn_active => 0-no repeat, 1-repeat start, 2-repeat continue
 function baro_pilot_updn_timer()
-	if baro_pilot_up_active ~= 0 then
-		baro_pilot_timer = baro_pilot_timer + SIM_PERIOD
-		if (baro_pilot_up_active == 1) and (baro_pilot_timer > 0.3) then
-			baro_pilot_timer = 0.5
-			if B738DR_baro_sel_in_hg_pilot < 40 then
-				B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_pilot + 0.01
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if baro_pilot_up_active ~= 0 then
+			baro_pilot_timer = baro_pilot_timer + SIM_PERIOD
+			if (baro_pilot_up_active == 1) and (baro_pilot_timer > 0.3) then
+				baro_pilot_timer = 0.5
+				if B738DR_baro_sel_in_hg_pilot < 40 then
+					B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_pilot + 0.01
+				end
+				if B738DR_dspl_ctrl_pnl == -1 then
+					B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_pilot
+				end
 			end
 		end
-	end
-	if baro_pilot_dn_active ~= 0 then
-		baro_pilot_timer = baro_pilot_timer + SIM_PERIOD
-		if (baro_pilot_dn_active == 1) and (baro_pilot_timer > 0.3) then
-			baro_pilot_timer = 0.5
-			if B738DR_baro_sel_in_hg_pilot > 0 then
-				B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_pilot - 0.01
+		if baro_pilot_dn_active ~= 0 then
+			baro_pilot_timer = baro_pilot_timer + SIM_PERIOD
+			if (baro_pilot_dn_active == 1) and (baro_pilot_timer > 0.3) then
+				baro_pilot_timer = 0.5
+				if B738DR_baro_sel_in_hg_pilot > 0 then
+					B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_pilot - 0.01
+				end
+				if B738DR_dspl_ctrl_pnl == -1 then
+					B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_pilot
+				end
 			end
 		end
 	end
 end
 
 function B738CMD_baro_pilot_up_CMDhandler(phase, duration)
-	if phase == 0  then
-		if B738DR_baro_sel_in_hg_pilot < 40 then
-			B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_pilot + 0.01
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0  then
+			if B738DR_baro_sel_in_hg_pilot < 40 then
+				B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_pilot + 0.01
+			end
+			if B738DR_dspl_ctrl_pnl == -1 then
+				B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_pilot
+			end
+		elseif phase == 1 then
+			if baro_pilot_up_active == 0 then
+				baro_pilot_up_active = 1
+			end
+		elseif phase == 2  then
+			baro_pilot_up_active = 0
+			baro_pilot_timer = 0
 		end
-	end
-	if phase == 1 then
-		if baro_pilot_up_active == 0 then
-			baro_pilot_up_active = 1
-		end
-	end
-	if phase == 2  then
-		baro_pilot_up_active = 0
-		baro_pilot_timer = 0
 	end
 end
 
 function B738CMD_baro_pilot_dn_CMDhandler(phase, duration)
-	if phase == 0  then
-		if B738DR_baro_sel_in_hg_pilot > 0 then
-			B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_pilot - 0.01
+	if B738DR_dspl_ctrl_pnl < 1 then
+		if phase == 0  then
+			if B738DR_baro_sel_in_hg_pilot > 0 then
+				B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_pilot - 0.01
+			end
+			if B738DR_dspl_ctrl_pnl == -1 then
+				B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_pilot
+			end
+		elseif phase == 1 then
+			if baro_pilot_dn_active == 0 then
+				baro_pilot_dn_active = 1
+			end
+		elseif phase == 2  then
+			baro_pilot_dn_active = 0
+			baro_pilot_timer = 0
 		end
-	end
-	if phase == 1 then
-		if baro_pilot_dn_active == 0 then
-			baro_pilot_dn_active = 1
-		end
-	end
-	if phase == 2  then
-		baro_pilot_dn_active = 0
-		baro_pilot_timer = 0
 	end
 end
 
 -- baro_copilot_up_active / baro_copilot_dn_active => 0-no repeat, 1-repeat start, 2-repeat continue
 function baro_copilot_updn_timer()
-	if baro_copilot_up_active ~= 0 then
-		baro_copilot_timer = baro_copilot_timer + SIM_PERIOD
-		if (baro_copilot_up_active == 1) and (baro_copilot_timer > 0.3) then
-			baro_copilot_timer = 0.5
-			if B738DR_baro_sel_in_hg_copilot < 40 then
-				B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_copilot + 0.01
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if baro_copilot_up_active ~= 0 then
+			baro_copilot_timer = baro_copilot_timer + SIM_PERIOD
+			if (baro_copilot_up_active == 1) and (baro_copilot_timer > 0.3) then
+				baro_copilot_timer = 0.5
+				if B738DR_baro_sel_in_hg_copilot < 40 then
+					B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_copilot + 0.01
+				end
+				if B738DR_dspl_ctrl_pnl == 1 then
+					B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_copilot
+				end
 			end
 		end
-	end
-	if baro_copilot_dn_active ~= 0 then
-		baro_copilot_timer = baro_copilot_timer + SIM_PERIOD
-		if (baro_copilot_dn_active == 1) and (baro_copilot_timer > 0.3) then
-			baro_copilot_timer = 0.5
-			if B738DR_baro_sel_in_hg_copilot > 0 then
-				B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_copilot - 0.01
+		if baro_copilot_dn_active ~= 0 then
+			baro_copilot_timer = baro_copilot_timer + SIM_PERIOD
+			if (baro_copilot_dn_active == 1) and (baro_copilot_timer > 0.3) then
+				baro_copilot_timer = 0.5
+				if B738DR_baro_sel_in_hg_copilot > 0 then
+					B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_copilot - 0.01
+				end
+				if B738DR_dspl_ctrl_pnl == 1 then
+					B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_copilot
+				end
 			end
 		end
 	end
 end
 
 function B738CMD_baro_copilot_up_CMDhandler(phase, duration)
-	if phase == 0  then
-		if B738DR_baro_sel_in_hg_copilot < 40 then
-			B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_copilot + 0.01
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0  then
+			if B738DR_baro_sel_in_hg_copilot < 40 then
+				B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_copilot + 0.01
+			end
+			if B738DR_dspl_ctrl_pnl == 1 then
+				B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_copilot
+			end
+		elseif phase == 1 then
+			if baro_copilot_up_active == 0 then
+				baro_copilot_up_active = 1
+			end
+		elseif phase == 2  then
+			baro_copilot_up_active = 0
+			baro_copilot_timer = 0
 		end
-	end
-	if phase == 1 then
-		if baro_copilot_up_active == 0 then
-			baro_copilot_up_active = 1
-		end
-	end
-	if phase == 2  then
-		baro_copilot_up_active = 0
-		baro_copilot_timer = 0
 	end
 end
 
 function B738CMD_baro_copilot_dn_CMDhandler(phase, duration)
-	if phase == 0  then
-		if B738DR_baro_sel_in_hg_copilot > 0 then
-			B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_copilot - 0.01
+	if B738DR_dspl_ctrl_pnl > -1 then
+		if phase == 0  then
+			if B738DR_baro_sel_in_hg_copilot > 0 then
+				B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_copilot - 0.01
+			end
+			if B738DR_dspl_ctrl_pnl == 1 then
+				B738DR_baro_sel_in_hg_pilot = B738DR_baro_sel_in_hg_copilot
+			end
+		elseif phase == 1 then
+			if baro_copilot_dn_active == 0 then
+				baro_copilot_dn_active = 1
+			end
+		elseif phase == 2  then
+			baro_copilot_dn_active = 0
+			baro_copilot_timer = 0
 		end
-	end
-	if phase == 1 then
-		if baro_copilot_dn_active == 0 then
-			baro_copilot_dn_active = 1
-		end
-	end
-	if phase == 2  then
-		baro_copilot_dn_active = 0
-		baro_copilot_timer = 0
 	end
 end
 
@@ -15072,15 +15845,6 @@ end
 -- Baro altimeter
 function B738_efis_baro()
 
-	-- sync baro CPT/FO
-	if B738DR_sync_baro == 1 then
-		B738DR_baro_sel_in_hg_copilot = B738DR_baro_sel_in_hg_pilot
-		B738DR_baro_set_std_copilot = B738DR_baro_set_std_pilot
-		simDR_barometer_setting_fo = simDR_barometer_setting_capt
-		baro_sel_co_old = baro_sel_old
-		B738DR_baro_sel_copilot_show = B738DR_baro_sel_pilot_show
-	end
-	
 	-- Captain
 	if B738DR_baro_set_std_pilot == 1 then	-- set STD
 		if baro_sel_old ~= B738DR_baro_sel_in_hg_pilot then
@@ -16082,7 +16846,7 @@ function B738_afs_protect()
 				simDR_airspeed_dial_kts = B738DR_afs_spd_limit_max
 				at_mode = 2
 			end
-		elseif at_mode ~= 1 and at_mode ~= 3 and at_mode ~= 4 and at_mode ~= 5 and at_mode ~= 8 and ap_pitch_mode ~= 5 then
+		elseif at_mode ~= 3 and at_mode ~= 4 and at_mode ~= 5 and at_mode ~= 8 and ap_pitch_mode ~= 5 then
 			if simDR_airspeed_pilot > (B738DR_afs_spd_limit_max - 5) and simDR_airspeed_dial_kts > B738DR_afs_spd_limit_max then
 				simDR_airspeed_dial_kts = B738DR_afs_spd_limit_max
 			end
@@ -16094,7 +16858,7 @@ function B738_afs_protect()
 					simDR_airspeed_dial_kts = B738DR_pfd_min_speed + 5
 					at_mode = 2
 				end
-			elseif at_mode ~= 1 and at_mode ~= 3 and at_mode ~= 4 and at_mode ~= 5 and at_mode ~= 8 and ap_pitch_mode ~= 5 then
+			elseif at_mode ~= 3 and at_mode ~= 4 and at_mode ~= 5 and at_mode ~= 8 and ap_pitch_mode ~= 5 then
 				if simDR_airspeed_pilot < (B738DR_pfd_min_speed + 8) and simDR_airspeed_dial_kts < (B738DR_pfd_min_speed + 4) then
 					simDR_airspeed_dial_kts = B738DR_pfd_min_speed + 4
 				end
@@ -16130,10 +16894,10 @@ end
 
 function flight_start()
 
-simDR_vor1_capt = 1
-simDR_vor2_capt	= 1
-simDR_vor1_fo	= 1
-simDR_vor2_fo	= 1
+-- simDR_vor1_capt = 1
+-- simDR_vor2_capt	= 1
+-- simDR_vor1_fo	= 1
+-- simDR_vor2_fo	= 1
 
 B738DR_efis_vor1_capt_pos = 1
 B738DR_efis_vor2_capt_pos = 1
@@ -16422,6 +17186,8 @@ autothr_arm_pos = B738DR_autopilot_autothr_arm_pos
 mcp_hdg_dial_old = B738DR_mcp_hdg_dial
 hide_hdg_line = 0
 hide_hdg_line_fo = 0
+dspl_ctrl_pnl_old = 0
+in_hpa_cnt = 0
 
 airspeed_dial_kts_old = 0
 
@@ -16434,6 +17200,9 @@ B738DR_bias = 6
 --B738DR_test_test = 1.0
 --B738DR_test_test2 = 2.0
 --B738DR_test_test = 1.0
+
+
+
 
 end
 
@@ -16520,6 +17289,7 @@ function after_physics()
 		B738_yoke()
 		B738_spd_ratio()
 		B738_eng_out()
+		B738_ctrl_panel()
 		
 		--B738DR_mcp_hdg_dial_nd = B738DR_test_test
 		--B738DR_data_test = 0

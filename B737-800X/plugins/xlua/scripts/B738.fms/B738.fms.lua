@@ -2560,7 +2560,7 @@ B738DR_fuelgauge		= create_dataref("laminar/B738/effects/fuelgauge", "number")
 B738DR_nosewheel		= create_dataref("laminar/B738/effects/nosewheel", "number")
 B738DR_fpln_format		= create_dataref("laminar/B738/fms/fpln_format", "number")
 B738DR_track_up			= create_dataref("laminar/B738/fms/track_up", "number")
-B738DR_sync_baro		= create_dataref("laminar/B738/fms/sync_baro", "number")
+B738DR_baro_in_hpa		= create_dataref("laminar/B738/fms/baro_in_hpa", "number")
 
 B738_legs_num			= create_dataref("laminar/B738/vnav/legs_num", "number")
 B738_legs_num_before	= create_dataref("laminar/B738/vnav/legs_num_before", "number")
@@ -18422,7 +18422,7 @@ function B738_default_others_config()
 	B738DR_fpln_format = 0
 	units = 0
 	B738DR_track_up = 1
-	B738DR_sync_baro = 0
+	B738DR_baro_in_hpa = 0
 	B738DR_kill_effect = 0
 	
 	simDR_pitch_nz = 0
@@ -18980,15 +18980,15 @@ function B738_load_config()
 							end
 						end
 					end
-				elseif string.sub(fms_line, 1, 16) == "SYNC BARO      =" then
+				elseif string.sub(fms_line, 1, 16) == "BARO IN HPA    =" then
 					temp_fmod = string.len(fms_line)
 					if temp_fmod > 16 then
 						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
 						if temp_fmod ~= nil then
 							if temp_fmod == 1 then
-								B738DR_sync_baro = 1
+								B738DR_baro_in_hpa = 1
 							else
-								B738DR_sync_baro = 0
+								B738DR_baro_in_hpa = 0
 							end
 						end
 					end
@@ -19664,7 +19664,7 @@ function B738_save_config()
 		file_navdata:write(fms_line)
 		fms_line = "TRACK UP       = " .. string.format("%2d", B738DR_track_up) .. "\n"
 		file_navdata:write(fms_line)
-		fms_line = "SYNC BARO      = " .. string.format("%2d", B738DR_sync_baro) .. "\n"
+		fms_line = "BARO IN HPA    = " .. string.format("%2d", B738DR_baro_in_hpa) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "WINDSH.EFFECTS = " .. string.format("%2d", B738DR_kill_effect) .. "\n"
 		file_navdata:write(fms_line)
@@ -24576,10 +24576,10 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 				B738DR_throttle_noise = 0
 			end
 		elseif page_xtras_others == 3 then
-			if B738DR_sync_baro == 0 then
-				B738DR_sync_baro = 1
+			if B738DR_baro_in_hpa == 0 then
+				B738DR_baro_in_hpa = 1
 			else
-				B738DR_sync_baro = 0
+				B738DR_baro_in_hpa = 0
 			end
 		elseif page_arr == 1 then
 			if des_star2 == "------" then
@@ -35620,7 +35620,7 @@ function B738_fmc_menu()
 		line4_l = "  Z I B O               "
 		line4_s = "           M O D  " .. version
 		if menu_tick < 5 then
-			line5_x = "FLIGHT MODEL 4.4 TWKSTER"
+			line5_x = "FLIGHT MODEL 4.5 TWKSTER"
 			line5_l = "         A   S  D  G    "
 			line5_s = "  AND BY  ERO IM EV ROUP"
 			line6_x = "SOUND PACK "
@@ -36797,15 +36797,15 @@ function B738_fmc_xtras_others()
 			line2_g = "          HEADING-UP    "
 			line2_s = " TRACK-UP               "
 		end
-		line3_x = " SYNC BARO CPT->FO      "
-		if B738DR_sync_baro == 1 then
+		line3_x = " BARO UNITS             "
+		if B738DR_baro_in_hpa == 0 then
 			line3_l = "<  /                    "
-			line3_g = " ON                     "
-			line3_s = "    OFF                 "
+			line3_g = " IN                     "
+			line3_s = "    HPA                 "
 		else
 			line3_l = "<  /                    "
-			line3_g = "    OFF                 "
-			line3_s = " ON                     "
+			line3_g = "    HPA                 "
+			line3_s = " IN                     "
 		end
 		line4_x = " WINDSHIELD EFFECTS     "
 		if B738DR_kill_effect == 0 then
@@ -50624,6 +50624,7 @@ function B738_vnav_calc()
 	local pom6 = 0
 	local wind_temp = 0
 	local wind_temp_old = 0
+	local dist2 = 0
 	
 	if vnav_update == 1 then
 	
@@ -50854,7 +50855,15 @@ function B738_vnav_calc()
 						-- tc_lat = temp_lat
 						-- tc_lon = temp_lon
 						
-						calc_brg_dist(legs_data[tc_idx][7], legs_data[tc_idx][8], temp_brg, tc_dist)
+						if tc_idx == 1 or (legs_intdir_act == 1 and n == offset2) then
+							calc_brg_dist(legs_data[tc_idx][7], legs_data[tc_idx][8], temp_brg, tc_dist)
+						else
+							dist2 = legs_data[tc_idx][3] - tc_dist
+							temp_brg = legs_data[tc_idx][2]
+							calc_brg_dist(legs_data[tc_idx-1][7], legs_data[tc_idx-1][8], temp_brg, dist2)
+						end
+						
+						--calc_brg_dist(legs_data[tc_idx][7], legs_data[tc_idx][8], temp_brg, tc_dist)
 						tc_lat = math.rad(calc_lat)
 						tc_lon = math.rad(calc_lon)
 						
@@ -51028,7 +51037,14 @@ function B738_vnav_calc()
 							-- td_lat = temp_lat
 							-- td_lon = temp_lon
 							
-							calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
+							if td_idx == 1 or (legs_intdir_act == 1 and ii == offset2) then
+								calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
+							else
+								dist2 = legs_data[td_idx][3] - td_dist
+								temp_brg = legs_data[td_idx][2]
+								calc_brg_dist(legs_data[td_idx-1][7], legs_data[td_idx-1][8], temp_brg, dist2)
+							end
+							--calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
 							td_lat = math.rad(calc_lat)
 							td_lon = math.rad(calc_lon)
 							
@@ -51217,7 +51233,14 @@ function B738_vnav_calc()
 										-- td_lat = temp_lat
 										-- td_lon = temp_lon
 										
-										calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
+										if td_idx == 1 or (legs_intdir_act == 1 and kk == offset2) then
+											calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
+										else
+											dist2 = legs_data[td_idx][3] - td_dist
+											temp_brg = legs_data[td_idx][2]
+											calc_brg_dist(legs_data[td_idx-1][7], legs_data[td_idx-1][8], temp_brg, dist2)
+										end
+										--calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
 										td_lat = math.rad(calc_lat)
 										td_lon = math.rad(calc_lon)
 										
@@ -51484,7 +51507,14 @@ function B738_vnav_calc()
 										-- td_lat = temp_lat
 										-- td_lon = temp_lon
 										
-										calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
+										if td_idx == 1 or (legs_intdir_act == 1 and kk == offset2) then
+											calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
+										else
+											dist2 = legs_data[td_idx][3] - td_dist
+											temp_brg = legs_data[td_idx][2]
+											calc_brg_dist(legs_data[td_idx-1][7], legs_data[td_idx-1][8], temp_brg, dist2)
+										end
+										--calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
 										td_lat = math.rad(calc_lat)
 										td_lon = math.rad(calc_lon)
 										
@@ -51698,7 +51728,14 @@ function B738_vnav_calc()
 											-- decel_lat = temp_lat
 											-- decel_lon = temp_lon
 											
-											calc_brg_dist(legs_data[decel_idx][7], legs_data[decel_idx][8], temp_brg, decel_dist)
+											if decel_idx == 1 or (legs_intdir_act == 1 and ii == offset2) then
+												calc_brg_dist(legs_data[decel_idx][7], legs_data[decel_idx][8], temp_brg, decel_dist)
+											else
+												dist2 = legs_data[decel_idx][3] - decel_dist
+												temp_brg = legs_data[decel_idx][2]
+												calc_brg_dist(legs_data[decel_idx-1][7], legs_data[decel_idx-1][8], temp_brg, dist2)
+											end
+											--calc_brg_dist(legs_data[decel_idx][7], legs_data[decel_idx][8], temp_brg, decel_dist)
 											decel_lat = math.rad(calc_lat)
 											decel_lon = math.rad(calc_lon)
 											
@@ -51802,7 +51839,14 @@ function B738_vnav_calc()
 										-- decel_lat = temp_lat
 										-- decel_lon = temp_lon
 										
-										calc_brg_dist(legs_data[decel_idx][7], legs_data[decel_idx][8], temp_brg, decel_dist)
+										if decel_idx == 1 or (legs_intdir_act == 1 and ii == offset2) then
+											calc_brg_dist(legs_data[decel_idx][7], legs_data[decel_idx][8], temp_brg, decel_dist)
+										else
+											dist2 = legs_data[decel_idx][3] - decel_dist
+											temp_brg = legs_data[decel_idx][2]
+											calc_brg_dist(legs_data[decel_idx-1][7], legs_data[decel_idx-1][8], temp_brg, dist2)
+										end
+										--calc_brg_dist(legs_data[decel_idx][7], legs_data[decel_idx][8], temp_brg, decel_dist)
 										decel_lat = math.rad(calc_lat)
 										decel_lon = math.rad(calc_lon)
 										
@@ -64095,7 +64139,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25v"
+	version = "v3.25w"
 
 end
 

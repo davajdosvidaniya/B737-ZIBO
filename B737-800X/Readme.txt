@@ -77,6 +77,13 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25w:
+------
+- new tuned flight model by Twkster
+- add Control Panel feature
+- add option BARO UNITS (after load plane)
+- fixed small bugs
+
 3.25v:
 ------
 - corrected systems
