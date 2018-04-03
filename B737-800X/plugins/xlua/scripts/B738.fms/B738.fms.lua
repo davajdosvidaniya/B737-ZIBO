@@ -61106,6 +61106,7 @@ function B738_fmc_calc()
 					
 					true_brg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 					true_hdg = simDR_mag_hdg
+					simDR_fmc_trk2 = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 					
 					simDR_fmc_crs = (nd_hdg + simDR_mag_variation + 360) % 360
 					
@@ -61172,6 +61173,7 @@ function B738_fmc_calc()
 				end
 				
 				simDR_fmc_trk = nd_hdg
+				simDR_fmc_trk2 = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 				--true_brg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 				--true_hdg = simDR_mag_hdg
 				simDR_fmc_crs = hold_crs2
@@ -61217,6 +61219,8 @@ function B738_fmc_calc()
 				nd_lon2 = math.rad(hold_opposite_lon)
 				simDR_fmc_trk = (hold_crs2 - simDR_mag_variation + 360) % 360
 				nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
+				
+				simDR_fmc_trk2 = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 				
 				nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
 				nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
@@ -61301,6 +61305,7 @@ function B738_fmc_calc()
 				end
 				
 				simDR_fmc_trk = nd_hdg
+				simDR_fmc_trk2 = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 				--true_brg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
 				--true_hdg = simDR_mag_hdg
 				simDR_fmc_crs = hold_crs1
@@ -62214,9 +62219,9 @@ function B738_pause_td()
 		end
 		
 	else
-		if simDR_pause == 1 then
-			simCMD_pause:once()
-		end
+		-- if simDR_pause == 1 then
+			-- simCMD_pause:once()
+		-- end
 		pause_td_disable = 0
 	end
 end
@@ -63924,7 +63929,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25r"
+	version = "v3.25s"
 
 end
 
@@ -64180,7 +64185,7 @@ function flight_start()
 	--fuel_tank_correct()
 	
 	--cold n dark
-	if simDR_startup_running == 0 and B738DR_engine_no_running_state == 0 then
+	if simDR_startup_running == 0 and B738DR_chock_status == 1 and B738DR_engine_no_running_state == 0 then
 		set_chock = 1
 	else
 		set_chock = 0

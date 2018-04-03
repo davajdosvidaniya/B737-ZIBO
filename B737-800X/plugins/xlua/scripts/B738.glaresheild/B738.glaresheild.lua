@@ -263,6 +263,7 @@ airspeed_pilot_old = 0
 v_speed_pilot_old = 0
 vdot_ratio_old = 0
 radio_height_old = 0
+radio_height_sum = 0
 altitude_pilot_old = 0
 air_on_acf_old = 0
 eng1_N1 = 0
@@ -378,6 +379,9 @@ spd_ratio_sum = 0
 spd_ratio_num = 0
 time_spd_ratio = 0
 
+gnd_spd_ratio = 0
+gnd_spd_ratio_old = 0
+
 --*************************************************************************************--
 --** 					               CONSTANTS                    				 **--
 --*************************************************************************************--
@@ -421,6 +425,30 @@ local yoke_pitch = 0
 local yoke_pitch2 = 0
 local vorloc_only = 0
 local throttle = 0
+
+SPD_act2 = 0
+spd_ratio2 = 0
+lock_at = 0
+at_lock_time = 0
+at_lock_num = 0
+at_spd_ratio = 0
+at_lock_time2 = 0
+at_spd = 0
+
+SPD_err_old = 0
+SPD_p = 0
+SPD_i = 0
+SPD_d = 0
+SPD_out = 0
+pid_time = 0
+thr1_target_pid = 0
+thr2_target_pid = 0
+mcp_dial_old = 0
+wind_acf_old = 0
+
+ghust_spd = 0
+ghust_detect = 0
+--SPD_ratio2 = 0
 
 --*************************************************************************************--
 --** 				             FIND X-PLANE DATAREFS            			    	 **--
@@ -715,6 +743,11 @@ simCMD_FMS_key_exec		= find_command("sim/FMS/exec")
 simDR_startup_running 	= find_dataref("sim/operation/prefs/startup_running")
 
 simDR_air_on_acf				= find_dataref("sim/flightmodel/forces/vx_air_on_acf")
+
+--simDR_wind_hdg					= find_dataref("sim/cockpit2/gauges/indicators/wind_heading_deg_mag")
+--simDR_wind_spd					= find_dataref("sim/cockpit2/gauges/indicators/wind_speed_kts")
+simDR_position_mag_psi 			= find_dataref("sim/flightmodel/position/mag_psi")
+
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM DATAREFS             			    	 **--
@@ -1393,9 +1426,28 @@ function B738DR_kill_glareshield_DRhandler() end
 function B738DR_yoke_roll_DRhandler() end
 function B738DR_yoke_pitch_DRhandler() end
 
+function B738DR_kp_DRhandler() end
+function B738DR_ki_DRhandler() end
+function B738DR_kd_DRhandler() end
+function B738DR_kf_DRhandler() end
+function B738DR_bias_DRhandler() end
+
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
+
+B738DR_kp					= create_dataref("laminar/pid/kp", "number", B738DR_kp_DRhandler)
+B738DR_ki					= create_dataref("laminar/pid/ki", "number", B738DR_ki_DRhandler)
+B738DR_kd					= create_dataref("laminar/pid/kd", "number", B738DR_kd_DRhandler)
+B738DR_kf					= create_dataref("laminar/pid/kf", "number", B738DR_kf_DRhandler)
+B738DR_bias					= create_dataref("laminar/pid/bias", "number", B738DR_bias_DRhandler)
+
+B738DR_pid_p				= create_dataref("laminar/pid/p", "number")
+B738DR_pid_i				= create_dataref("laminar/pid/i", "number")
+B738DR_pid_d				= create_dataref("laminar/pid/d", "number")
+B738DR_pid_out				= create_dataref("laminar/pid/out", "number")
+
+
 
 B738DR_yoke_roll			= create_dataref("laminar/yoke/roll", "number", B738DR_yoke_roll_DRhandler)
 B738DR_yoke_pitch			= create_dataref("laminar/yoke/pitch", "number", B738DR_yoke_pitch_DRhandler)
@@ -8795,7 +8847,8 @@ function B738_lvl_chg()
 					
 					if simDR_airspeed_is_mach == 0 then
 						if simDR_autopilot_altitude_mode ~= 6 then
-							speed_step = simDR_airspeed_pilot + (B738DR_speed_ratio * 5) + 5
+							--speed_step = simDR_airspeed_pilot + (B738DR_speed_ratio * 5) + 5
+							speed_step = simDR_airspeed_pilot + (B738DR_speed_ratio * 3.2) + 5
 							if speed_step > simDR_airspeed_dial then
 								if simDR_autopilot_altitude_mode ~= 5 then
 									at_mode_old = at_mode
@@ -10913,7 +10966,7 @@ function B738_at_logic()
 		ap_pitch_mode_eng = 0
 		B738DR_pfd_spd_mode = PFD_SPD_GA
 		B738DR_pfd_alt_mode = PFD_ALT_TO_GA
-		simDR_autothrottle_enable = 1
+		--simDR_autothrottle_enable = 1
 		if simDR_autopilot_altitude_mode ~= 4 then
 			simCMD_autopilot_vs:once()			-- VS on
 			--simDR_ap_vvi_dial = roundDownToIncrement(simDR_ap_vvi_dial, 100 )
@@ -10946,7 +10999,7 @@ function B738_at_logic()
 		B738DR_retard_status = 0
 		B738DR_autopilot_n1_pfd = 0
 		B738DR_autopilot_n1_status = 0
-		simDR_autothrottle_enable = 1
+		--simDR_autothrottle_enable = 1
 		--simDR_airspeed_dial = airspeed_dial
 		B738DR_pfd_spd_mode = PFD_SPD_GA
 		B738DR_pfd_alt_mode = PFD_ALT_TO_GA
@@ -11482,9 +11535,10 @@ function B738_ap_goaround()
 				end
 				
 			end
-			simDR_autothrottle_enable = 1
-			-- eng1_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
-			-- eng2_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
+			--simDR_autothrottle_enable = 1
+			
+			eng1_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
+			eng2_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
 
 			
 --			if simDR_vvi_fpm_pilot > 800 and simDR_yoke_pitch > 0.1 then
@@ -11711,7 +11765,9 @@ function B738_ap_goaround()
 				eng2_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
 			else
 				fd_go_disable = 1
-				simDR_autothrottle_enable = 1
+				-- simDR_autothrottle_enable = 1
+				eng1_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
+				eng2_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
 			end
 			
 			
@@ -12517,111 +12573,495 @@ function control_SPD()
 	local SPD_corr = 0
 	local SPD_corr2 = 0
 	local SPD_target = B738DR_mcp_speed_dial_kts
+	local SPD_predict = 0
+	local max_change = 0
 	
-	SPD_err = SPD_target - SPD_act
-	SPD_corr2 = SPD_act + (spd_ratio * 5.5)
-	if SPD_act < SPD_target then
-		if SPD_corr2 > SPD_target then
-			SPD_corr2 = (SPD_corr2 - SPD_target) * SIM_PERIOD * 0.25
-			if SPD_corr2 > 0.1 then
-				SPD_corr2 = 0.1
-			end
-		else
-			SPD_corr2 = 0
-		end
-	else
-		if SPD_corr2 < SPD_target then
-			SPD_corr2 = (SPD_target - SPD_corr2) * SIM_PERIOD * 0.25
-			if SPD_corr2 > 0.1 then
-				SPD_corr2 = 0.1
-			end
-			SPD_corr2 = -SPD_corr2
-		else
-			SPD_corr2 = 0
-		end
+	max_change = SPD_act - SPD_target
+	if max_change < 0 then
+		max_change = -max_change
 	end
 	
-	--B738DR_test_test = SPD_err
-	
+	SPD_err = spd_ratio
 	if SPD_err < 0 then
-		SPD_corr = -SPD_err
-		SPD_corr = math.min(20, SPD_corr)
-		SPD_corr = math.max(0, SPD_corr)
-		SPD_corr = -B738_rescale(0, 0, 20, 1.5, SPD_corr)	-- 3 / sec
+		SPD_err = -SPD_err
+	end
+	
+	if lock_at ~= 0 then
+		at_lock_time2 = at_lock_time2 + SIM_PERIOD
+		if at_lock_time2 > 2 then
+			at_lock_time2 = 0
+			if max_change > 5.5 and at_spd > 5 then
+				lock_at = 0
+			end
+			at_spd = max_change
+		end
 	else
-		SPD_corr = SPD_err
-		SPD_corr = math.min(20, SPD_corr)
-		SPD_corr = math.max(0, SPD_corr)
-		SPD_corr = B738_rescale(0, 0, 20, 1.5, SPD_corr)	-- 3 / sec
+		at_lock_time2 = 0
+		at_spd = 0
+	end
+	-- if max_change > 5 and at_spd > 5 then
+		-- lock_at = 0
+	-- else
+		if max_change < 2 and SPD_err < 0.2 and lock_at == 0 then
+			lock_at = 2
+		end
+	-- end
+	
+	if lock_at == 2 then
+		at_lock_time = at_lock_time + SIM_PERIOD
+		if at_lock_time > 1 then
+			at_lock_time = 0
+			if spd_ratio < 0 and at_spd_ratio < 0 then
+				at_lock_num = at_lock_num + 1
+			elseif spd_ratio > 0 and at_spd_ratio > 0 then
+				at_lock_num = at_lock_num + 1
+			else
+				at_lock_num = 0
+			end
+			at_spd_ratio = spd_ratio
+		end
+		if at_lock_num == 6 then
+			lock_at = 1
+			at_lock_num = 0
+		end
+	else
+		at_lock_time = 0
+		at_lock_num = 0
+		at_spd_ratio = 0
 	end
 	
-	SPD_corr = SPD_corr - (spd_ratio * 1.35)
-	SPD_corr = (SPD_corr * SIM_PERIOD * 0.90) - SPD_corr2
+	-- SPD_act2 = B738_set_anim_value(SPD_act2, SPD_act, 0, 500, 1.1)
+	-- spd_ratio2 = B738_set_anim_value(spd_ratio2, spd_ratio, -20, 20, 0.8)
+	SPD_act2 = SPD_act
+	spd_ratio2 = spd_ratio
 	
-	local max_change = SPD_corr / SIM_PERIOD
-	if max_change > 0.9 then
-		SPD_corr = 0.9 * SIM_PERIOD
-	end
-	if max_change < -0.9 then
-		SPD_corr = -0.9 * SIM_PERIOD
+	lock_at = 0
+	if lock_at < 2 then
+		
+		SPD_err = SPD_target - SPD_act2
+		SPD_predict = SPD_act2 + (spd_ratio2 * 14)
+		
+		SPD_corr2 = SPD_target - SPD_predict
+		
+		if SPD_err < 0 then
+			
+			if SPD_corr2 > 0 then
+				SPD_corr2 = math.min(30, SPD_corr2)
+				SPD_corr2 = math.max(0, SPD_corr2)
+				SPD_corr2 = 2.0 - B738_rescale(0, 0, 30, 1.8, SPD_corr2)
+			else
+				SPD_corr2 = 2.0
+			end
+			
+			SPD_corr2 = 2.0
+			SPD_corr = -SPD_err
+			SPD_corr = math.min(40, SPD_corr)
+			SPD_corr = math.max(0, SPD_corr)
+			SPD_corr = SPD_corr * 1.5 --* SPD_corr * 3.5
+			SPD_corr = math.min(40, SPD_corr)
+			SPD_corr = -B738_rescale(0, 0, 40, SPD_corr2, SPD_corr)	-- 3 / sec
+		else
+			
+			if SPD_corr2 < 0 then
+				SPD_corr2 = -SPD_corr2
+				SPD_corr2 = math.min(30, SPD_corr2)
+				SPD_corr2 = math.max(0, SPD_corr2)
+				SPD_corr2 = 2.0 - B738_rescale(0, 0, 30, 1.8, SPD_corr2)
+			else
+				SPD_corr2 = 2.0
+			end
+			
+			SPD_corr2 = 2.0
+			SPD_corr = SPD_err
+			SPD_corr = math.min(40, SPD_corr)
+			SPD_corr = math.max(0, SPD_corr)
+			SPD_corr = SPD_corr * 1.5 --* SPD_corr * 3.5
+			SPD_corr = math.min(40, SPD_corr)
+			SPD_corr = B738_rescale(0, 0, 40, SPD_corr2, SPD_corr)	-- 3 / sec
+		end
+		
+		B738DR_test_test = spd_ratio2
+		B738DR_test_test2 = SPD_corr
+		
+		SPD_corr = SPD_corr - spd_ratio2
+		SPD_corr = (SPD_corr * 0.02)	--4.2
+		
+		
+		max_change = SPD_corr / SIM_PERIOD
+		if max_change > 1.5 then
+			SPD_corr = 1.5 * SIM_PERIOD
+		end
+		if max_change < -1.5 then
+			SPD_corr = -1.5 * SIM_PERIOD
+		end
+	else
+		SPD_corr = 0
 	end
 	
 	return SPD_corr
 	
 end
 
+function Angle180(angle)
+	return (angle + 180) % 360
+end
 
-function control_N1()
+
+
+function control_SPD1(pid_time_x)
 	
-	local eng_N1 = 0
-	local N1_err = 0
-	local N1_corr = 0
-	local N1_corr2 = 0
-	local eng_N1_pct = 0
 	
-	eng_N1 = math.max(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug) * 100
-	eng_N1_pct = math.max(simDR_engine_N1_pct1, simDR_engine_N1_pct2)
-	N1_err = eng_N1 - eng_N1_pct
-	N1_corr2 = eng_N1_pct + (B738DR_eng1_N1_ratio * 2)
-	if eng_N1_pct < eng_N1 then
-		if N1_corr2 > eng_N1 then
-			N1_corr2 = (N1_corr2 - eng_N1) * SIM_PERIOD
-			if N1_corr2 > 0.5 then
-				N1_corr2 = 0.5
-			end
+	local result = 0
+	-- local wind_acf = simDR_wind_spd * math.cos(math.rad(Angle180(simDR_wind_hdg))-math.rad(simDR_position_mag_psi))
+	-- local wind_comp = (wind_acf - wind_acf_old) / pid_time_x
+	-- wind_acf_old = wind_acf
+	
+	local SPD_act = simDR_airspeed_pilot + (spd_ratio * 4) -- wind_comp
+	local SPD_err = B738DR_mcp_speed_dial_kts - SPD_act
+	
+	--local SPD_out_old = SPD_out
+	--local SPD_out_old = math.min(simDR_throttle_1, simDR_throttle_2) * 100
+	local SPD_out_old1 = B738_rescale(0, 0, 1.04, 100, eng1_N1_thrust_cur)
+	local SPD_out_old2 = B738_rescale(0, 0, 1.04, 100, eng2_N1_thrust_cur)
+	local SPD_out_old = math.min(SPD_out_old1, SPD_out_old2)
+	
+	local SPD_p = B738DR_kp * SPD_err
+	
+	-- wind up recalc integral
+	if B738DR_mcp_speed_dial_kts ~= mcp_dial_old then
+		if B738DR_ki == 0 then
+			SPD_i = 0
 		else
-			N1_corr2 = 0
-		end
-	else
-		if N1_corr2 < eng_N1 then
-			N1_corr2 = (eng_N1 - N1_corr2) * SIM_PERIOD
-			if N1_corr2 > 0.5 then
-				N1_corr2 = 0.5
-			end
-			N1_corr2 = -N1_corr2
-		else
-			N1_corr2 = 0
+			SPD_i = (1 / B738DR_ki) * (SPD_out - SPD_p)
 		end
 	end
+	mcp_dial_old = B738DR_mcp_speed_dial_kts
+	
+	-- calc I
+	SPD_i = SPD_i + (B738DR_ki * (SPD_err * pid_time_x))
+	
+	-- calc D
+	local SPD_d = 0
+	if pid_time_x <= 0 then
+		SPD_d = 0
+	else
+		SPD_d = B738DR_kd * ((SPD_err - SPD_err_old) / pid_time_x)
+	end
+	
+	SPD_err_old = SPD_err
+	
+	SPD_out = B738DR_bias + SPD_p + SPD_i + SPD_d
+	
+	--wind-up
+	if SPD_out > 100 then
+		SPD_out = 100
+		if B738DR_ki == 0 then
+			SPD_i = 0
+		else
+			SPD_i = (1 / B738DR_ki) * (SPD_out - B738DR_bias - SPD_p)
+		end
+	elseif SPD_out < 0 then
+		SPD_out = 0
+		if B738DR_ki == 0 then
+			SPD_i = 0
+		else
+			SPD_i = (1 / B738DR_ki) * (SPD_out - B738DR_bias - SPD_p)
+		end
+	end
+	
+	-- filter output
+	--local SPD_out2 = SPD_out - (B738DR_kf * ((SPD_out - SPD_out_old) / pid_time_x))
+	local kf = B738DR_kf
+	if kf == 0 then
+		kf = 60	--7
+	end
+	
+	local limit_out = 0
+	if pid_time_x <= 0 then
+		limit_out = 0
+	else
+		limit_out = (SPD_out - SPD_out_old) / pid_time_x
+	end
+	
+	if limit_out > kf then
+		SPD_out = SPD_out_old + (kf * pid_time_x)
+	elseif limit_out < -kf then
+		SPD_out = SPD_out_old - (kf * pid_time_x)
+	end
+	
+	if SPD_out > 100 then
+		SPD_out = 100
+		if B738DR_ki == 0 then
+			SPD_i = 0
+		else
+			SPD_i = (1 / B738DR_ki) * (SPD_out - B738DR_bias - SPD_p)
+		end
+	elseif SPD_out < 0 then
+		SPD_out = 0
+		if B738DR_ki == 0 then
+			SPD_i = 0
+		else
+			SPD_i = (1 / B738DR_ki) * (SPD_out - B738DR_bias - SPD_p)
+		end
+	end
+	
+	--result = SPD_out * 0.01
+	
+	B738DR_pid_p = SPD_p
+	B738DR_pid_i = SPD_i
+	B738DR_pid_d = SPD_d
+	B738DR_pid_out = SPD_out
+	
+	result = (SPD_out - SPD_out_old) * 0.01
+	
+	return result
+end
+
+
+function control_SPD2(pid_time_x)
+	
+	
+	local result = 0
+	-- local wind_acf = simDR_wind_spd * math.cos(math.rad(Angle180(simDR_wind_hdg))-math.rad(simDR_position_mag_psi))
+	-- local wind_comp = (wind_acf - wind_acf_old) / pid_time_x
+	-- wind_acf_old = wind_acf
+	
+	local SPD_act = simDR_airspeed_pilot + (spd_ratio * 4) --- wind_comp
+	local SPD_err = B738DR_mcp_speed_dial_kts - SPD_act
+	
+	local SPD_p = B738DR_kp * (1 + (pid_time_x / B738DR_ki)) * SPD_err
+	local SPD_d = B738DR_kd * SPD_err_old
+	
+	SPD_out = SPD_p - SPD_d
+	
+	SPD_err_old = SPD_err
+	
+	B738DR_pid_p = SPD_p
+	B738DR_pid_i = SPD_i
+	B738DR_pid_d = SPD_d
+	B738DR_pid_out = SPD_out
+	
+	--result = (SPD_out - SPD_out_old) * 0.01
+	
+	local limit_out = SPD_out / pid_time_x
+	if limit_out > B738DR_kf then
+		SPD_out = B738DR_kf * pid_time_x
+	end
+	if limit_out < -B738DR_kf then
+		SPD_out = -B738DR_kf * pid_time_x
+	end
+	
+	result = SPD_out
+	
+	return result
+end
+
+
+function control_SPD3(pid_time_x)
+	
+	
+	local result = 0
+	-- local wind_acf = simDR_wind_spd * math.cos(math.rad(Angle180(simDR_wind_hdg))-math.rad(simDR_position_mag_psi))
+	-- local wind_comp = (wind_acf - wind_acf_old) / pid_time_x
+	-- wind_acf_old = wind_acf
+	
+	local pid_p_old = SPD_p
+	local pid_i_old = SPD_i
+	local pid_d_old = SPD_d
+	local pid_out_old = pid_p_old + pid_i_old + pid_d_old
+	
+	
+	local SPD_act = simDR_airspeed_pilot + (spd_ratio * B738DR_bias) -- wind_comp
+	local SPD_err = B738DR_mcp_speed_dial_kts - SPD_act
+	
+	--local SPD_out_old = SPD_out
+	--local SPD_out_old = math.min(simDR_throttle_1, simDR_throttle_2) * 100
+	local SPD_out_old1 = B738_rescale(0, 0, 1.04, 100, eng1_N1_thrust_cur)
+	local SPD_out_old2 = B738_rescale(0, 0, 1.04, 100, eng2_N1_thrust_cur)
+	local SPD_out_old = math.min(SPD_out_old1, SPD_out_old2)
+	-- local SPD_out_old = SPD_out
+	
+	SPD_p = B738DR_kp * SPD_err
+	
+	-- wind up recalc integral
+	-- if B738DR_mcp_speed_dial_kts ~= mcp_dial_old then
+		-- SPD_i = 0
+		-- else
+			-- SPD_i = (1 / B738DR_ki) * (SPD_out - SPD_p)
+		-- end
+	-- end
+	mcp_dial_old = B738DR_mcp_speed_dial_kts
+	
+	-- calc I
+	SPD_i = SPD_i + (B738DR_ki * (SPD_err * pid_time_x))
+	
+	-- calc D
+	SPD_d = 0
+	if pid_time_x <= 0 then
+		SPD_d = 0
+	else
+		SPD_d = B738DR_kd * ((SPD_err - SPD_err_old) / pid_time_x)
+	end
+	
+	SPD_err_old = SPD_err
+	
+	SPD_out = SPD_p + SPD_i + SPD_d
+	
+	-- if SPD_out > 100 then
+		-- if SPD_i > 0 then
+			-- SPD_i = 0 --pid_i_old	-- 0
+		-- end
+		-- SPD_out = 100
+	-- elseif SPD_out < 0 then
+		-- if SPD_i < 0 then
+			-- SPD_i = 0	--pid_i_old	-- 0
+		-- end
+		-- SPD_out = 0
+	-- end
+	
+	-- filter output
+	--local SPD_out2 = SPD_out - (B738DR_kf * ((SPD_out - SPD_out_old) / pid_time_x))
+	local kf = B738DR_kf
+	if kf == 0 then
+		kf = 60	--7
+	end
+	
+	local limit_out = 0
+	if pid_time_x <= 0 then
+		limit_out = 0
+	else
+		limit_out = (SPD_out - SPD_out_old) / pid_time_x
+	end
+	
+	if limit_out > kf then
+		SPD_out = SPD_out_old + (kf * pid_time_x)
+	elseif limit_out < -kf then
+		SPD_out = SPD_out_old - (kf * pid_time_x)
+	end
+	
+	if SPD_out > 100 then
+		if SPD_i > 0 then
+			SPD_i = 0	--pid_i_old
+		end
+		SPD_out = 100
+	elseif SPD_out < 0 then
+		if SPD_i < 0 then
+			SPD_i = 0	--pid_i_old
+		end
+		SPD_out = 0
+	end
+	
+	--result = SPD_out * 0.01
+	local pid_out = SPD_out - SPD_out_old
+	
+	
+	B738DR_pid_p = SPD_p
+	B738DR_pid_i = SPD_i
+	B738DR_pid_d = SPD_d
+	B738DR_pid_out = pid_out
+	
+	result = pid_out * 0.01
+	
+	return result
+end
+
+
+
+function control_N1(N1_lim1, N1_lim2)
+	
+	local N1_corr = 0
+	
+	local eng_N1_ratio = math.max(B738DR_eng1_N1_ratio, B738DR_eng2_N1_ratio)
+	local eng_N1 = math.max(N1_lim1, N1_lim2) * 100
+	local eng_N1_pct = math.max(simDR_engine_N1_pct1, simDR_engine_N1_pct2)
+	local N1_err = eng_N1 - eng_N1_pct
 	
 	if N1_err < 0 then
 		N1_corr = -N1_err
-		N1_corr = math.min(10, N1_corr)
+		N1_corr = math.min(25, N1_corr)
 		N1_corr = math.max(0, N1_corr)
-		N1_corr = -B738_rescale(0, 0, 10, 10, N1_corr)	-- 2 / sec
+		N1_corr = -B738_rescale(0, 0, 25, 40, N1_corr)
 	else
 		N1_corr = N1_err
-		N1_corr = math.min(10, N1_corr)
+		N1_corr = math.min(25, N1_corr)
 		N1_corr = math.max(0, N1_corr)
-		N1_corr = B738_rescale(0, 0, 10, 10, N1_corr)	-- 2 / sec
+		N1_corr = B738_rescale(0, 0, 25, 40, N1_corr)
 	end
 	
-	N1_corr = N1_corr - (-B738DR_eng1_N1_ratio * 1.1)
-	N1_corr = ((N1_corr / 100) * SIM_PERIOD * 70) - N1_corr2
+	N1_corr = N1_corr - (eng_N1_ratio * 1)
+	N1_corr = ((N1_corr / 100) * SIM_PERIOD * 70)
 	
 	return N1_corr
 	
 end
+
+function control_SPD4()
+	
+	local SPD_corr = 0
+	
+	-- local wind_acf = simDR_wind_spd * math.cos(math.rad(Angle180(simDR_wind_hdg))-math.rad(simDR_position_mag_psi))
+	-- local wind_comp = (wind_acf - wind_acf_old) / pid_time_x
+	-- wind_acf_old = wind_acf
+	
+	local actual_err = B738DR_mcp_speed_dial_kts - simDR_airspeed_pilot
+	
+	local SPD_delta = spd_ratio - gnd_spd_ratio
+	if SPD_delta < 0 then
+		SPD_delta = -SPD_delta
+	end
+	
+	if ghust_detect == 0 then
+		if actual_err < 3 and actual_err > -3 then
+			if SPD_delta > 0.4 then
+				ghust_detect = 1
+			end
+		end
+	else
+		if actual_err > 5 or actual_err < -5 then
+			ghust_detect = 0
+		end
+	end
+	
+	local SPD_act = simDR_airspeed_pilot --+ (spd_ratio * B738DR_bias) -- wind_comp
+	local SPD_err = B738DR_mcp_speed_dial_kts - SPD_act
+	
+	if SPD_err < 0 then
+		SPD_corr = -SPD_err
+		SPD_corr = math.min(30, SPD_corr)
+		SPD_corr = math.max(0, SPD_corr)
+		SPD_corr = -B738_rescale(0, 0, 580, 40, SPD_corr)
+	else
+		SPD_corr = SPD_err
+		SPD_corr = math.min(30, SPD_corr)
+		SPD_corr = math.max(0, SPD_corr)
+		SPD_corr = B738_rescale(0, 0, 580, 40, SPD_corr)
+	end
+	
+	B738DR_pid_out = ghust_spd
+	
+	SPD_corr = SPD_corr - spd_ratio
+	SPD_corr = (SPD_corr * SIM_PERIOD * 16)
+	
+	local limit = 20
+	if ghust_detect == 1 then
+		limit = 1
+	end
+	
+	ghust_spd = B738_set_anim_value(ghust_spd, limit, 0.0, 20, 0.5)
+	
+	limit = ghust_spd * SIM_PERIOD
+	
+	if SPD_corr > limit then
+		SPD_corr = limit
+	end
+	if SPD_corr < -limit then
+		SPD_corr = -limit
+	end
+	
+	return SPD_corr
+	
+end
+
 
 function B738_N1_thrust_manage4()
 
@@ -12635,6 +13075,10 @@ function B738_N1_thrust_manage4()
 	local throttle_noise = B738DR_throttle_noise / 100
 	local throttle_limit = 0
 	local throttle_limit2 = 0
+	local control_N1_thrust = 0
+	local control_N1_thrust2 = 0
+	local SPD_out_old1 = 0
+	local SPD_out_old2 = 0
 	
 	if reverse_max_enable1 == 0 and reverse_max_enable2 == 0 then
 		thr1_target = eng1_N1_thrust_cur
@@ -12679,24 +13123,35 @@ function B738_N1_thrust_manage4()
 				thr1_anim = B738_rescale(0, 0, 1.04, 1, eng1_N1_thrust_cur)
 				thr2_anim = B738_rescale(0, 0, 1.04, 1, eng2_N1_thrust_cur)
 				
+				ghust_detect = 0
+				ghust_spd = 20
+				
+				-- SPD_err_old = 0
+				-- SPD_p = 0
+				-- SPD_i = 0
+				-- SPD_d = 0
+				-- --SPD_out = math.min(simDR_throttle_1, simDR_throttle_2) * 100
+				-- SPD_out_old1 = B738_rescale(0, 0, 1.04, 100, eng1_N1_thrust_cur)
+				-- SPD_out_old2 = B738_rescale(0, 0, 1.04, 100, eng2_N1_thrust_cur)
+				-- SPD_out = math.min(SPD_out_old1, SPD_out_old2)
+				
+				-- thr1_target_pid = simDR_throttle_1
+				-- thr2_target_pid = simDR_throttle_2
+				-- pid_time = 0
+				-- mcp_dial_old = 0
+				
 			elseif at_mode_eng == 2 then	-- speed mode
 				lock_throttle = 1
 				
-				throttle_limit = control_N1()
-				throttle_limit2 = control_SPD()
+				throttle_limit2 = control_SPD4()
+				throttle_limit = control_N1(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug)
 				throttle_limit = math.min(throttle_limit, throttle_limit2)
 				thr1_target = eng1_N1_thrust_cur + throttle_limit
 				thr2_target = eng2_N1_thrust_cur + throttle_limit
 				
-				if eng1_N1_thrust_cur == 0 and thr1_target < 0.008 then
-					thr1_target = 0
-				end
-				if eng2_N1_thrust_cur == 0 and thr2_target < 0.008 then
-					thr2_target = 0
-				end
+				eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, thr1_target, 0.0, 1.04, 0.5)	--2.0
+				eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, thr2_target, 0.0, 1.04, 0.5)	--2.0
 				
-				eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, thr1_target, 0.0, 1.04, 2.0)	--2.5
-				eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, thr2_target, 0.0, 1.04, 2.0)	--2.5
 				simDR_throttle1_use = eng1_N1_thrust_cur
 				simDR_throttle2_use = eng2_N1_thrust_cur
 				
@@ -12711,23 +13166,18 @@ function B738_N1_thrust_manage4()
 				axis_throttle2_old = B738DR_joy_axis_throttle2
 				
 			elseif at_mode_eng == 9 then	-- speed mode with N1 limit
+				
 				lock_throttle = 1
 				
-				throttle_limit = control_N1()
-				throttle_limit2 = control_SPD()
+				throttle_limit2 = control_SPD4()
+				throttle_limit = control_N1(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug)
 				throttle_limit = math.min(throttle_limit, throttle_limit2)
 				thr1_target = eng1_N1_thrust_cur + throttle_limit
 				thr2_target = eng2_N1_thrust_cur + throttle_limit
 				
-				if eng1_N1_thrust_cur == 0 and thr1_target < 0.008 then
-					thr1_target = 0
-				end
-				if eng2_N1_thrust_cur == 0 and thr2_target < 0.008 then
-					thr2_target = 0
-				end
+				eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, thr1_target, 0.0, 1.04, 0.5)	--2.0
+				eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, thr2_target, 0.0, 1.04, 0.5)	--2.0
 				
-				eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, thr1_target, 0.0, 1.04, 2.0)
-				eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, thr2_target, 0.0, 1.04, 2.0)
 				simDR_throttle1_use = eng1_N1_thrust_cur
 				simDR_throttle2_use = eng2_N1_thrust_cur
 				
@@ -12741,7 +13191,7 @@ function B738_N1_thrust_manage4()
 				axis_throttle1_old = B738DR_joy_axis_throttle1
 				axis_throttle2_old = B738DR_joy_axis_throttle2
 				
-			elseif at_mode_eng == 6 then	-- LVL CHG
+			elseif at_mode_eng == 6 or at_mode_eng == 7 then	-- LVL CHG and VNAV
 				lock_throttle = 1
 				if B738DR_autoland_status == 0 then
 					if eng1_N1_thrust_trg == 0 then		--retard
@@ -12751,8 +13201,23 @@ function B738_N1_thrust_manage4()
 							eng1_N1_thrust_cur = 0
 						end
 					else
-						eng1_N1_thrust_trg = eng1_N1_thrust_cur + control_N1()
-						eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 0.5)	--1.5
+						control_N1_thrust = control_N1(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug)
+						-- control_N1_thrust2 = (control_N1_thrust / SIM_PERIOD) * 100
+						-- if control_N1_thrust2 > 0.5 then
+							-- control_N1_thrust = 0.5
+						-- end
+						-----
+						eng1_N1_thrust_trg = eng1_N1_thrust_cur + control_N1_thrust
+						-- control_N1_thrust2 = eng1_N1_thrust_trg - eng1_N1_thrust_cur
+						
+						-- if control_N1_thrust2 > (0.15 * SIM_PERIOD) then
+							-- eng1_N1_thrust_trg = eng1_N1_thrust_cur + (0.15 * SIM_PERIOD)
+						-- -- elseif control_N1_thrust2 < (-0.05 * SIM_PERIOD) then
+							-- -- eng1_N1_thrust_trg = eng1_N1_thrust_cur - (0.05 * SIM_PERIOD)
+						-- end
+						--------
+						--eng1_N1_thrust_trg = eng1_N1_thrust_cur + control_N1_thrust
+						eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 0.15)	--1.5
 					end
 					if eng2_N1_thrust_trg == 0 then		--retard
 						--eng2_N1_thrust_cur = eng2_N1_thrust_cur - 0.002
@@ -12761,8 +13226,25 @@ function B738_N1_thrust_manage4()
 							eng2_N1_thrust_cur = 0
 						end
 					else
-						eng2_N1_thrust_trg = eng2_N1_thrust_cur + control_N1()
-						eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, eng2_N1_thrust_trg, 0.0, 1.04, 0.5)	--1.5
+						control_N1_thrust = control_N1(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug)
+						--control_N1_thrust2 = (control_N1_thrust / SIM_PERIOD) * 100
+						-- if control_N1_thrust2 > 0.5 then
+							-- control_N1_thrust = 0.5
+						-- end
+						-----
+						eng2_N1_thrust_trg = eng2_N1_thrust_cur + control_N1_thrust
+						-- control_N1_thrust2 = eng2_N1_thrust_trg - eng2_N1_thrust_cur
+						
+						-- if control_N1_thrust2 > (0.15 * SIM_PERIOD) then
+							-- eng2_N1_thrust_trg = eng2_N1_thrust_cur + (0.15 * SIM_PERIOD)
+						-- -- elseif control_N1_thrust2 < -B738DR_kf then
+							-- -- eng2_N1_thrust_trg = eng2_N1_thrust_cur - (0.05 * SIM_PERIOD)
+						-- end
+						--------
+						-- eng1_N1_thrust_trg = eng1_N1_thrust_cur + control_N1_thrust
+						-- eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 0.11)	--1.5
+						--eng2_N1_thrust_trg = eng2_N1_thrust_cur + control_N1_thrust
+						eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, eng2_N1_thrust_trg, 0.0, 1.04, 0.15)	--1.5
 					end
 				else
 					eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 1.0)
@@ -12787,56 +13269,70 @@ function B738_N1_thrust_manage4()
 				axis_throttle1_old = B738DR_joy_axis_throttle1
 				axis_throttle2_old = B738DR_joy_axis_throttle2
 				
+				-- SPD_err_old = 0
+				-- SPD_p = 0
+				-- SPD_i = 0
+				-- SPD_d = 0
+				-- SPD_out_old1 = B738_rescale(0, 0, 1.04, 100, eng1_N1_thrust_cur)
+				-- SPD_out_old2 = B738_rescale(0, 0, 1.04, 100, eng2_N1_thrust_cur)
+				-- SPD_out = math.min(SPD_out_old1, SPD_out_old2)
+				-- thr1_target_pid = simDR_throttle_1
+				-- thr2_target_pid = simDR_throttle_2
+				-- pid_time = 0
+				-- mcp_dial_old = 0
+			
 			elseif at_mode_eng == 4 or at_mode_eng == 5 or at_mode_eng == 8 then	-- AP and FD GoAround
 				lock_throttle = 1
-				if ap_goaround == 1 or fd_goaround == 1 then
-					if B738DR_n1_set_source == 0 then	-- FMC AUTO
-						if B738DR_fms_N1_mode == 0 or B738DR_fms_N1_mode == 13 then		-- no mode
-							thr1_limit = 1.04
-							thr2_limit = 1.04
-						else
-							thr1_limit = eng1_N1_thrust
-							thr2_limit = eng2_N1_thrust
-						end
-					else 
-						thr1_limit = eng1_N1_thrust
-						thr2_limit = eng2_N1_thrust
-					end
-					if fd_go_disable == 0 and at_mode_eng == 5 then
-						thr1_target = eng1_N1_thrust_trg
-						thr2_target = eng2_N1_thrust_trg
-					else
-						if simDR_throttle_1 > thr1_limit then
-							thr1_target = thr1_limit
-						else
-							thr1_target = simDR_throttle_1
-						end
-						if simDR_throttle_2 > thr2_limit then
-							thr2_target = thr2_limit
-						else
-							thr2_target = simDR_throttle_2
-						end
-					end
-					eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, thr1_target, 0.0, 1.04, 8)
-					eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, thr2_target, 0.0, 1.04, 8)
-					simDR_throttle1_use = eng1_N1_thrust_cur
-					simDR_throttle2_use = eng2_N1_thrust_cur
-					--thr1_anim = math.min(1.0, eng1_N1_thrust_cur)
-					--thr2_anim = math.min(1.0, eng2_N1_thrust_cur)
-					thr1_anim = B738_rescale(0, 0, 1.04, 1, eng1_N1_thrust_cur)
-					thr2_anim = B738_rescale(0, 0, 1.04, 1, eng2_N1_thrust_cur)
-				else
-					eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 0.5)	--1.5
-					eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, eng2_N1_thrust_trg, 0.0, 1.04, 0.5)	--1.5
-					simDR_throttle1_use = eng1_N1_thrust_cur
-					simDR_throttle2_use = eng2_N1_thrust_cur
-					simDR_throttle_1 = eng1_N1_thrust_cur
-					simDR_throttle_2 = eng2_N1_thrust_cur
-					--thr1_anim = math.min(1.0, eng1_N1_thrust_cur)
-					--thr2_anim = math.min(1.0, eng2_N1_thrust_cur)
-					thr1_anim = B738_rescale(0, 0, 1.04, 1, eng1_N1_thrust_cur)
-					thr2_anim = B738_rescale(0, 0, 1.04, 1, eng2_N1_thrust_cur)
-				end
+				-- if ap_goaround == 1 or fd_goaround == 1 then
+					-- if B738DR_n1_set_source == 0 then	-- FMC AUTO
+						-- if B738DR_fms_N1_mode == 0 or B738DR_fms_N1_mode == 13 then		-- no mode
+							-- thr1_limit = 1.04
+							-- thr2_limit = 1.04
+						-- else
+							-- thr1_limit = eng1_N1_thrust
+							-- thr2_limit = eng2_N1_thrust
+						-- end
+					-- else 
+						-- thr1_limit = eng1_N1_thrust
+						-- thr2_limit = eng2_N1_thrust
+					-- end
+					-- if fd_go_disable == 0 and at_mode_eng == 5 then
+						-- thr1_target = eng1_N1_thrust_trg
+						-- thr2_target = eng2_N1_thrust_trg
+					-- else
+						-- if simDR_throttle_1 > thr1_limit then
+							-- thr1_target = thr1_limit
+						-- else
+							-- thr1_target = simDR_throttle_1
+						-- end
+						-- if simDR_throttle_2 > thr2_limit then
+							-- thr2_target = thr2_limit
+						-- else
+							-- thr2_target = simDR_throttle_2
+						-- end
+					-- end
+					-- eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, thr1_target, 0.0, 1.04, 8)
+					-- eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, thr2_target, 0.0, 1.04, 8)
+					-- simDR_throttle1_use = eng1_N1_thrust_cur
+					-- simDR_throttle2_use = eng2_N1_thrust_cur
+					-- thr1_anim = B738_rescale(0, 0, 1.04, 1, eng1_N1_thrust_cur)
+					-- thr2_anim = B738_rescale(0, 0, 1.04, 1, eng2_N1_thrust_cur)
+				-- else
+					-- eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 0.5)	--1.5
+					-- eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, eng2_N1_thrust_trg, 0.0, 1.04, 0.5)	--1.5
+					-- simDR_throttle1_use = eng1_N1_thrust_cur
+					-- simDR_throttle2_use = eng2_N1_thrust_cur
+					-- simDR_throttle_1 = eng1_N1_thrust_cur
+					-- simDR_throttle_2 = eng2_N1_thrust_cur
+					-- thr1_anim = B738_rescale(0, 0, 1.04, 1, eng1_N1_thrust_cur)
+					-- thr2_anim = B738_rescale(0, 0, 1.04, 1, eng2_N1_thrust_cur)
+				-- end
+				
+				eng1_N1_thrust_trg = eng1_N1_thrust_cur + control_N1(eng1_N1_thrust_trg, eng2_N1_thrust_trg)
+				eng2_N1_thrust_trg = eng2_N1_thrust_cur + control_N1(eng1_N1_thrust_trg, eng2_N1_thrust_trg)
+				eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 0.5)
+				eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, eng2_N1_thrust_trg, 0.0, 1.04, 0.5)
+				
 				thr1_target = eng1_N1_thrust_trg
 				thr2_target = eng2_N1_thrust_trg
 				
@@ -12844,11 +13340,23 @@ function B738_N1_thrust_manage4()
 				axis_throttle1_old = B738DR_joy_axis_throttle1
 				axis_throttle2_old = B738DR_joy_axis_throttle2
 				
+				-- SPD_err_old = 0
+				-- SPD_p = 0
+				-- SPD_i = 0
+				-- SPD_d = 0
+				-- SPD_out_old1 = B738_rescale(0, 0, 1.04, 100, eng1_N1_thrust_cur)
+				-- SPD_out_old2 = B738_rescale(0, 0, 1.04, 100, eng2_N1_thrust_cur)
+				-- SPD_out = math.min(SPD_out_old1, SPD_out_old2)
+				-- thr1_target_pid = simDR_throttle_1
+				-- thr2_target_pid = simDR_throttle_2
+				-- pid_time = 0
+				-- mcp_dial_old = 0
+			
 			else
 				lock_throttle = 1
 				
-				eng1_N1_thrust_trg = eng1_N1_thrust_cur + control_N1()
-				eng2_N1_thrust_trg = eng2_N1_thrust_cur + control_N1()
+				eng1_N1_thrust_trg = eng1_N1_thrust_cur + control_N1(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug)
+				eng2_N1_thrust_trg = eng2_N1_thrust_cur + control_N1(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug)
 				eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 0.5)
 				eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, eng2_N1_thrust_trg, 0.0, 1.04, 0.5)
 				
@@ -12869,6 +13377,18 @@ function B738_N1_thrust_manage4()
 				axis_throttle1_old = B738DR_joy_axis_throttle1
 				axis_throttle2_old = B738DR_joy_axis_throttle2
 				
+				-- SPD_err_old = 0
+				-- SPD_p = 0
+				-- SPD_i = 0
+				-- SPD_d = 0
+				-- SPD_out_old1 = B738_rescale(0, 0, 1.04, 100, eng1_N1_thrust_cur)
+				-- SPD_out_old2 = B738_rescale(0, 0, 1.04, 100, eng2_N1_thrust_cur)
+				-- SPD_out = math.min(SPD_out_old1, SPD_out_old2)
+				-- thr1_target_pid = simDR_throttle_1
+				-- thr2_target_pid = simDR_throttle_2
+				-- pid_time = 0
+				-- mcp_dial_old = 0
+			
 			end
 		
 		else
@@ -12911,6 +13431,18 @@ function B738_N1_thrust_manage4()
 			thr2_anim = B738_rescale(0, 0, 1.04, 1, eng2_N1_thrust_cur)
 			--thr1_target = eng1_N1_thrust_trg
 			--thr2_target = eng2_N1_thrust_trg
+			
+			-- SPD_err_old = 0
+			-- SPD_p = 0
+			-- SPD_i = 0
+			-- SPD_d = 0
+			-- SPD_out_old1 = B738_rescale(0, 0, 1.04, 100, eng1_N1_thrust_cur)
+			-- SPD_out_old2 = B738_rescale(0, 0, 1.04, 100, eng2_N1_thrust_cur)
+			-- SPD_out = math.min(SPD_out_old1, SPD_out_old2)
+			-- thr1_target_pid = simDR_throttle_1
+			-- thr2_target_pid = simDR_throttle_2
+			-- pid_time = 0
+			-- mcp_dial_old = 0
 			
 		end
 	else
@@ -12958,6 +13490,19 @@ function B738_N1_thrust_manage4()
 				simDR_throttle_2 = 0
 			end
 		end
+		
+		-- SPD_err_old = 0
+		-- SPD_p = 0
+		-- SPD_i = 0
+		-- SPD_d = 0
+		-- SPD_out_old1 = B738_rescale(0, 0, 1.04, 100, eng1_N1_thrust_cur)
+		-- SPD_out_old2 = B738_rescale(0, 0, 1.04, 100, eng2_N1_thrust_cur)
+		-- SPD_out = math.min(SPD_out_old1, SPD_out_old2)
+		-- thr1_target_pid = simDR_throttle_1
+		-- thr2_target_pid = simDR_throttle_2
+		-- pid_time = 0
+		-- mcp_dial_old = 0
+			
 	end
 	
 	-- B738DR_thrust1_leveler = B738_set_anim_value(B738DR_thrust1_leveler, thr1_anim, 0.0, 1.0, 8)	--thr1_anim
@@ -14528,9 +15073,9 @@ function speed_ratio_timer()
 		vdot_ratio_old = vdot
 	end
 	
-	local radio_height = simDR_radio_height_pilot_ft
-	B738DR_radio_height_ratio = radio_height - radio_height_old
-	radio_height_old = radio_height
+	-- local radio_height = simDR_radio_height_pilot_ft
+	-- B738DR_radio_height_ratio = radio_height - radio_height_old
+	-- radio_height_old = radio_height
 	
 	local altitude_pilot = simDR_altitude_pilot
 	B738DR_altitude_pilot_ratio = altitude_pilot - altitude_pilot_old
@@ -14546,7 +15091,7 @@ function speed_ratio_timer()
 	
 	local eng2_N1 = simDR_engine_N1_pct2
 	B738DR_eng2_N1_ratio = eng2_N1 - eng2_N1_old
-	eng2_N1_old = eng_N1
+	eng2_N1_old = eng2_N1
 	
 	measure = 1
 	
@@ -15390,22 +15935,40 @@ function B738_yoke()
 	
 end
 
+
 function B738_spd_ratio()
 	time_spd_ratio = time_spd_ratio + SIM_PERIOD
-	if time_spd_ratio > 1 then
+	if time_spd_ratio > 0.1 then
+		
 		if spd_ratio_num == 0 then
 			spd_ratio_num = 1
 		end
-		spd_ratio = spd_ratio_sum / spd_ratio_num
+		
+		spd_ratio = (simDR_airspeed_pilot - spd_ratio_old) / time_spd_ratio
+		
+		--spd_ratio = spd_ratio_sum / spd_ratio_num
 		spd_ratio_old = simDR_airspeed_pilot
-		time_spd_ratio = time_spd_ratio - 1
-		spd_ratio_sum = 0
+		--spd_ratio_sum = 0
+		
+		gnd_spd_ratio = ((simDR_ground_spd * 1.94384449244) - gnd_spd_ratio_old) / time_spd_ratio
+		gnd_spd_ratio_old = simDR_ground_spd * 1.94384449244
+		
+		B738DR_radio_height_ratio = radio_height_sum / spd_ratio_num
+		radio_height_old = simDR_radio_height_pilot_ft
+		radio_height_sum = 0
+		
 		spd_ratio_num = 0
+		time_spd_ratio = 0	--time_spd_ratio - 1
 	else
-		spd_ratio_sum = spd_ratio_sum + ((simDR_airspeed_pilot - spd_ratio_old) / SIM_PERIOD)
+		-- spd_ratio_sum = spd_ratio_sum + ((simDR_airspeed_pilot - spd_ratio_old) / SIM_PERIOD)
+		-- spd_ratio_old = simDR_airspeed_pilot
+		
+		radio_height_sum = radio_height_sum + ((simDR_radio_height_pilot_ft - radio_height_old) / SIM_PERIOD)
+		radio_height_old = simDR_radio_height_pilot_ft
+		
 		spd_ratio_num = spd_ratio_num + 1
-		spd_ratio_old = simDR_airspeed_pilot
 	end
+
 end
 
 --*************************************************************************************--
@@ -15713,6 +16276,12 @@ hide_hdg_line_fo = 0
 
 airspeed_dial_kts_old = 0
 
+B738DR_kp = 9.0		--10.5
+B738DR_ki = 1.6		--1.8		--0.5
+B738DR_kd = 1.0		--1.3		--1.5		--1.2
+B738DR_kf = 60		--6.0
+B738DR_bias = 6
+
 --B738DR_test_test = 1.0
 --B738DR_test_test2 = 2.0
 --B738DR_test_test = 1.0
@@ -15801,7 +16370,7 @@ function after_physics()
 		
 		--B738DR_mcp_hdg_dial_nd = B738DR_test_test
 		--B738DR_data_test = 0
-		B738DR_test_test = spd_ratio
+		--B738DR_test_test = spd_ratio
 	end
 
  end

@@ -370,6 +370,7 @@ left_adf_old = 0
 change_adf_nav1 = 0
 right_adf_old = 0
 change_adf_nav2 = 0
+first_time_num = 0
 
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
@@ -6344,6 +6345,17 @@ function turn_around_state()
 			first_time = first_time + SIM_PERIOD
 		end
 	--end
+	if first_time_num == 1 then
+		if B738DR_chock_status == 0 then
+			if simDR_on_ground_0 == 1 and simDR_on_ground_1 == 1 and simDR_on_ground_2 == 1 then
+				simDR_brake = 1
+				B738DR_parking_brake_pos = simDR_brake
+			end
+		end
+		first_time_num = first_time_num + 1
+	else
+		first_time_num = first_time_num + 1
+	end
 end
 
 
@@ -6423,7 +6435,6 @@ function B738_init_engineMGMT_fltStart()
 		
 		flt_dk_door_tgt = 1
 		B738DR_flt_dk_door_ratio = 1
-		
 		-- ENGINES RUNNING ------------------------------------------------------------------
     elseif simDR_startup_running == 1 then
 
@@ -9791,7 +9802,7 @@ function B738_gpws()
 				end
 				--if simDR_fpm < 0 and gpws_warning == DONT_SINK then
 				if gpws_warning == DONT_SINK then
-					gpws_last_peak_altitude = simDR_altitude_pilot
+					gpws_last_peak_altitude = 0	--simDR_altitude_pilot
 				end
 			else
 				gpws_last_peak_altitude = 0	--simDR_altitude_pilot
@@ -11937,7 +11948,7 @@ B738_init_engineMGMT_fltStart()
 	B738DR_adf_ant2 = 0
 	simDR_adf1_power = 2
 	simDR_adf2_power = 2
-	
+	first_time_num = 0
 	steer_speed = 0.110	--0.028
 	
 end
