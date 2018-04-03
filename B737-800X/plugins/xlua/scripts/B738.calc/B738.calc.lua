@@ -1504,6 +1504,8 @@ B738DR_rw_wind_spd		= find_dataref("laminar/B738/fms/rw_wind_spd")
 B738DR_rw_slope			= find_dataref("laminar/B738/fms/rw_slope")
 B738DR_rw_hdg			= find_dataref("laminar/B738/fms/rw_hdg")
 
+B738DR_gear_handle_pos	= find_dataref("laminar/B738/controls/gear_handle_down")
+
 
 --*************************************************************************************--
 --** 				               FIND CUSTOM COMMANDS              			     **--
@@ -1541,7 +1543,7 @@ B738DR_fms_vr_calc		= create_dataref("laminar/B738/FMS/vr_calc", "number")
 B738DR_fms_v2_calc		= create_dataref("laminar/B738/FMS/v2_calc", "number")
 B738DR_trim_calc		= create_dataref("laminar/B738/FMS/trim_calc", "number")
 
-
+B738DR_afs_spd_limit_max = create_dataref("laminar/B738/FMS/afs_spd_limit_max", "number")
 
 -- flaps bugs
 B738DR_pfd_flaps_up			= create_dataref("laminar/B738/pfd/flaps_up", "number")
@@ -2456,7 +2458,7 @@ function B738_vspeed_bugs()
 		else
 			B738DR_pfd_no_vspd = 0
 			if B738DR_flight_phase == 0
-			and simDR_airspeed_pilot > 80 then
+			and simDR_airspeed_pilot > 50 then
 				B738DR_fms_v1r_bugs = 1
 				--B738DR_pfd_no_vspd = 0
 			end
@@ -2612,94 +2614,120 @@ function B738_calc_min_max_spd()
 	
 	-- minimum red/black tape, min and max maneuver lines
 	if flaps == 0 then				-- flaps 0
-		min_speed_0 = math.max( 116, (vmin_full[0] - 27))
-		min_speed = B738_rescale(0, min_speed_0, 1, vmin_full[0], weight_index)
+		-- min_speed_0 = math.max( 116, (vmin_full[0] - 27))
+		-- min_speed = B738_rescale(0, min_speed_0, 1, vmin_full[0], weight_index)
 		max_speed = max_spd
 		next_low_flaps_spd = max_spd
 		next_hi_flaps_spd = vmax[1] - 40
+		min_speed = B738_rescale(0, 124, 1, 165, weight_index)
 	
 	elseif flaps <= 0.125 then		-- flaps 1
-		min_speed_0 = math.max( 116, (vmin_full[0] - 27))
-		min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[0], weight_index)
-		min_speed_0 = math.max( 116, (vmin_full[1] - 27))
-		min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[1], weight_index)
-		min_speed = B738_rescale(0.0, min_speed_1, 0.125, min_speed_2, flaps)
+		-- min_speed_0 = math.max( 116, (vmin_full[0] - 27))
+		-- min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[0], weight_index)
+		-- min_speed_0 = math.max( 116, (vmin_full[1] - 27))
+		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[1], weight_index)
+		-- min_speed = B738_rescale(0.0, min_speed_1, 0.125, min_speed_2, flaps)
 		max_speed = B738_rescale(0.0, max_spd, 0.125, vmax[1], flaps)
 		next_low_flaps_spd = B738_rescale(0.0, max_spd, 0.125, B738DR_pfd_flaps_up, flaps)
 		next_hi_flaps_spd = B738_rescale(0.0, vmax[1] - 40, 0.125, (vmax[10]-30), flaps)
+		min_speed_1 = B738_rescale(0, 124, 1, 165, weight_index)
+		min_speed_2 = B738_rescale(0, 123, 1, 163, weight_index)
+		min_speed = B738_rescale(0.0, min_speed_1, 0.125, min_speed_2, flaps)
 	
 	elseif flaps <= 0.25 then		-- flaps 2
-		min_speed_0 = math.max( 116, (vmin_full[1] - 27))
-		min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[1], weight_index)
-		min_speed_0 = math.max( 116, (vmin_full[2] - 27))
-		min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[2], weight_index)
-		min_speed = B738_rescale(0.125, min_speed_1, 0.25, min_speed_2, flaps)
+		-- min_speed_0 = math.max( 116, (vmin_full[1] - 27))
+		-- min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[1], weight_index)
+		-- min_speed_0 = math.max( 116, (vmin_full[2] - 27))
+		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[2], weight_index)
+		-- min_speed = B738_rescale(0.125, min_speed_1, 0.25, min_speed_2, flaps)
 		max_speed = B738_rescale(0.125, vmax[1], 0.25, vmax[2], flaps)
 		next_low_flaps_spd = B738_rescale(0.125, B738DR_pfd_flaps_up, 0.25, B738DR_pfd_flaps_1, flaps)
 		next_hi_flaps_spd = B738_rescale(0.125, (vmax[10]-30), 0.25, (vmax[15]-40), flaps)
+		min_speed_1 = B738_rescale(0, 123, 1, 163, weight_index)
+		min_speed_2 = B738_rescale(0, 122, 1, 162, weight_index)
+		min_speed = B738_rescale(0.125, min_speed_1, 0.25, min_speed_2, flaps)
 	
 	elseif flaps <= 0.375 then		-- flaps 5
-		min_speed_0 = math.max( 116, (vmin_full[2] - 27))
-		min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[2], weight_index)
-		min_speed_0 = math.max( 116, (vmin_full[5] - 27))
-		min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[5], weight_index)
-		min_speed = B738_rescale(0.25, min_speed_1, 0.375, min_speed_2, flaps)
+		-- min_speed_0 = math.max( 116, (vmin_full[2] - 27))
+		-- min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[2], weight_index)
+		-- min_speed_0 = math.max( 116, (vmin_full[5] - 27))
+		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[5], weight_index)
+		-- min_speed = B738_rescale(0.25, min_speed_1, 0.375, min_speed_2, flaps)
 		max_speed = B738_rescale(0.25, vmax[2], 0.375, vmax[5], flaps)
 		next_low_flaps_spd = B738_rescale(0.25, B738DR_pfd_flaps_1, 0.375, B738DR_pfd_flaps_2, flaps)
 		next_hi_flaps_spd = B738_rescale(0.25, (vmax[15]-40), 0.375, (vmax[25]-40), flaps)
+		min_speed_1 = B738_rescale(0, 122, 1, 162, weight_index)
+		min_speed_2 = B738_rescale(0, 118, 1, 158, weight_index)
+		min_speed = B738_rescale(0.25, min_speed_1, 0.375, min_speed_2, flaps)
 	
 	elseif flaps <= 0.5 then		-- flaps 10
-		min_speed_0 = math.max( 116, (vmin_full[5] - 27))
-		min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[5], weight_index)
-		min_speed_0 = math.max( 116, (vmin_full[10] - 27))
-		min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[10], weight_index)
-		min_speed = B738_rescale(0.375, min_speed_1, 0.5, min_speed_2, flaps)
+		-- min_speed_0 = math.max( 116, (vmin_full[5] - 27))
+		-- min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[5], weight_index)
+		-- min_speed_0 = math.max( 116, (vmin_full[10] - 27))
+		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[10], weight_index)
+		-- min_speed = B738_rescale(0.375, min_speed_1, 0.5, min_speed_2, flaps)
 		max_speed = B738_rescale(0.375, vmax[5], 0.5, vmax[10], flaps)
 		next_low_flaps_spd = B738_rescale(0.375, B738DR_pfd_flaps_2, 0.5, B738DR_pfd_flaps_5, flaps)
 		next_hi_flaps_spd = B738_rescale(0.375, (vmax[25]-40), 0.5, (vmax[30]-40), flaps)
+		min_speed_1 = B738_rescale(0, 118, 1, 158, weight_index)
+		min_speed_2 = B738_rescale(0, 116, 1, 153, weight_index)
+		min_speed = B738_rescale(0.375, min_speed_1, 0.5, min_speed_2, flaps)
 	
 	elseif flaps <= 0.625 then		-- flaps 15
-		min_speed_0 = math.max( 116, (vmin_full[10] - 27))
-		min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[10], weight_index)
-		min_speed_0 = math.max( 116, (vmin_full[15] - 27))
-		min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[15], weight_index)
-		min_speed = B738_rescale(0.5, min_speed_1, 0.625, min_speed_2, flaps)
+		-- min_speed_0 = math.max( 116, (vmin_full[10] - 27))
+		-- min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[10], weight_index)
+		-- min_speed_0 = math.max( 116, (vmin_full[15] - 27))
+		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[15], weight_index)
+		-- min_speed = B738_rescale(0.5, min_speed_1, 0.625, min_speed_2, flaps)
 		max_speed = B738_rescale(0.5, vmax[10], 0.625, vmax[15], flaps)
 		next_low_flaps_spd = B738_rescale(0.5, B738DR_pfd_flaps_5, 0.625, B738DR_pfd_flaps_10, flaps)
 		next_hi_flaps_spd = B738_rescale(0.5, (vmax[30]-40), 0.625, (vmax[40]-40), flaps)
+		min_speed_1 = B738_rescale(0, 116, 1, 153, weight_index)
+		min_speed_2 = B738_rescale(0, 115, 1, 148, weight_index)
+		min_speed = B738_rescale(0.5, min_speed_1, 0.625, min_speed_2, flaps)
 	
 	elseif flaps <= 0.75 then		-- flaps 25
-		min_speed_0 = math.max( 116, (vmin_full[15] - 27))
-		min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[15], weight_index)
-		min_speed_0 = math.max( 116, (vmin_full[25] - 27))
-		min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[25], weight_index)
-		min_speed = B738_rescale(0.625, min_speed_1, 0.75, min_speed_2, flaps)
+		-- min_speed_0 = math.max( 116, (vmin_full[15] - 27))
+		-- min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[15], weight_index)
+		-- min_speed_0 = math.max( 116, (vmin_full[25] - 27))
+		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[25], weight_index)
+		-- min_speed = B738_rescale(0.625, min_speed_1, 0.75, min_speed_2, flaps)
 		max_speed = B738_rescale(0.625, vmax[15], 0.75, vmax[25], flaps)
 		next_low_flaps_spd = B738_rescale(0.625, B738DR_pfd_flaps_10, 0.75, B738DR_pfd_flaps_15, flaps)
 		next_hi_flaps_spd = B738_rescale(0.625, (vmax[40]-40), 0.75, (vmax[40]-50), flaps)
+		min_speed_1 = B738_rescale(0, 115, 1, 148, weight_index)
+		min_speed_2 = B738_rescale(0, 110, 1, 144, weight_index)
+		min_speed = B738_rescale(0.625, min_speed_1, 0.75, min_speed_2, flaps)
 	
 	elseif flaps <= 0.875 then		-- flaps 30
-		min_speed_0 = math.max( 116, (vmin_full[25] - 27))
-		min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[25], weight_index)
-		min_speed_0 = math.max( 116, (vmin_full[30] - 27))
-		min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[30], weight_index)
-		min_speed = B738_rescale(0.75, min_speed_1, 0.875, min_speed_2, flaps)
+		-- min_speed_0 = math.max( 116, (vmin_full[25] - 27))
+		-- min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[25], weight_index)
+		-- min_speed_0 = math.max( 116, (vmin_full[30] - 27))
+		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[30], weight_index)
+		-- min_speed = B738_rescale(0.75, min_speed_1, 0.875, min_speed_2, flaps)
 		max_speed = B738_rescale(0.75, vmax[25], 0.875, vmax[30], flaps)
 		next_low_flaps_spd = B738DR_pfd_flaps_15 - 10
 		next_hi_flaps_spd = B738_rescale(0.75, (vmax[40]-50), 0.875, (vmax[40]-60), flaps)
+		min_speed_1 = B738_rescale(0, 110, 1, 144, weight_index)
+		min_speed_2 = B738_rescale(0, 109, 1, 143, weight_index)
+		min_speed = B738_rescale(0.75, min_speed_1, 0.875, min_speed_2, flaps)
 	
 	elseif flaps <= 1.000 then		-- flaps 40
-		min_speed_0 = math.max( 116, (vmin_full[30] - 27))
-		min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[30], weight_index)
-		min_speed_0 = math.max( 116, (vmin_full[40] - 27))
-		min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[40], weight_index)
-		min_speed = B738_rescale(0.875, min_speed_1, 1.0, min_speed_2, flaps)
+		-- min_speed_0 = math.max( 116, (vmin_full[30] - 27))
+		-- min_speed_1 = B738_rescale(0, min_speed_0, 1, vmin_full[30], weight_index)
+		-- min_speed_0 = math.max( 116, (vmin_full[40] - 27))
+		-- min_speed_2 = B738_rescale(0, min_speed_0, 1, vmin_full[40], weight_index)
+		-- min_speed = B738_rescale(0.875, min_speed_1, 1.0, min_speed_2, flaps)
 		max_speed = B738_rescale(0.875, vmax[30], 1.0, vmax[40], flaps)
 		next_low_flaps_spd = B738DR_pfd_flaps_15 - 10
 		next_hi_flaps_spd = B738_rescale(0.875, (vmax[40]-60), 1.0, (vmax[40]-70), flaps)
+		min_speed_1 = B738_rescale(0, 109, 1, 143, weight_index)
+		min_speed_2 = B738_rescale(0, 107, 1, 141, weight_index)
+		min_speed = B738_rescale(0.875, min_speed_1, 1.0, min_speed_2, flaps)
 	end
 	
-	min_maneuver_speed = B738_rescale(0.0, (min_speed + 15), 1.0, (min_speed + 5), flaps)
+	--min_maneuver_speed = B738_rescale(0.0, (min_speed + 15), 1.0, (min_speed + 5), flaps)
+	min_maneuver_speed = min_speed * 1.07
 	
 	if gw_to == 0 then
 		max_maneuver_speed = max_speed - 10
@@ -2762,10 +2790,43 @@ function B738_calc_min_max_spd()
 	B738DR_pfd_max_maneuver_speed_show = max_maneuver_speed_show
 	B738DR_pfd_min_maneuver_speed_show = min_maneuver_speed_show
 
+	------------------
+	--AFS protection
+	------------------
+	local afs_flap = 340
+	-- flaps placard speed
+	if simDR_flaps_handle_ratio > 0.876 then		-- flaps 40
+		afs_flap = 162	-- placard speed
+	elseif simDR_flaps_handle_ratio > 0.751 then	-- flaps 30
+		afs_flap = 175	-- placard speed
+	elseif simDR_flaps_handle_ratio > 0.626 then	-- flaps 25
+		afs_flap = 190	-- placard speed
+	elseif simDR_flaps_handle_ratio > 0.501 then	-- flaps 15
+		afs_flap = 200	-- placard speed
+	elseif simDR_flaps_handle_ratio > 0.376 then	-- flaps 10
+		afs_flap = 210	-- placard speed
+	elseif simDR_flaps_handle_ratio > 0.251 then	-- flaps 5
+		afs_flap = 250	-- placard speed
+	elseif simDR_flaps_handle_ratio > 0.126 then	-- flaps 2
+		afs_flap = 250	-- placard speed
+	elseif simDR_flaps_handle_ratio > 0.001 then	-- flaps 1
+		afs_flap = 250	-- placard speed
+	end
+	
+	local afs_gear = 340
+	if B738DR_gear_handle_pos == 1 then
+		afs_gear = 235
+	end
+	
+	B738DR_afs_spd_limit_max = math.min(max_speed, afs_flap, afs_gear)
+	
 	-- MCP flash "8"
-	if B738DR_mcp_speed_dial > max_speed then
+	if B738DR_mcp_speed_dial > B738DR_afs_spd_limit_max then
 		B738DR_digit_8 = DRblink
 		B738DR_digit_over_spd = 1
+	-- elseif B738DR_mcp_speed_dial > max_speed then
+		-- B738DR_digit_8 = DRblink
+		-- B738DR_digit_over_spd = 1
 	else
 		B738DR_digit_8 = 0
 		B738DR_digit_over_spd = 0

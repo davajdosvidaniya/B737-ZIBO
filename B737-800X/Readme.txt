@@ -77,6 +77,13 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+33.25t:
+-------
+- add AFS system
+- add code for detect engine out
+- corrected some systems
+- fixed typo errors and bugs
+
 3.25s:
 ------
 - fixed holding pattern (I change LNAV code and I forget change code for HOLD)

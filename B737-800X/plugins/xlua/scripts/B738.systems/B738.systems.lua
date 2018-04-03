@@ -728,6 +728,11 @@ simDR_nav2_type				= find_dataref("sim/cockpit2/radios/indicators/nav2_type")
 
 B738DR_fms_vref				= find_dataref("laminar/B738/FMS/vref")
 
+B738DR_tire_on_noisy		= find_dataref("sim/flightmodel2/gear/on_noisy")
+B738DR_tire_blow0			= find_dataref("sim/operation/failures/rel_tire1")
+B738DR_tire_blow1			= find_dataref("sim/operation/failures/rel_tire2")
+B738DR_tire_blow2			= find_dataref("sim/operation/failures/rel_tire3")
+
 --*************************************************************************************--
 --** 				               FIND X-PLANE COMMANDS                   	    	 **--
 --*************************************************************************************--
@@ -1017,7 +1022,6 @@ B738DR_idle_mode_request	= create_dataref("laminar/B738/engine/idle_mode_request
 B738DR_tire_speed0			= create_dataref("laminar/B738/systems/tire_speed0", "number")
 B738DR_tire_speed1			= create_dataref("laminar/B738/systems/tire_speed1", "number")
 B738DR_tire_speed2			= create_dataref("laminar/B738/systems/tire_speed2", "number")
-
 
 --B738DR_parking_brake_pos	= create_dataref("laminar/B738/parking_brake_pos", "number")
 
@@ -10390,7 +10394,7 @@ function B738_man_land_gear()
 	and simDR_on_ground_2 == 0 then
 		if B738DR_hyd_A_status > 0 then
 			if landing_gear_target == 0 then
-				if simDR_airspeed_pilot < 235 then
+				if simDR_airspeed_pilot < 250 then
 					if B738DR_gear_handle_pos ~= 0.5 then
 						--landing_gear_act = B738_set_anim_time(landing_gear_act, landing_gear_target, 0.0, 1.0, 0, 14.0)
 						landing_gear0_act = B738_set_anim_time(landing_gear0_act, landing_gear_target, 0.0, 1.0, 0, LANDGEAR_NOSE_UP_TIME)
@@ -10400,7 +10404,7 @@ function B738_man_land_gear()
 					simDR_gear_handle_status = 0
 				end
 			else
-				if simDR_airspeed_pilot < 270 then
+				if simDR_airspeed_pilot < 280 then
 					if B738DR_gear_handle_pos ~= 0.5 or B738DR_landgear_pos > 0.9 then
 						--landing_gear_act = B738_set_anim_time(landing_gear_act, landing_gear_target, 0.0, 1.0, 1, 17.0)
 						landing_gear0_act = B738_set_anim_time(landing_gear0_act, landing_gear_target, 0.0, 1.0, 1, LANDGEAR_NOSE_DN_TIME)
@@ -10411,7 +10415,7 @@ function B738_man_land_gear()
 				end
 			end
 		else
-			if simDR_airspeed_pilot < 270 and B738DR_landgear_pos > 0.9 then
+			if simDR_airspeed_pilot < 280 and B738DR_landgear_pos > 0.9 then
 				--landing_gear_act = B738_set_anim_time(landing_gear_act, landing_gear_target, 0.0, 1.0, 1, 19.0)		-- manual gear extend 19 secs
 				landing_gear0_act = B738_set_anim_time(landing_gear0_act, 1, 0.0, 1.0, 1, LANDGEAR_NOSE_MAN_TIME)
 				landing_gear1_act = B738_set_anim_time(landing_gear1_act, 1, 0.0, 1.0, 1, LANDGEAR_LEFT_MAN_TIME)
@@ -11697,10 +11701,10 @@ function B738_speedbrake_handle_animation()
 
 
 	----- WHAT MY LEVER IS DOING MAPPED AS AUSTINS LEVER -----
-
+	local alex_speedbrake_handle = 0
 	if B738_speedbrake_stop == 1 then
 		if B738DR_speedbrake_lever >= 0.15 then
-			local alex_speedbrake_handle = B738_rescale(0.15, 0, 0.667, 0.99, B738DR_speedbrake_lever)
+			alex_speedbrake_handle = B738_rescale(0.15, 0, 0.667, 0.99, B738DR_speedbrake_lever)
 		elseif B738DR_speedbrake_lever < 0.15 then
 			alex_speedbrake_handle = 0
 		end
@@ -11749,6 +11753,23 @@ function B738_speedbrake_handle_animation()
 	if simDR_speedbrake_ratio == -0.5 then
 	B738DR_speedbrake_lever = 0.0889
 	end
+end
+
+
+function B738DR_tire()
+	
+	if simDR_ground_speed > 25 then
+		if B738DR_tire_on_noisy[0] == 1 and B738DR_tire_blow0 == 0 then
+			B738DR_tire_blow0 = 6
+		end
+		if B738DR_tire_on_noisy[1] == 1 and B738DR_tire_blow1 == 0 then
+			B738DR_tire_blow1 = 6
+		end
+		if B738DR_tire_on_noisy[2] == 1 and B738DR_tire_blow2 == 0 then
+			B738DR_tire_blow2 = 6
+		end
+	end
+	
 end
 
 --*************************************************************************************--
@@ -11951,6 +11972,7 @@ B738_init_engineMGMT_fltStart()
 	first_time_num = 0
 	steer_speed = 0.110	--0.028
 	
+	
 end
 
 --function flight_crash() end
@@ -12014,6 +12036,7 @@ function after_physics()
 		B738_speedbrake_lever_stop()
 		B738_speedbrake_handle_animation()
 		B738_speedbrake_disagree_monitor()
+		B738DR_tire()
 		
 		if fmod_flap_sound == 1 then
 			fmod_flap_sound = 2
@@ -12024,7 +12047,7 @@ function after_physics()
 	
 
 	--B738_bus_trans()
-	DR_sys_test = gpws_playing_sound	--gpws_aural_phase
+	--DR_sys_test = gpws_playing_sound	--gpws_aural_phase
 	--B738DR_tcas_test_test = gpws_aural_phase
 	
 end

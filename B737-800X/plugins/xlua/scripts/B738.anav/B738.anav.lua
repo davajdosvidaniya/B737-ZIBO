@@ -293,7 +293,7 @@ function window_ratio()
 	gnd_spd = math.min(gnd_spd, 236)
 	gnd_spd = math.max(gnd_spd, 5)
 	
-	local tmp = precip_acf_ratio * B738_rescale(5, 1, 236, 2.5, gnd_spd)
+	local tmp = precip_acf_ratio * B738_rescale(5, 1, 236, 4.5, gnd_spd)	-- 2.5
 	tmp = math.min(tmp, 1)
 	tmp = math.max(tmp, 0)
 	

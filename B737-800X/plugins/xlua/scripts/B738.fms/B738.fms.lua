@@ -1360,6 +1360,10 @@ ff_sample = 0
 
 	--vnav_alt_err_ratio = 0
 	vnav_alt_err_ratio_old = 0
+	
+	fuel_ed = 0
+	fuel_tc = 0
+	fuel_td = 0
 
 	
 --*************************************************************************************--
@@ -1690,6 +1694,7 @@ B738DR_ac_tnsbus2_status	= find_dataref("laminar/B738/electric/ac_tnsbus2_status
 
 B738DR_calc_vspd			= find_dataref("laminar/B738/FMS/calc_vspd")
 B738DR_calc_trim 			= find_dataref("laminar/B738/FMS/calc_trim")
+B738DR_eng_out				= find_dataref("laminar/B738/FMS/eng_out")
 
 -- FMOD by AudioBird XP
 B738DR_enable_pax_boarding	= find_dataref("laminar/b738/fmodpack/fmod_pax_boarding_on")
@@ -19022,6 +19027,18 @@ function B738_load_config()
 							end
 						end
 					end
+				elseif string.sub(fms_line, 1, 16) == "CHOCKS STATE   =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							if temp_fmod == 1 then
+								B738DR_chock_status = 1
+							else
+								B738DR_chock_status = 0
+							end
+						end
+					end
 				-- elseif string.sub(fms_line, 1, 16) == "LAST POS LAT   =" then
 					-- temp_fmod = string.len(fms_line)
 					-- if temp_fmod > 16 then
@@ -19614,6 +19631,8 @@ function B738_save_config()
 		fms_line = "LOCK IDLE THR  = " .. string.format("%2d", B738DR_lock_idle_thrust) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "ENG NO RUNNING = " .. string.format("%2d", B738DR_engine_no_running_state) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "CHOCKS STATE   = " .. string.format("%2d", B738DR_chock_status) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "BRAKE REM CHOCK= " .. string.format("%2d", B738DR_parkbrake_remove_chock) .. "\n"
 		file_navdata:write(fms_line)
@@ -28406,12 +28425,12 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_dx ~= 0 and td_idx ~= 0 then
+												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
 													if qqq >= td_idx then
 														break
 													end
 												end
-												if item < tc_idx and tc_dx ~= 0 then
+												if item < tc_idx and tc_idx ~= 0 then
 													if qqq >= tc_idx then
 														break
 													end
@@ -28948,12 +28967,12 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_dx ~= 0 and td_idx ~= 0 then
+												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
 													if qqq >= td_idx then
 														break
 													end
 												end
-												if item < tc_idx and tc_dx ~= 0 then
+												if item < tc_idx and tc_idx ~= 0 then
 													if qqq >= tc_idx then
 														break
 													end
@@ -29633,12 +29652,12 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_dx ~= 0 and td_idx ~= 0 then
+												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
 													if qqq >= td_idx then
 														break
 													end
 												end
-												if item < tc_idx and tc_dx ~= 0 then
+												if item < tc_idx and tc_idx ~= 0 then
 													if qqq >= tc_idx then
 														break
 													end
@@ -30166,12 +30185,12 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_dx ~= 0 and td_idx ~= 0 then
+												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
 													if qqq >= td_idx then
 														break
 													end
 												end
-												if item < tc_idx and tc_dx ~= 0 then
+												if item < tc_idx and tc_idx ~= 0 then
 													if qqq >= tc_idx then
 														break
 													end
@@ -30625,12 +30644,12 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_dx ~= 0 and td_idx ~= 0 then
+												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
 													if qqq >= td_idx then
 														break
 													end
 												end
-												if item < tc_idx and tc_dx ~= 0 then
+												if item < tc_idx and tc_idx ~= 0 then
 													if qqq >= tc_idx then
 														break
 													end
@@ -35583,7 +35602,7 @@ function B738_fmc_menu()
 		if menu_tick < 5 then
 			line5_x = "FLIGHT MODEL 4.4 TWKSTER"
 			line5_l = "         A   S  D  G    "
-			line5_s = "      BY  ERO IM EV ROUP"
+			line5_s = "  AND BY  ERO IM EV ROUP"
 			line6_x = "SOUND PACK "
 			if string.len(fmod_version) > 13 then
 				line6_x = line6_x .. string.sub(fmod_version, 1, 13)
@@ -45576,14 +45595,16 @@ function B738_N1_thrust_calc()
 	
 	fmc_clb_thrust = B738DR_thr_climb_N1
 	fmc_crz_thrust = B738DR_thr_cruise_N1
-	--fmc_con_thrust = math.min(math.max( B738DR_thr_climb_N1, B738DR_thr_cruise_N1, B738DR_thr_goaround_N1) + 0.1, 1.04)
-	fmc_con_thrust = math.max(B738DR_thr_climb_N1, B738DR_thr_cruise_N1)
-	if fmc_con_thrust > 0 then
-		fmc_con_thrust = fmc_con_thrust + 0.023
-	end
-	if fmc_con_thrust > B738DR_thr_goaround_N1 then
-		fmc_con_thrust = B738DR_thr_goaround_N1 - 0.023
-	end
+	
+	-- fmc_con_thrust = math.max(B738DR_thr_climb_N1, B738DR_thr_cruise_N1)
+	-- if fmc_con_thrust > 0 then
+		-- fmc_con_thrust = fmc_con_thrust + 0.023
+	-- end
+	-- if fmc_con_thrust > B738DR_thr_goaround_N1 then
+		-- fmc_con_thrust = B738DR_thr_goaround_N1 - 0.023
+	-- end
+	fmc_con_thrust = B738DR_thr_goaround_N1 * 0.96
+	
 	fmc_ga_thrust = B738DR_thr_goaround_N1
 
 end
@@ -46075,9 +46096,9 @@ function B738_N1_thrust_set()
 			end
 		end
 		fms_N1_mode = fms_N1_to_mode_sel
-		if simDR_radio_height_pilot_ft > B738DR_accel_alt - 300 then
-			fmc_auto_thrust = fmc_auto_thrust * 0.96	-- 4% thrust reduction
-		end
+		-- if simDR_radio_height_pilot_ft > B738DR_accel_alt - 300 then
+			-- fmc_auto_thrust = fmc_auto_thrust * 0.96	-- 4% thrust reduction
+		-- end
 	
 	-- mode CLIMB
 	elseif B738DR_flight_phase == 1 then
@@ -46122,6 +46143,13 @@ function B738_N1_thrust_set()
 	elseif B738DR_flight_phase >= 7 then
 		fms_N1_mode = 11	-- mode GA
 		fmc_auto_thrust = fmc_ga_thrust
+	end
+	
+	if B738DR_eng_out == 1 then
+		if B738DR_flight_phase > 0 and B738DR_flight_phase < 7 then
+			fms_N1_mode = 12
+			fmc_auto_thrust = fmc_con_thrust
+		end
 	end
 	
 	if vnav_status_old ~= B738DR_autopilot_vnav_status and B738DR_autopilot_vnav_status == 1 then
@@ -58299,41 +58327,126 @@ function B738_restrict_data()
 						break
 					end
 				end
-			--end
 			
 			elseif B738DR_flight_phase == 2 then	-- cruise before T/D
+				-- if td_idx == 0 then
+					-- td_idx_temp = 0
+				-- else
+					-- if tc_idx > td_idx then
+						-- td_idx_temp = 0
+					-- else
+						-- td_idx_temp = td_idx
+					-- end
+				-- end
+				-- for ii = legs_restr_spd_n, 1, -1 do
+					-- if legs_restr_spd[ii][2] == offset and legs_restr_spd[ii][2] == td_idx_temp then
+					-- --if legs_restr_spd[ii][2] >= offset and legs_restr_spd[ii][2] <= td_idx_temp then
+						-- decel_dist = 6.7
+						-- B738DR_rest_wpt_spd_id = legs_restr_spd[ii][1]
+						-- B738DR_rest_wpt_spd = legs_restr_spd[ii][3]
+						-- B738DR_rest_wpt_spd_idx = legs_restr_spd[ii][2]
+						-- break
+					-- end
+				-- end
+				
+				-- if B738DR_rest_wpt_spd == 0 then
+					-- if last_sid_idx > 0 and offset <= last_sid_idx then
+						-- for ii = legs_restr_spd_n, 1, -1 do
+							-- if legs_restr_spd[ii][2] <= last_sid_idx and legs_restr_spd[ii][2] >= offset then
+								-- B738DR_rest_wpt_spd_id = legs_restr_spd[ii][1]
+								-- B738DR_rest_wpt_spd = legs_restr_spd[ii][3]
+								-- B738DR_rest_wpt_spd_idx = legs_restr_spd[ii][2]
+								-- decel_dist = 9999
+							-- end
+						-- end
+					-- end
+				-- end
+				
 				if td_idx == 0 then
-					td_idx_temp = 0
+					if math.max(first_star_idx, first_app_idx) == 0 then
+						td_idx_temp = legs_num
+					else
+						td_idx_temp = math.max(first_star_idx, first_app_idx) - 1
+					end
 				else
 					if tc_idx > td_idx then
-						td_idx_temp = 0
+						td_idx_temp = td_idx - 1
 					else
-						td_idx_temp = td_idx
+						if last_sid_idx == 0 then
+							td_idx_temp = tc_idx
+						else
+							td_idx_temp = last_sid_idx
+						end
 					end
 				end
-				for ii = legs_restr_spd_n, 1, -1 do
-					if legs_restr_spd[ii][2] == offset and legs_restr_spd[ii][2] == td_idx_temp then
-					--if legs_restr_spd[ii][2] >= offset and legs_restr_spd[ii][2] <= td_idx_temp then
-						decel_dist = 6.7
+				for ii = 1, legs_restr_spd_n do
+					if legs_restr_spd[ii][2] >= offset and legs_restr_spd[ii][2] <= td_idx_temp then
 						B738DR_rest_wpt_spd_id = legs_restr_spd[ii][1]
 						B738DR_rest_wpt_spd = legs_restr_spd[ii][3]
 						B738DR_rest_wpt_spd_idx = legs_restr_spd[ii][2]
 						break
 					end
 				end
+				
 				if B738DR_rest_wpt_spd == 0 then
-					if last_sid_idx > 0 and offset <= last_sid_idx then
-						for ii = legs_restr_spd_n, 1, -1 do
-							if legs_restr_spd[ii][2] <= last_sid_idx and legs_restr_spd[ii][2] >= offset then
+				
+					if last_sid_idx == 0 then
+						if tc_idx == 0 then
+							td_idx_temp = 2
+						else
+							td_idx_temp = tc_idx
+						end
+					else
+						td_idx_temp = last_sid_idx + 1
+						td_idx_temp = math.max(td_idx_temp, tc_idx)
+					end
+					
+					for ii = legs_restr_spd_n, 1, -1 do
+						if legs_restr_spd[ii][2] >= td_idx_temp and legs_restr_spd[ii][3] <= B738DR_fmc_cruise_speed then
+							decel_before_idx = legs_restr_spd[ii][2]
+							if legs_data[decel_before_idx][3] < 6.7 and decel_before_idx > 1 then
+								decel_dist = 6.7 - legs_data[decel_before_idx][3]
+								decel_before_idx = decel_before_idx - 1
+								if legs_data[decel_before_idx][4] ~= 0 then
+									decel_before_idx = legs_restr_spd[ii][2]
+									decel_dist = legs_data[decel_before_idx][3] - 0.3
+								else
+									if legs_data[decel_before_idx][3] < decel_dist then
+										decel_dist = legs_data[decel_before_idx][3] - 0.3
+									end
+								end
+							else
+								decel_dist = 6.7
+							end
+							if decel_before_idx <= offset then
 								B738DR_rest_wpt_spd_id = legs_restr_spd[ii][1]
 								B738DR_rest_wpt_spd = legs_restr_spd[ii][3]
 								B738DR_rest_wpt_spd_idx = legs_restr_spd[ii][2]
-								decel_dist = 9999
+								break
 							end
 						end
 					end
+
+					-- temp_alt = 0
+					-- if B738DR_rest_wpt_spd_idx > offset then 
+						-- temp_alt = 1
+					-- end
+					-- if B738DR_rest_wpt_spd_idx == offset and decel_dist > simDR_fmc_dist then
+						-- temp_alt = 1
+					-- end
+					-- if temp_alt == 1 and legs_data[offset][4] == 0 and B738DR_rest_wpt_spd ~= legs_data[offset][10] then
+						-- if legs_data[offset][10] ~= 0 then
+							-- B738DR_rest_wpt_spd = legs_data[offset][10]
+						-- end
+						-- decel_dist = 1000
+					-- end
+					if B738DR_rest_wpt_spd_idx > 0 and B738DR_rest_wpt_spd_idx < offset then
+						decel_dist = 9000
+					end
+				else
+					decel_dist = 9000
 				end
-			--end
+				
 			
 			elseif B738DR_flight_phase > 4 and B738DR_flight_phase < 8 then		-- descent
 				-- if td_fix_idx == 0 then
@@ -58382,20 +58495,24 @@ function B738_restrict_data()
 						end
 					end
 				end
-				temp_alt = 0
-				if B738DR_rest_wpt_spd_idx > offset then 
-					temp_alt = 1
-				end
-				if B738DR_rest_wpt_spd_idx == offset and decel_dist > simDR_fmc_dist then
-					temp_alt = 1
-				end
-				if temp_alt == 1 and legs_data[offset][4] == 0 and B738DR_rest_wpt_spd ~= legs_data[offset][10] then
-					--B738DR_rest_wpt_spd_id = legs_data[offset][1]
-					if legs_data[offset][10] ~= 0 then
-						B738DR_rest_wpt_spd = legs_data[offset][10]
-					end
-					--B738DR_rest_wpt_spd_idx = offset
-					decel_dist = 1000
+				-- temp_alt = 0
+				-- if B738DR_rest_wpt_spd_idx > offset then 
+					-- temp_alt = 1
+				-- end
+				-- if B738DR_rest_wpt_spd_idx == offset and decel_dist > simDR_fmc_dist then
+					-- temp_alt = 1
+				-- end
+				-- if temp_alt == 1 and legs_data[offset][4] == 0 and B738DR_rest_wpt_spd ~= legs_data[offset][10] then
+					-- --B738DR_rest_wpt_spd_id = legs_data[offset][1]
+					-- if legs_data[offset][10] ~= 0 then
+						-- B738DR_rest_wpt_spd = legs_data[offset][10]
+					-- end
+					-- --B738DR_rest_wpt_spd_idx = offset
+					-- decel_dist = 1000
+				-- end
+				
+				if B738DR_rest_wpt_spd_idx > 0 and B738DR_rest_wpt_spd_idx < offset then
+					decel_dist = 9000
 				end
 			end
 		end
@@ -59225,6 +59342,7 @@ function B738_vnav_pth3()
 	local vnav_app_active = 0
 	local not_idle_pth = 0
 	local idle_pth_idx = 0
+	local vnav_alt_cor = 0
 	
 	if ref_icao == "----" or des_icao == "****" then
 		legs_num = 0
@@ -63929,7 +64047,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25s"
+	version = "v3.25t"
 
 end
 
@@ -64188,6 +64306,7 @@ function flight_start()
 	if simDR_startup_running == 0 and B738DR_chock_status == 1 and B738DR_engine_no_running_state == 0 then
 		set_chock = 1
 	else
+		B738DR_chock_status = 0
 		set_chock = 0
 	end
 	

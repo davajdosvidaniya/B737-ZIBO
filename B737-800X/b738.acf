@@ -192,7 +192,7 @@ P _gear/1/_lonE -4.0
 P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 112094.945312500
-P _gear/1/_stat_def 0.724378884
+P _gear/1/_stat_def 0.724379003
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -226,7 +226,7 @@ P _gear/2/_lonE -4.0
 P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 112094.945312500
-P _gear/2/_stat_def 0.724378884
+P _gear/2/_stat_def 0.724379003
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -40549,7 +40549,7 @@ GROUP EICAS
       LOCKED
       GROUP_OPEN
       gen_pie Left tank pie
-        POS 1368.000000 -203.000000
+        POS 1368.500000 -202.500000
         IMAGE EICAS/EICAS_pie_tank
         DATAREF sim/flightmodel/weight/m_fuel[0]
         LOCKED
@@ -40567,7 +40567,7 @@ GROUP EICAS
         OFFSET 0.000000
 
       gen_pie Right tank pie
-        POS 1469.000000 -203.000000
+        POS 1469.500000 -202.500000
         IMAGE EICAS/EICAS_pie_tank
         DATAREF sim/flightmodel/weight/m_fuel[2]
         LOCKED
@@ -40585,7 +40585,7 @@ GROUP EICAS
         OFFSET 0.000000
 
       gen_pie Center tank pie
-        POS 1418.000000 -134.000000
+        POS 1418.500000 -133.500000
         IMAGE EICAS/EICAS_pie_tank
         DATAREF sim/flightmodel/weight/m_fuel[1]
         SHOW_LESS 0.000000 laminar/B738/fuel/center_status
@@ -98093,15 +98093,12 @@ GROUP PFD Captain
   END_GROUP
   GROUP Dots
     LOCKED
-    HIDE
     GROUP PFD VNAV Path
       SHOW_EQUAL 1.000000 laminar/B738/pfd/pfd_vert_path
       LOCKED
-      HIDE
       GROUP_OPEN
       GROUP VNav Dev Expand
         LOCKED
-        HIDE
         GROUP_OPEN
         gen_rotary VERT DEVIATION DOTS
           POS 361.000000 9.000000
@@ -98109,7 +98106,6 @@ GROUP PFD Captain
           DATAREF 
           SHOW_EQUAL 0.000000 laminar/B738/fms/pfd_gp_path
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 0
           BUS_SRC 3
@@ -98131,7 +98127,6 @@ GROUP PFD Captain
           IMAGE PFD/vnav_vert_trg
           DATAREF laminar/B738/fms/vnav_err_pfd
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 0
           BUS_SRC 3
@@ -98147,7 +98142,6 @@ GROUP PFD Captain
     END_GROUP
     GROUP NAV1 Vertical G/S
       SHOW_LESS 0.000000 laminar/B738/toggle_switch/vhf_nav_source
-      HIDE
       GROUP_OPEN
       GROUP Vertical G/S
         SHOW_LESS 0.000000 laminar/B738/FMS/ils_disable
@@ -98220,12 +98214,10 @@ GROUP PFD Captain
     END_GROUP
     GROUP NAV2 Vertical G/S
       SHOW_GREATER 1.000000 laminar/B738/toggle_switch/vhf_nav_source
-      HIDE
       GROUP_OPEN
       GROUP Vertical G/S
         SHOW_LESS 0.000000 laminar/B738/FMS/ils_disable
         LOCKED
-        HIDE
         GROUP_OPEN
         gen_rotary vertical dots
           POS 360.000000 9.000000
@@ -98234,7 +98226,6 @@ GROUP PFD Captain
           SHOW_LESS 0.000000 sim/cockpit2/radios/indicators/nav2_flag_glideslope
           SHOW_GREATER 1.000000 sim/cockpit2/radios/indicators/nav2_display_vertical
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 0
           BUS_SRC 3
@@ -98255,7 +98246,6 @@ GROUP PFD Captain
           SHOW_LESS 2.490000 sim/cockpit2/radios/indicators/nav2_vdef_dots_pilot
           SHOW_GREATER -2.490000 sim/cockpit2/radios/indicators/nav2_vdef_dots_pilot
           LOCKED
-          HIDE
           GROUP_OPEN
           gen_pointer VERT pointer
             POS 360.000000 9.000000
@@ -98265,7 +98255,6 @@ GROUP PFD Captain
             SHOW_EQUAL 0.000000 laminar/B738/autopilot/ils_pointer_disable
             SHOW_GREATER 1.000000 sim/cockpit2/radios/indicators/nav2_display_vertical
             LOCKED
-            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 0
             BUS_SRC 7
@@ -98284,7 +98273,6 @@ GROUP PFD Captain
           SHOW_EQUAL 0.000000 laminar/B738/autopilot/ils_pointer_disable
           SHOW_GREATER 1.000000 sim/cockpit2/radios/indicators/nav2_display_vertical
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 0
           BUS_SRC 7
@@ -98300,14 +98288,12 @@ GROUP PFD Captain
       SHOW_EQUAL 1.000000 laminar/B738/FMS/ils_disable
       SHOW_GREATER 1.000000 laminar/B738/fms/pfd_gp_path
       LOCKED
-      HIDE
       GROUP_OPEN
       gen_rotary vertical dots
         POS 360.000000 9.000000
         IMAGE PFD/vertical_dots
         DATAREF 
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 0
         BUS_SRC 3
@@ -98328,14 +98314,12 @@ GROUP PFD Captain
         SHOW_LESS 499.000000 laminar/B738/fms/gp_err_pfd
         SHOW_GREATER -499.000000 laminar/B738/fms/gp_err_pfd
         LOCKED
-        HIDE
         GROUP_OPEN
         gen_pointer VERT pointer
           POS 360.000000 9.000000
           IMAGE PFD/vertical_diamond
           DATAREF laminar/B738/fms/gp_err_pfd
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 0
           BUS_SRC 7
@@ -98353,7 +98337,6 @@ GROUP PFD Captain
         IMAGE PFD/vertical_diam_e
         DATAREF laminar/B738/fms/gp_err_pfd
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 0
         BUS_SRC 7
@@ -98369,13 +98352,11 @@ GROUP PFD Captain
     GROUP Horizontal
       SHOW_GREATER 1.000000 laminar/B738/vnav/legs_num
       LOCKED
-      HIDE
       gen_pointer HORZ pointer 2
         POS 230.000000 -127.000000
         IMAGE PFD/horizontal_triangle
         DATAREF laminar/B738/autopilot/gps_horizont
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 0
         BUS_SRC 7
@@ -98390,7 +98371,6 @@ GROUP PFD Captain
         IMAGE PFD/horizontal_dots2
         DATAREF 
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 0
         BUS_SRC 3
@@ -98410,10 +98390,8 @@ GROUP PFD Captain
     END_GROUP
     GROUP NAV1 Approach
       SHOW_LESS 0.000000 laminar/B738/toggle_switch/vhf_nav_source
-      HIDE
       GROUP Approach Horizontal
         LOCKED
-        HIDE
         GROUP_OPEN
         gen_rotary horizontal dots
           POS 230.000000 -125.000000
@@ -98422,7 +98400,6 @@ GROUP PFD Captain
           SHOW_EQUAL 1.000000 sim/cockpit2/radios/indicators/nav1_display_horizontal
           SHOW_GREATER 1.000000 sim/cockpit2/radios/indicators/nav1_flag_from_to_pilot
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 0
           BUS_SRC 3
@@ -98443,7 +98420,6 @@ GROUP PFD Captain
           SHOW_LESS 2.490000 sim/cockpit2/radios/indicators/nav1_hdef_dots_pilot
           SHOW_GREATER -2.490000 sim/cockpit2/radios/indicators/nav1_hdef_dots_pilot
           LOCKED
-          HIDE
           GROUP_OPEN
           gen_pointer HORZ pointer
             POS 230.000000 -125.000000
@@ -98453,7 +98429,6 @@ GROUP PFD Captain
             SHOW_EQUAL 1.000000 sim/cockpit2/radios/indicators/nav1_display_horizontal
             SHOW_GREATER 1.000000 sim/cockpit2/radios/indicators/nav1_flag_from_to_pilot
             LOCKED
-            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 0
             BUS_SRC 7
@@ -98472,7 +98447,6 @@ GROUP PFD Captain
           SHOW_EQUAL 1.000000 sim/cockpit2/radios/indicators/nav1_display_horizontal
           SHOW_GREATER 1.000000 sim/cockpit2/radios/indicators/nav1_flag_from_to_pilot
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 0
           BUS_SRC 7
@@ -98962,7 +98936,6 @@ GROUP PFD Captain
     DATAREF 
     SHOW_EQUAL 1.000000 laminar/b738/alert/pfd_pull_up
     LOCKED
-    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 0
     BUS_SRC 3
@@ -99260,6 +99233,7 @@ GROUP CAPT PFD2
   GROUP Indicators
     GROUP CAPT AOA
       LOCKED
+      GROUP_OPEN
       gen_rotary AOA gauge
         POS 339.000000 175.000000
         IMAGE PFD/aoa_gauge
@@ -99625,7 +99599,6 @@ GROUP CAPT AP Annuns
 
   GROUP CAPT roll pitch
     SHOW_GREATER 1.000000 laminar/B738/autopilot/pfd_fd_cmd
-    GROUP_OPEN
     gen_rotary HDG rectangle
       POS 236.000000 237.000000
       IMAGE PFD/hdg_modes
@@ -100508,6 +100481,28 @@ GROUP CAPT AP Annuns
     BUS_SRC 3
     KEY_FRAME 0.000000 -1.000000 1.000000
     KEY_FRAME 1.000000 0.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
+  gen_rotary AUTOPILOT
+    POS 235.000000 202.000000
+    IMAGE PFD/autopilot
+    DATAREF laminar/B738/autopilot/ap_warn
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 0
+    BUS_SRC 3
+    KEY_FRAME 0.000000 -1.000000 1.000000
+    KEY_FRAME 1.000000 0.000000 1.000000
+    KEY_FRAME 2.000000 0.000000
     DIGITS 1
     ROTARY_TYPE NO_CLICK
     CLICK_RADIUS 10.000000
@@ -102571,7 +102566,6 @@ GROUP PFD First Officer
     DATAREF 
     SHOW_EQUAL 1.000000 laminar/b738/alert/pfd_pull_up
     LOCKED
-    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 1
     BUS_SRC 3
@@ -103319,6 +103313,7 @@ GROUP Marker Beacons
 END_GROUP
 GROUP FO AP Annuns
   LOCKED
+  GROUP_OPEN
   gen_rotary THR rectangle
     POS 142.000000 749.000000
     IMAGE PFD/thr_modes
@@ -104248,6 +104243,28 @@ GROUP FO AP Annuns
     BUS_SRC 3
     KEY_FRAME 0.000000 -1.000000 1.000000
     KEY_FRAME 1.000000 0.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
+  gen_rotary AUTOPILOT 2
+    POS 235.000000 714.000000
+    IMAGE PFD/autopilot
+    DATAREF laminar/B738/autopilot/ap_warn
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 0
+    BUS_SRC 3
+    KEY_FRAME 0.000000 -1.000000 1.000000
+    KEY_FRAME 1.000000 0.000000 1.000000
+    KEY_FRAME 2.000000 0.000000
     DIGITS 1
     ROTARY_TYPE NO_CLICK
     CLICK_RADIUS 10.000000
@@ -106425,7 +106442,7 @@ GROUP ADF 1
     LED_ROWS 0
 
   gen_LED ADF1 Active frac
-    POS 1824.500000 864.500000
+    POS 1824.000000 864.000000
     IMAGE TYPE/RadioOrange_3n
     DATAREF sim/cockpit2/radios/actuators/adf1_frequency_hz
     LOCKED
@@ -106625,6 +106642,7 @@ END_GROUP
 GROUP Display light test
   SHOW_GREATER 1.000000 laminar/B738/dspl_light_test
   HIDE
+  GROUP_OPEN
   gen_rotary AP TEST2
     POS 1873.000000 688.000000
     IMAGE Standby/ap_test2
@@ -106759,6 +106777,7 @@ GROUP Display light test
   GROUP Display light test2
     SHOW_EQUAL 1.000000 laminar/B738/dspl_light_test
     HIDE
+    GROUP_OPEN
     gen_rotary AP TEST
       POS 1873.000000 688.000000
       IMAGE Standby/ap_test
