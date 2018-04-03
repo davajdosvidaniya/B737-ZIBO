@@ -643,6 +643,7 @@ B738DR_duct_ovht_test_pos	= find_dataref("laminar/B738/push_button/duct_ovht_tes
 B738DR_gpws_test_running	= find_dataref("laminar/B738/system/gpws_test_running")
 
 B738DR_batbus_status		= find_dataref("laminar/B738/electric/batbus_status")
+B738DR_flaps_test_pos		= find_dataref("laminar/B738/push_button/flaps_test_pos")
 
 
 --*************************************************************************************--
@@ -843,6 +844,7 @@ B738DR_crossfeed = create_dataref("laminar/B738/annunciator/crossfeed", "number"
 B738DR_generic_annun = create_dataref("laminar/B738/annunciator/generic", "number")
 B738DR_lights_test = create_dataref("laminar/B738/annunciator/test", "number")
 B738DR_dspl_lights_test = create_dataref("laminar/B738/dspl_light_test", "number")
+B738_flaps_test			= create_dataref("laminar/B738/annunciator/flaps_test", "number")
 
 -- LIGHTS TEST / BRIGHTNESS SWITCH
 
@@ -4405,10 +4407,10 @@ local takeoff_config_warn = 0
 	if B738DR_lights_test == 1 then
 		B738DR_parking_brake_annun			= 1 * brightness_level2
 --		B738DR_window_heat_annun			= 1 * brightness_level
---		B738DR_window_heat_annun1			= 1 * brightness_level
---		B738DR_window_heat_annun2			= 1 * brightness_level
---		B738DR_window_heat_annun3			= 1 * brightness_level
---		B738DR_window_heat_annun4			= 1 * brightness_level
+		B738DR_window_heat_annun1			= 1 * brightness_level
+		B738DR_window_heat_annun2			= 1 * brightness_level
+		B738DR_window_heat_annun3			= 1 * brightness_level
+		B738DR_window_heat_annun4			= 1 * brightness_level
 		B738DR_fadec_fail_annun_0			= 1 * brightness_level
 		B738DR_fadec_fail_annun_1			= 1 * brightness_level
 		B738DR_reverser_fail_annun_0		= 1 * brightness_level
@@ -4418,10 +4420,10 @@ local takeoff_config_warn = 0
 		B738DR_capt_aoa_off					= 1 * brightness_level
 		B738DR_fo_aoa_off					= 1 * brightness_level
 --		B738DR_window_heat_fail				= 1 * brightness_level
---		B738DR_window_heat_fail_rf			= 1 * brightness_level
---		B738DR_window_heat_fail_rs			= 1 * brightness_level
---		B738DR_window_heat_fail_lf			= 1 * brightness_level
---		B738DR_window_heat_fail_ls			= 1 * brightness_level
+		B738DR_window_heat_fail_rf			= 1 * brightness_level
+		B738DR_window_heat_fail_rs			= 1 * brightness_level
+		B738DR_window_heat_fail_lf			= 1 * brightness_level
+		B738DR_window_heat_fail_ls			= 1 * brightness_level
 		B738DR_cowl_ice_0					= 1 * brightness_level
 		B738DR_cowl_ice_1					= 1 * brightness_level
 		B738DR_cowl_ice_0_on				= 1 * brightness_level
@@ -4550,6 +4552,14 @@ local takeoff_config_warn = 0
 		
 
 	end
+	
+	if B738DR_flaps_test_pos == 1 or B738DR_lights_test == 1 then
+		B738_flaps_test = 1
+	else
+		B738_flaps_test = 0
+	end
+	
+	
 end
 
 

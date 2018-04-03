@@ -158,7 +158,7 @@ P _gear/0/_lonE 0.0
 P _gear/0/_lonN 0.0
 P _gear/0/_lonR 111.0
 P _gear/0/_scon 112094.945312500
-P _gear/0/_stat_def 0.105245002
+P _gear/0/_stat_def 0.105244994
 P _gear/0/_steerdeg_hispeed 6.0
 P _gear/0/_steerdeg_lospeed 63.0
 P _gear/0/_strut_comp 0.0
@@ -192,7 +192,7 @@ P _gear/1/_lonE -4.0
 P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 112094.945312500
-P _gear/1/_stat_def 0.724379003
+P _gear/1/_stat_def 0.724378884
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -226,7 +226,7 @@ P _gear/2/_lonE -4.0
 P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 112094.945312500
-P _gear/2/_stat_def 0.724379003
+P _gear/2/_stat_def 0.724378884
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -44406,6 +44406,7 @@ GROUP CLOCKS
 END_GROUP
 GROUP SLATS
   LOCKED
+  GROUP_OPEN
   gen_rotary Inbd Transit Left
     POS 1501.000000 457.000000
     IMAGE Slat Indicator/transit_light_left_inbd
@@ -44641,7 +44642,7 @@ GROUP SLATS
     IMAGE Slat Indicator/slat_test
     DATAREF 
     SHOW_EQUAL 1.000000 laminar/B738/electric/power_on_buses
-    SHOW_GREATER 1.000000 laminar/B738/push_button/flaps_test_pos
+    SHOW_GREATER 1.000000 laminar/B738/annunciator/flaps_test
     LOCKED
     LIGHT_MODE BACK_LIT_MANUAL
     LIGHT_RHEOSTAT 9

@@ -823,8 +823,9 @@ B738DR_pfd_flaps_15			= find_dataref("laminar/B738/pfd/flaps_15")
 
 B738DR_vnav_disconnect		= find_dataref("laminar/B738/fms/vnav_disconnect")
 B738DR_lnav_disconnect		= find_dataref("laminar/B738/fms/lnav_disconnect")
-decel_idx					= find_dataref("laminar/B738/fms/vnav_decel_idx")
+--decel_idx					= find_dataref("laminar/B738/fms/vnav_decel_idx")
 decel_dist					= find_dataref("laminar/B738/fms/vnav_decel_dist")
+--decel_before_idx			= find_dataref("laminar/B738/fms/vnav_decel_before_idx")
 
 --B738DR_autopilot_pfd_mode		= find_dataref("laminar/B738/autopilot/pfd_mode")
 --B738DR_autopilot_pfd_mode_fo	= find_dataref("laminar/B738/autopilot/pfd_mode_fo")
@@ -861,6 +862,7 @@ B738DR_nd_fac_horizontal_fo	= find_dataref("laminar/B738/fms/pfd_fac_horizontal_
 B738DR_radii_turn_act		= find_dataref("laminar/B738/fms/radii_turn_act")
 B738DR_radii_correct		= find_dataref("laminar/B738/fms/radii_correct")
 
+B738DR_fms_approach_wind_corr	= find_dataref("laminar/B738/FMS/approach_wind_corr")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
@@ -7341,6 +7343,8 @@ function B738_vnav6()
 	local at_mode_old = 0
 	local lvl_chg_fpm = 0
 	local lvl_chg_alt = 0
+	local vnav_alt2 = 0
+	local delta_alt_dial2 = 0
 	
 	--local hold_for_vpath = 0
 	
@@ -7716,7 +7720,7 @@ function B738_vnav6()
 							-- vnav_vs = 0
 							-- --B738DR_pfd_spd_mode = PFD_SPD_FMC_SPD
 						
-						elseif simDR_ap_altitude_dial_ft == mcp_alt_hold and vnav_alt_hld == 0 then
+						elseif simDR_ap_altitude_dial_ft == mcp_alt_hold and vnav_alt_hld == 0 and mcp_alt_hold < B738DR_rest_wpt_alt then
 							vnav_alt_mode = 1
 							simDR_ap_altitude_dial_ft = B738DR_mcp_alt_dial
 							B738DR_pfd_alt_mode = PFD_ALT_VNAV_ALT
@@ -7738,22 +7742,41 @@ function B738_vnav6()
 								delta_vvi = -delta_vvi
 							end
 							if delta_vvi < 500 then		-- ALT HLD stabilized
-								delta_alt_dial = vnav_alt - simDR_altitude_pilot
+								
+								
+								if B738DR_rest_wpt_alt == 0 or B738DR_rest_wpt_alt_t == 43 then
+									vnav_alt2 = B738DR_fmc_cruise_alt
+								else
+									vnav_alt2 = math.min(B738DR_rest_wpt_alt, B738DR_fmc_cruise_alt)
+								end
+								delta_alt_dial = vnav_alt2 - simDR_altitude_pilot
+								delta_alt_dial2 = B738DR_mcp_alt_dial - simDR_altitude_pilot
+								
+								-- delta_alt_dial = vnav_alt - simDR_altitude_pilot
+								-- if delta_alt_dial > 500 then
+								
 								if delta_alt_dial > 500 then
-									if B738DR_autopilot_autothr_arm_pos == 1 then
-										--at_mode_old = at_mode
-										simCMD_autopilot_lvl_chg:once()
-										--at_mode = at_mode_old
-										at_mode = 7
-										B738DR_pfd_spd_mode = PFD_SPD_N1
-									else
-										at_mode_old = at_mode
-										simCMD_autopilot_lvl_chg:once()
-										at_mode = at_mode_old
-									end
-									--if simDR_autopilot_altitude_mode == 5 then		-- LVL CHG
+									if delta_alt_dial2 > 500 then
+										if B738DR_autopilot_autothr_arm_pos == 1 then
+											--at_mode_old = at_mode
+											simCMD_autopilot_lvl_chg:once()
+											--at_mode = at_mode_old
+											at_mode = 7
+											B738DR_pfd_spd_mode = PFD_SPD_N1
+										else
+											at_mode_old = at_mode
+											simCMD_autopilot_lvl_chg:once()
+											at_mode = at_mode_old
+										end
 										vnav_alt_hld = 0
-									--end
+									else
+										vnav_alt_mode = 1
+										simDR_ap_altitude_dial_ft = B738DR_mcp_alt_dial
+										B738DR_pfd_alt_mode = PFD_ALT_VNAV_ALT
+										B738DR_autopilot_n1_status = 0
+										vnav_alt_hld = 1
+										vnav_vs = 0
+									end
 								end
 							end
 						end
@@ -8268,47 +8291,27 @@ function B738_vnav6()
 					if simDR_airspeed_is_mach == 0 then
 						if B738DR_rest_wpt_spd > 0 then
 							if B738DR_mcp_speed_dial < 100 then
-								--vnav_speed_trg = B738DR_rest_wpt_spd
 								vnav_speed_trg = math.min(spd_250_10000, B738DR_rest_wpt_spd, B738DR_fmc_descent_speed)
 							else
-								if simDR_airspeed_dial ~= B738DR_rest_wpt_spd and simDR_dme_dist < decel_dist then
-									--vnav_speed_trg = B738DR_rest_wpt_spd
-									vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, B738DR_rest_wpt_spd, B738DR_fmc_descent_speed)
-								end
-							end
-							if B738DR_pfd_flaps_up == 340 then
-								if B738DR_fmc_descent_speed < flaps_speed and flaps_speed < 340 then
-									vnav_speed_trg = flaps_speed
+								if simDR_dme_dist < decel_dist then
+									vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, B738DR_rest_wpt_spd)
 								else
-									--vnav_speed_trg = B738DR_fmc_descent_speed
 									vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000)
 								end
-							else
-								if vnav_speed_trg < B738DR_pfd_flaps_up then
-									vnav_speed_trg = B738DR_pfd_flaps_up
-									if flaps_speed > B738DR_pfd_flaps_up then
-										flaps_speed = B738DR_pfd_flaps_up
-									end
-								end
 							end
-							vnav_speed_trg = math.min(vnav_speed_trg, spd_250_10000, flaps_speed)
-						else
-							if B738DR_calc_wpt_spd == 0 then
-								if flaps_speed == 340 then
-									vnav_speed_trg = math.min(spd_250_10000, B738DR_fmc_descent_speed)
+							if flaps_speed == 340 then
+								if B738DR_pfd_flaps_up == 340 then
+									vnav_speed_trg = math.max(B738DR_rest_wpt_spd, 240)
 								else
-									if flaps_speed > B738DR_fmc_descent_speed then
-										vnav_speed_trg = math.min(spd_250_10000, flaps_speed)
-									else
-										vnav_speed_trg = math.min(spd_250_10000, flaps_speed, B738DR_fmc_descent_speed)
-									end
+									vnav_speed_trg = math.max(B738DR_rest_wpt_spd, B738DR_pfd_flaps_up)
 								end
-							else
-								vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, flaps_speed)
 							end
+							vnav_speed_trg = math.min(vnav_speed_trg, flaps_speed)
+						else
+							vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, flaps_speed)
 						end
 						if B738DR_fms_approach_speed > 0 then
-							vnav_speed_trg = math.max(vnav_speed_trg, (B738DR_fms_approach_speed + 5))
+							vnav_speed_trg = math.max(vnav_speed_trg, (B738DR_fms_approach_speed + B738DR_fms_approach_wind_corr))
 						end
 					else
 						vnav_speed_trg = B738DR_fmc_descent_speed_mach
@@ -8524,57 +8527,93 @@ function B738_vnav6()
 							end
 						end
 						
-						-- if vnav_desc_spd == 0 then
 						
-							if simDR_airspeed_is_mach == 0 then
-								if B738DR_rest_wpt_spd > 0 then
-									if B738DR_mcp_speed_dial < 100 then
-										vnav_speed_trg = B738DR_rest_wpt_spd
+						
+						if simDR_airspeed_is_mach == 0 then
+							if B738DR_rest_wpt_spd > 0 then
+								if B738DR_mcp_speed_dial < 100 then
+									vnav_speed_trg = math.min(spd_250_10000, B738DR_rest_wpt_spd, B738DR_fmc_descent_speed)
+								else
+									if simDR_dme_dist < decel_dist then
+										vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, B738DR_rest_wpt_spd)
 									else
-										if simDR_airspeed_dial ~= B738DR_rest_wpt_spd and simDR_dme_dist < decel_dist then
-											--vnav_speed_trg = B738DR_rest_wpt_spd
-											vnav_speed_trg = math.min(B738DR_rest_wpt_spd, spd_250_10000, B738DR_fmc_descent_speed)
-										end
-										if offset > B738DR_rest_wpt_spd_idx then
-											--vnav_speed_trg = B738DR_rest_wpt_spd
-											vnav_speed_trg = math.min(B738DR_rest_wpt_spd, spd_250_10000, B738DR_fmc_descent_speed)
-										end
+										vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000)
 									end
+								end
+								if flaps_speed == 340 then
 									if B738DR_pfd_flaps_up == 340 then
-										if B738DR_fmc_descent_speed < flaps_speed and flaps_speed < 340 then
-											vnav_speed_trg = flaps_speed
-										else
-											--vnav_speed_trg = B738DR_fmc_descent_speed
-											vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000)
-										end
+										vnav_speed_trg = math.max(B738DR_rest_wpt_spd, 240)
 									else
-										if vnav_speed_trg < B738DR_pfd_flaps_up then
-											vnav_speed_trg = B738DR_pfd_flaps_up
-											if flaps_speed > B738DR_pfd_flaps_up then
-												flaps_speed = B738DR_pfd_flaps_up
-											end
-										end
+										vnav_speed_trg = math.max(B738DR_rest_wpt_spd, B738DR_pfd_flaps_up)
 									end
-									-- if vnav_speed_trg < B738DR_pfd_flaps_up then
-										-- vnav_speed_trg = B738DR_pfd_flaps_up
-										-- if flaps_speed > B738DR_pfd_flaps_up then
-											-- flaps_speed = B738DR_pfd_flaps_up
+								end
+								vnav_speed_trg = math.min(vnav_speed_trg, flaps_speed)
+							else
+								vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, flaps_speed)
+							end
+							if B738DR_fms_approach_speed > 0 then
+								vnav_speed_trg = math.max(vnav_speed_trg, (B738DR_fms_approach_speed + B738DR_fms_approach_wind_corr))
+							end
+						else
+							vnav_speed_trg = B738DR_fmc_descent_speed_mach
+						end
+						
+						
+						
+						
+						
+						
+						-- -- if vnav_desc_spd == 0 then
+						
+							-- if simDR_airspeed_is_mach == 0 then
+								-- if B738DR_rest_wpt_spd > 0 then
+									-- if B738DR_mcp_speed_dial < 100 then
+										-- vnav_speed_trg = B738DR_rest_wpt_spd
+									-- else
+										-- if simDR_airspeed_dial ~= B738DR_rest_wpt_spd and simDR_dme_dist < decel_dist then
+											-- --vnav_speed_trg = B738DR_rest_wpt_spd
+											-- vnav_speed_trg = math.min(B738DR_rest_wpt_spd, spd_250_10000, B738DR_fmc_descent_speed)
+										-- end
+										-- if offset > B738DR_rest_wpt_spd_idx then
+											-- --vnav_speed_trg = B738DR_rest_wpt_spd
+											-- vnav_speed_trg = math.min(B738DR_rest_wpt_spd, spd_250_10000, B738DR_fmc_descent_speed)
 										-- end
 									-- end
-									vnav_speed_trg = math.min(vnav_speed_trg, spd_250_10000, flaps_speed)
-								else
-									if B738DR_calc_wpt_spd == 0 then
-										vnav_speed_trg = math.min(spd_250_10000, flaps_speed)
-									else
-										vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, flaps_speed)
-									end
-								end
-								if B738DR_fms_approach_speed > 0 then
-									vnav_speed_trg = math.max(vnav_speed_trg, (B738DR_fms_approach_speed + 5))
-								end
-							else
-								vnav_speed_trg = B738DR_fmc_descent_speed_mach
-							end
+									-- if B738DR_pfd_flaps_up == 340 then
+										-- if B738DR_fmc_descent_speed < flaps_speed and flaps_speed < 340 then
+											-- vnav_speed_trg = flaps_speed
+										-- else
+											-- --vnav_speed_trg = B738DR_fmc_descent_speed
+											-- vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000)
+										-- end
+									-- else
+										-- if vnav_speed_trg < B738DR_pfd_flaps_up then
+											-- vnav_speed_trg = B738DR_pfd_flaps_up
+											-- if flaps_speed > B738DR_pfd_flaps_up then
+												-- flaps_speed = B738DR_pfd_flaps_up
+											-- end
+										-- end
+									-- end
+									-- -- if vnav_speed_trg < B738DR_pfd_flaps_up then
+										-- -- vnav_speed_trg = B738DR_pfd_flaps_up
+										-- -- if flaps_speed > B738DR_pfd_flaps_up then
+											-- -- flaps_speed = B738DR_pfd_flaps_up
+										-- -- end
+									-- -- end
+									-- vnav_speed_trg = math.min(vnav_speed_trg, spd_250_10000, flaps_speed)
+								-- else
+									-- if B738DR_calc_wpt_spd == 0 then
+										-- vnav_speed_trg = math.min(spd_250_10000, flaps_speed)
+									-- else
+										-- vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, flaps_speed)
+									-- end
+								-- end
+								-- if B738DR_fms_approach_speed > 0 then
+									-- vnav_speed_trg = math.max(vnav_speed_trg, (B738DR_fms_approach_speed + 5))
+								-- end
+							-- else
+								-- vnav_speed_trg = B738DR_fmc_descent_speed_mach
+							-- end
 						
 						-- else
 							-- if simDR_airspeed_is_mach == 0 then
@@ -8663,16 +8702,12 @@ function B738_vnav6()
 					
 					B738DR_autopilot_vnav_alt_pfd = 0	-- PFD: no VNAV ALT
 					if vnav_desc_spd == 0 then
-						--B738DR_autopilot_vnav_pth_pfd = 1	-- PFD: VNAV PTH
-						--B738DR_autopilot_vnav_spd_pfd = 0	-- PFD: no VNAV SPD
 						if vnav_desc_protect_spd == 0 then
 							B738DR_pfd_alt_mode = PFD_ALT_VNAV_PTH
 						else
 							B738DR_pfd_alt_mode = PFD_ALT_VNAV_SPD
 						end
 					else
-						--B738DR_autopilot_vnav_pth_pfd = 0	-- PFD: VNAV PTH
-						--B738DR_autopilot_vnav_spd_pfd = 1	-- PFD: no VNAV SPD
 						B738DR_pfd_alt_mode = PFD_ALT_VNAV_SPD
 					end
 				else
@@ -8680,26 +8715,15 @@ function B738_vnav6()
 						at_mode = 2
 						B738DR_pfd_spd_mode = PFD_SPD_FMC_SPD
 					end
-					--B738DR_autopilot_vnav_alt_pfd = 1	-- PFD: VNAV ALT
-					--B738DR_autopilot_vnav_pth_pfd = 0	-- PFD: no VNAV PTH
-					--B738DR_autopilot_vnav_spd_pfd = 0	-- PFD: no VNAV SPD
 					B738DR_pfd_alt_mode = PFD_ALT_VNAV_ALT
 				end
 				
 				if at_mode == 0 then
-					--B738DR_retard_status = 0				-- PFD: no RETARD
-					--B738DR_autopilot_autothrottle_pfd = 1	-- PFD: A/T ARM
-					--B738DR_autopilot_fmc_spd_pfd = 0
 					B738DR_pfd_spd_mode = PFD_SPD_ARM
 				else
 					if vnav_desc_spd == 0 then
-						--B738DR_retard_status = 0				-- PFD: no RETARD
-						--B738DR_autopilot_autothrottle_pfd = 0	-- PFD: no A/T ARM
-						--B738DR_autopilot_fmc_spd_pfd = 1
 						B738DR_pfd_spd_mode = PFD_SPD_FMC_SPD
 					else
-						--B738DR_autopilot_autothrottle_pfd = 0	-- PFD: no A/T ARM
-						--B738DR_autopilot_fmc_spd_pfd = 0
 						B738DR_pfd_spd_mode = PFD_SPD_FMC_SPD
 					end
 				end
@@ -8707,14 +8731,7 @@ function B738_vnav6()
 			
 			if B738DR_ap_spd_interv_status == 0 then
 				
-				-- if vnav_speed_trg ~= 340 then
-					simDR_airspeed_dial = vnav_speed_trg
-					-- vnav_speed_trg_old = vnav_speed_trg
-				-- else
-					-- if vnav_speed_trg_old ~= 0 then
-						-- simDR_airspeed_dial = vnav_speed_trg_old
-					-- end
-				-- end
+				simDR_airspeed_dial = vnav_speed_trg
 				
 				if simDR_autopilot_altitude_mode ~= 6 and (B738DR_flight_phase < 2 or B738DR_missed_app_act > 0) then
 					if init_climb == 0 and (B738DR_flight_phase < 2 or B738DR_missed_app_act > 0) then
@@ -13098,7 +13115,7 @@ function control_SPD4()
 	B738DR_pid_out = ghust_spd
 	
 	SPD_corr = SPD_corr - spd_ratio
-	SPD_corr = (SPD_corr * SIM_PERIOD * 16)
+	SPD_corr = SPD_corr * SIM_PERIOD * 16
 	
 	local limit = 20
 	if ghust_detect == 1 then
@@ -13433,8 +13450,8 @@ function B738_N1_thrust_manage4()
 				
 				eng1_N1_thrust_trg = eng1_N1_thrust_cur + control_N1(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug)
 				eng2_N1_thrust_trg = eng2_N1_thrust_cur + control_N1(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug)
-				eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 0.5)
-				eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, eng2_N1_thrust_trg, 0.0, 1.04, 0.5)
+				eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, eng1_N1_thrust_trg, 0.0, 1.04, 0.36)	--0.5
+				eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, eng2_N1_thrust_trg, 0.0, 1.04, 0.36)	--0.5
 				
 				simDR_throttle1_use = eng1_N1_thrust_cur
 				simDR_throttle2_use = eng2_N1_thrust_cur
@@ -16060,7 +16077,7 @@ function B738_afs_protect()
 				simDR_airspeed_dial_kts = B738DR_afs_spd_limit_max
 				at_mode = 2
 			end
-		elseif at_mode ~= 1 and at_mode ~= 4 and at_mode ~= 5 and at_mode ~= 8 and ap_pitch_mode ~= 5 then
+		elseif at_mode ~= 1 and at_mode ~= 3 and at_mode ~= 4 and at_mode ~= 5 and at_mode ~= 8 and ap_pitch_mode ~= 5 then
 			if simDR_airspeed_pilot > (B738DR_afs_spd_limit_max - 5) and simDR_airspeed_dial_kts > B738DR_afs_spd_limit_max then
 				simDR_airspeed_dial_kts = B738DR_afs_spd_limit_max
 			end
@@ -16072,9 +16089,9 @@ function B738_afs_protect()
 					simDR_airspeed_dial_kts = B738DR_pfd_min_speed + 5
 					at_mode = 2
 				end
-			elseif at_mode ~= 1 and at_mode ~= 4 and at_mode ~= 5 and at_mode ~= 8 and ap_pitch_mode ~= 5 then
-				if simDR_airspeed_pilot < (B738DR_pfd_min_speed + 10) and simDR_airspeed_dial_kts < (B738DR_pfd_min_speed + 5) then
-					simDR_airspeed_dial_kts = B738DR_pfd_min_speed + 5
+			elseif at_mode ~= 1 and at_mode ~= 3 and at_mode ~= 4 and at_mode ~= 5 and at_mode ~= 8 and ap_pitch_mode ~= 5 then
+				if simDR_airspeed_pilot < (B738DR_pfd_min_speed + 8) and simDR_airspeed_dial_kts < (B738DR_pfd_min_speed + 4) then
+					simDR_airspeed_dial_kts = B738DR_pfd_min_speed + 4
 				end
 			end
 		end

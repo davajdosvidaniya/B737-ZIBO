@@ -3693,6 +3693,7 @@ function B738_flaps_test_CMDhandler(phase, duration)
 	end
 end
 
+
 function B738_tat_test_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_tat_test_pos = 1

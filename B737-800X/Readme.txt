@@ -77,7 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
-33.25t:
+3.25u:
+------
+- corrected systems
+- fixed bugs
+
+3.25t:
 -------
 - add AFS system
 - add code for detect engine out

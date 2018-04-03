@@ -82,6 +82,11 @@ align_lon = 0
 first_time = 0
 R_turn_off = 0
 
+irs_align_fail_left = 0
+irs_align_fail_right = 0
+irs_dc_fail_left = 0
+irs_dc_fail_right = 0
+
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
 --*************************************************************************************--
@@ -151,6 +156,8 @@ simDR_overwr_fms			= find_dataref("sim/operation/override/override_fms_advance")
 B738DR_ac_stdbus_status		= find_dataref("laminar/B738/electric/ac_stdbus_status")
 B738DR_ac_tnsbus1_status	= find_dataref("laminar/B738/electric/ac_tnsbus1_status")
 B738DR_ac_tnsbus2_status	= find_dataref("laminar/B738/electric/ac_tnsbus2_status")
+
+B738DR_lights_test 			= find_dataref("laminar/B738/annunciator/test")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
@@ -581,16 +588,15 @@ end
 
 function B738_irs_dspl_test_off()
 	irs_dspl_test_run = 0
-	B738DR_irs_align_fail_left = 0
+	irs_align_fail_left = 0
 	B738DR_irs_align_left = 0
-	B738DR_irs_dc_fail_left = 0
+	irs_dc_fail_left = 0
 	B738DR_irs_on_dc_left = 0
-	B738DR_irs_align_fail_right = 0
+	irs_align_fail_right = 0
 	B738DR_irs_align_right = 0
-	B738DR_irs_dc_fail_right = 0
+	irs_dc_fail_right = 0
 	B738DR_irs_on_dc_right = 0
 end
-
 
 function B738_irs_display_data()
 
@@ -614,7 +620,7 @@ function B738_irs_display_data()
 		end
 	end
 	
-	if irs_dspl_test_run == 1 then
+	if irs_dspl_test_run == 1 or B738DR_lights_test == 1 then
 		if irs_left_status == 1
 		or irs_right_status == 1 then
 			-- test running
@@ -1129,7 +1135,7 @@ function B738_irs_system()
 	
 	local irs_rgt = B738DR_irs_right
 	if irs_enable2 == 0 then
-		B738DR_irs_align_fail_right = 0
+		irs_align_fail_right = 0
 		B738DR_irs_align_right = 0
 		if irs_rgt == 0 then
 			B738DR_irs_on_dc_right = 0
@@ -1353,7 +1359,7 @@ function B738_irs_annun()
 	local irs_rgt = B738DR_irs_right
 	
 	if irs_lft == 0 then
-		B738DR_irs_align_fail_left = 0		-- on, if fault entry only
+		irs_align_fail_left = 0		-- on, if fault entry only
 		if irs_left_status == 0 then
 			B738DR_irs_align_left = 0
 		else
@@ -1361,13 +1367,13 @@ function B738_irs_annun()
 		end
 	else
 		if irs_dspl_test_run == 1 then
-			B738DR_irs_align_fail_left = 1
+			irs_align_fail_left = 1
 			B738DR_irs_align_left = 1
-			B738DR_irs_dc_fail_left = 1
+			irs_dc_fail_left = 1
 			B738DR_irs_on_dc_left = 1
 		else
 			if irs_left_fail == 1 then
-				B738DR_irs_align_fail_left = 1
+				irs_align_fail_left = 1
 				B738DR_irs_align_left = 0
 			elseif irs_left_mode == 1 then		-- mode ALIGN
 				if irs_left_test == 1 then
@@ -1383,7 +1389,7 @@ function B738_irs_annun()
 				end
 			elseif irs_left_mode == 4 then
 				-- fault
-				B738DR_irs_align_fail_left = 1
+				irs_align_fail_left = 1
 			else	-- mode NAV and ATT
 				if irs_lft == 1 then
 					-- fast realign
@@ -1400,7 +1406,7 @@ function B738_irs_annun()
 	----------------------------------------
 	if irs_enable2 == 1 then
 		if irs_rgt == 0 then
-			B738DR_irs_align_fail_right = 0		-- on, if fault entry only
+			irs_align_fail_right = 0		-- on, if fault entry only
 			if irs_right_status == 0 then
 				B738DR_irs_align_right = 0
 			else
@@ -1408,13 +1414,13 @@ function B738_irs_annun()
 			end
 		else
 			if irs_dspl_test_run == 1 then
-				B738DR_irs_align_fail_right = 1
+				irs_align_fail_right = 1
 				B738DR_irs_align_right = 1
-				B738DR_irs_dc_fail_right = 1
+				irs_dc_fail_right = 1
 				B738DR_irs_on_dc_right = 1
 			else
 				if irs_right_fail == 1 then
-					B738DR_irs_align_fail_right = 1
+					irs_align_fail_right = 1
 					B738DR_irs_align_right = 0
 				elseif irs_right_mode == 1 then		-- mode ALIGN
 					if irs_right_test == 1 then
@@ -1429,7 +1435,7 @@ function B738_irs_annun()
 					end
 				elseif irs_right_mode == 4 then
 					-- fault
-					B738DR_irs_align_fail_right = 1
+					irs_align_fail_right = 1
 				else	-- mode NAV and ATT
 					if irs_rgt == 1 then
 						-- fast realign
@@ -1502,21 +1508,21 @@ function B738_irs_electric()
 	else
 		irs_enable = 0
 		B738DR_irs_align_left = 0
-		B738DR_irs_align_fail_left = 0
+		irs_align_fail_left = 0
 		B738DR_irs_align_right = 0
-		B738DR_irs_align_fail_right = 0
+		irs_align_fail_right = 0
 		B738DR_irs_on_dc_left = 0
 		B738DR_irs_on_dc_right = 0
 	end
 	if B738DR_ac_tnsbus2_status == 0 then
 		irs_enable2 = 0
 		B738DR_irs_align_right = 0
-		B738DR_irs_align_fail_right = 0
+		irs_align_fail_right = 0
 	else
 		irs_enable2 = 1
 		R_turn_off = 0
 	end
-
+	
 end
 
 function B738_irs_flash()
@@ -1759,6 +1765,21 @@ function after_physics()
 			B738DR_irs_status = 0
 			B738DR_irs2_status = 0
 		end
+		if B738DR_lights_test == 1 then
+			B738DR_irs_align_left = 1
+			B738DR_irs_align_fail_left = 1
+			B738DR_irs_align_right = 1
+			B738DR_irs_align_fail_right = 1
+			B738DR_irs_on_dc_left = 1
+			B738DR_irs_on_dc_right = 1
+			B738DR_irs_dc_fail_left = 1
+			B738DR_irs_dc_fail_right = 1
+		else
+			B738DR_irs_align_fail_left = irs_align_fail_left
+			B738DR_irs_align_fail_right = irs_align_fail_right
+			B738DR_irs_dc_fail_left = irs_dc_fail_left
+			B738DR_irs_dc_fail_right = irs_dc_fail_right
+		end
 		pfd_nd()
 		turn_around_state()
 	end
@@ -1766,8 +1787,6 @@ function after_physics()
 end
 
 --function after_replay() end
-
-
 
 
 --*************************************************************************************--
