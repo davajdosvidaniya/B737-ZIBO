@@ -6091,6 +6091,9 @@ function autopilot_system_lights2()
 		-- G/S
 		elseif ap_pitch_mode == 4 and ap_pitch_mode_eng == 4 then
 			B738DR_pfd_alt_mode = PFD_ALT_GS
+			if B738DR_pfd_alt_mode_arm == PFD_ALT_GS_ARM then
+				B738DR_pfd_alt_mode_arm = 0
+			end
 		-- VNAV
 		-- elseif ap_pitch_mode == 5 and ap_pitch_mode_eng == 5 then
 			-- if vnav_engaged == 0 then
@@ -6107,10 +6110,14 @@ function autopilot_system_lights2()
 		
 		-- LNAV -> APP
 		if ap_roll_mode == 6 and ap_roll_mode_eng == 6 then
-			B738DR_pfd_alt_mode_arm = PFD_ALT_GS_ARM
+			if B738DR_pfd_alt_mode ~= PFD_ALT_GS then
+				B738DR_pfd_alt_mode_arm = PFD_ALT_GS_ARM
+			end
 		elseif ap_roll_mode == 3 and ap_roll_mode_eng == 3 then
 			-- APP
-			B738DR_pfd_alt_mode_arm = PFD_ALT_GS_ARM
+			if B738DR_pfd_alt_mode ~= PFD_ALT_GS then
+				B738DR_pfd_alt_mode_arm = PFD_ALT_GS_ARM
+			end
 		end
 		if simDR_glideslope_status == 2 then
 			B738DR_pfd_alt_mode = PFD_ALT_GS
@@ -7114,7 +7121,7 @@ function B738_lnav3()
 							idx_dist = max_idx_dist
 						end
 						--idx_dist = idx_dist * idx_dist
-						idx_corr = B738_rescale(0, 0, max_idx_dist, 45, idx_dist)
+						idx_corr = B738_rescale(0, 0, max_idx_dist, 35, idx_dist)
 					else
 						idx_dist = B738DR_xtrack
 						-- if idx_dist > idx_rnp then
@@ -7127,7 +7134,7 @@ function B738_lnav3()
 							idx_dist = max_idx_dist
 						end
 						--idx_dist = idx_dist * idx_dist
-						idx_corr = -B738_rescale(0, 0, max_idx_dist, 45, idx_dist)
+						idx_corr = -B738_rescale(0, 0, max_idx_dist, 35, idx_dist)
 					end
 					ap_hdg = (simDR_fmc_trk + simDR_mag_variation + idx_corr + 360) % 360
 					--B738DR_test_test = idx_corr
@@ -8483,7 +8490,7 @@ function B738_vnav6()
 					if B738DR_lock_idle_thrust == 0 then
 						if vnav_desc_spd == 0 then
 							if simDR_airspeed_is_mach == 0 then
-								if simDR_airspeed_pilot < (vnav_speed_trg + 10) then
+								if simDR_airspeed_pilot < (vnav_speed_trg - 5) then
 									if B738DR_autopilot_autothr_arm_pos == 1 then
 										at_mode = 2
 									end
@@ -8495,7 +8502,7 @@ function B738_vnav6()
 									end
 								end
 							else
-								if simDR_mach_no < (vnav_speed_trg + 0.02) then
+								if simDR_mach_no < (vnav_speed_trg - 0.02) then
 									if B738DR_autopilot_autothr_arm_pos == 1 then
 										at_mode = 2
 									end

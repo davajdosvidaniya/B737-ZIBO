@@ -110,6 +110,18 @@ month_table =
 		[12] = { [1] = "DEC", [2] = "12"}
 	}
 
+
+-- 18 idx
+vnav_des_alt = { 1500, 5000, 10000, 11000, 15000, 17000, 19000, 21000, 23000, 25000, 27000, 29000, 31000, 33000, 35000, 37000, 39000, 41000 }
+
+vnav_des_dist =
+	{	[40] = { 13, 26, 42, 48, 58, 63, 67, 72, 77,  81,  87,  90,  95,  99, 103, 107, 113, 115 },
+		[50] = { 13, 27, 46, 53, 64, 70, 75, 80, 86,  91,  97, 102, 108, 113, 117, 122, 127, 133 },
+		[60] = { 13, 28, 48, 56, 70, 76, 82, 88, 94, 100, 106, 112, 119, 125, 129, 135, 139, 146 },
+		[70] = { 13, 29, 50, 58, 73, 79, 86, 92, 99, 106, 112, 119, 126, 132, 137, 143, 148, 153 }
+	}
+
+
 FILE_NAME_CFG = "b738x.cfg"
 FILE_NAME_STATUS = "b738x_status.dat"
 FILE_NAME_APT_DAT = "B738X_apt.dat"
@@ -36927,7 +36939,7 @@ function B738_fmc_pos_init()
 		line6_x = "------------------------"
 		line6_l = "<INDEX            ROUTE>"
 		-- line6_s = "                        "
-		if ref_icao == "----" then
+		if ref_icao2 == "----" then
 			disable_POS_3L = 1
 		else
 			disable_POS_3L = 0
@@ -50325,6 +50337,34 @@ function find_clb_rest_alt_mod(rest_from, rest_to)
 end
 
 
+function wind_pth(wpt_brg, wind_over, wind_pred)
+	
+	local tmp_wind_spd = 0
+	local tmp_wind_dir = 0
+	
+	if wind_over == "" then
+		if wind_pred ~= "" then
+			tmp_wind_dir = tonumber(string.sub(wind_pred, 1, 3))
+			tmp_wind_spd = tonumber(string.sub(wind_pred, -3, -1))
+		end
+	else
+		tmp_wind_dir = tonumber(string.sub(wind_over, 1, 3))
+		tmp_wind_spd = tonumber(string.sub(wind_over, -3, -1))
+	end
+	
+	local wc_speed = 0
+	if tmp_wind_spd > 0 then
+		wc_speed = tonumber(tmp_wind_spd) * math.cos(math.rad(Angle180(tonumber(tmp_wind_dir)))-wpt_brg)
+	end
+	
+	wc_speed = math.min(wc_speed, 200)
+	wc_speed = math.max(wc_speed, -200)
+	
+	result = B738_rescale(-200, 1.1, 200, 0.9, wc_speed)
+	
+	return	result
+end
+
 function B738_vnav_calc()
 
 	local n = 0
@@ -50601,8 +50641,8 @@ function B738_vnav_calc()
 						end
 						
 						-- calc bearing
-						nd_lat = math.rad(legs_data[n][7])
-						nd_lon = math.rad(legs_data[n][8])
+						-- nd_lat = math.rad(legs_data[n][7])
+						-- nd_lon = math.rad(legs_data[n][8])
 						if n == 1 then
 							temp_brg = legs_data[n][2] + 3.1415926535
 						else
@@ -50614,11 +50654,12 @@ function B738_vnav_calc()
 									temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
 								end
 							else
-								nd_lat2 = math.rad(legs_data[n-1][7])
-								nd_lon2 = math.rad(legs_data[n-1][8])
-								nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-								nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-								temp_brg = math.atan2(nd_y, nd_x)
+								-- nd_lat2 = math.rad(legs_data[n-1][7])
+								-- nd_lon2 = math.rad(legs_data[n-1][8])
+								-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+								-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+								-- temp_brg = math.atan2(nd_y, nd_x)
+								temp_brg = math.rad((math.deg(legs_data[n][2]) + 180) % 360)
 							end
 						end
 						
@@ -50702,8 +50743,9 @@ function B738_vnav_calc()
 			if idx_ed > 0 then
 				ed_found = idx_ed
 				ed_alt = legs_data[ed_found][5]
-				ed_dist = (crz_alt_num - ed_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
-				ed_dist = ed_dist * 0.00016458		-- NM
+				-- ed_dist = (crz_alt_num - ed_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
+				-- ed_dist = ed_dist * 0.00016458		-- NM
+				ed_dist = calc_vnav_pth_dist(ed_alt, crz_alt_num, gw_app_kgs, 1)
 				ed_vpa = econ_des_vpa
 			end
 			
@@ -50716,8 +50758,9 @@ function B738_vnav_calc()
 				if ed_found == 0 then	-- not found e/d
 					ed_found = legs_num + 1
 					ed_alt = math.floor((des_icao_alt + 1000)/100) * 100
-					ed_dist = (crz_alt_num - ed_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
-					ed_dist = ed_dist * 0.00016458		-- NM
+					-- ed_dist = (crz_alt_num - ed_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
+					-- ed_dist = ed_dist * 0.00016458		-- NM
+					ed_dist = calc_vnav_pth_dist(ed_alt, crz_alt_num, gw_app_kgs, 1)
 					ed_vpa = econ_des_vpa
 					if legs_data[ed_found][1] == nil then
 						skip_vpa = 1
@@ -50738,7 +50781,9 @@ function B738_vnav_calc()
 						if ii == ed_found then
 							calc_wpt_alt = ed_alt
 						else
-							calc_wpt_alt = calc_wpt_alt + ((legs_data[ii+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
+							--calc_wpt_alt = calc_wpt_alt + ((legs_data[ii+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
+							--wind_temp = wind_pth(legs_data[ii][2], legs_data[ii][39], legs_data[ii][38])
+							calc_wpt_alt = calc_vnav_pth_alt(ed_alt , td_dist - legs_data[ii][3], gw_app_kgs, 1)
 						end
 						if calc_wpt_alt > crz_alt_num then
 							calc_wpt_alt = crz_alt_num
@@ -50748,36 +50793,23 @@ function B738_vnav_calc()
 						
 						if td_dist > ed_dist then
 							
-							-- calc bearing
-							-- nd_lat = math.rad(legs_data[ii][7])
-							-- nd_lon = math.rad(legs_data[ii][8])
-							-- if ii == 1 then
-								-- temp_brg = legs_data[ii][2] + 3.1415926535
-							-- else
-								-- pom5 = ii - 1
-								-- if last_lat ~= 0 and last_lon ~= 0 and pom5 == offset2 then
-									-- nd_lat2 = last_lat
-									-- nd_lon2 = last_lon
-								-- else
-									-- nd_lat2 = math.rad(legs_data[ii-1][7])
-									-- nd_lon2 = math.rad(legs_data[ii-1][8])
-								-- end
-								if legs_intdir_act == 1 and ii == offset2 then
-									if B738DR_wpt_path == "DF" then
-										temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
-									else
-										temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
-									end
+							if legs_intdir_act == 1 and ii == offset2 then
+								if B738DR_wpt_path == "DF" then
+									temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
 								else
-									nd_lat = math.rad(legs_data[ii][7])
-									nd_lon = math.rad(legs_data[ii][8])
-									nd_lat2 = math.rad(legs_data[ii-1][7])
-									nd_lon2 = math.rad(legs_data[ii-1][8])
-									nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-									nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-									temp_brg = math.atan2(nd_y, nd_x)
+									temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
 								end
-							-- end
+							else
+								-- nd_lat = math.rad(legs_data[ii][7])
+								-- nd_lon = math.rad(legs_data[ii][8])
+								-- nd_lat2 = math.rad(legs_data[ii-1][7])
+								-- nd_lon2 = math.rad(legs_data[ii-1][8])
+								-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+								-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+								-- temp_brg = math.atan2(nd_y, nd_x)
+								temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
+							end
+							
 							td_dist = legs_data[ii][3] - (td_dist - ed_dist)
 							td_idx = ii 	-- before idx
 							lat_wpt = math.rad(legs_data[ii][7])
@@ -50795,31 +50827,6 @@ function B738_vnav_calc()
 					-----------------------------------------------------------
 					-- find fixed altitude restrict between T/C and T/D
 					-----------------------------------------------------------
-					-- if tc_idx == 0 then
-						-- jj = 2	--offset offset2
-					-- else
-						-- if tc_idx > td_idx then
-							-- if last_sid_idx == 0 then
-								-- jj = 2
-							-- else
-								-- if tc_idx <= last_sid_idx then
-									-- jj = last_sid_idx + 1
-								-- else
-									-- jj = 2
-								-- end
-							-- end
-						-- else
-							-- if last_sid_idx == 0 then
-								-- jj = tc_idx
-							-- else
-								-- if tc_idx <= last_sid_idx then
-									-- jj = last_sid_idx + 1
-								-- else
-									-- jj = tc_idx
-								-- end
-							-- end
-						-- end
-					-- end
 					
 					if tc_idx == 0 then
 						if last_sid_idx == 0 then
@@ -50908,8 +50915,9 @@ function B738_vnav_calc()
 								
 								ed_fix_vpa = econ_des_vpa
 								if ed_fix_num == 1 then
-									ed_dist = (crz_alt_num - ed_fix_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
-									ed_dist = ed_dist * 0.00016458		-- NM
+									-- ed_dist = (crz_alt_num - ed_fix_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
+									-- ed_dist = ed_dist * 0.00016458		-- NM
+									ed_dist = calc_vnav_pth_dist(ed_fix_alt, crz_alt_num, gw_app_kgs, 1)
 									n = 2	--jj
 									ed_fix_vpa2[ed_fix_num] = econ_des_vpa
 								else
@@ -50943,8 +50951,12 @@ function B738_vnav_calc()
 									if kk == ed_fix_found then
 										calc_wpt_alt = ed_fix_alt
 									else
-										--calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
-										calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2[ed_fix_num])))) * 6076.11549) -- ft
+										-- calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2[ed_fix_num])))) * 6076.11549) -- ft
+										if ed_fix_num == 1 then
+											calc_wpt_alt = calc_vnav_pth_alt(ed_fix_alt, td_dist - legs_data[kk][3], gw_app_kgs, 1)
+										else
+											calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2[ed_fix_num])))) * 6076.11549) -- ft
+										end
 									end
 									if calc_wpt_alt > crz_alt_num then
 										calc_wpt_alt = crz_alt_num
@@ -50955,23 +50967,6 @@ function B738_vnav_calc()
 									if td_dist > ed_dist and ed_fix_num == 1 then
 										
 										-- calc bearing
-										-- nd_lat = math.rad(legs_data[kk][7])
-										-- nd_lon = math.rad(legs_data[kk][8])
-										-- if kk == 1 then
-											-- temp_brg = legs_data[kk][2] + 3.1415926535
-										-- else
-											-- pom5 = kk - 1
-											-- if last_lat ~= 0 and last_lon ~= 0 and pom5 == offset2 then
-												-- nd_lat2 = last_lat
-												-- nd_lon2 = last_lon
-											-- else
-												-- nd_lat2 = math.rad(legs_data[kk-1][7])
-												-- nd_lon2 = math.rad(legs_data[kk-1][8])
-											-- end
-											-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-											-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-											-- temp_brg = math.atan2(nd_y, nd_x)
-											
 											if legs_intdir_act == 1 and kk == offset2 then
 												if B738DR_wpt_path == "DF" then
 													temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
@@ -50979,13 +50974,14 @@ function B738_vnav_calc()
 													temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
 												end
 											else
-												nd_lat = math.rad(legs_data[kk][7])
-												nd_lon = math.rad(legs_data[kk][8])
-												nd_lat2 = math.rad(legs_data[kk-1][7])
-												nd_lon2 = math.rad(legs_data[kk-1][8])
-												nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-												nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-												temp_brg = math.atan2(nd_y, nd_x)
+												-- nd_lat = math.rad(legs_data[kk][7])
+												-- nd_lon = math.rad(legs_data[kk][8])
+												-- nd_lat2 = math.rad(legs_data[kk-1][7])
+												-- nd_lon2 = math.rad(legs_data[kk-1][8])
+												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+												-- temp_brg = math.atan2(nd_y, nd_x)
+												temp_brg = math.rad((math.deg(legs_data[kk][2]) + 180) % 360)
 											end
 										-- end
 										td_dist = legs_data[kk][3] - (td_dist - ed_dist)
@@ -51148,8 +51144,9 @@ function B738_vnav_calc()
 								ed_fix_vpa = econ_des_vpa
 								--if ed_fix_num == 1 then
 								if first_restrict == 0 then
-									ed_dist = (crz_alt_num - ed_fix_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
-									ed_dist = ed_dist * 0.00016458		-- NM
+									-- ed_dist = (crz_alt_num - ed_fix_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
+									-- ed_dist = ed_dist * 0.00016458		-- NM
+									ed_dist = calc_vnav_pth_dist(ed_fix_alt, crz_alt_num, gw_app_kgs, 1)
 									n = 2	--jj
 									ed_fix_vpa2[ed_fix_num] = econ_des_vpa
 									td_dist = 0
@@ -51190,7 +51187,12 @@ function B738_vnav_calc()
 									if kk == ed_fix_found then
 										calc_wpt_alt = ed_fix_alt
 									else
-										calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2[ed_fix_num])))) * 6076.11549) -- ft
+										-- calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2[ed_fix_num])))) * 6076.11549) -- ft
+										if ed_fix_num == 1 then
+											calc_wpt_alt = calc_vnav_pth_alt(ed_fix_alt, td_dist - legs_data[kk][3], gw_app_kgs, 1)
+										else
+											calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2[ed_fix_num])))) * 6076.11549) -- ft
+										end
 									end
 									if calc_wpt_alt > crz_alt_num then
 										calc_wpt_alt = crz_alt_num
@@ -51210,24 +51212,6 @@ function B738_vnav_calc()
 									
 									if td_dist > ed_dist and first_restrict == 0 then
 										
-										-- calc bearing
-										-- nd_lat = math.rad(legs_data[kk][7])
-										-- nd_lon = math.rad(legs_data[kk][8])
-										-- if kk == 1 then
-											-- temp_brg = legs_data[kk][2] + 3.1415926535
-										-- else
-											-- pom5 = kk - 1
-											-- if last_lat ~= 0 and last_lon ~= 0 and pom5 == offset2 then
-												-- nd_lat2 = last_lat
-												-- nd_lon2 = last_lon
-											-- else
-												-- nd_lat2 = math.rad(legs_data[kk-1][7])
-												-- nd_lon2 = math.rad(legs_data[kk-1][8])
-											-- end
-											-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-											-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-											-- temp_brg = math.atan2(nd_y, nd_x)
-										-- end
 											if legs_intdir_act == 1 and kk == offset2 then
 												if B738DR_wpt_path == "DF" then
 													temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
@@ -51235,13 +51219,14 @@ function B738_vnav_calc()
 													temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
 												end
 											else
-												nd_lat = math.rad(legs_data[kk][7])
-												nd_lon = math.rad(legs_data[kk][8])
-												nd_lat2 = math.rad(legs_data[kk-1][7])
-												nd_lon2 = math.rad(legs_data[kk-1][8])
-												nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-												nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-												temp_brg = math.atan2(nd_y, nd_x)
+												-- nd_lat = math.rad(legs_data[kk][7])
+												-- nd_lon = math.rad(legs_data[kk][8])
+												-- nd_lat2 = math.rad(legs_data[kk-1][7])
+												-- nd_lon2 = math.rad(legs_data[kk-1][8])
+												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+												-- temp_brg = math.atan2(nd_y, nd_x)
+												temp_brg =  math.rad((math.deg(legs_data[kk][2]) + 180) % 360)
 											end
 										td_dist = legs_data[kk][3] - (td_dist - ed_dist)
 										td_idx = kk 	-- before idx
@@ -51290,7 +51275,6 @@ function B738_vnav_calc()
 											if kk == n then
 												calc_wpt_alt = legs_data[kk][5]
 											else
-												--calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
 												calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(-legs_data[n][20])))) * 6076.11549) -- ft
 											end
 											if calc_wpt_alt > crz_alt_num then
@@ -51417,25 +51401,6 @@ function B738_vnav_calc()
 										if simDR_fmc_dist > 6.7 then
 											-- DECEL calc
 											
-											-- calc bearing
-											-- nd_lat = math.rad(legs_data[ii][7])
-											-- nd_lon = math.rad(legs_data[ii][8])
-											-- if ii == 1 then
-												-- temp_brg = legs_data[ii][2] + 3.1415926535
-											-- else
-												-- pom5 = ii - 1
-												-- if last_lat ~= 0 and last_lon ~= 0 and pom5 == offset2 then
-													-- nd_lat2 = last_lat
-													-- nd_lon2 = last_lon
-												-- else
-													-- nd_lat2 = math.rad(legs_data[ii-1][7])
-													-- nd_lon2 = math.rad(legs_data[ii-1][8])
-												-- end
-												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-												-- temp_brg = math.atan2(nd_y, nd_x)
-											-- end
-											
 											if legs_intdir_act == 1 and ii == offset2 then
 												if B738DR_wpt_path == "DF" then
 													temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
@@ -51443,13 +51408,14 @@ function B738_vnav_calc()
 													temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
 												end
 											else
-												nd_lat = math.rad(legs_data[ii][7])
-												nd_lon = math.rad(legs_data[ii][8])
-												nd_lat2 = math.rad(legs_data[ii-1][7])
-												nd_lon2 = math.rad(legs_data[ii-1][8])
-												nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-												nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-												temp_brg = math.atan2(nd_y, nd_x)
+												-- nd_lat = math.rad(legs_data[ii][7])
+												-- nd_lon = math.rad(legs_data[ii][8])
+												-- nd_lat2 = math.rad(legs_data[ii-1][7])
+												-- nd_lon2 = math.rad(legs_data[ii-1][8])
+												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+												-- temp_brg = math.atan2(nd_y, nd_x)
+												temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
 											end
 											
 											decel_dist = 6.7 -- before dist (6.7NM)
@@ -51470,25 +51436,6 @@ function B738_vnav_calc()
 											-- if ii-1 is restrict wpt then
 											---------------------------------
 											if legs_data[ii-1][4] == 0 then		-- speed restrict
-												-- calc bearing
-												-- nd_lat = math.rad(legs_data[ii-1][7])
-												-- nd_lon = math.rad(legs_data[ii-1][8])
-												-- if ii == 1 then
-													-- temp_brg = legs_data[ii][2] + 3.1415926535
-												-- else
-													-- pom5 = ii - 2
-													-- if last_lat ~= 0 and last_lon ~= 0 and pom5 == offset2 then
-														-- nd_lat2 = last_lat
-														-- nd_lon2 = last_lon
-													-- else
-														-- nd_lat2 = math.rad(legs_data[ii-2][7])
-														-- nd_lon2 = math.rad(legs_data[ii-2][8])
-													-- end
-													-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-													-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-													-- temp_brg = math.atan2(nd_y, nd_x)
-												-- end
-											
 												pom5 = ii - 1
 												if legs_intdir_act == 1 and pom5 == offset2 then
 													if B738DR_wpt_path == "DF" then
@@ -51497,13 +51444,14 @@ function B738_vnav_calc()
 														temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
 													end
 												else
-													nd_lat = math.rad(legs_data[ii][7])
-													nd_lon = math.rad(legs_data[ii][8])
-													nd_lat2 = math.rad(legs_data[ii-1][7])
-													nd_lon2 = math.rad(legs_data[ii-1][8])
-													nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-													nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-													temp_brg = math.atan2(nd_y, nd_x)
+													-- nd_lat = math.rad(legs_data[ii][7])
+													-- nd_lon = math.rad(legs_data[ii][8])
+													-- nd_lat2 = math.rad(legs_data[ii-1][7])
+													-- nd_lon2 = math.rad(legs_data[ii-1][8])
+													-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+													-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+													-- temp_brg = math.atan2(nd_y, nd_x)
+													temp_brg = math.rad((math.deg(legs_data[ii-1][2]) + 180) % 360)
 												end
 											
 												decel_idx = ii - 1
@@ -51515,20 +51463,6 @@ function B738_vnav_calc()
 												end
 											else
 												decel_dist = legs_data[ii][3] - 0.3 -- 0.3 NM before
-												-- calc bearing
-												-- nd_lat = math.rad(legs_data[ii][7])
-												-- nd_lon = math.rad(legs_data[ii][8])
-												-- pom5 = ii - 1
-												-- if last_lat ~= 0 and last_lon ~= 0 and pom5 == offset2 then
-													-- nd_lat2 = last_lat
-													-- nd_lon2 = last_lon
-												-- else
-													-- nd_lat2 = math.rad(legs_data[ii-1][7])
-													-- nd_lon2 = math.rad(legs_data[ii-1][8])
-												-- end
-												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-												-- temp_brg = math.atan2(nd_y, nd_x)
 											
 												if legs_intdir_act == 1 and ii == offset2 then
 													if B738DR_wpt_path == "DF" then
@@ -51537,13 +51471,14 @@ function B738_vnav_calc()
 														temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
 													end
 												else
-													nd_lat = math.rad(legs_data[ii][7])
-													nd_lon = math.rad(legs_data[ii][8])
-													nd_lat2 = math.rad(legs_data[ii-1][7])
-													nd_lon2 = math.rad(legs_data[ii-1][8])
-													nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-													nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-													temp_brg = math.atan2(nd_y, nd_x)
+													-- nd_lat = math.rad(legs_data[ii][7])
+													-- nd_lon = math.rad(legs_data[ii][8])
+													-- nd_lat2 = math.rad(legs_data[ii-1][7])
+													-- nd_lon2 = math.rad(legs_data[ii-1][8])
+													-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+													-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+													-- temp_brg = math.atan2(nd_y, nd_x)
+													temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
 												end
 											
 												decel_idx = ii
@@ -51553,25 +51488,6 @@ function B738_vnav_calc()
 										else
 											decel_dist = 6.7 -- before dist (6.7NM)
 											
-											-- calc bearing
-											-- nd_lat = math.rad(legs_data[ii][7])
-											-- nd_lon = math.rad(legs_data[ii][8])
-											-- if ii == 1 then
-												-- temp_brg = legs_data[ii][2] + 3.1415926535
-											-- else
-												-- pom5 = ii - 1
-												-- if last_lat ~= 0 and last_lon ~= 0 and pom5 == offset2 then
-													-- nd_lat2 = last_lat
-													-- nd_lon2 = last_lon
-												-- else
-													-- nd_lat2 = math.rad(legs_data[ii-1][7])
-													-- nd_lon2 = math.rad(legs_data[ii-1][8])
-												-- end
-												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-												-- temp_brg = math.atan2(nd_y, nd_x)
-											-- end
-											
 											if legs_intdir_act == 1 and ii == offset2 then
 												if B738DR_wpt_path == "DF" then
 													temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
@@ -51579,13 +51495,14 @@ function B738_vnav_calc()
 													temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
 												end
 											else
-												nd_lat = math.rad(legs_data[ii][7])
-												nd_lon = math.rad(legs_data[ii][8])
-												nd_lat2 = math.rad(legs_data[ii-1][7])
-												nd_lon2 = math.rad(legs_data[ii-1][8])
-												nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-												nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-												temp_brg = math.atan2(nd_y, nd_x)
+												-- nd_lat = math.rad(legs_data[ii][7])
+												-- nd_lon = math.rad(legs_data[ii][8])
+												-- nd_lat2 = math.rad(legs_data[ii-1][7])
+												-- nd_lon2 = math.rad(legs_data[ii-1][8])
+												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
+												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
+												-- temp_brg = math.atan2(nd_y, nd_x)
+												temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
 											end
 											
 											decel_idx = ii
@@ -52210,8 +52127,9 @@ function B738_vnav_calc_mod()
 			if idx_ed_mod > 0 then
 				ed_found_mod = idx_ed_mod
 				ed_alt_mod = legs_data2[ed_found_mod][5]
-				ed_dist_mod = (crz_alt_num - ed_alt_mod) / math.tan(math.rad(econ_des_vpa))		-- ft
-				ed_dist_mod = ed_dist_mod * 0.00016458		-- NM
+				-- ed_dist_mod = (crz_alt_num - ed_alt_mod) / math.tan(math.rad(econ_des_vpa))		-- ft
+				-- ed_dist_mod = ed_dist_mod * 0.00016458		-- NM
+				ed_dist_mod = calc_vnav_pth_dist(ed_alt_mod, crz_alt_num, gw_app_kgs, 1)
 				ed_vpa_mod = econ_des_vpa
 			end
 			
@@ -52223,8 +52141,9 @@ function B738_vnav_calc_mod()
 				if ed_found_mod == 0 then	-- not found e/d
 					ed_found_mod = legs_num2 + 1
 					ed_alt_mod = math.floor((des_icao_alt + 1000)/100) * 100
-					ed_dist_mod = (crz_alt_num - ed_alt_mod) / math.tan(math.rad(econ_des_vpa))		-- ft
-					ed_dist_mod = ed_dist_mod * 0.00016458		-- NM
+					-- ed_dist_mod = (crz_alt_num - ed_alt_mod) / math.tan(math.rad(econ_des_vpa))		-- ft
+					-- ed_dist_mod = ed_dist_mod * 0.00016458		-- NM
+					ed_dist_mod = calc_vnav_pth_dist(ed_alt_mod, crz_alt_num, gw_app_kgs, 1)
 					ed_vpa_mod = econ_des_vpa
 					if legs_data2[ed_found_mod][1] == nil then
 						skip_vpa = 1
@@ -52245,7 +52164,8 @@ function B738_vnav_calc_mod()
 						if ii == ed_found_mod then
 							calc_wpt_alt = ed_alt_mod
 						else
-							calc_wpt_alt = calc_wpt_alt + ((legs_data2[ii+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
+							--calc_wpt_alt = calc_wpt_alt + ((legs_data2[ii+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
+							calc_wpt_alt = calc_vnav_pth_alt(ed_alt_mod , td_dist_mod - legs_data2[ii][3], gw_app_kgs, 1)
 						end
 						if calc_wpt_alt > crz_alt_num then
 							calc_wpt_alt = crz_alt_num
@@ -52371,8 +52291,9 @@ function B738_vnav_calc_mod()
 								
 								ed_fix_vpa_mod = econ_des_vpa
 								if ed_fix_num_mod == 1 then
-									ed_dist_mod = (crz_alt_num - ed_fix_alt_mod) / math.tan(math.rad(econ_des_vpa))		-- ft
-									ed_dist_mod = ed_dist_mod * 0.00016458		-- NM
+									-- ed_dist_mod = (crz_alt_num - ed_fix_alt_mod) / math.tan(math.rad(econ_des_vpa))		-- ft
+									-- ed_dist_mod = ed_dist_mod * 0.00016458		-- NM
+									ed_dist = calc_vnav_pth_dist(ed_fix_alt_mod, crz_alt_num, gw_app_kgs, 1)
 									n = 2	--jj
 									ed_fix_vpa2_mod[ed_fix_num_mod] = econ_des_vpa
 								else
@@ -52406,8 +52327,12 @@ function B738_vnav_calc_mod()
 									if kk == ed_fix_found_mod then
 										calc_wpt_alt = ed_fix_alt_mod
 									else
-										--calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
-										calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2_mod[ed_fix_num_mod])))) * 6076.11549) -- ft
+										--calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2_mod[ed_fix_num_mod])))) * 6076.11549) -- ft
+										if ed_fix_num_mod == 1 then
+											calc_wpt_alt = calc_vnav_pth_alt(ed_fix_alt_mod, td_dist_mod - legs_data2[kk][3], gw_app_kgs, 1)
+										else
+											calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2_mod[ed_fix_num_mod])))) * 6076.11549) -- ft
+										end
 									end
 									if calc_wpt_alt > crz_alt_num then
 										calc_wpt_alt = crz_alt_num
@@ -52417,26 +52342,8 @@ function B738_vnav_calc_mod()
 									
 									if td_dist_mod > ed_dist_mod and ed_fix_num_mod == 1 then
 										
-											-- if legs_intdir_act == 1 and kk == offset2 then
-												-- temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
-											-- else
-												-- nd_lat = math.rad(legs_data2[kk][7])
-												-- nd_lon = math.rad(legs_data2[kk][8])
-												-- nd_lat2 = math.rad(legs_data2[kk-1][7])
-												-- nd_lon2 = math.rad(legs_data2[kk-1][8])
-												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-												-- temp_brg = math.atan2(nd_y, nd_x)
-											-- end
 										td_dist_mod = legs_data2[kk][3] - (td_dist_mod - ed_dist_mod)
 										td_idx_mod = kk 	-- before idx
-										-- lat_wpt = math.rad(legs_data2[kk][7])
-										-- lon_wpt = math.rad(legs_data2[kk][8])
-										-- temp_d_R = td_dist_mod / 3440.064795					-- distance NM
-										-- temp_lat = math.asin(math.sin(lat_wpt)*math.cos(temp_d_R) + math.cos(lat_wpt)*math.sin(temp_d_R)*math.cos(temp_brg))
-										-- temp_lon = lon_wpt + math.atan2(math.sin(temp_brg)*math.sin(temp_d_R)*math.cos(lat_wpt), math.cos(temp_d_R)-math.sin(lat_wpt)*math.sin(temp_lat))
-										--td_lat = temp_lat
-										--td_lon = temp_lon
 										break
 									end
 									if ed_fix_num_mod > 1 and calc_wpt_alt > ed_fix_alt2_mod[ed_fix_num_mod-1] then
@@ -52543,8 +52450,9 @@ function B738_vnav_calc_mod()
 								
 								ed_fix_vpa_mod = econ_des_vpa
 								if first_restrict == 0 then
-									ed_dist_mod = (crz_alt_num - ed_fix_alt_mod) / math.tan(math.rad(econ_des_vpa))		-- ft
-									ed_dist_mod = ed_dist_mod * 0.00016458		-- NM
+									-- ed_dist_mod = (crz_alt_num - ed_fix_alt_mod) / math.tan(math.rad(econ_des_vpa))		-- ft
+									-- ed_dist_mod = ed_dist_mod * 0.00016458		-- NM
+									ed_dist_mod = calc_vnav_pth_dist(ed_fix_alt_mod, crz_alt_num, gw_app_kgs, 1)
 									n = 2	--jj
 									ed_fix_vpa2_mod[ed_fix_num_mod] = econ_des_vpa
 									td_dist_mod = 0
@@ -52582,7 +52490,12 @@ function B738_vnav_calc_mod()
 									if kk == ed_fix_found_mod then
 										calc_wpt_alt = ed_fix_alt_mod
 									else
-										calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2_mod[ed_fix_num_mod])))) * 6076.11549) -- ft
+										-- calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2_mod[ed_fix_num_mod])))) * 6076.11549) -- ft
+										if ed_fix_num == 1 then
+											calc_wpt_alt = calc_vnav_pth_alt(ed_fix_alt_mod, td_dist - legs_data2[kk][3], gw_app_kgs, 1)
+										else
+											calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(ed_fix_vpa2_mod[ed_fix_num_mod])))) * 6076.11549) -- ft
+										end
 									end
 									if calc_wpt_alt > crz_alt_num then
 										calc_wpt_alt = crz_alt_num
@@ -58737,6 +58650,204 @@ function pfd_fo_rnav()
 
 end
 
+-- calculate dist by alt
+function calc_vnav_pth_dist(x_alt01, x_alt02, x_gw_str, x_idx)
+	
+	local ii = 0
+	local x_alt1 = 0
+	local x_alt2 = 0
+	local x_dist1 = 0
+	local x_dist2 = 0
+	local result_tmp = 0
+	local result_tmp2 = 0
+	local result = 0
+	local tmp_des_spd = math.min(B738DR_fmc_descent_speed, 290)
+	tmp_des_spd = math.max(B738DR_fmc_descent_speed, 265)
+	local x_idx_des_spd = B738_rescale(265, 1.15, 290, 0.9, tmp_des_spd)
+	local x_gw = tonumber(x_gw_str)
+	if x_gw == nil then
+		x_gw = 40
+	end
+	local x_gw00 = math.min ( 70, x_gw)
+	x_gw00 = math.max ( 40, x_gw00)
+	
+	x_gw2 = math.min ( 70, roundUpToIncrement(x_gw00, 10 ))
+	x_gw2 = math.max ( 40, x_gw2)
+	x_gw1 = math.min (70, x_gw2 - 10)
+	x_gw1 = math.max ( 40, x_gw1)
+	
+	-- landing gw min
+	-- min alt
+	for ii = 1, 18 do
+		if x_alt01 <= vnav_des_alt[ii] then
+			x_dist2 = vnav_des_dist[x_gw1][ii] * x_idx * x_idx_des_spd
+			x_alt2 = vnav_des_alt[ii]
+			if ii > 1 then
+				x_dist1 = vnav_des_dist[x_gw1][ii-1] * x_idx * x_idx_des_spd
+				x_alt1 = vnav_des_alt[ii-1]
+			end
+			break
+		end
+	end
+	
+	result_tmp = B738_rescale(x_alt1, x_dist1, x_alt2, x_dist2, x_alt01)
+	
+	-- max alt
+	x_alt1 = 0
+	x_alt2 = 0
+	x_dist1 = 0
+	x_dist2 = 0
+	for ii = 1, 18 do
+		if x_alt02 <= vnav_des_alt[ii] then
+			x_dist2 = vnav_des_dist[x_gw1][ii] * x_idx * x_idx_des_spd
+			x_alt2 = vnav_des_alt[ii]
+			if ii > 1 then
+				x_dist1 = vnav_des_dist[x_gw1][ii-1] * x_idx * x_idx_des_spd
+				x_alt1 = vnav_des_alt[ii-1]
+			end
+			break
+		end
+	end
+	
+	result_tmp2 = B738_rescale(x_alt1, x_dist1, x_alt2, x_dist2, x_alt02)
+	
+	result_tmp2 = result_tmp2 - result_tmp
+	if result_tmp2 < 0 then
+		result_tmp2 = 0
+	end
+	
+	-- landing gw max
+	-- min alt
+	x_alt1 = 0
+	x_alt2 = 0
+	x_dist1 = 0
+	x_dist2 = 0
+	for ii = 1, 18 do
+		if x_alt01 <= vnav_des_alt[ii] then
+			x_dist2 = vnav_des_dist[x_gw2][ii] * x_idx * x_idx_des_spd
+			x_alt2 = vnav_des_alt[ii]
+			if ii > 1 then
+				x_dist1 = vnav_des_dist[x_gw2][ii-1] * x_idx * x_idx_des_spd
+				x_alt1 = vnav_des_alt[ii-1]
+			end
+			break
+		end
+	end
+	
+	result_tmp = B738_rescale(x_alt1, x_dist1, x_alt2, x_dist2, x_alt01)
+	
+	-- max alt
+	x_alt1 = 0
+	x_alt2 = 0
+	x_dist1 = 0
+	x_dist2 = 0
+	for ii = 1, 18 do
+		if x_alt02 <= vnav_des_alt[ii] then
+			x_dist2 = vnav_des_dist[x_gw2][ii] * x_idx * x_idx_des_spd
+			x_alt2 = vnav_des_alt[ii]
+			if ii > 1 then
+				x_dist1 = vnav_des_dist[x_gw2][ii-1] * x_idx * x_idx_des_spd
+				x_alt1 = vnav_des_alt[ii-1]
+			end
+			break
+		end
+	end
+	
+	result = B738_rescale(x_alt1, x_dist1, x_alt2, x_dist2, x_alt02)
+	
+	result = result - result_tmp
+	if result < 0 then
+		result = 0
+	end
+	
+	result = B738_rescale(x_gw1, result_tmp2, x_gw2, result, x_gw00)
+	
+	return result
+	
+end
+
+-- calculate alt by distance
+function calc_vnav_pth_alt(x_alt01, x_dist, x_gw_str, x_idx)
+	
+	local ii = 0
+	local x_dist00 = 0
+	local x_dist1 = 0
+	local x_dist2 = 0
+	local x_alt1 = 0
+	local x_alt2 = 0
+	local x_gw1 = 0
+	local x_gw2 = 0
+	local tmp_pom = 0
+	local result_tmp = 0
+	local result = 0
+	local tmp_des_spd = math.min(B738DR_fmc_descent_speed, 290)
+	tmp_des_spd = math.max(B738DR_fmc_descent_speed, 265)
+	local x_idx_des_spd = B738_rescale(265, 1.15, 290, 0.9, tmp_des_spd)
+	local x_gw = tonumber(x_gw_str)
+	if x_gw == nil then
+		x_gw = 40
+	end
+	local x_gw00 = math.min ( 70, x_gw)
+	x_gw00 = math.max ( 40, x_gw00)
+	
+	x_gw2 = math.min ( 70, roundUpToIncrement(x_gw00, 10 ))
+	x_gw2 = math.max ( 40, x_gw2)
+	x_gw1 = math.min (70, x_gw2 - 10)
+	x_gw1 = math.max ( 40, x_gw1)
+	
+	x_dist00 = calc_vnav_pth_dist(0, x_alt01, x_gw_str, 1)
+	x_dist00 = x_dist00 + x_dist
+	
+	-- min landing gw
+	for ii = 1, 18 do
+		tmp_pom = vnav_des_dist[x_gw1][ii] * x_idx * x_idx_des_spd
+		if x_dist00 <= tmp_pom then
+			x_dist2 = tmp_pom
+			x_alt2 = vnav_des_alt[ii]
+			if ii > 1 then
+				x_dist1 = vnav_des_dist[x_gw1][ii-1] * x_idx * x_idx_des_spd
+				x_alt1 = vnav_des_alt[ii-1]
+			end
+			break
+		end
+	end
+	
+	if x_dist2 == 0 then
+		result_tmp = 41000
+	else
+		result_tmp = B738_rescale(x_dist1, x_alt1, x_dist2, x_alt2, x_dist00)
+	end
+	
+	-- max landing gw
+	x_dist1 = 0
+	x_dist2 = 0
+	x_alt1 = 0
+	x_alt2 = 0
+	
+	for ii = 1, 18 do
+		tmp_pom = vnav_des_dist[x_gw2][ii] * x_idx * x_idx_des_spd
+		if x_dist00 <= tmp_pom then
+			x_dist2 = tmp_pom
+			x_alt2 = vnav_des_alt[ii]
+			if ii > 1 then
+				x_dist1 = vnav_des_dist[x_gw2][ii-1] * x_idx * x_idx_des_spd
+				x_alt1 = vnav_des_alt[ii-1]
+			end
+			break
+		end
+	end
+	
+	if x_dist2 == 0 then
+		result = 41000
+	else
+		result = B738_rescale(x_dist1, x_alt1, x_dist2, x_alt2, x_dist00)
+	end
+	
+	result = B738_rescale(x_gw1, result_tmp, x_gw2, result, x_gw00)
+	
+	return result
+	
+end
 
 function B738_vnav_pth3()
 
@@ -58776,6 +58887,7 @@ function B738_vnav_pth3()
 	local descent_vpa = 0
 	local gp_disable = 0
 	local vnav_app_active = 0
+	local not_idle_pth = 0
 	
 	if ref_icao == "----" or des_icao == "****" then
 		legs_num = 0
@@ -58838,6 +58950,9 @@ function B738_vnav_pth3()
 					ed_found_temp = ed_fix_found2[n]
 					ed_alt_temp = ed_fix_alt2[n]
 					descent_vpa = ed_fix_vpa2[n]
+					if n > 1 then
+						not_idle_pth = 1
+					end
 					break
 				end
 			end
@@ -58874,7 +58989,12 @@ function B738_vnav_pth3()
 						end
 					end
 					ed_to_dist = dist
-					B738DR_vnav_pth_alt = ed_alt_temp + ((dist * (math.tan(math.rad(descent_vpa)))) * 6076.11549) -- ft
+					if not_idle_pth == 0 then
+						B738DR_vnav_pth_alt = calc_vnav_pth_alt(ed_alt_temp, dist, gw_app_kgs, 1)	-- 50000 kgs
+					else
+						B738DR_vnav_pth_alt = ed_alt_temp + ((dist * (math.tan(math.rad(descent_vpa)))) * 6076.11549) -- ft
+					end
+					
 					B738DR_vnav_alt_err = B738DR_vnav_pth_alt - simDR_altitude_pilot
 					if B738DR_vnav_alt_err > 9999 then
 						B738DR_vnav_err_pfd = 9999
@@ -59605,7 +59725,7 @@ function B738_fmc_calc()
 				hold_term = 0
 			
 			elseif offset <= legs_num then
-				B738DR_fms_test1 = 100
+				--B738DR_fms_test1 = 100
 					nd_lat2 = math.rad(legs_data[offset][7])
 					nd_lon2 = math.rad(legs_data[offset][8])
 					
@@ -59902,7 +60022,7 @@ function B738_fmc_calc()
 						end
 					end
 					
-					B738DR_fms_test1 = 101
+					--B738DR_fms_test1 = 101
 					
 					if next_wpt_enable == 1 then
 						last_lat = 0
@@ -60002,7 +60122,7 @@ function B738_fmc_calc()
 								end
 							end
 							
-							B738DR_fms_test1 = 102
+							--B738DR_fms_test1 = 102
 							
 							next_rel_brg = ((math.deg(legs_data[offset][2]) - math.deg(legs_data[offset-1][2])) + 360 ) % 360
 							if next_rel_brg > 180 then
@@ -60184,7 +60304,7 @@ function B738_fmc_calc()
 						
 						legs_intdir_act = 0
 						
-						B738DR_fms_test1 = 103
+						--B738DR_fms_test1 = 103
 						
 						if offset <= legs_num then
 							if legs_data[offset][31] == "AF" then
@@ -60236,7 +60356,7 @@ function B738_fmc_calc()
 						
 					end
 					
-					B738DR_fms_test1 = 104
+					--B738DR_fms_test1 = 104
 					
 					if offset > legs_num then
 						-- end of route if selected approach
@@ -61105,7 +61225,7 @@ function B738_fmc_calc()
 			
 		end
 		
-		B738DR_fms_test1 = 105
+		--B738DR_fms_test1 = 105
 		
 		-- Detect Missed Approach
 		if first_miss_app_idx > 0 and offset >= first_miss_app_idx then
@@ -61746,10 +61866,22 @@ function B738_calc_vnav_spd()
 			econ_clb_spd_mach = B738_rescale(0, 0.70, 500, 0.77, ci)	--0.76/0.80
 			econ_crz_spd = B738_rescale(0, 300, 500, 330, ci)
 			econ_crz_spd_mach = B738_rescale(0, 0.78, 500, 0.80, ci)
-			econ_des_spd = B738_rescale(0, 270, 500, 290, ci)
-			econ_des_spd_mach = B738_rescale(0, 0.70, 500, 0.77, ci)	--0.76/0.80
+			-- econ_des_spd = B738_rescale(0, 270, 500, 290, ci)
+			-- econ_des_spd_mach = B738_rescale(0, 0.70, 500, 0.77, ci)	--0.76/0.80
 			econ_des_vpa = B738_rescale(0, 2.8, 500, 3.0, ci)
 			--econ_des_vpa = 3.0 --B738_rescale(0, 2.6, 500, 3.0, ci)
+			
+			if ci <= 20 then
+				econ_des_spd = B738_rescale(0, 270, 20, 280, ci)
+				econ_des_spd_mach = B738_rescale(0, 0.70, 20, 0.78, ci)	--0.76/0.80
+			elseif ci >= 200 then
+				econ_des_spd = B738_rescale(200, 280, 500, 290, ci)
+				econ_des_spd_mach = B738_rescale(200, 0.78, 500, 0.79, ci)	--0.76/0.80
+			else
+				econ_des_spd = 280
+				econ_des_spd_mach = 0.78
+			end
+			
 		end
 		B738DR_fmc_climb_speed_mach = econ_clb_spd_mach		-- temporary
 		B738DR_fmc_climb_speed = econ_clb_spd				-- temporary
@@ -63415,7 +63547,7 @@ temp_ils4 = ""
 	precalc_done = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25m"
+	version = "v3.25n"
 
 end
 
@@ -63786,7 +63918,7 @@ function after_physics()
 			end
 		end
 		
-		B738DR_fms_test = xnd_page
+		--B738DR_fms_test = xnd_page
 
 		B738DR_fms_test1 = 18
 		if calc_rte_enable == 0 then
@@ -63902,7 +64034,9 @@ function after_physics()
 		--B738DR_fms_test = tc_lat
 		--calc_rte_enable = 0
 		--calc_rte_enable2 = 0
-		
+		--B738DR_fms_test3 = calc_vnav_pth_dist(0, B738DR_fms_test, "50")
+		--x_dist00 = 16
+
 	end
 	
 end

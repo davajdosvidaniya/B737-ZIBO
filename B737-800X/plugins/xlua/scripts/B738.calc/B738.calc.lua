@@ -2500,7 +2500,7 @@ function B738_vspeed_bugs()
 		B738DR_fms_v2_15 = B738DR_fms_vref + 20		-- Vref + 20
 	else
 		B738DR_fms_vref_bugs = 0
-		if aircraft_was_on_air == 1 then
+		if aircraft_was_on_air == 1 and B738DR_flight_phase > 1 then
 			B738DR_fms_v2_bugs = 0
 		end
 	end

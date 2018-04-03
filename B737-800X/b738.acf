@@ -158,7 +158,7 @@ P _gear/0/_lonE 0.0
 P _gear/0/_lonN 0.0
 P _gear/0/_lonR 111.0
 P _gear/0/_scon 112094.945312500
-P _gear/0/_stat_def 0.105245009
+P _gear/0/_stat_def 0.105245002
 P _gear/0/_steerdeg_hispeed 6.0
 P _gear/0/_steerdeg_lospeed 63.0
 P _gear/0/_strut_comp 0.0
@@ -192,7 +192,7 @@ P _gear/1/_lonE -4.0
 P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 112094.945312500
-P _gear/1/_stat_def 0.724379182
+P _gear/1/_stat_def 0.724378884
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -226,7 +226,7 @@ P _gear/2/_lonE -4.0
 P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 112094.945312500
-P _gear/2/_stat_def 0.724379182
+P _gear/2/_stat_def 0.724378884
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -28887,7 +28887,7 @@ P _part/86/_part_specs_invis 1
 P _part/86/_part_tex 0
 P _part/86/_part_the 0.0
 P _part/86/_part_x -9.350000381
-P _part/86/_part_y -8.699056625
+P _part/86/_part_y -8.699057579
 P _part/86/_part_z 64.554344177
 P _part/86/_patt_con 0
 P _part/86/_patt_prt 0
@@ -30364,7 +30364,7 @@ P _part/87/_part_specs_invis 1
 P _part/87/_part_tex 0
 P _part/87/_part_the 0.0
 P _part/87/_part_x 9.350000381
-P _part/87/_part_y -8.699056625
+P _part/87/_part_y -8.699057579
 P _part/87/_part_z 64.554344177
 P _part/87/_patt_con 0
 P _part/87/_patt_prt 0
@@ -38711,7 +38711,7 @@ P acf/_cyclic_lf_trim_rat 0.250000000
 P acf/_cyclic_rt_trim_rat 0.250000000
 P acf/_cyclic_up_trim_rat 0.500000000
 P acf/_deg_psi_per_deg_def 8.0
-P acf/_deg_the_per_deg_def 8.0
+P acf/_deg_the_per_deg_def 7.0
 P acf/_delta3 0.0
 P acf/_descrip Boeing 737-800X
 P acf/_diff_coll_with_hdng 0.0
@@ -39481,7 +39481,7 @@ P acf/_nw_side_k 263.0
 P acf/_oilT_is_C 1
 P acf/_ott_asi_kts_off_for_full_def 47.0
 P acf/_ott_asi_sec_into_future 15.0
-P acf/_ott_asi_thro_per_sec 0.070000000
+P acf/_ott_asi_thro_per_sec 0.079999998
 P acf/_ott_gls_sec_into_future 15.0
 P acf/_ott_phi_deg_off_for_full_def 34.0
 P acf/_ott_phi_sec_into_future 2.0

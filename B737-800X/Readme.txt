@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25n:
+------
+- new VNAV descent path code
+- fixed small bugs
+
 3.25m:
 ------
 Fixed typo bugs, graphics bugs and system correction:
