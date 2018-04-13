@@ -360,6 +360,9 @@ master_light_block_act = 0
 
 cpt_tcas_enable = 1
 fo_tcas_enable = 1
+cpt_terr_enable = 0
+fo_terr_enable = 0
+
 autothr_arm_pos = 0
 autopilot_side = 0
 
@@ -514,7 +517,7 @@ simDR_airspeed_dial_kts			= find_dataref("sim/cockpit2/autopilot/airspeed_dial_k
 -- 0 for NAV1, 1 for NAV2, 2 for FMS/GPS
 
 simDR_EFIS_mode					= find_dataref("sim/cockpit2/EFIS/map_mode")
-simDR_EFIS_WX					= find_dataref("sim/cockpit2/EFIS/EFIS_weather_on")
+--simDR_EFIS_WX					= find_dataref("sim/cockpit2/EFIS/EFIS_weather_on")
 simDR_EFIS_TCAS					= find_dataref("sim/cockpit2/EFIS/EFIS_tcas_on")
 
 simDR_ap_altitude_dial_ft		= find_dataref("sim/cockpit2/autopilot/altitude_dial_ft")
@@ -979,6 +982,12 @@ B738DR_fo_alt_mode_meters		= create_dataref("laminar/B738/PFD/fo/alt_mode_is_met
 B738DR_fo_fpv_on				= create_dataref("laminar/B738/PFD/fo/fpv_on", "number")
 
 --B738DR_map_mode_fo			= create_dataref("laminar/B738/EFIS_control/fo/map_mode_pos", "number")
+
+B738DR_efis_rings				= create_dataref("laminar/B738/EFIS_control/capt/rings", "number")
+B738DR_efis_terr_on				= create_dataref("laminar/B738/EFIS_control/capt/terr_on", "number")
+
+B738DR_efis_fo_rings			= create_dataref("laminar/B738/EFIS_control/fo/rings", "number")
+B738DR_efis_fo_terr_on			= create_dataref("laminar/B738/EFIS_control/fo/terr_on", "number")
 
 -- AP BUTTON / SWITCH POSITION DRS
 
@@ -2310,6 +2319,12 @@ end
 function B738_efis_terr_capt_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_efis_terr_capt = 1
+		if cpt_terr_enable == 0 then
+			cpt_terr_enable = 1
+		else
+			cpt_terr_enable = 0
+		end
+
 	elseif phase == 2 then
 		B738DR_efis_terr_capt = 0
 	end
@@ -3165,11 +3180,15 @@ end
 function B738_efis_terr_fo_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_efis_terr_fo = 1
+		if fo_terr_enable == 0 then
+			fo_terr_enable = 1
+		else
+			fo_terr_enable = 0
+		end
 	elseif phase == 2 then
 		B738DR_efis_terr_fo = 0
 	end
 end
-
 function B738_efis_rst_fo_CMDhandler(phase, duration)
 	if B738DR_dspl_ctrl_pnl > -1 then
 		if phase == 0 then
@@ -15970,6 +15989,14 @@ function B738_vor_sel()
 
 end
 
+function timer_efis_disagr()
+	B738DR_efis_disagree = 1
+end
+
+function timer_efis_disagr_fo()
+	B738DR_efis_disagree_fo = 1
+end
+
 function B738_efis()
 	
 	local efis_disagree = 0
@@ -15990,7 +16017,20 @@ function B738_efis()
 			efis_disagree = 1
 		end
 	end
-	B738DR_efis_disagree = efis_disagree
+	
+	if efis_disagree == 0 then
+		B738DR_efis_disagree = 0
+		if is_timer_scheduled(timer_efis_disagr) == true then
+			stop_timer(timer_efis_disagr)
+		end
+	else
+		if B738DR_efis_disagree == 0 then
+			if is_timer_scheduled(timer_efis_disagr) == false then
+				run_after_time(timer_efis_disagr, 1.8)
+			end
+		end
+	end
+	--B738DR_efis_disagree = efis_disagree
 	
 	efis_disagree = 0
 	nav_type_vor = 0
@@ -16011,7 +16051,19 @@ function B738_efis()
 		end
 	end
 	
-	B738DR_efis_disagree_fo = efis_disagree
+	if efis_disagree == 0 then
+		B738DR_efis_disagree_fo = 0
+		if is_timer_scheduled(timer_efis_disagr_fo) == true then
+			stop_timer(timer_efis_disagr_fo)
+		end
+	else
+		if B738DR_efis_disagree_fo == 0 then
+			if is_timer_scheduled(timer_efis_disagr_fo) == false then
+				run_after_time(timer_efis_disagr_fo, 1.8)
+			end
+		end
+	end
+	--B738DR_efis_disagree_fo = efis_disagree
 
 end
 
@@ -16839,7 +16891,7 @@ function B738_nd()
 	-- WEATHER RADAR
 	if B738DR_efis_wxr_on == 0 and B738DR_efis_fo_wxr_on == 0 then
 		-- turn off WX
-		if simDR_EFIS_WX == 1 then
+		if simDR_efis_wxr_on == 1 then
 			simCMD_efis_wxr:once()
 		end
 	else
@@ -16849,12 +16901,12 @@ function B738_nd()
 				-- MAP mode
 				if B738DR_efis_map_range_fo == 0 then
 					-- turn off WX for range 5NM
-					if simDR_EFIS_WX == 1 then
+					if simDR_efis_wxr_on == 1 then
 						simCMD_efis_wxr:once()
 					end
 				else
 					-- turn on WW for First Officer
-					if simDR_EFIS_WX == 0 then
+					if simDR_efis_wxr_on == 0 then
 						simCMD_efis_wxr:once()
 					end
 					simDR_efis_map_range = B738DR_efis_map_range_fo
@@ -16863,24 +16915,24 @@ function B738_nd()
 				-- APP, VOR mode
 				if B738DR_fo_exp_map_mode == 0 then
 					-- turn off WX for CTR mode
-					if simDR_EFIS_WX == 1 then
+					if simDR_efis_wxr_on == 1 then
 						simCMD_efis_wxr:once()
 					end
 				elseif B738DR_efis_map_range_fo == 0 then
 					-- turn off WX for range 5NM
-					if simDR_EFIS_WX == 1 then
+					if simDR_efis_wxr_on == 1 then
 						simCMD_efis_wxr:once()
 					end
 				else
 					-- turn on WW for First Officer
-					if simDR_EFIS_WX == 0 and B738DR_fo_exp_map_mode == 1 then
+					if simDR_efis_wxr_on == 0 then	--and B738DR_fo_exp_map_mode == 1 then
 						simCMD_efis_wxr:once()
 					end
 					simDR_efis_map_range = B738DR_efis_map_range_fo
 				end
 			else
 				-- turn off WX for PLN mode
-				if simDR_EFIS_WX == 1 then
+				if simDR_efis_wxr_on == 1 then
 					simCMD_efis_wxr:once()
 				end
 			end
@@ -16890,12 +16942,12 @@ function B738_nd()
 				-- MAP mode
 				if B738DR_efis_map_range_capt == 0 then
 					-- turn off WX for range 5NM
-					if simDR_EFIS_WX == 1 then
+					if simDR_efis_wxr_on == 1 then
 						simCMD_efis_wxr:once()
 					end
 				else
 				-- turn on WW for Captain
-					if simDR_EFIS_WX == 0 then
+					if simDR_efis_wxr_on == 0 then
 						simCMD_efis_wxr:once()
 					end
 					simDR_efis_map_range = B738DR_efis_map_range_capt
@@ -16904,29 +16956,71 @@ function B738_nd()
 				-- APP, VOR mode
 				if B738DR_capt_exp_map_mode == 0 then
 					-- turn off WX for CTR mode
-					if simDR_EFIS_WX == 1 then
+					if simDR_efis_wxr_on == 1 then
 						simCMD_efis_wxr:once()
 					end
 				elseif B738DR_efis_map_range_capt == 0 then
 					-- turn off WX for range 5NM
-					if simDR_EFIS_WX == 1 then
+					if simDR_efis_wxr_on == 1 then
 						simCMD_efis_wxr:once()
 					end
 				else
-				-- turn on WW for Captain
-					if simDR_EFIS_WX == 0 and B738DR_capt_exp_map_mode == 1 then
+				-- turn on WX for Captain
+					if simDR_efis_wxr_on == 0 then	--and B738DR_capt_exp_map_mode == 1 then
 						simCMD_efis_wxr:once()
 					end
 					simDR_efis_map_range = B738DR_efis_map_range_capt
 				end
 			else
 				-- turn off WX for PLN mode
-				if simDR_EFIS_WX == 1 then
+				if simDR_efis_wxr_on == 1 then
 					simCMD_efis_wxr:once()
 				end
 			end
 		end
 	end
+	
+	-- TERRAIN
+	local terr_enable = cpt_terr_enable
+	if B738DR_capt_exp_map_mode == 0 and B738DR_capt_map_mode < 2 then
+		terr_enable = 0
+	elseif B738DR_capt_map_mode == 3 then
+		terr_enable = 0
+	end
+	B738DR_efis_terr_on = terr_enable
+	
+	terr_enable = fo_terr_enable
+	if B738DR_fo_exp_map_mode == 0 and B738DR_fo_map_mode < 2 then
+		terr_enable = 0
+	elseif B738DR_fo_map_mode == 3 then
+		terr_enable = 0
+	end
+	B738DR_efis_fo_terr_on = terr_enable
+	
+	-- ND Rings
+	local efis_rings = 0
+	if B738DR_capt_exp_map_mode == 1 and B738DR_capt_map_mode < 2 then
+		if B738DR_efis_terr_on == 1 or B738DR_efis_wxr_on == 1 or B738DR_EFIS_TCAS_on == 1 then
+			efis_rings = 1
+		end
+	elseif B738DR_capt_map_mode == 2 then
+		if B738DR_efis_terr_on == 1 or B738DR_efis_wxr_on == 1 or B738DR_EFIS_TCAS_on == 1 then
+			efis_rings = 1
+		end
+	end
+	B738DR_efis_rings = efis_rings
+	
+	efis_rings = 0
+	if B738DR_fo_exp_map_mode == 1 and B738DR_fo_map_mode < 2 then
+		if B738DR_efis_fo_terr_on == 1 or B738DR_efis_fo_wxr_on == 1 or B738DR_EFIS_TCAS_on_fo == 1 then
+			efis_rings = 1
+		end
+	elseif B738DR_fo_map_mode == 2 then
+		if B738DR_efis_fo_terr_on == 1 or B738DR_efis_fo_wxr_on == 1 or B738DR_EFIS_TCAS_on_fo == 1 then
+			efis_rings = 1
+		end
+	end
+	B738DR_efis_fo_rings = efis_rings
 	
 	
 end
@@ -17209,6 +17303,8 @@ B738DR_EFIS_TCAS_on_fo = 1
 simDR_EFIS_TCAS = 0
 cpt_tcas_enable = 1
 fo_tcas_enable = 1
+cpt_terr_enable = 0
+fo_terr_enable = 0
 
 B738DR_ap_spd_interv_status = 0
 lnav_app = 0
@@ -17270,6 +17366,7 @@ if simDR_startup_running == 0 then
 	B738DR_efis_fo_apt_on = 0
 	B738DR_efis_fo_fix_on = 0
 	B738DR_efis_fo_wxr_on = 0
+	simDR_efis_wxr_on = 0
 else
 	B738DR_efis_vor_on = 1
 	B738DR_efis_apt_on = 1
@@ -17280,6 +17377,7 @@ else
 	B738DR_efis_fo_apt_on = 1
 	B738DR_efis_fo_fix_on = 0
 	B738DR_efis_fo_wxr_on = 0
+
 end
 
 simDR_efis_vor_on = 0

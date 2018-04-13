@@ -77,6 +77,10 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25z:
+------
+- graphic correction on both NDs
+
 3.25y:
 ------
 - tuned A/T code

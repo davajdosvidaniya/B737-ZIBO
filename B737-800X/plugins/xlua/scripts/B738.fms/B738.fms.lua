@@ -20743,7 +20743,7 @@ function set_spd_alt_rest(item_idx)
 	local nn = 0
 	local nnn = 0
 	local strlen = string.len(entry)
-	
+	local alt_slash = 0
 	
 	if item_idx > legs_num2 then
 		--add_fmc_msg(INVALID_INPUT, 1)
@@ -20759,7 +20759,33 @@ function set_spd_alt_rest(item_idx)
 		msg_chk_alt_constr = 0
 		vnav_update = 1
 	else
-		if strlen < 7 then
+		if strlen > 3 then
+			if string.sub(entry, 1, 1) == "/" then
+				entry = string.sub(entry, 2, -1)
+				alt_slash = 1
+			end
+		end
+		if alt_slash == 1 then
+			-- only /ALT
+			n = entry_alt(entry, 100, 41000, 1, 18000)
+			if n == nil then
+				--add_fmc_msg(INVALID_INPUT, 1)
+				add_fmc_msg(INVALID_INPUT, 1)
+			else
+				if string.sub(output_str, -1, -1) == "A" then
+					nn = 43
+				elseif string.sub(output_str, -1, -1) == "B" then
+					nn = 45
+				else
+					nn = 32
+				end
+				legs_data2[item_idx][5] = n
+				legs_data2[item_idx][6] = nn
+				vnav_update = 1
+				msg_chk_alt_constr = 0
+				entry = ""
+			end
+		elseif strlen < 7 then
 			-- only SPD or ALT
 			n = entry_spd_kts(entry, 100, 340, 1)
 			if n == nil then
@@ -44356,6 +44382,40 @@ function B738_fmc_progress()
 
 end
 
+-- function B738_fmc_acars()
+	
+	-- if page_acars == 1 then
+		-- act_page = 1
+		-- max_page = 1
+		-- line0_l = "      ACARS MENU        "
+		-- line0_s = "                    1/1 "
+		-- line1_x = "                        "
+		-- line2_l = "<ATIS                   "
+	-- end
+	
+-- end
+
+-- function B738_fmc_ac_atis()
+	
+	-- if page_ac_atis == 1 then
+		-- act_page = 1
+		-- max_page = 1
+		-- line0_l = "      ATIS              "
+		-- line0_s = "                    1/1 "
+		-- line1_x = "                        "
+		-- line2_x = " AIRPORT                "
+		-- line2_l = "----                    "
+		-- line2_s = "                        "
+		-- line5_x = "                        "
+		-- line5_l = "                        "
+		-- line5_s = "                   SEND*"
+		-- line6_x = "      VHF IN PROG  22:14"
+		-- line6_l = "<RETURN            ATIS>"
+		-- line6_s = "                        "
+	-- end
+	
+	
+-- end
 
 
 function txt_trunc(txt_txt, txt_trunc2)
@@ -47256,13 +47316,6 @@ function B738_displ_wpt()
 		
 		-- CAPTAIN
 		if B738DR_capt_map_mode == 3 then
-			-- if legs_step == 0 then
-				-- nd_lat = math.rad(legs_data2[1][7])
-				-- nd_lon = math.rad(legs_data2[1][8])
-			-- else
-				-- nd_lat = math.rad(legs_data2[legs_step][7])
-				-- nd_lon = math.rad(legs_data2[legs_step][8])
-			-- end
 			if legs_step == 0 then
 				nd_lat = legs_data2[1][7]
 				nd_lon = legs_data2[1][8]
@@ -47279,23 +47332,15 @@ function B738_displ_wpt()
 			end
 			rte_plan_mode = 1
 		elseif B738DR_capt_map_mode == 2 then
-			-- if B738DR_capt_map_mode < 2 then
-				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				-- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
-					-- nav_disable = 1
-				-- end
-				
-			-- else
-				if B738DR_track_up == 0 then
+			if B738DR_track_up == 0 then
+				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+			else
+				if B738DR_track_up_active == 0 then
 					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
 				else
-					if B738DR_track_up_active == 0 then
-						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-					else
-						mag_hdg = ndx_mag_hdg - simDR_mag_variation
-					end
+					mag_hdg = ndx_mag_hdg - simDR_mag_variation
 				end
-			-- end
+			end
 			rte_plan_mode = 0
 			wpt_from = offset
 		else
@@ -56295,8 +56340,6 @@ end
 
 function B738_nd_perf()
 	
-	-- local nd_lat = math.rad(simDR_latitude) 
-	-- local nd_lon = math.rad(simDR_longitude) 
 	local nd_lat = ndx_lat
 	local nd_lon = ndx_lon
 	local nd_lat2 = 0
@@ -56340,8 +56383,6 @@ function B738_nd_perf()
 	
 	for n = nd_from, nd_to do 
 		
-		-- nd_lat2 = math.rad(apt_data[n][2])
-		-- nd_lon2 = math.rad(apt_data[n][3])
 		nd_lat2 = apt_data[n][2]
 		nd_lon2 = apt_data[n][3]
 		
@@ -56403,10 +56444,8 @@ end
 
 function B738_displ_apt()
 
-	-- local nd_lat = math.rad(simDR_latitude) 
-	-- local nd_lon = math.rad(simDR_longitude) 
-	local nd_lat = math.rad(ndx_lat)
-	local nd_lon = math.rad(ndx_lon)
+	local nd_lat = ndx_lat
+	local nd_lon = ndx_lon
 	local mag_hdg = 0
 	local nd_lat2 = 0
 	local nd_lon2 = 0
@@ -56436,33 +56475,17 @@ function B738_displ_apt()
 	local nav_disable3 = 0
 	local obj3 = 0
 		
-	-- if simDR_efis_sub_mode < 2 then
-		-- mag_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
-		-- if simDR_efis_map_mode == 0 then
-			-- nav_disable = 1
-		-- end
-	-- elseif simDR_efis_sub_mode == 4 then
-		-- nav_disable = 1
-	-- else
-		-- mag_hdg = simDR_mag_hdg - simDR_mag_variation
-	-- end
-	-- if B738DR_efis_apt_on == 0 then
-		-- nav_disable = 1
-	-- end
-	
-	nav_disable = 1
-	if B738DR_capt_map_mode == 2 then	--and B738DR_capt_exp_map_mode ~= 0 then
-		nav_disable = 0
+	if B738DR_efis_apt_on == 0 or B738DR_capt_map_mode < 2 then
+		nav_disable = 1
 	end
-	if B738DR_efis_apt_on == 0 then
+	if B738DR_capt_map_mode == 3 and legs_num2 == 0 then
 		nav_disable = 1
 	end
 	
-	nav_disable2 = 1
-	if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode ~= 0 then
-		nav_disable2 = 0
+	if B738DR_efis_fo_apt_on == 0 or B738DR_fo_map_mode < 2 then
+		nav_disable2 = 1
 	end
-	if B738DR_efis_fo_apt_on == 0 then
+	if B738DR_fo_map_mode == 3 and legs_num2 == 0 then
 		nav_disable2 = 1
 	end
 	
@@ -56476,27 +56499,16 @@ function B738_displ_apt()
 		obj3 = obj2
 	end
 	
-	if B738DR_track_up == 0 then
-		mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-	else
-		if B738DR_track_up_active == 0 then
-			mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-		else
-			mag_hdg = ndx_mag_hdg - simDR_mag_variation
-		end
-	end
-	
 	if nd_page == 0 then
 		page_max = nd_page2_num
 	else
 		page_max = nd_page1_num
 	end
 	
-	if page_max > 0 then
+	if page_max > 0 and nav_disable3 == 0 then
 		
 		for n = 1, page_max do 
 			
-			--nd_on_off = 0
 			nd_on_off2 = 0
 			if nd_page == 0 then
 				page_1 = nd_page2[n][1]
@@ -56508,271 +56520,360 @@ function B738_displ_apt()
 				page_3 = nd_page1[n][3]
 			end
 		
-		--for n = 1, apt_data_num do
-			--nd_lat2 = apt_data[n][2]
-			--nd_lon2 = apt_data[n][3]
-			nd_lat2 = math.rad(page_2)
-			nd_lon2 = math.rad(page_3)
+			nd_lat2 = page_2
+			nd_lon2 = page_3
 			
-			-- nd_x = (nd_lon2 - nd_lon) * math.cos((nd_lat + nd_lat2)/2)
-			-- nd_y = nd_lat2 - nd_lat
-			-- nd_dis = math.sqrt(nd_x*nd_x + nd_y*nd_y) * 3440.064795	--nm
-			
-			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
-			
-			if nd_dis < 165 and obj3 >= 0 and nav_disable3 == 0 then
-				
-				nd_y2 = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-				nd_x2 = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-				nd_hdg = math.atan2(nd_y2, nd_x2)
-				nd_hdg = math.deg(nd_hdg)
-				nd_hdg = (nd_hdg + 360) % 360
-				
-				--delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
-				delta_hdg = (nd_hdg - mag_hdg + 360) % 360
-				if delta_hdg > 180 then
-					delta_hdg = delta_hdg - 360
-				end
-				
-				if delta_hdg >= 0 and delta_hdg <= 90 then
-					-- right
-					nd_on_off2 = 1
-					delta_hdg = 90 - delta_hdg
-					delta_hdg = math.rad(delta_hdg)
-					nd_y2 = nd_dis * math.sin(delta_hdg)
-					nd_x2 = nd_dis * math.cos(delta_hdg)
-				elseif delta_hdg < 0 and delta_hdg >= -90 then
-					-- left
-					nd_on_off2 = 1
-					delta_hdg = 90 + delta_hdg
-					delta_hdg = math.rad(delta_hdg)
-					nd_y2 = nd_dis * math.sin(delta_hdg)
-					nd_x2 = -nd_dis * math.cos(delta_hdg)
-				elseif delta_hdg >= 90 then
-					-- right back
-					nd_on_off2 = 1
-					delta_hdg = delta_hdg - 90
-					delta_hdg = math.rad(delta_hdg)
-					nd_y2 = -nd_dis * math.sin(delta_hdg)
-					nd_x2 = nd_dis * math.cos(delta_hdg)
-				elseif delta_hdg <= -90 then
-					-- left back
-					nd_on_off2 = 1
-					delta_hdg = -90 - delta_hdg
-					delta_hdg = math.rad(delta_hdg)
-					nd_y2 = -nd_dis * math.sin(delta_hdg)
-					nd_x2 = -nd_dis * math.cos(delta_hdg)
-				end
-				
-				-- CPT
-				nd_on_off = nd_on_off2
-				if B738DR_efis_map_range_capt == 0 then	-- 5 NM
-					nd_zoom = 2
-				elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
-					nd_zoom = 1
-				elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
-					nd_zoom = 0.5
-				elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
-					nd_zoom = 0.25
-				elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
-					nd_zoom = 0.125
-				elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
-					nd_zoom = 0.0625
-				else
-					nd_on_off = 0
-				end
-				
-				nd_x = nd_x2 * nd_zoom		-- zoom
-				nd_y = nd_y2 * nd_zoom		-- zoom
+			if nav_disable == 0 then
+				-- CAPTAIN
+				nd_lat = ndx_lat
+				nd_lon = ndx_lon
 				if B738DR_capt_map_mode == 3 then
-					nd_y = nd_y + 4.1	-- adjust
-				end
-				
-				if nd_x < -8.0 or nd_x > 8.0 then
-					nd_on_off = 0
-				end
-				if nd_y > 11.0 or nd_y < -2 then
-					nd_on_off = 0
-				end
-				
-				if nd_on_off == 1 and obj >= 0 and nav_disable == 0 then
-					--if obj >= 0 then
-						apt_txt = page_1
-						if B738DR_fpln_nav_id ~= apt_txt then
-							B738DR_apt_obj[obj] = 1
-							B738DR_apt_x[obj] = nd_x
-							B738DR_apt_y[obj] = nd_y
-							if obj == 0 then
-								B738DR_apt_id00 = apt_txt
-							elseif obj == 1 then
-								B738DR_apt_id01 = apt_txt
-							elseif obj == 2 then
-								B738DR_apt_id02 = apt_txt
-							elseif obj == 3 then
-								B738DR_apt_id03 = apt_txt
-							elseif obj == 4 then
-								B738DR_apt_id04 = apt_txt
-							elseif obj == 5 then
-								B738DR_apt_id05 = apt_txt
-							elseif obj == 6 then
-								B738DR_apt_id06 = apt_txt
-							elseif obj == 7 then
-								B738DR_apt_id07 = apt_txt
-							elseif obj == 8 then
-								B738DR_apt_id08 = apt_txt
-							elseif obj == 9 then
-								B738DR_apt_id09 = apt_txt
-							elseif obj == 10 then
-								B738DR_apt_id10 = apt_txt
-							elseif obj == 11 then
-								B738DR_apt_id11 = apt_txt
-							elseif obj == 12 then
-								B738DR_apt_id12 = apt_txt
-							elseif obj == 13 then
-								B738DR_apt_id13 = apt_txt
-							elseif obj == 14 then
-								B738DR_apt_id14 = apt_txt
-							elseif obj == 15 then
-								B738DR_apt_id15 = apt_txt
-							elseif obj == 16 then
-								B738DR_apt_id16 = apt_txt
-							elseif obj == 17 then
-								B738DR_apt_id17 = apt_txt
-							elseif obj == 18 then
-								B738DR_apt_id18 = apt_txt
-							elseif obj == 19 then
-								B738DR_apt_id19 = apt_txt
-							elseif obj == 20 then
-								B738DR_apt_id20 = apt_txt
-							elseif obj == 21 then
-								B738DR_apt_id21 = apt_txt
-							elseif obj == 22 then
-								B738DR_apt_id22 = apt_txt
-							elseif obj == 23 then
-								B738DR_apt_id23 = apt_txt
-							elseif obj == 24 then
-								B738DR_apt_id24 = apt_txt
-							elseif obj == 25 then
-								B738DR_apt_id25 = apt_txt
-							elseif obj == 26 then
-								B738DR_apt_id26 = apt_txt
-							elseif obj == 27 then
-								B738DR_apt_id27 = apt_txt
-							elseif obj == 28 then
-								B738DR_apt_id28 = apt_txt
-							elseif obj == 29 then
-								B738DR_apt_id29 = apt_txt
-							end
-							obj = obj - 1
+					if legs_step == 0 then
+						nd_lat = legs_data2[1][7]
+						nd_lon = legs_data2[1][8]
+					else
+						nd_lat = legs_data2[legs_step][7]
+						nd_lon = legs_data2[legs_step][8]
+					end
+					mag_hdg = -simDR_mag_variation
+				elseif B738DR_capt_map_mode == 2 then
+					if B738DR_track_up == 0 then
+						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+					else
+						if B738DR_track_up_active == 0 then
+							mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+						else
+							mag_hdg = ndx_mag_hdg - simDR_mag_variation
 						end
-					--end
+					end
 				end
 				
-				-- FO
-				nd_on_off = nd_on_off2
-				if B738DR_efis_map_range_fo == 0 then	-- 5 NM
-					nd_zoom = 2
-				elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
-					nd_zoom = 1
-				elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
-					nd_zoom = 0.5
-				elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
-					nd_zoom = 0.25
-				elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
-					nd_zoom = 0.125
-				elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
-					nd_zoom = 0.0625
-				else
-					nd_on_off = 0
-				end
+				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
-				nd_x = nd_x2 * nd_zoom		-- zoom
-				nd_y = nd_y2 * nd_zoom		-- zoom
+				if nd_dis < 165 and obj3 >= 0 then	--and nav_disable3 == 0 then
+					
+					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					
+					delta_hdg = (nd_hdg - mag_hdg + 360) % 360
+					if delta_hdg > 180 then
+						delta_hdg = delta_hdg - 360
+					end
+					
+					if delta_hdg >= 0 and delta_hdg <= 90 then
+						-- right
+						nd_on_off2 = 1
+						delta_hdg = 90 - delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = nd_dis * math.sin(delta_hdg)
+						nd_x2 = nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg < 0 and delta_hdg >= -90 then
+						-- left
+						nd_on_off2 = 1
+						delta_hdg = 90 + delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = nd_dis * math.sin(delta_hdg)
+						nd_x2 = -nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg >= 90 then
+						-- right back
+						nd_on_off2 = 1
+						delta_hdg = delta_hdg - 90
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = -nd_dis * math.sin(delta_hdg)
+						nd_x2 = nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg <= -90 then
+						-- left back
+						nd_on_off2 = 1
+						delta_hdg = -90 - delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = -nd_dis * math.sin(delta_hdg)
+						nd_x2 = -nd_dis * math.cos(delta_hdg)
+					end
+					
+					-- CPT
+					nd_on_off = nd_on_off2
+					if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+						nd_zoom = 2
+					elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+						nd_zoom = 1
+					elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+						nd_zoom = 0.5
+					elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+						nd_zoom = 0.25
+					elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+						nd_zoom = 0.125
+					elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
+						nd_zoom = 0.0625
+					else
+						nd_on_off = 0
+					end
+					
+					if B738DR_capt_map_mode == 3 then
+						nd_zoom = nd_zoom / 2
+					end
+					
+					nd_x = nd_x2 * nd_zoom		-- zoom
+					nd_y = nd_y2 * nd_zoom		-- zoom
+					if nd_x < -8.0 or nd_x > 8.0 then
+						nd_on_off = 0
+					end
+					if nd_y > 11.0 or nd_y < -2 then
+						nd_on_off = 0
+					end
+					
+					if B738DR_capt_map_mode == 3 then
+						nd_y = nd_y + 4.1	-- adjust
+					end
+					
+					if nd_on_off == 1 and obj >= 0 then	--and nav_disable == 0 then
+						--if obj >= 0 then
+							apt_txt = page_1
+							if B738DR_fpln_nav_id ~= apt_txt then
+								B738DR_apt_obj[obj] = 1
+								B738DR_apt_x[obj] = nd_x
+								B738DR_apt_y[obj] = nd_y
+								if obj == 0 then
+									B738DR_apt_id00 = apt_txt
+								elseif obj == 1 then
+									B738DR_apt_id01 = apt_txt
+								elseif obj == 2 then
+									B738DR_apt_id02 = apt_txt
+								elseif obj == 3 then
+									B738DR_apt_id03 = apt_txt
+								elseif obj == 4 then
+									B738DR_apt_id04 = apt_txt
+								elseif obj == 5 then
+									B738DR_apt_id05 = apt_txt
+								elseif obj == 6 then
+									B738DR_apt_id06 = apt_txt
+								elseif obj == 7 then
+									B738DR_apt_id07 = apt_txt
+								elseif obj == 8 then
+									B738DR_apt_id08 = apt_txt
+								elseif obj == 9 then
+									B738DR_apt_id09 = apt_txt
+								elseif obj == 10 then
+									B738DR_apt_id10 = apt_txt
+								elseif obj == 11 then
+									B738DR_apt_id11 = apt_txt
+								elseif obj == 12 then
+									B738DR_apt_id12 = apt_txt
+								elseif obj == 13 then
+									B738DR_apt_id13 = apt_txt
+								elseif obj == 14 then
+									B738DR_apt_id14 = apt_txt
+								elseif obj == 15 then
+									B738DR_apt_id15 = apt_txt
+								elseif obj == 16 then
+									B738DR_apt_id16 = apt_txt
+								elseif obj == 17 then
+									B738DR_apt_id17 = apt_txt
+								elseif obj == 18 then
+									B738DR_apt_id18 = apt_txt
+								elseif obj == 19 then
+									B738DR_apt_id19 = apt_txt
+								elseif obj == 20 then
+									B738DR_apt_id20 = apt_txt
+								elseif obj == 21 then
+									B738DR_apt_id21 = apt_txt
+								elseif obj == 22 then
+									B738DR_apt_id22 = apt_txt
+								elseif obj == 23 then
+									B738DR_apt_id23 = apt_txt
+								elseif obj == 24 then
+									B738DR_apt_id24 = apt_txt
+								elseif obj == 25 then
+									B738DR_apt_id25 = apt_txt
+								elseif obj == 26 then
+									B738DR_apt_id26 = apt_txt
+								elseif obj == 27 then
+									B738DR_apt_id27 = apt_txt
+								elseif obj == 28 then
+									B738DR_apt_id28 = apt_txt
+								elseif obj == 29 then
+									B738DR_apt_id29 = apt_txt
+								end
+								obj = obj - 1
+							end
+						--end
+					end
+				end
+			end
+			
+			if nav_disable2 == 0 then
+				-- FIRST OFFICER
+				nd_lat = ndx_lat
+				nd_lon = ndx_lon
 				if B738DR_fo_map_mode == 3 then
-					nd_y = nd_y + 4.1	-- adjust
-				end
-				
-				if nd_x < -8.0 or nd_x > 8.0 then
-					nd_on_off = 0
-				end
-				if nd_y > 11.0 or nd_y < -2 then
-					nd_on_off = 0
-				end
-				
-				if nd_on_off == 1 and obj2 >= 0 and nav_disable2 == 0 then
-					--if obj2 >= 0 then
-						apt_txt = page_1
-						if B738DR_fpln_nav_id ~= apt_txt then
-							B738DR_apt_fo_obj[obj2] = 1
-							B738DR_apt_fo_x[obj2] = nd_x
-							B738DR_apt_fo_y[obj2] = nd_y
-							if obj2 == 0 then
-								B738DR_apt_fo_id00 = apt_txt
-							elseif obj2 == 1 then
-								B738DR_apt_fo_id01 = apt_txt
-							elseif obj2 == 2 then
-								B738DR_apt_fo_id02 = apt_txt
-							elseif obj2 == 3 then
-								B738DR_apt_fo_id03 = apt_txt
-							elseif obj2 == 4 then
-								B738DR_apt_fo_id04 = apt_txt
-							elseif obj2 == 5 then
-								B738DR_apt_fo_id05 = apt_txt
-							elseif obj2 == 6 then
-								B738DR_apt_fo_id06 = apt_txt
-							elseif obj2 == 7 then
-								B738DR_apt_fo_id07 = apt_txt
-							elseif obj2 == 8 then
-								B738DR_apt_fo_id08 = apt_txt
-							elseif obj2 == 9 then
-								B738DR_apt_fo_id09 = apt_txt
-							elseif obj2 == 10 then
-								B738DR_apt_fo_id10 = apt_txt
-							elseif obj2 == 11 then
-								B738DR_apt_fo_id11 = apt_txt
-							elseif obj2 == 12 then
-								B738DR_apt_fo_id12 = apt_txt
-							elseif obj2 == 13 then
-								B738DR_apt_fo_id13 = apt_txt
-							elseif obj2 == 14 then
-								B738DR_apt_fo_id14 = apt_txt
-							elseif obj2 == 15 then
-								B738DR_apt_fo_id15 = apt_txt
-							elseif obj2 == 16 then
-								B738DR_apt_fo_id16 = apt_txt
-							elseif obj2 == 17 then
-								B738DR_apt_fo_id17 = apt_txt
-							elseif obj2 == 18 then
-								B738DR_apt_fo_id18 = apt_txt
-							elseif obj2 == 19 then
-								B738DR_apt_fo_id19 = apt_txt
-							elseif obj2 == 20 then
-								B738DR_apt_fo_id20 = apt_txt
-							elseif obj2 == 21 then
-								B738DR_apt_fo_id21 = apt_txt
-							elseif obj2 == 22 then
-								B738DR_apt_fo_id22 = apt_txt
-							elseif obj2 == 23 then
-								B738DR_apt_fo_id23 = apt_txt
-							elseif obj2 == 24 then
-								B738DR_apt_fo_id24 = apt_txt
-							elseif obj2 == 25 then
-								B738DR_apt_fo_id25 = apt_txt
-							elseif obj2 == 26 then
-								B738DR_apt_fo_id26 = apt_txt
-							elseif obj2 == 27 then
-								B738DR_apt_fo_id27 = apt_txt
-							elseif obj2 == 28 then
-								B738DR_apt_fo_id28 = apt_txt
-							elseif obj2 == 29 then
-								B738DR_apt_fo_id29 = apt_txt
-							end
-							obj2 = obj2 - 1
+					if legs_step2 == 0 then
+						nd_lat = legs_data2[1][7]
+						nd_lon = legs_data2[1][8]
+					else
+						nd_lat = legs_data2[legs_step2][7]
+						nd_lon = legs_data2[legs_step2][8]
+					end
+					
+					mag_hdg = -simDR_mag_variation
+				elseif B738DR_fo_map_mode == 2 then
+					if B738DR_track_up == 0 then
+						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+					else
+						if B738DR_track_up_active == 0 then
+							mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+						else
+							mag_hdg = ndx_mag_hdg - simDR_mag_variation
 						end
-					--end
+					end
 				end
 				
+				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
+				if nd_dis < 165 and obj3 >= 0 then	--and nav_disable3 == 0 then
+					
+					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					
+					delta_hdg = (nd_hdg - mag_hdg + 360) % 360
+					if delta_hdg > 180 then
+						delta_hdg = delta_hdg - 360
+					end
+					
+					if delta_hdg >= 0 and delta_hdg <= 90 then
+						-- right
+						nd_on_off2 = 1
+						delta_hdg = 90 - delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = nd_dis * math.sin(delta_hdg)
+						nd_x2 = nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg < 0 and delta_hdg >= -90 then
+						-- left
+						nd_on_off2 = 1
+						delta_hdg = 90 + delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = nd_dis * math.sin(delta_hdg)
+						nd_x2 = -nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg >= 90 then
+						-- right back
+						nd_on_off2 = 1
+						delta_hdg = delta_hdg - 90
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = -nd_dis * math.sin(delta_hdg)
+						nd_x2 = nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg <= -90 then
+						-- left back
+						nd_on_off2 = 1
+						delta_hdg = -90 - delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = -nd_dis * math.sin(delta_hdg)
+						nd_x2 = -nd_dis * math.cos(delta_hdg)
+					end
+				
+					-- FO
+					nd_on_off = nd_on_off2
+					if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+						nd_zoom = 2
+					elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+						nd_zoom = 1
+					elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+						nd_zoom = 0.5
+					elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+						nd_zoom = 0.25
+					elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+						nd_zoom = 0.125
+					elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
+						nd_zoom = 0.0625
+					else
+						nd_on_off = 0
+					end
+					
+					if B738DR_fo_map_mode == 3 then
+						nd_zoom = nd_zoom / 2
+					end
+					
+					nd_x = nd_x2 * nd_zoom		-- zoom
+					nd_y = nd_y2 * nd_zoom		-- zoom
+					if nd_x < -8.0 or nd_x > 8.0 then
+						nd_on_off = 0
+					end
+					if nd_y > 11.0 or nd_y < -2 then
+						nd_on_off = 0
+					end
+					
+					if B738DR_fo_map_mode == 3 then
+						nd_y = nd_y + 4.1	-- adjust
+					end
+					
+					if nd_on_off == 1 and obj2 >= 0 then	--and nav_disable2 == 0 then
+						--if obj2 >= 0 then
+							apt_txt = page_1
+							if B738DR_fpln_nav_id ~= apt_txt then
+								B738DR_apt_fo_obj[obj2] = 1
+								B738DR_apt_fo_x[obj2] = nd_x
+								B738DR_apt_fo_y[obj2] = nd_y
+								if obj2 == 0 then
+									B738DR_apt_fo_id00 = apt_txt
+								elseif obj2 == 1 then
+									B738DR_apt_fo_id01 = apt_txt
+								elseif obj2 == 2 then
+									B738DR_apt_fo_id02 = apt_txt
+								elseif obj2 == 3 then
+									B738DR_apt_fo_id03 = apt_txt
+								elseif obj2 == 4 then
+									B738DR_apt_fo_id04 = apt_txt
+								elseif obj2 == 5 then
+									B738DR_apt_fo_id05 = apt_txt
+								elseif obj2 == 6 then
+									B738DR_apt_fo_id06 = apt_txt
+								elseif obj2 == 7 then
+									B738DR_apt_fo_id07 = apt_txt
+								elseif obj2 == 8 then
+									B738DR_apt_fo_id08 = apt_txt
+								elseif obj2 == 9 then
+									B738DR_apt_fo_id09 = apt_txt
+								elseif obj2 == 10 then
+									B738DR_apt_fo_id10 = apt_txt
+								elseif obj2 == 11 then
+									B738DR_apt_fo_id11 = apt_txt
+								elseif obj2 == 12 then
+									B738DR_apt_fo_id12 = apt_txt
+								elseif obj2 == 13 then
+									B738DR_apt_fo_id13 = apt_txt
+								elseif obj2 == 14 then
+									B738DR_apt_fo_id14 = apt_txt
+								elseif obj2 == 15 then
+									B738DR_apt_fo_id15 = apt_txt
+								elseif obj2 == 16 then
+									B738DR_apt_fo_id16 = apt_txt
+								elseif obj2 == 17 then
+									B738DR_apt_fo_id17 = apt_txt
+								elseif obj2 == 18 then
+									B738DR_apt_fo_id18 = apt_txt
+								elseif obj2 == 19 then
+									B738DR_apt_fo_id19 = apt_txt
+								elseif obj2 == 20 then
+									B738DR_apt_fo_id20 = apt_txt
+								elseif obj2 == 21 then
+									B738DR_apt_fo_id21 = apt_txt
+								elseif obj2 == 22 then
+									B738DR_apt_fo_id22 = apt_txt
+								elseif obj2 == 23 then
+									B738DR_apt_fo_id23 = apt_txt
+								elseif obj2 == 24 then
+									B738DR_apt_fo_id24 = apt_txt
+								elseif obj2 == 25 then
+									B738DR_apt_fo_id25 = apt_txt
+								elseif obj2 == 26 then
+									B738DR_apt_fo_id26 = apt_txt
+								elseif obj2 == 27 then
+									B738DR_apt_fo_id27 = apt_txt
+								elseif obj2 == 28 then
+									B738DR_apt_fo_id28 = apt_txt
+								elseif obj2 == 29 then
+									B738DR_apt_fo_id29 = apt_txt
+								end
+								obj2 = obj2 - 1
+							end
+						--end
+					end
+				end
 			end
 		end
 	end
@@ -57166,14 +57267,16 @@ end
 function B738_calc_navaid()
 	
 	local page_max = 0
-	local page_1 = 0
-	local page_2 = 0
-	local page_3 = 0
-	local page_4 = ""
-	local page_5 = 0 	-- x
-	local page_6 = 0 	-- y
-	local nd_lat = math.rad(ndx_lat)
-	local nd_lon = math.rad(ndx_lon)
+	-- local page_1 = 0
+	-- local page_2 = 0
+	-- local page_3 = 0
+	-- local page_4 = ""
+	-- local page_5 = 0 	-- x
+	-- local page_6 = 0 	-- y
+	-- local nd_lat = math.rad(ndx_lat)
+	-- local nd_lon = math.rad(ndx_lon)
+	local nd_lat = ndx_lat
+	local nd_lon = ndx_lon
 	local mag_hdg = 0
 	local nd_lat2 = 0
 	local nd_lon2 = 0
@@ -57188,6 +57291,9 @@ function B738_calc_navaid()
 	local n = 0
 	local nd_hdg = 0
 	
+	local nav_disable = 0
+	local nav_disable2 = 0
+	local nav_disable3 = 0
 	
 	if xnd_page == 0 then
 		page_max = xnd_page2_num
@@ -57195,19 +57301,28 @@ function B738_calc_navaid()
 		page_max = xnd_page1_num
 	end
 	
-	if page_max > 0 then
+	if (B738DR_efis_vor_on == 0 and B738DR_efis_fix_on == 0) or B738DR_capt_map_mode < 2 then
+		nav_disable = 1
+	end
+	if B738DR_capt_map_mode == 3 and legs_num2 == 0 then
+		nav_disable = 1
+	end
+	
+	if (B738DR_efis_fo_vor_on == 0 and B738DR_efis_fo_fix_on == 0) or B738DR_fo_map_mode < 2 then
+		nav_disable2 = 1
+	end
+	if B738DR_fo_map_mode == 3 and legs_num2 == 0 then
+		nav_disable2 = 1
+	end
+	
+	nav_disable3 = 1
+	if nav_disable == 0 or nav_disable2 == 0 then
+		nav_disable3 = 0
+	end
+	
+	if page_max > 0 and nav_disable3 == 0 then
+	
 		
-		if B738DR_track_up == 0 then
-			mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-		else
-			if B738DR_track_up_active == 0 then
-				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-			else
-				mag_hdg = ndx_mag_hdg - simDR_mag_variation
-			end
-		end
-		
-		--if xfirst_time2 == 0 then
 		if xfirst_time2 == 1 then
 			from0 = 1
 			to0 = math.floor(page_max / 2)
@@ -57215,13 +57330,7 @@ function B738_calc_navaid()
 			from0 = math.floor(page_max / 2)
 			to0 = page_max
 		end
-		-- if xfirst_time2 == 0 then
-			-- from0 = 1
-			-- to0 = math.floor(page_max / 8) * 3
-		-- else
-			-- from0 = (math.floor(page_max / 8) * 3) + 1
-			-- to0 = page_max
-		-- end
+		
 		if to0 == 0 or to0 > page_max then
 			to0 = page_max
 		end
@@ -57232,97 +57341,211 @@ function B738_calc_navaid()
 			from0 = 1
 		end
 		
-		
-	
-		
-		--for n = 1, page_max do 
 		for n = from0, to0 do 
 			
-														   
-			
 			if xnd_page == 0 then
-				--page_1 = xnd_page2[n][1]
 				page_2 = xnd_page2[n][2]
 				page_3 = xnd_page2[n][3]
-				--page_4 = xnd_page2[n][4]
 			else
-				--page_1 = xnd_page1[n][1]
 				page_2 = xnd_page1[n][2]
 				page_3 = xnd_page1[n][3]
-				--page_4 = xnd_page1[n][4]
 			end
 		
 			
-			nd_lat2 = math.rad(page_2)
-			nd_lon2 = math.rad(page_3)
+			nd_lat2 = page_2
+			nd_lon2 = page_3
 			
-			nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
-			
-			
-			if nd_dis < 165 then
-				
-				nd_y2 = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-				nd_x2 = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-				nd_hdg = math.atan2(nd_y2, nd_x2)
-				nd_hdg = math.deg(nd_hdg)
-				nd_hdg = (nd_hdg + 360) % 360
-				
-				delta_hdg = (nd_hdg - mag_hdg + 360) % 360
-				if delta_hdg > 180 then
-					delta_hdg = delta_hdg - 360
+			if nav_disable == 0 then
+				-- CAPTAIN
+				nd_lat = ndx_lat
+				nd_lon = ndx_lon
+				if B738DR_capt_map_mode == 3 then
+					if legs_step == 0 then
+						nd_lat = legs_data2[1][7]
+						nd_lon = legs_data2[1][8]
+					else
+						nd_lat = legs_data2[legs_step][7]
+						nd_lon = legs_data2[legs_step][8]
+					end
+					mag_hdg = -simDR_mag_variation
+				elseif B738DR_capt_map_mode == 2 then
+					if B738DR_track_up == 0 then
+						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+					else
+						if B738DR_track_up_active == 0 then
+							mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+						else
+							mag_hdg = ndx_mag_hdg - simDR_mag_variation
+						end
+					end
 				end
+			
+			
+				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
-				if delta_hdg >= 0 and delta_hdg <= 90 then
-					-- right
-					delta_hdg = 90 - delta_hdg
-					delta_hdg = math.rad(delta_hdg)
-					nd_y2 = nd_dis * math.sin(delta_hdg)
-					nd_x2 = nd_dis * math.cos(delta_hdg)
-				elseif delta_hdg < 0 and delta_hdg >= -90 then
-					-- left
-					delta_hdg = 90 + delta_hdg
-					delta_hdg = math.rad(delta_hdg)
-					nd_y2 = nd_dis * math.sin(delta_hdg)
-					nd_x2 = -nd_dis * math.cos(delta_hdg)
-				elseif delta_hdg >= 90 then
-					-- right back
-					delta_hdg = delta_hdg - 90
-					delta_hdg = math.rad(delta_hdg)
-					nd_y2 = -nd_dis * math.sin(delta_hdg)
-					nd_x2 = nd_dis * math.cos(delta_hdg)
-				elseif delta_hdg <= -90 then
-					-- left back
-					delta_hdg = -90 - delta_hdg
-					delta_hdg = math.rad(delta_hdg)
-					nd_y2 = -nd_dis * math.sin(delta_hdg)
-					nd_x2 = -nd_dis * math.cos(delta_hdg)
-				end
-				if xnd_page == 0 then
-					xnd_page2[n][5] = nd_x2
-					xnd_page2[n][6] = nd_y2
-					xnd_page2[n][7] = 1
+				if nd_dis < 165 then
+					
+					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					
+					delta_hdg = (nd_hdg - mag_hdg + 360) % 360
+					if delta_hdg > 180 then
+						delta_hdg = delta_hdg - 360
+					end
+					
+					if delta_hdg >= 0 and delta_hdg <= 90 then
+						-- right
+						delta_hdg = 90 - delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = nd_dis * math.sin(delta_hdg)
+						nd_x2 = nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg < 0 and delta_hdg >= -90 then
+						-- left
+						delta_hdg = 90 + delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = nd_dis * math.sin(delta_hdg)
+						nd_x2 = -nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg >= 90 then
+						-- right back
+						delta_hdg = delta_hdg - 90
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = -nd_dis * math.sin(delta_hdg)
+						nd_x2 = nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg <= -90 then
+						-- left back
+						delta_hdg = -90 - delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = -nd_dis * math.sin(delta_hdg)
+						nd_x2 = -nd_dis * math.cos(delta_hdg)
+					end
+					if xnd_page == 0 then
+						xnd_page2[n][5] = nd_x2
+						xnd_page2[n][6] = nd_y2
+						xnd_page2[n][7] = 1
+					else
+						xnd_page1[n][5] = nd_x2
+						xnd_page1[n][6] = nd_y2
+						xnd_page1[n][7] = 1
+					end
+					
 				else
-					xnd_page1[n][5] = nd_x2
-					xnd_page1[n][6] = nd_y2
-					xnd_page1[n][7] = 1
+					if xnd_page == 0 then
+						xnd_page2[n][5] = 0
+						xnd_page2[n][6] = 0
+						xnd_page2[n][7] = 0
+					else
+						xnd_page1[n][5] = 0
+						xnd_page1[n][6] = 0
+						xnd_page1[n][7] = 0
+					end
 				end
-				
 			else
 				if xnd_page == 0 then
-					xnd_page2[n][5] = nd_x2
-					xnd_page2[n][6] = nd_y2
+					xnd_page2[n][5] = 0
+					xnd_page2[n][6] = 0
 					xnd_page2[n][7] = 0
 				else
-					xnd_page1[n][5] = nd_x2
-					xnd_page1[n][6] = nd_y2
+					xnd_page1[n][5] = 0
+					xnd_page1[n][6] = 0
 					xnd_page1[n][7] = 0
 				end
 			end
-  
+			
+			if nav_disable2 == 0 then
+				-- FIRST OFFICER
+				nd_lat = ndx_lat
+				nd_lon = ndx_lon
+				if B738DR_fo_map_mode == 3 then
+					if legs_step2 == 0 then
+						nd_lat = legs_data2[1][7]
+						nd_lon = legs_data2[1][8]
+					else
+						nd_lat = legs_data2[legs_step2][7]
+						nd_lon = legs_data2[legs_step2][8]
+					end
+					
+					mag_hdg = -simDR_mag_variation
+				elseif B738DR_fo_map_mode == 2 then
+					if B738DR_track_up == 0 then
+						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+					else
+						if B738DR_track_up_active == 0 then
+							mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+						else
+							mag_hdg = ndx_mag_hdg - simDR_mag_variation
+						end
+					end
+				end
+			
+				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
+				
+				if nd_dis < 165 then
+					
+					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					
+					delta_hdg = (nd_hdg - mag_hdg + 360) % 360
+					if delta_hdg > 180 then
+						delta_hdg = delta_hdg - 360
+					end
+					
+					if delta_hdg >= 0 and delta_hdg <= 90 then
+						-- right
+						delta_hdg = 90 - delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = nd_dis * math.sin(delta_hdg)
+						nd_x2 = nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg < 0 and delta_hdg >= -90 then
+						-- left
+						delta_hdg = 90 + delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = nd_dis * math.sin(delta_hdg)
+						nd_x2 = -nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg >= 90 then
+						-- right back
+						delta_hdg = delta_hdg - 90
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = -nd_dis * math.sin(delta_hdg)
+						nd_x2 = nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg <= -90 then
+						-- left back
+						delta_hdg = -90 - delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y2 = -nd_dis * math.sin(delta_hdg)
+						nd_x2 = -nd_dis * math.cos(delta_hdg)
+					end
+					if xnd_page == 0 then
+						xnd_page2[n][8] = nd_x2
+						xnd_page2[n][9] = nd_y2
+						xnd_page2[n][10] = 1
+					else
+						xnd_page1[n][8] = nd_x2
+						xnd_page1[n][9] = nd_y2
+						xnd_page1[n][10] = 1
+					end
+					
+				else
+					if xnd_page == 0 then
+						xnd_page2[n][8] = 0
+						xnd_page2[n][9] = 0
+						xnd_page2[n][10] = 0
+					else
+						xnd_page1[n][8] = 0
+						xnd_page1[n][9] = 0
+						xnd_page1[n][10] = 0
+					end
+				end
+			else
+				if xnd_page == 0 then
+					xnd_page2[n][8] = 0
+					xnd_page2[n][9] = 0
+					xnd_page2[n][10] = 0
+				else
+					xnd_page1[n][8] = 0
+					xnd_page1[n][9] = 0
+					xnd_page1[n][10] = 0
+				end
+			end
 		end
-  
 	end
- 
 end
 
 
@@ -57330,10 +57553,10 @@ function B738_displ_navaid()
 
 	-- local nd_lat = math.rad(ndx_lat) 	--math.rad(simDR_latitude) 
 	-- local nd_lon = math.rad(ndx_lon) 	--math.rad(simDR_longitude) 
-	local mag_hdg = 0
-	local nd_lat2 = 0
-	local nd_lon2 = 0
-	local nd_dis = 0
+	-- local mag_hdg = 0
+	-- local nd_lat2 = 0
+	-- local nd_lon2 = 0
+	-- local nd_dis = 0
 	local nd_x = 0
 	local nd_y = 0
 	local nd_hdg = 0
@@ -57352,6 +57575,10 @@ function B738_displ_navaid()
 	local page_5 = 0
 	local page_6 = 0
 	local page_7 = 0
+	local page_8 = 0
+	local page_9 = 0
+	local page_10 = 0
+	
 	local num_type = 0
 	local obj_enable = 0
 	local txt_white = ""
@@ -57368,20 +57595,25 @@ function B738_displ_navaid()
 	local nd_y2 = 0
 	local nd_on_off2 = 0
 	
-	nav_disable = 1
-	if B738DR_capt_map_mode == 2 then	--and B738DR_capt_exp_map_mode ~= 0 then
-		nav_disable = 0
+	if (B738DR_efis_vor_on == 0 and B738DR_efis_fix_on == 0) or B738DR_capt_map_mode < 2 then
+		nav_disable = 1
+	end
+	if B738DR_capt_map_mode == 3 and legs_num2 == 0 then
+		nav_disable = 1
 	end
 	
-	nav_disable2 = 1
-	if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode ~= 0 then
-		nav_disable2 = 0
+	if (B738DR_efis_fo_vor_on == 0 and B738DR_efis_fo_fix_on == 0) or B738DR_fo_map_mode < 2 then
+		nav_disable2 = 1
+	end
+	if B738DR_fo_map_mode == 3 and legs_num2 == 0 then
+		nav_disable2 = 1
 	end
 	
 	nav_disable3 = 1
 	if nav_disable == 0 or nav_disable2 == 0 then
 		nav_disable3 = 0
 	end
+	
 	if obj > obj2 then
 		obj3 = obj
 	else
@@ -57394,87 +57626,36 @@ function B738_displ_navaid()
 		page_max = xnd_page1_num
 	end
 	
-	if page_max > 0 then
+	if page_max > 0 and nav_disable3 == 0 then
 		
 		for n = 1, page_max do 
-			
 			
 			nd_on_off2 = 0
 			if xnd_page == 0 then
 				page_1 = xnd_page2[n][1]
-				--page_2 = xnd_page2[n][2]
-				--page_3 = xnd_page2[n][3]
 				page_4 = xnd_page2[n][4]
 				page_5 = xnd_page2[n][5]
 				page_6 = xnd_page2[n][6]
 				page_7 = xnd_page2[n][7]
+				page_8 = xnd_page2[n][8]
+				page_9 = xnd_page2[n][9]
+				page_10 = xnd_page2[n][10]
 			else
 				page_1 = xnd_page1[n][1]
-				--page_2 = xnd_page1[n][2]
-				--page_3 = xnd_page1[n][3]
 				page_4 = xnd_page1[n][4]
 				page_5 = xnd_page1[n][5]
 				page_6 = xnd_page1[n][6]
 				page_7 = xnd_page1[n][7]
+				page_8 = xnd_page1[n][8]
+				page_9 = xnd_page1[n][9]
+				page_10 = xnd_page1[n][10]
 			end
-
-			-- nd_lat2 = math.rad(page_2)
-			-- nd_lon2 = math.rad(page_3)
 			
-			-- nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
-							 
-			
-																								   
-			
-   
-			--if nd_dis < 165 and obj3 >= 0 and nav_disable3 == 0 then
-			if page_7 > 0 and obj3 >= 0 and nav_disable3 == 0 then
+			if page_7 > 0 and obj3 >= 0 and nav_disable == 0 then
 				
 				nd_x2 = page_5
 				nd_y2 = page_6
 				nd_on_off2 = 1
-				
-				-- nd_y2 = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-				-- nd_x2 = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-				-- nd_hdg = math.atan2(nd_y2, nd_x2)
-				-- nd_hdg = math.deg(nd_hdg)
-				-- nd_hdg = (nd_hdg + 360) % 360
-				
-				-- --delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
-				-- delta_hdg = (nd_hdg - mag_hdg + 360) % 360
-				-- if delta_hdg > 180 then
-					-- delta_hdg = delta_hdg - 360
-				-- end
-				
-				-- if delta_hdg >= 0 and delta_hdg <= 90 then
-					-- -- right
-					-- nd_on_off2 = 1
-					-- delta_hdg = 90 - delta_hdg
-					-- delta_hdg = math.rad(delta_hdg)
-					-- nd_y2 = nd_dis * math.sin(delta_hdg)
-					-- nd_x2 = nd_dis * math.cos(delta_hdg)
-				-- elseif delta_hdg < 0 and delta_hdg >= -90 then
-					-- -- left
-					-- nd_on_off2 = 1
-					-- delta_hdg = 90 + delta_hdg
-					-- delta_hdg = math.rad(delta_hdg)
-					-- nd_y2 = nd_dis * math.sin(delta_hdg)
-					-- nd_x2 = -nd_dis * math.cos(delta_hdg)
-				-- elseif delta_hdg >= 90 then
-					-- -- right back
-					-- nd_on_off2 = 1
-					-- delta_hdg = delta_hdg - 90
-					-- delta_hdg = math.rad(delta_hdg)
-					-- nd_y2 = -nd_dis * math.sin(delta_hdg)
-					-- nd_x2 = nd_dis * math.cos(delta_hdg)
-				-- elseif delta_hdg <= -90 then
-					-- -- left back
-					-- nd_on_off2 = 1
-					-- delta_hdg = -90 - delta_hdg
-					-- delta_hdg = math.rad(delta_hdg)
-					-- nd_y2 = -nd_dis * math.sin(delta_hdg)
-					-- nd_x2 = -nd_dis * math.cos(delta_hdg)
-				-- end
 				
 				-- CAPTAIN
 				nd_on_off = nd_on_off2
@@ -57494,11 +57675,12 @@ function B738_displ_navaid()
 					nd_on_off = 0
 				end
 				
+				if B738DR_capt_map_mode == 3 then
+					nd_zoom = nd_zoom / 2
+				end
+					
 				nd_x = nd_x2 * nd_zoom		-- zoom
 				nd_y = nd_y2 * nd_zoom		-- zoom
-				if B738DR_capt_map_mode == 3 then
-					nd_y = nd_y + 4.1	-- adjust
-				end
 				
 				if nd_x < -8.0 or nd_x > 8.0 then
 					nd_on_off = 0
@@ -57507,261 +57689,258 @@ function B738_displ_navaid()
 					nd_on_off = 0
 				end
 				
-				if nd_on_off == 1 and obj >= 0 and nav_disable == 0 then
-					-- -- WAYPOINTS
-					-- if wpt_enable == 0 then
-						-- if B738DR_fpln_nav_id ~= nil and num_type ~= 5 then
-							-- if B738DR_fpln_nav_id == page_4 then
-								-- wpt_enable = 1
-							-- end
-						-- end
-					-- end
-					
-					-- OBJECT
-					--if obj >= 0 then	-- max number displayed objects
-						B738DR_nd_object_x[obj] = nd_x
-						B738DR_nd_object_y[obj] = nd_y
-						obj_enable =  0
-						num_type = page_1
-						if B738DR_efis_vor_on == 1 and num_type < 3 then	-- VOR, VOR DME
-							obj_enable = 1
-							txt_white = ""
-							txt_cyan = page_4
-						--end
-						elseif B738DR_efis_fix_on == 1 and num_type == 4 then		-- WPT
-							obj_enable = 1
-							txt_white = page_4
-							txt_cyan = ""
-						--end
-						elseif B738DR_vor1_show == 1 and num_type < 3 and vor_sel1 == page_4 then
-							obj_enable = 0
-							txt_cyan = ""
-							txt_white = ""
-						--end
-						elseif B738DR_vor2_show == 1 and num_type < 3 and vor_sel2 == page_4 then
-							obj_enable = 0
-							txt_cyan = ""
-							txt_white = ""
-						--end
-						elseif B738DR_efis_map_range_capt > 2 and num_type == 4 then	-- FIX to zoom 20NM
-							obj_enable = 0
-							txt_cyan = ""
-							txt_white = ""
-						--end
-						elseif B738DR_fpln_nav_id ~= nil and num_type ~= 5 then
-							if B738DR_fpln_nav_id == page_4 then
-								obj_enable = 0
-								txt_cyan = ""
-								txt_white = ""
-							end
-						end
-						if obj_enable == 1 then
-							if obj == 0 then
-								B738DR_nd_object_id00 = txt_cyan
-								B738DR_nd_object_id00w = txt_white
-								B738DR_nd_object_type00 = num_type
-							elseif obj == 1 then
-								B738DR_nd_object_id01 = txt_cyan
-								B738DR_nd_object_id01w = txt_white
-								B738DR_nd_object_type01 = num_type
-							elseif obj == 2 then
-								B738DR_nd_object_id02 = txt_cyan
-								B738DR_nd_object_id02w = txt_white
-								B738DR_nd_object_type02 = num_type
-							elseif obj == 3 then
-								B738DR_nd_object_id03 = txt_cyan
-								B738DR_nd_object_id03w = txt_white
-								B738DR_nd_object_type03 = num_type
-							elseif obj == 4 then
-								B738DR_nd_object_id04 = txt_cyan
-								B738DR_nd_object_id04w = txt_white
-								B738DR_nd_object_type04 = num_type
-							elseif obj == 5 then
-								B738DR_nd_object_id05 = txt_cyan
-								B738DR_nd_object_id05w = txt_white
-								B738DR_nd_object_type05 = num_type
-							elseif obj == 6 then
-								B738DR_nd_object_id06 = txt_cyan
-								B738DR_nd_object_id06w = txt_white
-								B738DR_nd_object_type06 = num_type
-							elseif obj == 7 then
-								B738DR_nd_object_id07 = txt_cyan
-								B738DR_nd_object_id07w = txt_white
-								B738DR_nd_object_type07 = num_type
-							elseif obj == 8 then
-								B738DR_nd_object_id08 = txt_cyan
-								B738DR_nd_object_id08w = txt_white
-								B738DR_nd_object_type08 = num_type
-							elseif obj == 9 then
-								B738DR_nd_object_id09 = txt_cyan
-								B738DR_nd_object_id09w = txt_white
-								B738DR_nd_object_type09 = num_type
-							elseif obj == 10 then
-								B738DR_nd_object_id10 = txt_cyan
-								B738DR_nd_object_id10w = txt_white
-								B738DR_nd_object_type10 = num_type
-							elseif obj == 11 then
-								B738DR_nd_object_id11 = txt_cyan
-								B738DR_nd_object_id11w = txt_white
-								B738DR_nd_object_type11 = num_type
-							elseif obj == 12 then
-								B738DR_nd_object_id12 = txt_cyan
-								B738DR_nd_object_id12w = txt_white
-								B738DR_nd_object_type12 = num_type
-							elseif obj == 13 then
-								B738DR_nd_object_id13 = txt_cyan
-								B738DR_nd_object_id13w = txt_white
-								B738DR_nd_object_type13 = num_type
-							elseif obj == 14 then
-								B738DR_nd_object_id14 = txt_cyan
-								B738DR_nd_object_id14w = txt_white
-								B738DR_nd_object_type14 = num_type
-							elseif obj == 15 then
-								B738DR_nd_object_id15 = txt_cyan
-								B738DR_nd_object_id15w = txt_white
-								B738DR_nd_object_type15 = num_type
-							elseif obj == 16 then
-								B738DR_nd_object_id16 = txt_cyan
-								B738DR_nd_object_id16w = txt_white
-								B738DR_nd_object_type16 = num_type
-							elseif obj == 17 then
-								B738DR_nd_object_id17 = txt_cyan
-								B738DR_nd_object_id17w = txt_white
-								B738DR_nd_object_type17 = num_type
-							elseif obj == 18 then
-								B738DR_nd_object_id18 = txt_cyan
-								B738DR_nd_object_id18w = txt_white
-								B738DR_nd_object_type18 = num_type
-							elseif obj == 19 then
-								B738DR_nd_object_id19 = txt_cyan
-								B738DR_nd_object_id19w = txt_white
-								B738DR_nd_object_type19 = num_type
-							elseif obj == 20 then
-								B738DR_nd_object_id20 = txt_cyan
-								B738DR_nd_object_id20w = txt_white
-								B738DR_nd_object_type20 = num_type
-							elseif obj == 21 then
-								B738DR_nd_object_id21 = txt_cyan
-								B738DR_nd_object_id21w = txt_white
-								B738DR_nd_object_type21 = num_type
-							elseif obj == 22 then
-								B738DR_nd_object_id22 = txt_cyan
-								B738DR_nd_object_id22w = txt_white
-								B738DR_nd_object_type22 = num_type
-							elseif obj == 23 then
-								B738DR_nd_object_id23 = txt_cyan
-								B738DR_nd_object_id23w = txt_white
-								B738DR_nd_object_type23 = num_type
-							elseif obj == 24 then
-								B738DR_nd_object_id24 = txt_cyan
-								B738DR_nd_object_id24w = txt_white
-								B738DR_nd_object_type24 = num_type
-							elseif obj == 25 then
-								B738DR_nd_object_id25 = txt_cyan
-								B738DR_nd_object_id25w = txt_white
-								B738DR_nd_object_type25 = num_type
-							elseif obj == 26 then
-								B738DR_nd_object_id26 = txt_cyan
-								B738DR_nd_object_id26w = txt_white
-								B738DR_nd_object_type26 = num_type
-							elseif obj == 27 then
-								B738DR_nd_object_id27 = txt_cyan
-								B738DR_nd_object_id27w = txt_white
-								B738DR_nd_object_type27 = num_type
-							elseif obj == 28 then
-								B738DR_nd_object_id28 = txt_cyan
-								B738DR_nd_object_id28w = txt_white
-								B738DR_nd_object_type28 = num_type
-							elseif obj == 29 then
-								B738DR_nd_object_id29 = txt_cyan
-								B738DR_nd_object_id29w = txt_white
-								B738DR_nd_object_type29 = num_type
-							elseif obj == 30 then
-								B738DR_nd_object_id30 = txt_cyan
-								B738DR_nd_object_id30w = txt_white
-								B738DR_nd_object_type30 = num_type
-							elseif obj == 31 then
-								B738DR_nd_object_id31 = txt_cyan
-								B738DR_nd_object_id31w = txt_white
-								B738DR_nd_object_type31 = num_type
-							elseif obj == 32 then
-								B738DR_nd_object_id32 = txt_cyan
-								B738DR_nd_object_id32w = txt_white
-								B738DR_nd_object_type32 = num_type
-							elseif obj == 33 then
-								B738DR_nd_object_id33 = txt_cyan
-								B738DR_nd_object_id33w = txt_white
-								B738DR_nd_object_type33 = num_type
-							elseif obj == 34 then
-								B738DR_nd_object_id34 = txt_cyan
-								B738DR_nd_object_id34w = txt_white
-								B738DR_nd_object_type34 = num_type
-							elseif obj == 35 then
-								B738DR_nd_object_id35 = txt_cyan
-								B738DR_nd_object_id35w = txt_white
-								B738DR_nd_object_type35 = num_type
-							elseif obj == 36 then
-								B738DR_nd_object_id36 = txt_cyan
-								B738DR_nd_object_id36w = txt_white
-								B738DR_nd_object_type36 = num_type
-							elseif obj == 37 then
-								B738DR_nd_object_id37 = txt_cyan
-								B738DR_nd_object_id37w = txt_white
-								B738DR_nd_object_type37 = num_type
-							elseif obj == 38 then
-								B738DR_nd_object_id38 = txt_cyan
-								B738DR_nd_object_id38w = txt_white
-								B738DR_nd_object_type38 = num_type
-							elseif obj == 39 then
-								B738DR_nd_object_id39 = txt_cyan
-								B738DR_nd_object_id39w = txt_white
-								B738DR_nd_object_type39 = num_type
-							elseif obj == 40 then
-								B738DR_nd_object_id40 = txt_cyan
-								B738DR_nd_object_id40w = txt_white
-								B738DR_nd_object_type40 = num_type
-							elseif obj == 41 then
-								B738DR_nd_object_id41 = txt_cyan
-								B738DR_nd_object_id41w = txt_white
-								B738DR_nd_object_type41 = num_type
-							elseif obj == 42 then
-								B738DR_nd_object_id42 = txt_cyan
-								B738DR_nd_object_id42w = txt_white
-								B738DR_nd_object_type42 = num_type
-							elseif obj == 43 then
-								B738DR_nd_object_id43 = txt_cyan
-								B738DR_nd_object_id43w = txt_white
-								B738DR_nd_object_type43 = num_type
-							elseif obj == 44 then
-								B738DR_nd_object_id44 = txt_cyan
-								B738DR_nd_object_id44w = txt_white
-								B738DR_nd_object_type44 = num_type
-							elseif obj == 45 then
-								B738DR_nd_object_id45 = txt_cyan
-								B738DR_nd_object_id45w = txt_white
-								B738DR_nd_object_type45 = num_type
-							elseif obj == 46 then
-								B738DR_nd_object_id46 = txt_cyan
-								B738DR_nd_object_id46w = txt_white
-								B738DR_nd_object_type46 = num_type
-							elseif obj == 47 then
-								B738DR_nd_object_id47 = txt_cyan
-								B738DR_nd_object_id47w = txt_white
-								B738DR_nd_object_type47 = num_type
-							elseif obj == 48 then
-								B738DR_nd_object_id48 = txt_cyan
-								B738DR_nd_object_id48w = txt_white
-								B738DR_nd_object_type48 = num_type
-							elseif obj == 49 then
-								B738DR_nd_object_id49 = txt_cyan
-								B738DR_nd_object_id49w = txt_white
-								B738DR_nd_object_type49 = num_type
-							end
-							obj = obj - 1
-						end
-					--end
+				if B738DR_capt_map_mode == 3 then
+					nd_y = nd_y + 4.1	-- adjust
 				end
 				
+				if nd_on_off == 1 and obj >= 0 then	--and nav_disable == 0 then
+					-- OBJECT
+					B738DR_nd_object_x[obj] = nd_x
+					B738DR_nd_object_y[obj] = nd_y
+					obj_enable = 0
+					num_type = page_1
+					if B738DR_vor1_show == 1 and num_type < 3 and vor_sel1 == page_4 then
+						obj_enable = 0
+						txt_cyan = ""
+						txt_white = ""
+					elseif B738DR_vor2_show == 1 and num_type < 3 and vor_sel2 == page_4 then
+						obj_enable = 0
+						txt_cyan = ""
+						txt_white = ""
+					elseif B738DR_efis_map_range_capt > 3 and num_type == 4 then	-- FIX to zoom 40NM
+						obj_enable = 0
+						txt_cyan = ""
+						txt_white = ""
+					elseif B738DR_efis_vor_on == 1 and num_type < 3 then	-- VOR, VOR DME
+						obj_enable = 1
+						txt_white = ""
+						txt_cyan = page_4
+					elseif B738DR_efis_fix_on == 1 and num_type == 4 then		-- WPT
+						obj_enable = 1
+						txt_white = page_4
+						txt_cyan = ""
+					end
+					if B738DR_fpln_nav_id ~= nil and num_type ~= 5 then
+						if B738DR_fpln_nav_id == page_4 then
+							obj_enable = 0
+							txt_cyan = ""
+							txt_white = ""
+						end
+					end
+					
+					if obj_enable == 1 then
+						if obj == 0 then
+							B738DR_nd_object_id00 = txt_cyan
+							B738DR_nd_object_id00w = txt_white
+							B738DR_nd_object_type00 = num_type
+						elseif obj == 1 then
+							B738DR_nd_object_id01 = txt_cyan
+							B738DR_nd_object_id01w = txt_white
+							B738DR_nd_object_type01 = num_type
+						elseif obj == 2 then
+							B738DR_nd_object_id02 = txt_cyan
+							B738DR_nd_object_id02w = txt_white
+							B738DR_nd_object_type02 = num_type
+						elseif obj == 3 then
+							B738DR_nd_object_id03 = txt_cyan
+							B738DR_nd_object_id03w = txt_white
+							B738DR_nd_object_type03 = num_type
+						elseif obj == 4 then
+							B738DR_nd_object_id04 = txt_cyan
+							B738DR_nd_object_id04w = txt_white
+							B738DR_nd_object_type04 = num_type
+						elseif obj == 5 then
+							B738DR_nd_object_id05 = txt_cyan
+							B738DR_nd_object_id05w = txt_white
+							B738DR_nd_object_type05 = num_type
+						elseif obj == 6 then
+							B738DR_nd_object_id06 = txt_cyan
+							B738DR_nd_object_id06w = txt_white
+							B738DR_nd_object_type06 = num_type
+						elseif obj == 7 then
+							B738DR_nd_object_id07 = txt_cyan
+							B738DR_nd_object_id07w = txt_white
+							B738DR_nd_object_type07 = num_type
+						elseif obj == 8 then
+							B738DR_nd_object_id08 = txt_cyan
+							B738DR_nd_object_id08w = txt_white
+							B738DR_nd_object_type08 = num_type
+						elseif obj == 9 then
+							B738DR_nd_object_id09 = txt_cyan
+							B738DR_nd_object_id09w = txt_white
+							B738DR_nd_object_type09 = num_type
+						elseif obj == 10 then
+							B738DR_nd_object_id10 = txt_cyan
+							B738DR_nd_object_id10w = txt_white
+							B738DR_nd_object_type10 = num_type
+						elseif obj == 11 then
+							B738DR_nd_object_id11 = txt_cyan
+							B738DR_nd_object_id11w = txt_white
+							B738DR_nd_object_type11 = num_type
+						elseif obj == 12 then
+							B738DR_nd_object_id12 = txt_cyan
+							B738DR_nd_object_id12w = txt_white
+							B738DR_nd_object_type12 = num_type
+						elseif obj == 13 then
+							B738DR_nd_object_id13 = txt_cyan
+							B738DR_nd_object_id13w = txt_white
+							B738DR_nd_object_type13 = num_type
+						elseif obj == 14 then
+							B738DR_nd_object_id14 = txt_cyan
+							B738DR_nd_object_id14w = txt_white
+							B738DR_nd_object_type14 = num_type
+						elseif obj == 15 then
+							B738DR_nd_object_id15 = txt_cyan
+							B738DR_nd_object_id15w = txt_white
+							B738DR_nd_object_type15 = num_type
+						elseif obj == 16 then
+							B738DR_nd_object_id16 = txt_cyan
+							B738DR_nd_object_id16w = txt_white
+							B738DR_nd_object_type16 = num_type
+						elseif obj == 17 then
+							B738DR_nd_object_id17 = txt_cyan
+							B738DR_nd_object_id17w = txt_white
+							B738DR_nd_object_type17 = num_type
+						elseif obj == 18 then
+							B738DR_nd_object_id18 = txt_cyan
+							B738DR_nd_object_id18w = txt_white
+							B738DR_nd_object_type18 = num_type
+						elseif obj == 19 then
+							B738DR_nd_object_id19 = txt_cyan
+							B738DR_nd_object_id19w = txt_white
+							B738DR_nd_object_type19 = num_type
+						elseif obj == 20 then
+							B738DR_nd_object_id20 = txt_cyan
+							B738DR_nd_object_id20w = txt_white
+							B738DR_nd_object_type20 = num_type
+						elseif obj == 21 then
+							B738DR_nd_object_id21 = txt_cyan
+							B738DR_nd_object_id21w = txt_white
+							B738DR_nd_object_type21 = num_type
+						elseif obj == 22 then
+							B738DR_nd_object_id22 = txt_cyan
+							B738DR_nd_object_id22w = txt_white
+							B738DR_nd_object_type22 = num_type
+						elseif obj == 23 then
+							B738DR_nd_object_id23 = txt_cyan
+							B738DR_nd_object_id23w = txt_white
+							B738DR_nd_object_type23 = num_type
+						elseif obj == 24 then
+							B738DR_nd_object_id24 = txt_cyan
+							B738DR_nd_object_id24w = txt_white
+							B738DR_nd_object_type24 = num_type
+						elseif obj == 25 then
+							B738DR_nd_object_id25 = txt_cyan
+							B738DR_nd_object_id25w = txt_white
+							B738DR_nd_object_type25 = num_type
+						elseif obj == 26 then
+							B738DR_nd_object_id26 = txt_cyan
+							B738DR_nd_object_id26w = txt_white
+							B738DR_nd_object_type26 = num_type
+						elseif obj == 27 then
+							B738DR_nd_object_id27 = txt_cyan
+							B738DR_nd_object_id27w = txt_white
+							B738DR_nd_object_type27 = num_type
+						elseif obj == 28 then
+							B738DR_nd_object_id28 = txt_cyan
+							B738DR_nd_object_id28w = txt_white
+							B738DR_nd_object_type28 = num_type
+						elseif obj == 29 then
+							B738DR_nd_object_id29 = txt_cyan
+							B738DR_nd_object_id29w = txt_white
+							B738DR_nd_object_type29 = num_type
+						elseif obj == 30 then
+							B738DR_nd_object_id30 = txt_cyan
+							B738DR_nd_object_id30w = txt_white
+							B738DR_nd_object_type30 = num_type
+						elseif obj == 31 then
+							B738DR_nd_object_id31 = txt_cyan
+							B738DR_nd_object_id31w = txt_white
+							B738DR_nd_object_type31 = num_type
+						elseif obj == 32 then
+							B738DR_nd_object_id32 = txt_cyan
+							B738DR_nd_object_id32w = txt_white
+							B738DR_nd_object_type32 = num_type
+						elseif obj == 33 then
+							B738DR_nd_object_id33 = txt_cyan
+							B738DR_nd_object_id33w = txt_white
+							B738DR_nd_object_type33 = num_type
+						elseif obj == 34 then
+							B738DR_nd_object_id34 = txt_cyan
+							B738DR_nd_object_id34w = txt_white
+							B738DR_nd_object_type34 = num_type
+						elseif obj == 35 then
+							B738DR_nd_object_id35 = txt_cyan
+							B738DR_nd_object_id35w = txt_white
+							B738DR_nd_object_type35 = num_type
+						elseif obj == 36 then
+							B738DR_nd_object_id36 = txt_cyan
+							B738DR_nd_object_id36w = txt_white
+							B738DR_nd_object_type36 = num_type
+						elseif obj == 37 then
+							B738DR_nd_object_id37 = txt_cyan
+							B738DR_nd_object_id37w = txt_white
+							B738DR_nd_object_type37 = num_type
+						elseif obj == 38 then
+							B738DR_nd_object_id38 = txt_cyan
+							B738DR_nd_object_id38w = txt_white
+							B738DR_nd_object_type38 = num_type
+						elseif obj == 39 then
+							B738DR_nd_object_id39 = txt_cyan
+							B738DR_nd_object_id39w = txt_white
+							B738DR_nd_object_type39 = num_type
+						elseif obj == 40 then
+							B738DR_nd_object_id40 = txt_cyan
+							B738DR_nd_object_id40w = txt_white
+							B738DR_nd_object_type40 = num_type
+						elseif obj == 41 then
+							B738DR_nd_object_id41 = txt_cyan
+							B738DR_nd_object_id41w = txt_white
+							B738DR_nd_object_type41 = num_type
+						elseif obj == 42 then
+							B738DR_nd_object_id42 = txt_cyan
+							B738DR_nd_object_id42w = txt_white
+							B738DR_nd_object_type42 = num_type
+						elseif obj == 43 then
+							B738DR_nd_object_id43 = txt_cyan
+							B738DR_nd_object_id43w = txt_white
+							B738DR_nd_object_type43 = num_type
+						elseif obj == 44 then
+							B738DR_nd_object_id44 = txt_cyan
+							B738DR_nd_object_id44w = txt_white
+							B738DR_nd_object_type44 = num_type
+						elseif obj == 45 then
+							B738DR_nd_object_id45 = txt_cyan
+							B738DR_nd_object_id45w = txt_white
+							B738DR_nd_object_type45 = num_type
+						elseif obj == 46 then
+							B738DR_nd_object_id46 = txt_cyan
+							B738DR_nd_object_id46w = txt_white
+							B738DR_nd_object_type46 = num_type
+						elseif obj == 47 then
+							B738DR_nd_object_id47 = txt_cyan
+							B738DR_nd_object_id47w = txt_white
+							B738DR_nd_object_type47 = num_type
+						elseif obj == 48 then
+							B738DR_nd_object_id48 = txt_cyan
+							B738DR_nd_object_id48w = txt_white
+							B738DR_nd_object_type48 = num_type
+						elseif obj == 49 then
+							B738DR_nd_object_id49 = txt_cyan
+							B738DR_nd_object_id49w = txt_white
+							B738DR_nd_object_type49 = num_type
+						end
+						obj = obj - 1
+					end
+				end
+			end
+			
+			if page_10 > 0 and obj3 >= 0 and nav_disable2 == 0 then
+				
+				nd_x2 = page_8
+				nd_y2 = page_9
+				nd_on_off2 = 1
+			
 				-- FIRST OFFICER
 				nd_on_off = nd_on_off2
 				if B738DR_efis_map_range_fo == 0 then	-- 5 NM
@@ -57780,12 +57959,12 @@ function B738_displ_navaid()
 					nd_on_off = 0
 				end
 				
+				if B738DR_fo_map_mode == 3 then
+					nd_zoom = nd_zoom / 2
+				end
+					
 				nd_x = nd_x2 * nd_zoom		-- zoom
 				nd_y = nd_y2 * nd_zoom		-- zoom
-				if B738DR_fo_map_mode == 3 then
-					nd_y = nd_y + 4.1	-- adjust
-				end
-				
 				if nd_x < -8.0 or nd_x > 8.0 then
 					nd_on_off = 0
 				end
@@ -57793,259 +57972,248 @@ function B738_displ_navaid()
 					nd_on_off = 0
 				end
 				
+				if B738DR_fo_map_mode == 3 then
+					nd_y = nd_y + 4.1	-- adjust
+				end
+				
 				if nd_on_off == 1 and obj2 >= 0 and nav_disable2 == 0 then
-					-- -- WAYPOINTS
-					-- if wpt_enable == 0 then
-						-- if B738DR_fpln_nav_id ~= nil and num_type ~= 5 then
-							-- if B738DR_fpln_nav_id == page_4 then
-								-- wpt_enable = 1
-							-- end
-						-- end
-					-- end
-					
 					-- OBJECT
-					--if obj >= 0 then	-- max number displayed objects
-						B738DR_nd_object_fo_x[obj2] = nd_x
-						B738DR_nd_object_fo_y[obj2] = nd_y
-						obj_enable =  0
-						num_type = page_1
-						if B738DR_efis_fo_vor_on == 1 and num_type < 3 then	-- VOR, VOR DME
-							obj_enable = 1
-							txt_white = ""
-							txt_cyan = page_4
-						--end
-						elseif B738DR_efis_fo_fix_on == 1 and num_type == 4 then		-- WPT
-							obj_enable = 1
-							txt_white = page_4
-							txt_cyan = ""
-						--end
-						elseif B738DR_vor1_copilot_show == 1 and num_type < 3 and vor_sel1 == page_4 then
+					B738DR_nd_object_fo_x[obj2] = nd_x
+					B738DR_nd_object_fo_y[obj2] = nd_y
+					obj_enable =  0
+					num_type = page_1
+					if B738DR_vor1_copilot_show == 1 and num_type < 3 and vor_sel1 == page_4 then
+						obj_enable = 0
+						txt_cyan = ""
+						txt_white = ""
+					elseif B738DR_vor2_copilot_show == 1 and num_type < 3 and vor_sel2 == page_4 then
+						obj_enable = 0
+						txt_cyan = ""
+						txt_white = ""
+					elseif B738DR_efis_map_range_fo > 3 and num_type == 4 then	-- FIX to zoom 40NM
+						obj_enable = 0
+						txt_cyan = ""
+						txt_white = ""
+					elseif B738DR_efis_fo_vor_on == 1 and num_type < 3 then	-- VOR, VOR DME
+						obj_enable = 1
+						txt_white = ""
+						txt_cyan = page_4
+					elseif B738DR_efis_fo_fix_on == 1 and num_type == 4 then		-- WPT
+						obj_enable = 1
+						txt_white = page_4
+						txt_cyan = ""
+					end
+					if B738DR_fpln_nav_id ~= nil and num_type ~= 5 then
+						if B738DR_fpln_nav_id == page_4 then
 							obj_enable = 0
 							txt_cyan = ""
 							txt_white = ""
-						--end
-						elseif B738DR_vor2_copilot_show == 1 and num_type < 3 and vor_sel2 == page_4 then
-							obj_enable = 0
-							txt_cyan = ""
-							txt_white = ""
-						--end
-						elseif B738DR_efis_map_range_fo > 2 and num_type == 4 then	-- FIX to zoom 20NM
-							obj_enable = 0
-							txt_cyan = ""
-							txt_white = ""
-						--end
-						elseif B738DR_fpln_nav_id ~= nil and num_type ~= 5 then
-							if B738DR_fpln_nav_id == page_4 then
-								obj_enable = 0
-								txt_cyan = ""
-								txt_white = ""
-							end
 						end
-						if obj_enable == 1 then
-							if obj2 == 0 then
-								B738DR_nd_object_fo_id00 = txt_cyan
-								B738DR_nd_object_fo_id00w = txt_white
-								B738DR_nd_object_fo_type00 = num_type
-							elseif obj2 == 1 then
-								B738DR_nd_object_fo_id01 = txt_cyan
-								B738DR_nd_object_fo_id01w = txt_white
-								B738DR_nd_object_fo_type01 = num_type
-							elseif obj2 == 2 then
-								B738DR_nd_object_fo_id02 = txt_cyan
-								B738DR_nd_object_fo_id02w = txt_white
-								B738DR_nd_object_fo_type02 = num_type
-							elseif obj2 == 3 then
-								B738DR_nd_object_fo_id03 = txt_cyan
-								B738DR_nd_object_fo_id03w = txt_white
-								B738DR_nd_object_fo_type03 = num_type
-							elseif obj2 == 4 then
-								B738DR_nd_object_fo_id04 = txt_cyan
-								B738DR_nd_object_fo_id04w = txt_white
-								B738DR_nd_object_fo_type04 = num_type
-							elseif obj2 == 5 then
-								B738DR_nd_object_fo_id05 = txt_cyan
-								B738DR_nd_object_fo_id05w = txt_white
-								B738DR_nd_object_fo_type05 = num_type
-							elseif obj2 == 6 then
-								B738DR_nd_object_fo_id06 = txt_cyan
-								B738DR_nd_object_fo_id06w = txt_white
-								B738DR_nd_object_fo_type06 = num_type
-							elseif obj2 == 7 then
-								B738DR_nd_object_fo_id07 = txt_cyan
-								B738DR_nd_object_fo_id07w = txt_white
-								B738DR_nd_object_fo_type07 = num_type
-							elseif obj2 == 8 then
-								B738DR_nd_object_fo_id08 = txt_cyan
-								B738DR_nd_object_fo_id08w = txt_white
-								B738DR_nd_object_fo_type08 = num_type
-							elseif obj2 == 9 then
-								B738DR_nd_object_fo_id09 = txt_cyan
-								B738DR_nd_object_fo_id09w = txt_white
-								B738DR_nd_object_fo_type09 = num_type
-							elseif obj2 == 10 then
-								B738DR_nd_object_fo_id10 = txt_cyan
-								B738DR_nd_object_fo_id10w = txt_white
-								B738DR_nd_object_fo_type10 = num_type
-							elseif obj2 == 11 then
-								B738DR_nd_object_fo_id11 = txt_cyan
-								B738DR_nd_object_fo_id11w = txt_white
-								B738DR_nd_object_fo_type11 = num_type
-							elseif obj2 == 12 then
-								B738DR_nd_object_fo_id12 = txt_cyan
-								B738DR_nd_object_fo_id12w = txt_white
-								B738DR_nd_object_fo_type12 = num_type
-							elseif obj2 == 13 then
-								B738DR_nd_object_fo_id13 = txt_cyan
-								B738DR_nd_object_fo_id13w = txt_white
-								B738DR_nd_object_fo_type13 = num_type
-							elseif obj2 == 14 then
-								B738DR_nd_object_fo_id14 = txt_cyan
-								B738DR_nd_object_fo_id14w = txt_white
-								B738DR_nd_object_fo_type14 = num_type
-							elseif obj2 == 15 then
-								B738DR_nd_object_fo_id15 = txt_cyan
-								B738DR_nd_object_fo_id15w = txt_white
-								B738DR_nd_object_fo_type15 = num_type
-							elseif obj2 == 16 then
-								B738DR_nd_object_fo_id16 = txt_cyan
-								B738DR_nd_object_fo_id16w = txt_white
-								B738DR_nd_object_fo_type16 = num_type
-							elseif obj2 == 17 then
-								B738DR_nd_object_fo_id17 = txt_cyan
-								B738DR_nd_object_fo_id17w = txt_white
-								B738DR_nd_object_fo_type17 = num_type
-							elseif obj2 == 18 then
-								B738DR_nd_object_fo_id18 = txt_cyan
-								B738DR_nd_object_fo_id18w = txt_white
-								B738DR_nd_object_fo_type18 = num_type
-							elseif obj2 == 19 then
-								B738DR_nd_object_fo_id19 = txt_cyan
-								B738DR_nd_object_fo_id19w = txt_white
-								B738DR_nd_object_fo_type19 = num_type
-							elseif obj2 == 20 then
-								B738DR_nd_object_fo_id20 = txt_cyan
-								B738DR_nd_object_fo_id20w = txt_white
-								B738DR_nd_object_fo_type20 = num_type
-							elseif obj2 == 21 then
-								B738DR_nd_object_fo_id21 = txt_cyan
-								B738DR_nd_object_fo_id21w = txt_white
-								B738DR_nd_object_fo_type21 = num_type
-							elseif obj2 == 22 then
-								B738DR_nd_object_fo_id22 = txt_cyan
-								B738DR_nd_object_fo_id22w = txt_white
-								B738DR_nd_object_fo_type22 = num_type
-							elseif obj2 == 23 then
-								B738DR_nd_object_fo_id23 = txt_cyan
-								B738DR_nd_object_fo_id23w = txt_white
-								B738DR_nd_object_fo_type23 = num_type
-							elseif obj2 == 24 then
-								B738DR_nd_object_fo_id24 = txt_cyan
-								B738DR_nd_object_fo_id24w = txt_white
-								B738DR_nd_object_fo_type24 = num_type
-							elseif obj2 == 25 then
-								B738DR_nd_object_fo_id25 = txt_cyan
-								B738DR_nd_object_fo_id25w = txt_white
-								B738DR_nd_object_fo_type25 = num_type
-							elseif obj2 == 26 then
-								B738DR_nd_object_fo_id26 = txt_cyan
-								B738DR_nd_object_fo_id26w = txt_white
-								B738DR_nd_object_fo_type26 = num_type
-							elseif obj2 == 27 then
-								B738DR_nd_object_fo_id27 = txt_cyan
-								B738DR_nd_object_fo_id27w = txt_white
-								B738DR_nd_object_fo_type27 = num_type
-							elseif obj2 == 28 then
-								B738DR_nd_object_fo_id28 = txt_cyan
-								B738DR_nd_object_fo_id28w = txt_white
-								B738DR_nd_object_fo_type28 = num_type
-							elseif obj2 == 29 then
-								B738DR_nd_object_fo_id29 = txt_cyan
-								B738DR_nd_object_fo_id29w = txt_white
-								B738DR_nd_object_fo_type29 = num_type
-							elseif obj2 == 30 then
-								B738DR_nd_object_fo_id30 = txt_cyan
-								B738DR_nd_object_fo_id30w = txt_white
-								B738DR_nd_object_fo_type30 = num_type
-							elseif obj2 == 31 then
-								B738DR_nd_object_fo_id31 = txt_cyan
-								B738DR_nd_object_fo_id31w = txt_white
-								B738DR_nd_object_fo_type31 = num_type
-							elseif obj2 == 32 then
-								B738DR_nd_object_fo_id32 = txt_cyan
-								B738DR_nd_object_fo_id32w = txt_white
-								B738DR_nd_object_fo_type32 = num_type
-							elseif obj2 == 33 then
-								B738DR_nd_object_fo_id33 = txt_cyan
-								B738DR_nd_object_fo_id33w = txt_white
-								B738DR_nd_object_fo_type33 = num_type
-							elseif obj2 == 34 then
-								B738DR_nd_object_fo_id34 = txt_cyan
-								B738DR_nd_object_fo_id34w = txt_white
-								B738DR_nd_object_fo_type34 = num_type
-							elseif obj2 == 35 then
-								B738DR_nd_object_fo_id35 = txt_cyan
-								B738DR_nd_object_fo_id35w = txt_white
-								B738DR_nd_object_fo_type35 = num_type
-							elseif obj2 == 36 then
-								B738DR_nd_object_fo_id36 = txt_cyan
-								B738DR_nd_object_fo_id36w = txt_white
-								B738DR_nd_object_fo_type36 = num_type
-							elseif obj2 == 37 then
-								B738DR_nd_object_fo_id37 = txt_cyan
-								B738DR_nd_object_fo_id37w = txt_white
-								B738DR_nd_object_fo_type37 = num_type
-							elseif obj2 == 38 then
-								B738DR_nd_object_fo_id38 = txt_cyan
-								B738DR_nd_object_fo_id38w = txt_white
-								B738DR_nd_object_fo_type38 = num_type
-							elseif obj2 == 39 then
-								B738DR_nd_object_fo_id39 = txt_cyan
-								B738DR_nd_object_fo_id39w = txt_white
-								B738DR_nd_object_fo_type39 = num_type
-							elseif obj2 == 40 then
-								B738DR_nd_object_fo_id40 = txt_cyan
-								B738DR_nd_object_fo_id40w = txt_white
-								B738DR_nd_object_fo_type40 = num_type
-							elseif obj2 == 41 then
-								B738DR_nd_object_fo_id41 = txt_cyan
-								B738DR_nd_object_fo_id41w = txt_white
-								B738DR_nd_object_fo_type41 = num_type
-							elseif obj2 == 42 then
-								B738DR_nd_object_fo_id42 = txt_cyan
-								B738DR_nd_object_fo_id42w = txt_white
-								B738DR_nd_object_fo_type42 = num_type
-							elseif obj2 == 43 then
-								B738DR_nd_object_fo_id43 = txt_cyan
-								B738DR_nd_object_fo_id43w = txt_white
-								B738DR_nd_object_fo_type43 = num_type
-							elseif obj2 == 44 then
-								B738DR_nd_object_fo_id44 = txt_cyan
-								B738DR_nd_object_fo_id44w = txt_white
-								B738DR_nd_object_fo_type44 = num_type
-							elseif obj2 == 45 then
-								B738DR_nd_object_fo_id45 = txt_cyan
-								B738DR_nd_object_fo_id45w = txt_white
-								B738DR_nd_object_fo_type45 = num_type
-							elseif obj2 == 46 then
-								B738DR_nd_object_fo_id46 = txt_cyan
-								B738DR_nd_object_fo_id46w = txt_white
-								B738DR_nd_object_fo_type46 = num_type
-							elseif obj2 == 47 then
-								B738DR_nd_object_fo_id47 = txt_cyan
-								B738DR_nd_object_fo_id47w = txt_white
-								B738DR_nd_object_fo_type47 = num_type
-							elseif obj2 == 48 then
-								B738DR_nd_object_fo_id48 = txt_cyan
-								B738DR_nd_object_fo_id48w = txt_white
-								B738DR_nd_object_fo_type48 = num_type
-							elseif obj2 == 49 then
-								B738DR_nd_object_fo_id49 = txt_cyan
-								B738DR_nd_object_fo_id49w = txt_white
-								B738DR_nd_object_fo_type49 = num_type
-							end
-							obj2 = obj2 - 1
+					end
+					if obj_enable == 1 then
+						if obj2 == 0 then
+							B738DR_nd_object_fo_id00 = txt_cyan
+							B738DR_nd_object_fo_id00w = txt_white
+							B738DR_nd_object_fo_type00 = num_type
+						elseif obj2 == 1 then
+							B738DR_nd_object_fo_id01 = txt_cyan
+							B738DR_nd_object_fo_id01w = txt_white
+							B738DR_nd_object_fo_type01 = num_type
+						elseif obj2 == 2 then
+							B738DR_nd_object_fo_id02 = txt_cyan
+							B738DR_nd_object_fo_id02w = txt_white
+							B738DR_nd_object_fo_type02 = num_type
+						elseif obj2 == 3 then
+							B738DR_nd_object_fo_id03 = txt_cyan
+							B738DR_nd_object_fo_id03w = txt_white
+							B738DR_nd_object_fo_type03 = num_type
+						elseif obj2 == 4 then
+							B738DR_nd_object_fo_id04 = txt_cyan
+							B738DR_nd_object_fo_id04w = txt_white
+							B738DR_nd_object_fo_type04 = num_type
+						elseif obj2 == 5 then
+							B738DR_nd_object_fo_id05 = txt_cyan
+							B738DR_nd_object_fo_id05w = txt_white
+							B738DR_nd_object_fo_type05 = num_type
+						elseif obj2 == 6 then
+							B738DR_nd_object_fo_id06 = txt_cyan
+							B738DR_nd_object_fo_id06w = txt_white
+							B738DR_nd_object_fo_type06 = num_type
+						elseif obj2 == 7 then
+							B738DR_nd_object_fo_id07 = txt_cyan
+							B738DR_nd_object_fo_id07w = txt_white
+							B738DR_nd_object_fo_type07 = num_type
+						elseif obj2 == 8 then
+							B738DR_nd_object_fo_id08 = txt_cyan
+							B738DR_nd_object_fo_id08w = txt_white
+							B738DR_nd_object_fo_type08 = num_type
+						elseif obj2 == 9 then
+							B738DR_nd_object_fo_id09 = txt_cyan
+							B738DR_nd_object_fo_id09w = txt_white
+							B738DR_nd_object_fo_type09 = num_type
+						elseif obj2 == 10 then
+							B738DR_nd_object_fo_id10 = txt_cyan
+							B738DR_nd_object_fo_id10w = txt_white
+							B738DR_nd_object_fo_type10 = num_type
+						elseif obj2 == 11 then
+							B738DR_nd_object_fo_id11 = txt_cyan
+							B738DR_nd_object_fo_id11w = txt_white
+							B738DR_nd_object_fo_type11 = num_type
+						elseif obj2 == 12 then
+							B738DR_nd_object_fo_id12 = txt_cyan
+							B738DR_nd_object_fo_id12w = txt_white
+							B738DR_nd_object_fo_type12 = num_type
+						elseif obj2 == 13 then
+							B738DR_nd_object_fo_id13 = txt_cyan
+							B738DR_nd_object_fo_id13w = txt_white
+							B738DR_nd_object_fo_type13 = num_type
+						elseif obj2 == 14 then
+							B738DR_nd_object_fo_id14 = txt_cyan
+							B738DR_nd_object_fo_id14w = txt_white
+							B738DR_nd_object_fo_type14 = num_type
+						elseif obj2 == 15 then
+							B738DR_nd_object_fo_id15 = txt_cyan
+							B738DR_nd_object_fo_id15w = txt_white
+							B738DR_nd_object_fo_type15 = num_type
+						elseif obj2 == 16 then
+							B738DR_nd_object_fo_id16 = txt_cyan
+							B738DR_nd_object_fo_id16w = txt_white
+							B738DR_nd_object_fo_type16 = num_type
+						elseif obj2 == 17 then
+							B738DR_nd_object_fo_id17 = txt_cyan
+							B738DR_nd_object_fo_id17w = txt_white
+							B738DR_nd_object_fo_type17 = num_type
+						elseif obj2 == 18 then
+							B738DR_nd_object_fo_id18 = txt_cyan
+							B738DR_nd_object_fo_id18w = txt_white
+							B738DR_nd_object_fo_type18 = num_type
+						elseif obj2 == 19 then
+							B738DR_nd_object_fo_id19 = txt_cyan
+							B738DR_nd_object_fo_id19w = txt_white
+							B738DR_nd_object_fo_type19 = num_type
+						elseif obj2 == 20 then
+							B738DR_nd_object_fo_id20 = txt_cyan
+							B738DR_nd_object_fo_id20w = txt_white
+							B738DR_nd_object_fo_type20 = num_type
+						elseif obj2 == 21 then
+							B738DR_nd_object_fo_id21 = txt_cyan
+							B738DR_nd_object_fo_id21w = txt_white
+							B738DR_nd_object_fo_type21 = num_type
+						elseif obj2 == 22 then
+							B738DR_nd_object_fo_id22 = txt_cyan
+							B738DR_nd_object_fo_id22w = txt_white
+							B738DR_nd_object_fo_type22 = num_type
+						elseif obj2 == 23 then
+							B738DR_nd_object_fo_id23 = txt_cyan
+							B738DR_nd_object_fo_id23w = txt_white
+							B738DR_nd_object_fo_type23 = num_type
+						elseif obj2 == 24 then
+							B738DR_nd_object_fo_id24 = txt_cyan
+							B738DR_nd_object_fo_id24w = txt_white
+							B738DR_nd_object_fo_type24 = num_type
+						elseif obj2 == 25 then
+							B738DR_nd_object_fo_id25 = txt_cyan
+							B738DR_nd_object_fo_id25w = txt_white
+							B738DR_nd_object_fo_type25 = num_type
+						elseif obj2 == 26 then
+							B738DR_nd_object_fo_id26 = txt_cyan
+							B738DR_nd_object_fo_id26w = txt_white
+							B738DR_nd_object_fo_type26 = num_type
+						elseif obj2 == 27 then
+							B738DR_nd_object_fo_id27 = txt_cyan
+							B738DR_nd_object_fo_id27w = txt_white
+							B738DR_nd_object_fo_type27 = num_type
+						elseif obj2 == 28 then
+							B738DR_nd_object_fo_id28 = txt_cyan
+							B738DR_nd_object_fo_id28w = txt_white
+							B738DR_nd_object_fo_type28 = num_type
+						elseif obj2 == 29 then
+							B738DR_nd_object_fo_id29 = txt_cyan
+							B738DR_nd_object_fo_id29w = txt_white
+							B738DR_nd_object_fo_type29 = num_type
+						elseif obj2 == 30 then
+							B738DR_nd_object_fo_id30 = txt_cyan
+							B738DR_nd_object_fo_id30w = txt_white
+							B738DR_nd_object_fo_type30 = num_type
+						elseif obj2 == 31 then
+							B738DR_nd_object_fo_id31 = txt_cyan
+							B738DR_nd_object_fo_id31w = txt_white
+							B738DR_nd_object_fo_type31 = num_type
+						elseif obj2 == 32 then
+							B738DR_nd_object_fo_id32 = txt_cyan
+							B738DR_nd_object_fo_id32w = txt_white
+							B738DR_nd_object_fo_type32 = num_type
+						elseif obj2 == 33 then
+							B738DR_nd_object_fo_id33 = txt_cyan
+							B738DR_nd_object_fo_id33w = txt_white
+							B738DR_nd_object_fo_type33 = num_type
+						elseif obj2 == 34 then
+							B738DR_nd_object_fo_id34 = txt_cyan
+							B738DR_nd_object_fo_id34w = txt_white
+							B738DR_nd_object_fo_type34 = num_type
+						elseif obj2 == 35 then
+							B738DR_nd_object_fo_id35 = txt_cyan
+							B738DR_nd_object_fo_id35w = txt_white
+							B738DR_nd_object_fo_type35 = num_type
+						elseif obj2 == 36 then
+							B738DR_nd_object_fo_id36 = txt_cyan
+							B738DR_nd_object_fo_id36w = txt_white
+							B738DR_nd_object_fo_type36 = num_type
+						elseif obj2 == 37 then
+							B738DR_nd_object_fo_id37 = txt_cyan
+							B738DR_nd_object_fo_id37w = txt_white
+							B738DR_nd_object_fo_type37 = num_type
+						elseif obj2 == 38 then
+							B738DR_nd_object_fo_id38 = txt_cyan
+							B738DR_nd_object_fo_id38w = txt_white
+							B738DR_nd_object_fo_type38 = num_type
+						elseif obj2 == 39 then
+							B738DR_nd_object_fo_id39 = txt_cyan
+							B738DR_nd_object_fo_id39w = txt_white
+							B738DR_nd_object_fo_type39 = num_type
+						elseif obj2 == 40 then
+							B738DR_nd_object_fo_id40 = txt_cyan
+							B738DR_nd_object_fo_id40w = txt_white
+							B738DR_nd_object_fo_type40 = num_type
+						elseif obj2 == 41 then
+							B738DR_nd_object_fo_id41 = txt_cyan
+							B738DR_nd_object_fo_id41w = txt_white
+							B738DR_nd_object_fo_type41 = num_type
+						elseif obj2 == 42 then
+							B738DR_nd_object_fo_id42 = txt_cyan
+							B738DR_nd_object_fo_id42w = txt_white
+							B738DR_nd_object_fo_type42 = num_type
+						elseif obj2 == 43 then
+							B738DR_nd_object_fo_id43 = txt_cyan
+							B738DR_nd_object_fo_id43w = txt_white
+							B738DR_nd_object_fo_type43 = num_type
+						elseif obj2 == 44 then
+							B738DR_nd_object_fo_id44 = txt_cyan
+							B738DR_nd_object_fo_id44w = txt_white
+							B738DR_nd_object_fo_type44 = num_type
+						elseif obj2 == 45 then
+							B738DR_nd_object_fo_id45 = txt_cyan
+							B738DR_nd_object_fo_id45w = txt_white
+							B738DR_nd_object_fo_type45 = num_type
+						elseif obj2 == 46 then
+							B738DR_nd_object_fo_id46 = txt_cyan
+							B738DR_nd_object_fo_id46w = txt_white
+							B738DR_nd_object_fo_type46 = num_type
+						elseif obj2 == 47 then
+							B738DR_nd_object_fo_id47 = txt_cyan
+							B738DR_nd_object_fo_id47w = txt_white
+							B738DR_nd_object_fo_type47 = num_type
+						elseif obj2 == 48 then
+							B738DR_nd_object_fo_id48 = txt_cyan
+							B738DR_nd_object_fo_id48w = txt_white
+							B738DR_nd_object_fo_type48 = num_type
+						elseif obj2 == 49 then
+							B738DR_nd_object_fo_id49 = txt_cyan
+							B738DR_nd_object_fo_id49w = txt_white
+							B738DR_nd_object_fo_type49 = num_type
 						end
-					--end
+						obj2 = obj2 - 1
+					end
 				end
 				
 			end
@@ -58055,419 +58223,6 @@ function B738_displ_navaid()
 	
 	nd_clr_navaid(obj, obj2)
 	
-	-- if obj >= 0 then
-		-- for n = obj, 0, -1 do
-			-- if n == 0 then
-				-- B738DR_nd_object_type00 = 0
-				-- B738DR_nd_object_id00 = ""
-				-- B738DR_nd_object_id00w = ""
-			-- elseif n == 1 then
-				-- B738DR_nd_object_type01 = 0
-				-- B738DR_nd_object_id01 = ""
-				-- B738DR_nd_object_id01w = ""
-			-- elseif n == 2 then
-				-- B738DR_nd_object_type02 = 0
-				-- B738DR_nd_object_id02 = ""
-				-- B738DR_nd_object_id02w = ""
-			-- elseif n == 3 then
-				-- B738DR_nd_object_type03 = 0
-				-- B738DR_nd_object_id03 = ""
-				-- B738DR_nd_object_id03w = ""
-			-- elseif n == 4 then
-				-- B738DR_nd_object_type04 = 0
-				-- B738DR_nd_object_id04 = ""
-				-- B738DR_nd_object_id04w = ""
-			-- elseif n == 5 then
-				-- B738DR_nd_object_type05 = 0
-				-- B738DR_nd_object_id05 = ""
-				-- B738DR_nd_object_id05w = ""
-			-- elseif n == 6 then
-				-- B738DR_nd_object_type06 = 0
-				-- B738DR_nd_object_id06 = ""
-				-- B738DR_nd_object_id06w = ""
-			-- elseif n == 7 then
-				-- B738DR_nd_object_type07 = 0
-				-- B738DR_nd_object_id07 = ""
-				-- B738DR_nd_object_id07w = ""
-			-- elseif n == 8 then
-				-- B738DR_nd_object_type08 = 0
-				-- B738DR_nd_object_id08 = ""
-				-- B738DR_nd_object_id08w = ""
-			-- elseif n == 9 then
-				-- B738DR_nd_object_type09 = 0
-				-- B738DR_nd_object_id09 = ""
-				-- B738DR_nd_object_id09w = ""
-			-- elseif n == 10 then
-				-- B738DR_nd_object_type10 = 0
-				-- B738DR_nd_object_id10 = ""
-				-- B738DR_nd_object_id10w = ""
-			-- elseif n == 11 then
-				-- B738DR_nd_object_type11 = 0
-				-- B738DR_nd_object_id11 = ""
-				-- B738DR_nd_object_id11w = ""
-			-- elseif n == 12 then
-				-- B738DR_nd_object_type12 = 0
-				-- B738DR_nd_object_id12 = ""
-				-- B738DR_nd_object_id12w = ""
-			-- elseif n == 13 then
-				-- B738DR_nd_object_type13 = 0
-				-- B738DR_nd_object_id13 = ""
-				-- B738DR_nd_object_id13w = ""
-			-- elseif n == 14 then
-				-- B738DR_nd_object_type14 = 0
-				-- B738DR_nd_object_id14 = ""
-				-- B738DR_nd_object_id14w = ""
-			-- elseif n == 15 then
-				-- B738DR_nd_object_type15 = 0
-				-- B738DR_nd_object_id15 = ""
-				-- B738DR_nd_object_id15w = ""
-			-- elseif n == 16 then
-				-- B738DR_nd_object_type16 = 0
-				-- B738DR_nd_object_id16 = ""
-				-- B738DR_nd_object_id16w = ""
-			-- elseif n == 17 then
-				-- B738DR_nd_object_type17 = 0
-				-- B738DR_nd_object_id17 = ""
-				-- B738DR_nd_object_id17w = ""
-			-- elseif n == 18 then
-				-- B738DR_nd_object_type18 = 0
-				-- B738DR_nd_object_id18 = ""
-				-- B738DR_nd_object_id18w = ""
-			-- elseif n == 19 then
-				-- B738DR_nd_object_type19 = 0
-				-- B738DR_nd_object_id19 = ""
-				-- B738DR_nd_object_id19w = ""
-			-- elseif n == 20 then
-				-- B738DR_nd_object_type20 = 0
-				-- B738DR_nd_object_id20 = ""
-				-- B738DR_nd_object_id20w = ""
-			-- elseif n == 21 then
-				-- B738DR_nd_object_type21 = 0
-				-- B738DR_nd_object_id21 = ""
-				-- B738DR_nd_object_id21w = ""
-			-- elseif n == 22 then
-				-- B738DR_nd_object_type22 = 0
-				-- B738DR_nd_object_id22 = ""
-				-- B738DR_nd_object_id22w = ""
-			-- elseif n == 23 then
-				-- B738DR_nd_object_type23 = 0
-				-- B738DR_nd_object_id23 = ""
-				-- B738DR_nd_object_id23w = ""
-			-- elseif n == 24 then
-				-- B738DR_nd_object_type24 = 0
-				-- B738DR_nd_object_id24 = ""
-				-- B738DR_nd_object_id24w = ""
-			-- elseif n == 25 then
-				-- B738DR_nd_object_type25 = 0
-				-- B738DR_nd_object_id25 = ""
-				-- B738DR_nd_object_id25w = ""
-			-- elseif n == 26 then
-				-- B738DR_nd_object_type26 = 0
-				-- B738DR_nd_object_id26 = ""
-				-- B738DR_nd_object_id26w = ""
-			-- elseif n == 27 then
-				-- B738DR_nd_object_type27 = 0
-				-- B738DR_nd_object_id27 = ""
-				-- B738DR_nd_object_id27w = ""
-			-- elseif n == 28 then
-				-- B738DR_nd_object_type28 = 0
-				-- B738DR_nd_object_id28 = ""
-				-- B738DR_nd_object_id28w = ""
-			-- elseif n == 29 then
-				-- B738DR_nd_object_type29 = 0
-				-- B738DR_nd_object_id29 = ""
-				-- B738DR_nd_object_id29w = ""
-			-- elseif n == 30 then
-				-- B738DR_nd_object_type30 = 0
-				-- B738DR_nd_object_id30 = ""
-				-- B738DR_nd_object_id30w = ""
-			-- elseif n == 31 then
-				-- B738DR_nd_object_type31 = 0
-				-- B738DR_nd_object_id31 = ""
-				-- B738DR_nd_object_id31w = ""
-			-- elseif n == 32 then
-				-- B738DR_nd_object_type32 = 0
-				-- B738DR_nd_object_id32 = ""
-				-- B738DR_nd_object_id32w = ""
-			-- elseif n == 33 then
-				-- B738DR_nd_object_type33 = 0
-				-- B738DR_nd_object_id33 = ""
-				-- B738DR_nd_object_id33w = ""
-			-- elseif n == 34 then
-				-- B738DR_nd_object_type34 = 0
-				-- B738DR_nd_object_id34 = ""
-				-- B738DR_nd_object_id34w = ""
-			-- elseif n == 35 then
-				-- B738DR_nd_object_type35 = 0
-				-- B738DR_nd_object_id35 = ""
-				-- B738DR_nd_object_id35w = ""
-			-- elseif n == 36 then
-				-- B738DR_nd_object_type36 = 0
-				-- B738DR_nd_object_id36 = ""
-				-- B738DR_nd_object_id36w = ""
-			-- elseif n == 37 then
-				-- B738DR_nd_object_type37 = 0
-				-- B738DR_nd_object_id37 = ""
-				-- B738DR_nd_object_id37w = ""
-			-- elseif n == 38 then
-				-- B738DR_nd_object_type38 = 0
-				-- B738DR_nd_object_id38 = ""
-				-- B738DR_nd_object_id38w = ""
-			-- elseif n == 39 then
-				-- B738DR_nd_object_type39 = 0
-				-- B738DR_nd_object_id39 = ""
-				-- B738DR_nd_object_id39w = ""
-			-- elseif n == 40 then
-				-- B738DR_nd_object_type40 = 0
-				-- B738DR_nd_object_id40 = ""
-				-- B738DR_nd_object_id40w = ""
-			-- elseif n == 41 then
-				-- B738DR_nd_object_type41 = 0
-				-- B738DR_nd_object_id41 = ""
-				-- B738DR_nd_object_id41w = ""
-			-- elseif n == 42 then
-				-- B738DR_nd_object_type42 = 0
-				-- B738DR_nd_object_id42 = ""
-				-- B738DR_nd_object_id42w = ""
-			-- elseif n == 43 then
-				-- B738DR_nd_object_type43 = 0
-				-- B738DR_nd_object_id43 = ""
-				-- B738DR_nd_object_id43w = ""
-			-- elseif n == 44 then
-				-- B738DR_nd_object_type44 = 0
-				-- B738DR_nd_object_id44 = ""
-				-- B738DR_nd_object_id44w = ""
-			-- elseif n == 45 then
-				-- B738DR_nd_object_type45 = 0
-				-- B738DR_nd_object_id45 = ""
-				-- B738DR_nd_object_id45w = ""
-			-- elseif n == 46 then
-				-- B738DR_nd_object_type46 = 0
-				-- B738DR_nd_object_id46 = ""
-				-- B738DR_nd_object_id46w = ""
-			-- elseif n == 47 then
-				-- B738DR_nd_object_type47 = 0
-				-- B738DR_nd_object_id47 = ""
-				-- B738DR_nd_object_id47w = ""
-			-- elseif n == 48 then
-				-- B738DR_nd_object_type48 = 0
-				-- B738DR_nd_object_id48 = ""
-				-- B738DR_nd_object_id48w = ""
-			-- elseif n == 49 then
-				-- B738DR_nd_object_type49 = 0
-				-- B738DR_nd_object_id49 = ""
-				-- B738DR_nd_object_id49w = ""
-			-- end
-		-- end
-	-- end
-	
-	-- if obj2 >= 0 then
-		-- for n = obj2, 0, -1 do
-			-- if n == 0 then
-				-- B738DR_nd_object_fo_type00 = 0
-				-- B738DR_nd_object_fo_id00 = ""
-				-- B738DR_nd_object_fo_id00w = ""
-			-- elseif n == 1 then
-				-- B738DR_nd_object_fo_type01 = 0
-				-- B738DR_nd_object_fo_id01 = ""
-				-- B738DR_nd_object_fo_id01w = ""
-			-- elseif n == 2 then
-				-- B738DR_nd_object_fo_type02 = 0
-				-- B738DR_nd_object_fo_id02 = ""
-				-- B738DR_nd_object_fo_id02w = ""
-			-- elseif n == 3 then
-				-- B738DR_nd_object_fo_type03 = 0
-				-- B738DR_nd_object_fo_id03 = ""
-				-- B738DR_nd_object_fo_id03w = ""
-			-- elseif n == 4 then
-				-- B738DR_nd_object_fo_type04 = 0
-				-- B738DR_nd_object_fo_id04 = ""
-				-- B738DR_nd_object_fo_id04w = ""
-			-- elseif n == 5 then
-				-- B738DR_nd_object_fo_type05 = 0
-				-- B738DR_nd_object_fo_id05 = ""
-				-- B738DR_nd_object_fo_id05w = ""
-			-- elseif n == 6 then
-				-- B738DR_nd_object_fo_type06 = 0
-				-- B738DR_nd_object_fo_id06 = ""
-				-- B738DR_nd_object_fo_id06w = ""
-			-- elseif n == 7 then
-				-- B738DR_nd_object_fo_type07 = 0
-				-- B738DR_nd_object_fo_id07 = ""
-				-- B738DR_nd_object_fo_id07w = ""
-			-- elseif n == 8 then
-				-- B738DR_nd_object_fo_type08 = 0
-				-- B738DR_nd_object_fo_id08 = ""
-				-- B738DR_nd_object_fo_id08w = ""
-			-- elseif n == 9 then
-				-- B738DR_nd_object_fo_type09 = 0
-				-- B738DR_nd_object_fo_id09 = ""
-				-- B738DR_nd_object_fo_id09w = ""
-			-- elseif n == 10 then
-				-- B738DR_nd_object_fo_type10 = 0
-				-- B738DR_nd_object_fo_id10 = ""
-				-- B738DR_nd_object_fo_id10w = ""
-			-- elseif n == 11 then
-				-- B738DR_nd_object_fo_type11 = 0
-				-- B738DR_nd_object_fo_id11 = ""
-				-- B738DR_nd_object_fo_id11w = ""
-			-- elseif n == 12 then
-				-- B738DR_nd_object_fo_type12 = 0
-				-- B738DR_nd_object_fo_id12 = ""
-				-- B738DR_nd_object_fo_id12w = ""
-			-- elseif n == 13 then
-				-- B738DR_nd_object_fo_type13 = 0
-				-- B738DR_nd_object_fo_id13 = ""
-				-- B738DR_nd_object_fo_id13w = ""
-			-- elseif n == 14 then
-				-- B738DR_nd_object_fo_type14 = 0
-				-- B738DR_nd_object_fo_id14 = ""
-				-- B738DR_nd_object_fo_id14w = ""
-			-- elseif n == 15 then
-				-- B738DR_nd_object_fo_type15 = 0
-				-- B738DR_nd_object_fo_id15 = ""
-				-- B738DR_nd_object_fo_id15w = ""
-			-- elseif n == 16 then
-				-- B738DR_nd_object_fo_type16 = 0
-				-- B738DR_nd_object_fo_id16 = ""
-				-- B738DR_nd_object_fo_id16w = ""
-			-- elseif n == 17 then
-				-- B738DR_nd_object_fo_type17 = 0
-				-- B738DR_nd_object_fo_id17 = ""
-				-- B738DR_nd_object_fo_id17w = ""
-			-- elseif n == 18 then
-				-- B738DR_nd_object_fo_type18 = 0
-				-- B738DR_nd_object_fo_id18 = ""
-				-- B738DR_nd_object_fo_id18w = ""
-			-- elseif n == 19 then
-				-- B738DR_nd_object_fo_type19 = 0
-				-- B738DR_nd_object_fo_id19 = ""
-				-- B738DR_nd_object_fo_id19w = ""
-			-- elseif n == 20 then
-				-- B738DR_nd_object_fo_type20 = 0
-				-- B738DR_nd_object_fo_id20 = ""
-				-- B738DR_nd_object_fo_id20w = ""
-			-- elseif n == 21 then
-				-- B738DR_nd_object_fo_type21 = 0
-				-- B738DR_nd_object_fo_id21 = ""
-				-- B738DR_nd_object_fo_id21w = ""
-			-- elseif n == 22 then
-				-- B738DR_nd_object_fo_type22 = 0
-				-- B738DR_nd_object_fo_id22 = ""
-				-- B738DR_nd_object_fo_id22w = ""
-			-- elseif n == 23 then
-				-- B738DR_nd_object_fo_type23 = 0
-				-- B738DR_nd_object_fo_id23 = ""
-				-- B738DR_nd_object_fo_id23w = ""
-			-- elseif n == 24 then
-				-- B738DR_nd_object_fo_type24 = 0
-				-- B738DR_nd_object_fo_id24 = ""
-				-- B738DR_nd_object_fo_id24w = ""
-			-- elseif n == 25 then
-				-- B738DR_nd_object_fo_type25 = 0
-				-- B738DR_nd_object_fo_id25 = ""
-				-- B738DR_nd_object_fo_id25w = ""
-			-- elseif n == 26 then
-				-- B738DR_nd_object_fo_type26 = 0
-				-- B738DR_nd_object_fo_id26 = ""
-				-- B738DR_nd_object_fo_id26w = ""
-			-- elseif n == 27 then
-				-- B738DR_nd_object_fo_type27 = 0
-				-- B738DR_nd_object_fo_id27 = ""
-				-- B738DR_nd_object_fo_id27w = ""
-			-- elseif n == 28 then
-				-- B738DR_nd_object_fo_type28 = 0
-				-- B738DR_nd_object_fo_id28 = ""
-				-- B738DR_nd_object_fo_id28w = ""
-			-- elseif n == 29 then
-				-- B738DR_nd_object_fo_type29 = 0
-				-- B738DR_nd_object_fo_id29 = ""
-				-- B738DR_nd_object_fo_id29w = ""
-			-- elseif n == 30 then
-				-- B738DR_nd_object_fo_type30 = 0
-				-- B738DR_nd_object_fo_id30 = ""
-				-- B738DR_nd_object_fo_id30w = ""
-			-- elseif n == 31 then
-				-- B738DR_nd_object_fo_type31 = 0
-				-- B738DR_nd_object_fo_id31 = ""
-				-- B738DR_nd_object_fo_id31w = ""
-			-- elseif n == 32 then
-				-- B738DR_nd_object_fo_type32 = 0
-				-- B738DR_nd_object_fo_id32 = ""
-				-- B738DR_nd_object_fo_id32w = ""
-			-- elseif n == 33 then
-				-- B738DR_nd_object_fo_type33 = 0
-				-- B738DR_nd_object_fo_id33 = ""
-				-- B738DR_nd_object_fo_id33w = ""
-			-- elseif n == 34 then
-				-- B738DR_nd_object_fo_type34 = 0
-				-- B738DR_nd_object_fo_id34 = ""
-				-- B738DR_nd_object_fo_id34w = ""
-			-- elseif n == 35 then
-				-- B738DR_nd_object_fo_type35 = 0
-				-- B738DR_nd_object_fo_id35 = ""
-				-- B738DR_nd_object_fo_id35w = ""
-			-- elseif n == 36 then
-				-- B738DR_nd_object_fo_type36 = 0
-				-- B738DR_nd_object_fo_id36 = ""
-				-- B738DR_nd_object_fo_id36w = ""
-			-- elseif n == 37 then
-				-- B738DR_nd_object_fo_type37 = 0
-				-- B738DR_nd_object_fo_id37 = ""
-				-- B738DR_nd_object_fo_id37w = ""
-			-- elseif n == 38 then
-				-- B738DR_nd_object_fo_type38 = 0
-				-- B738DR_nd_object_fo_id38 = ""
-				-- B738DR_nd_object_fo_id38w = ""
-			-- elseif n == 39 then
-				-- B738DR_nd_object_fo_type39 = 0
-				-- B738DR_nd_object_fo_id39 = ""
-				-- B738DR_nd_object_fo_id39w = ""
-			-- elseif n == 40 then
-				-- B738DR_nd_object_fo_type40 = 0
-				-- B738DR_nd_object_fo_id40 = ""
-				-- B738DR_nd_object_fo_id40w = ""
-			-- elseif n == 41 then
-				-- B738DR_nd_object_fo_type41 = 0
-				-- B738DR_nd_object_fo_id41 = ""
-				-- B738DR_nd_object_fo_id41w = ""
-			-- elseif n == 42 then
-				-- B738DR_nd_object_fo_type42 = 0
-				-- B738DR_nd_object_fo_id42 = ""
-				-- B738DR_nd_object_fo_id42w = ""
-			-- elseif n == 43 then
-				-- B738DR_nd_object_fo_type43 = 0
-				-- B738DR_nd_object_fo_id43 = ""
-				-- B738DR_nd_object_fo_id43w = ""
-			-- elseif n == 44 then
-				-- B738DR_nd_object_fo_type44 = 0
-				-- B738DR_nd_object_fo_id44 = ""
-				-- B738DR_nd_object_fo_id44w = ""
-			-- elseif n == 45 then
-				-- B738DR_nd_object_fo_type45 = 0
-				-- B738DR_nd_object_fo_id45 = ""
-				-- B738DR_nd_object_fo_id45w = ""
-			-- elseif n == 46 then
-				-- B738DR_nd_object_fo_type46 = 0
-				-- B738DR_nd_object_fo_id46 = ""
-				-- B738DR_nd_object_fo_id46w = ""
-			-- elseif n == 47 then
-				-- B738DR_nd_object_fo_type47 = 0
-				-- B738DR_nd_object_fo_id47 = ""
-				-- B738DR_nd_object_fo_id47w = ""
-			-- elseif n == 48 then
-				-- B738DR_nd_object_fo_type48 = 0
-				-- B738DR_nd_object_fo_id48 = ""
-				-- B738DR_nd_object_fo_id48w = ""
-			-- elseif n == 49 then
-				-- B738DR_nd_object_fo_type49 = 0
-				-- B738DR_nd_object_fo_id49 = ""
-				-- B738DR_nd_object_fo_id49w = ""
-			-- end
-		-- end
-	-- end
-	
-
 end
 
 function nd_clr_navaid(rst_obj, rst_obj2)
@@ -64662,7 +64417,7 @@ temp_ils4 = ""
 	first_alt_restrict = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25y"
+	version = "v3.25z"
 
 end
 

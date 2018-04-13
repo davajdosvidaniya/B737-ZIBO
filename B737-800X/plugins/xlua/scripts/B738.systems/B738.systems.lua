@@ -191,46 +191,55 @@ tcas_tara = 0
 tcas_tara_status = 0
 tcas_dis = 0
 
-tcas_dis_1 = 0
-tcas_dis_2 = 0
-tcas_dis_3 = 0
-tcas_dis_4 = 0
-tcas_dis_5 = 0
-tcas_dis_6 = 0
-tcas_dis_7 = 0
-tcas_dis_8 = 0
-tcas_dis_9 = 0
-tcas_dis_10 = 0
-tcas_dis_11 = 0
-tcas_dis_12 = 0
-tcas_dis_13 = 0
-tcas_dis_14 = 0
-tcas_dis_15 = 0
-tcas_dis_16 = 0
-tcas_dis_17 = 0
-tcas_dis_18 = 0
-tcas_dis_19 = 0
+-- tcas_dis_1 = 0
+-- tcas_dis_2 = 0
+-- tcas_dis_3 = 0
+-- tcas_dis_4 = 0
+-- tcas_dis_5 = 0
+-- tcas_dis_6 = 0
+-- tcas_dis_7 = 0
+-- tcas_dis_8 = 0
+-- tcas_dis_9 = 0
+-- tcas_dis_10 = 0
+-- tcas_dis_11 = 0
+-- tcas_dis_12 = 0
+-- tcas_dis_13 = 0
+-- tcas_dis_14 = 0
+-- tcas_dis_15 = 0
+-- tcas_dis_16 = 0
+-- tcas_dis_17 = 0
+-- tcas_dis_18 = 0
+-- tcas_dis_19 = 0
 
 tcas_el_0 = 0	-- my elevation
-tcas_el_1 = 0
-tcas_el_2 = 0
-tcas_el_3 = 0
-tcas_el_4 = 0
-tcas_el_5 = 0
-tcas_el_6 = 0
-tcas_el_7 = 0
-tcas_el_8 = 0
-tcas_el_9 = 0
-tcas_el_10 = 0
-tcas_el_11 = 0
-tcas_el_12 = 0
-tcas_el_13 = 0
-tcas_el_14 = 0
-tcas_el_15 = 0
-tcas_el_16 = 0
-tcas_el_17 = 0
-tcas_el_18 = 0
-tcas_el_19 = 0
+-- tcas_el_1 = 0
+-- tcas_el_2 = 0
+-- tcas_el_3 = 0
+-- tcas_el_4 = 0
+-- tcas_el_5 = 0
+-- tcas_el_6 = 0
+-- tcas_el_7 = 0
+-- tcas_el_8 = 0
+-- tcas_el_9 = 0
+-- tcas_el_10 = 0
+-- tcas_el_11 = 0
+-- tcas_el_12 = 0
+-- tcas_el_13 = 0
+-- tcas_el_14 = 0
+-- tcas_el_15 = 0
+-- tcas_el_16 = 0
+-- tcas_el_17 = 0
+-- tcas_el_18 = 0
+-- tcas_el_19 = 0
+
+tcas_dis_ai = {}
+tcas_el_ai = {}
+
+local decl = 0
+	for decl = 0, 18 do
+		tcas_dis_ai[decl] = 0
+		tcas_el_ai[decl] = 0
+	end
 
 apu_temp = 0
 apu_temp_target = 0
@@ -553,6 +562,7 @@ simDR_mag_hdg			= find_dataref("sim/cockpit2/gauges/indicators/ground_track_mag_
 simDR_efis_map_range	= find_dataref("sim/cockpit2/EFIS/map_range")
 simDR_map_mode_is_HSI	= find_dataref("sim/cockpit2/EFIS/map_mode_is_HSI")
 B738DR_EFIS_TCAS_on		= find_dataref("laminar/B738/EFIS/tcas_on")
+B738DR_EFIS_TCAS_on_fo	= find_dataref("laminar/B738/EFIS/tcas_on_fo")
 
 simDR_ahars_mag_hdg		= find_dataref("sim/cockpit2/gauges/indicators/heading_AHARS_deg_mag_pilot")
 
@@ -1041,6 +1051,7 @@ B738_EFIS_tcas_fail_show	= create_dataref("laminar/B738/EFIS/tcas_fail_show", "n
 B738_EFIS_traffic_ra 		= create_dataref("laminar/B738/TCAS/traffic_ra", "number")
 B738_EFIS_traffic_ta 		= create_dataref("laminar/B738/TCAS/traffic_ta", "number")
 
+B738_EFIS_TCAS_show_fo		= create_dataref("laminar/B738/EFIS/tcas_show_fo", "number")
 B738_EFIS_tfc_show_fo		= create_dataref("laminar/B738/EFIS/tfc_show_fo", "number")
 B738_EFIS_ta_only_show_fo	= create_dataref("laminar/B738/EFIS/ta_only_show_fo", "number")
 B738_EFIS_tcas_test_show_fo	= create_dataref("laminar/B738/EFIS/tcas_test_show_fo", "number")
@@ -1052,256 +1063,64 @@ B738_EFIS_traffic_ta_fo 	= create_dataref("laminar/B738/TCAS/traffic_ta_fo", "nu
 B738DR_tcas_nearest_plane_m	= create_dataref("laminar/B738/TCAS/nearest_plane_m", "number")
 
 
---- TCAS
-B738DR_tcas_x				= create_dataref("laminar/B738/TCAS/x", "number")
-B738DR_tcas_y				= create_dataref("laminar/B738/TCAS/y", "number")
+--- TCAS captain
+
+B738DR_tcas_x				= create_dataref("laminar/B738/TCAS/x", "array[19]")
+B738DR_tcas_y				= create_dataref("laminar/B738/TCAS/y", "array[19]")
+B738DR_tcas_alt_dn_up_show	= create_dataref("laminar/B738/TCAS/alt_dn_up_show", "array[19]")
+B738DR_tcas_arr_dn_up_show	= create_dataref("laminar/B738/TCAS/arrow_dn_up_show", "array[19]")
+B738DR_tcas_type_show		= create_dataref("laminar/B738/TCAS/type_show", "array[19]")
+B738_EFIS_TCAS_ai_show		= create_dataref("laminar/B738/EFIS/tcas_ai_show", "array[19]")
+
 B738DR_tcas_alt				= create_dataref("laminar/B738/TCAS/alt", "string")
-B738DR_tcas_alt_up_show		= create_dataref("laminar/B738/TCAS/alt_up_show", "number")
-B738DR_tcas_alt_dn_show		= create_dataref("laminar/B738/TCAS/alt_dn_show", "number")
-B738DR_tcas_arr_up_show		= create_dataref("laminar/B738/TCAS/arrow_up_show", "number")
-B738DR_tcas_arr_dn_show		= create_dataref("laminar/B738/TCAS/arrow_dn_show", "number")
-B738DR_tcas_box_show		= create_dataref("laminar/B738/TCAS/box_show", "number")
-B738DR_tcas_circle_show		= create_dataref("laminar/B738/TCAS/circle_show", "number")
-B738DR_tcas_diam_show		= create_dataref("laminar/B738/TCAS/diamond_show", "number")
-B738DR_tcas_diam_e_show		= create_dataref("laminar/B738/TCAS/diamond_e_show", "number")
-B738_EFIS_TCAS_show1		= create_dataref("laminar/B738/EFIS/tcas_show1", "number")
-
-B738DR_tcas_x2				= create_dataref("laminar/B738/TCAS/x2", "number")
-B738DR_tcas_y2				= create_dataref("laminar/B738/TCAS/y2", "number")
-B738DR_tcas_alt2				= create_dataref("laminar/B738/TCAS/alt2", "string")
-B738DR_tcas_alt_up_show2		= create_dataref("laminar/B738/TCAS/alt_up_show2", "number")
-B738DR_tcas_alt_dn_show2		= create_dataref("laminar/B738/TCAS/alt_dn_show2", "number")
-B738DR_tcas_arr_up_show2		= create_dataref("laminar/B738/TCAS/arrow_up_show2", "number")
-B738DR_tcas_arr_dn_show2		= create_dataref("laminar/B738/TCAS/arrow_dn_show2", "number")
-B738DR_tcas_box_show2		= create_dataref("laminar/B738/TCAS/box_show2", "number")
-B738DR_tcas_circle_show2		= create_dataref("laminar/B738/TCAS/circle_show2", "number")
-B738DR_tcas_diam_show2		= create_dataref("laminar/B738/TCAS/diamond_show2", "number")
-B738DR_tcas_diam_e_show2		= create_dataref("laminar/B738/TCAS/diamond_e_show2", "number")
-B738_EFIS_TCAS_show2		= create_dataref("laminar/B738/EFIS/tcas_show2", "number")
-
-B738DR_tcas_x3				= create_dataref("laminar/B738/TCAS/x3", "number")
-B738DR_tcas_y3				= create_dataref("laminar/B738/TCAS/y3", "number")
-B738DR_tcas_alt3				= create_dataref("laminar/B738/TCAS/alt3", "string")
-B738DR_tcas_alt_up_show3		= create_dataref("laminar/B738/TCAS/alt_up_show3", "number")
-B738DR_tcas_alt_dn_show3		= create_dataref("laminar/B738/TCAS/alt_dn_show3", "number")
-B738DR_tcas_arr_up_show3		= create_dataref("laminar/B738/TCAS/arrow_up_show3", "number")
-B738DR_tcas_arr_dn_show3		= create_dataref("laminar/B738/TCAS/arrow_dn_show3", "number")
-B738DR_tcas_box_show3		= create_dataref("laminar/B738/TCAS/box_show3", "number")
-B738DR_tcas_circle_show3		= create_dataref("laminar/B738/TCAS/circle_show3", "number")
-B738DR_tcas_diam_show3		= create_dataref("laminar/B738/TCAS/diamond_show3", "number")
-B738DR_tcas_diam_e_show3		= create_dataref("laminar/B738/TCAS/diamond_e_show3", "number")
-B738_EFIS_TCAS_show3		= create_dataref("laminar/B738/EFIS/tcas_show3", "number")
-
-B738DR_tcas_x4				= create_dataref("laminar/B738/TCAS/x4", "number")
-B738DR_tcas_y4				= create_dataref("laminar/B738/TCAS/y4", "number")
-B738DR_tcas_alt4				= create_dataref("laminar/B738/TCAS/alt4", "string")
-B738DR_tcas_alt_up_show4		= create_dataref("laminar/B738/TCAS/alt_up_show4", "number")
-B738DR_tcas_alt_dn_show4		= create_dataref("laminar/B738/TCAS/alt_dn_show4", "number")
-B738DR_tcas_arr_up_show4		= create_dataref("laminar/B738/TCAS/arrow_up_show4", "number")
-B738DR_tcas_arr_dn_show4		= create_dataref("laminar/B738/TCAS/arrow_dn_show4", "number")
-B738DR_tcas_box_show4		= create_dataref("laminar/B738/TCAS/box_show4", "number")
-B738DR_tcas_circle_show4		= create_dataref("laminar/B738/TCAS/circle_show4", "number")
-B738DR_tcas_diam_show4		= create_dataref("laminar/B738/TCAS/diamond_show4", "number")
-B738DR_tcas_diam_e_show4		= create_dataref("laminar/B738/TCAS/diamond_e_show4", "number")
-B738_EFIS_TCAS_show4		= create_dataref("laminar/B738/EFIS/tcas_show4", "number")
-
-B738DR_tcas_x5				= create_dataref("laminar/B738/TCAS/x5", "number")
-B738DR_tcas_y5				= create_dataref("laminar/B738/TCAS/y5", "number")
-B738DR_tcas_alt5				= create_dataref("laminar/B738/TCAS/alt5", "string")
-B738DR_tcas_alt_up_show5		= create_dataref("laminar/B738/TCAS/alt_up_show5", "number")
-B738DR_tcas_alt_dn_show5		= create_dataref("laminar/B738/TCAS/alt_dn_show5", "number")
-B738DR_tcas_arr_up_show5		= create_dataref("laminar/B738/TCAS/arrow_up_show5", "number")
-B738DR_tcas_arr_dn_show5		= create_dataref("laminar/B738/TCAS/arrow_dn_show5", "number")
-B738DR_tcas_box_show5		= create_dataref("laminar/B738/TCAS/box_show5", "number")
-B738DR_tcas_circle_show5		= create_dataref("laminar/B738/TCAS/circle_show5", "number")
-B738DR_tcas_diam_show5		= create_dataref("laminar/B738/TCAS/diamond_show5", "number")
-B738DR_tcas_diam_e_show5		= create_dataref("laminar/B738/TCAS/diamond_e_show5", "number")
-B738_EFIS_TCAS_show5		= create_dataref("laminar/B738/EFIS/tcas_show5", "number")
-
-B738DR_tcas_x6			= create_dataref("laminar/B738/TCAS/x6", "number")
-B738DR_tcas_y6				= create_dataref("laminar/B738/TCAS/y6", "number")
-B738DR_tcas_alt6				= create_dataref("laminar/B738/TCAS/alt6", "string")
-B738DR_tcas_alt_up_show6		= create_dataref("laminar/B738/TCAS/alt_up_show6", "number")
-B738DR_tcas_alt_dn_show6		= create_dataref("laminar/B738/TCAS/alt_dn_show6", "number")
-B738DR_tcas_arr_up_show6		= create_dataref("laminar/B738/TCAS/arrow_up_show6", "number")
-B738DR_tcas_arr_dn_show6		= create_dataref("laminar/B738/TCAS/arrow_dn_show6", "number")
-B738DR_tcas_box_show6		= create_dataref("laminar/B738/TCAS/box_show6", "number")
-B738DR_tcas_circle_show6		= create_dataref("laminar/B738/TCAS/circle_show6", "number")
-B738DR_tcas_diam_show6		= create_dataref("laminar/B738/TCAS/diamond_show6", "number")
-B738DR_tcas_diam_e_show6		= create_dataref("laminar/B738/TCAS/diamond_e_show6", "number")
-B738_EFIS_TCAS_show6		= create_dataref("laminar/B738/EFIS/tcas_show6", "number")
-
-B738DR_tcas_x7				= create_dataref("laminar/B738/TCAS/x7", "number")
-B738DR_tcas_y7				= create_dataref("laminar/B738/TCAS/y7", "number")
-B738DR_tcas_alt7				= create_dataref("laminar/B738/TCAS/alt7", "string")
-B738DR_tcas_alt_up_show7		= create_dataref("laminar/B738/TCAS/alt_up_show7", "number")
-B738DR_tcas_alt_dn_show7		= create_dataref("laminar/B738/TCAS/alt_dn_show7", "number")
-B738DR_tcas_arr_up_show7		= create_dataref("laminar/B738/TCAS/arrow_up_show7", "number")
-B738DR_tcas_arr_dn_show7		= create_dataref("laminar/B738/TCAS/arrow_dn_show7", "number")
-B738DR_tcas_box_show7		= create_dataref("laminar/B738/TCAS/box_show7", "number")
-B738DR_tcas_circle_show7		= create_dataref("laminar/B738/TCAS/circle_show7", "number")
-B738DR_tcas_diam_show7		= create_dataref("laminar/B738/TCAS/diamond_show7", "number")
-B738DR_tcas_diam_e_show7		= create_dataref("laminar/B738/TCAS/diamond_e_show7", "number")
-B738_EFIS_TCAS_show7		= create_dataref("laminar/B738/EFIS/tcas_show7", "number")
-
-B738DR_tcas_x8				= create_dataref("laminar/B738/TCAS/x8", "number")
-B738DR_tcas_y8				= create_dataref("laminar/B738/TCAS/y8", "number")
-B738DR_tcas_alt8				= create_dataref("laminar/B738/TCAS/alt8", "string")
-B738DR_tcas_alt_up_show8		= create_dataref("laminar/B738/TCAS/alt_up_show8", "number")
-B738DR_tcas_alt_dn_show8		= create_dataref("laminar/B738/TCAS/alt_dn_show8", "number")
-B738DR_tcas_arr_up_show8		= create_dataref("laminar/B738/TCAS/arrow_up_show8", "number")
-B738DR_tcas_arr_dn_show8		= create_dataref("laminar/B738/TCAS/arrow_dn_show8", "number")
-B738DR_tcas_box_show8		= create_dataref("laminar/B738/TCAS/box_show8", "number")
-B738DR_tcas_circle_show8		= create_dataref("laminar/B738/TCAS/circle_show8", "number")
-B738DR_tcas_diam_show8		= create_dataref("laminar/B738/TCAS/diamond_show8", "number")
-B738DR_tcas_diam_e_show8		= create_dataref("laminar/B738/TCAS/diamond_e_show8", "number")
-B738_EFIS_TCAS_show8		= create_dataref("laminar/B738/EFIS/tcas_show8", "number")
-
-B738DR_tcas_x9				= create_dataref("laminar/B738/TCAS/x9", "number")
-B738DR_tcas_y9				= create_dataref("laminar/B738/TCAS/y9", "number")
-B738DR_tcas_alt9				= create_dataref("laminar/B738/TCAS/alt9", "string")
-B738DR_tcas_alt_up_show9		= create_dataref("laminar/B738/TCAS/alt_up_show9", "number")
-B738DR_tcas_alt_dn_show9		= create_dataref("laminar/B738/TCAS/alt_dn_show9", "number")
-B738DR_tcas_arr_up_show9		= create_dataref("laminar/B738/TCAS/arrow_up_show9", "number")
-B738DR_tcas_arr_dn_show9		= create_dataref("laminar/B738/TCAS/arrow_dn_show9", "number")
-B738DR_tcas_box_show9		= create_dataref("laminar/B738/TCAS/box_show9", "number")
-B738DR_tcas_circle_show9		= create_dataref("laminar/B738/TCAS/circle_show9", "number")
-B738DR_tcas_diam_show9		= create_dataref("laminar/B738/TCAS/diamond_show9", "number")
-B738DR_tcas_diam_e_show9		= create_dataref("laminar/B738/TCAS/diamond_e_show9", "number")
-B738_EFIS_TCAS_show9		= create_dataref("laminar/B738/EFIS/tcas_show9", "number")
-
-B738DR_tcas_x10				= create_dataref("laminar/B738/TCAS/x10", "number")
-B738DR_tcas_y10				= create_dataref("laminar/B738/TCAS/y10", "number")
+B738DR_tcas_alt2			= create_dataref("laminar/B738/TCAS/alt2", "string")
+B738DR_tcas_alt3			= create_dataref("laminar/B738/TCAS/alt3", "string")
+B738DR_tcas_alt4			= create_dataref("laminar/B738/TCAS/alt4", "string")
+B738DR_tcas_alt5			= create_dataref("laminar/B738/TCAS/alt5", "string")
+B738DR_tcas_alt6			= create_dataref("laminar/B738/TCAS/alt6", "string")
+B738DR_tcas_alt7			= create_dataref("laminar/B738/TCAS/alt7", "string")
+B738DR_tcas_alt8			= create_dataref("laminar/B738/TCAS/alt8", "string")
+B738DR_tcas_alt9			= create_dataref("laminar/B738/TCAS/alt9", "string")
 B738DR_tcas_alt10			= create_dataref("laminar/B738/TCAS/alt10", "string")
-B738DR_tcas_alt_up_show10	= create_dataref("laminar/B738/TCAS/alt_up_show10", "number")
-B738DR_tcas_alt_dn_show10	= create_dataref("laminar/B738/TCAS/alt_dn_show10", "number")
-B738DR_tcas_arr_up_show10	= create_dataref("laminar/B738/TCAS/arrow_up_show10", "number")
-B738DR_tcas_arr_dn_show10	= create_dataref("laminar/B738/TCAS/arrow_dn_show10", "number")
-B738DR_tcas_box_show10		= create_dataref("laminar/B738/TCAS/box_show10", "number")
-B738DR_tcas_circle_show10	= create_dataref("laminar/B738/TCAS/circle_show10", "number")
-B738DR_tcas_diam_show10		= create_dataref("laminar/B738/TCAS/diamond_show10", "number")
-B738DR_tcas_diam_e_show10	= create_dataref("laminar/B738/TCAS/diamond_e_show10", "number")
-B738_EFIS_TCAS_show10		= create_dataref("laminar/B738/EFIS/tcas_show10", "number")
-
-B738DR_tcas_x11				= create_dataref("laminar/B738/TCAS/x11", "number")
-B738DR_tcas_y11				= create_dataref("laminar/B738/TCAS/y11", "number")
 B738DR_tcas_alt11			= create_dataref("laminar/B738/TCAS/alt11", "string")
-B738DR_tcas_alt_up_show11	= create_dataref("laminar/B738/TCAS/alt_up_show11", "number")
-B738DR_tcas_alt_dn_show11	= create_dataref("laminar/B738/TCAS/alt_dn_show11", "number")
-B738DR_tcas_arr_up_show11	= create_dataref("laminar/B738/TCAS/arrow_up_show11", "number")
-B738DR_tcas_arr_dn_show11	= create_dataref("laminar/B738/TCAS/arrow_dn_show11", "number")
-B738DR_tcas_box_show11		= create_dataref("laminar/B738/TCAS/box_show11", "number")
-B738DR_tcas_circle_show11	= create_dataref("laminar/B738/TCAS/circle_show11", "number")
-B738DR_tcas_diam_show11		= create_dataref("laminar/B738/TCAS/diamond_show11", "number")
-B738DR_tcas_diam_e_show11	= create_dataref("laminar/B738/TCAS/diamond_e_show11", "number")
-B738_EFIS_TCAS_show11		= create_dataref("laminar/B738/EFIS/tcas_show11", "number")
-
-B738DR_tcas_x12				= create_dataref("laminar/B738/TCAS/x12", "number")
-B738DR_tcas_y12				= create_dataref("laminar/B738/TCAS/y12", "number")
 B738DR_tcas_alt12			= create_dataref("laminar/B738/TCAS/alt12", "string")
-B738DR_tcas_alt_up_show12	= create_dataref("laminar/B738/TCAS/alt_up_show12", "number")
-B738DR_tcas_alt_dn_show12	= create_dataref("laminar/B738/TCAS/alt_dn_show12", "number")
-B738DR_tcas_arr_up_show12	= create_dataref("laminar/B738/TCAS/arrow_up_show12", "number")
-B738DR_tcas_arr_dn_show12	= create_dataref("laminar/B738/TCAS/arrow_dn_show12", "number")
-B738DR_tcas_box_show12		= create_dataref("laminar/B738/TCAS/box_show12", "number")
-B738DR_tcas_circle_show12	= create_dataref("laminar/B738/TCAS/circle_show12", "number")
-B738DR_tcas_diam_show12		= create_dataref("laminar/B738/TCAS/diamond_show12", "number")
-B738DR_tcas_diam_e_show12	= create_dataref("laminar/B738/TCAS/diamond_e_show12", "number")
-B738_EFIS_TCAS_show12		= create_dataref("laminar/B738/EFIS/tcas_show12", "number")
-
-B738DR_tcas_x13				= create_dataref("laminar/B738/TCAS/x13", "number")
-B738DR_tcas_y13				= create_dataref("laminar/B738/TCAS/y13", "number")
 B738DR_tcas_alt13			= create_dataref("laminar/B738/TCAS/alt13", "string")
-B738DR_tcas_alt_up_show13	= create_dataref("laminar/B738/TCAS/alt_up_show13", "number")
-B738DR_tcas_alt_dn_show13	= create_dataref("laminar/B738/TCAS/alt_dn_show13", "number")
-B738DR_tcas_arr_up_show13	= create_dataref("laminar/B738/TCAS/arrow_up_show13", "number")
-B738DR_tcas_arr_dn_show13	= create_dataref("laminar/B738/TCAS/arrow_dn_show13", "number")
-B738DR_tcas_box_show13		= create_dataref("laminar/B738/TCAS/box_show13", "number")
-B738DR_tcas_circle_show13	= create_dataref("laminar/B738/TCAS/circle_show13", "number")
-B738DR_tcas_diam_show13		= create_dataref("laminar/B738/TCAS/diamond_show13", "number")
-B738DR_tcas_diam_e_show13	= create_dataref("laminar/B738/TCAS/diamond_e_show13", "number")
-B738_EFIS_TCAS_show13		= create_dataref("laminar/B738/EFIS/tcas_show13", "number")
-
-B738DR_tcas_x14				= create_dataref("laminar/B738/TCAS/x14", "number")
-B738DR_tcas_y14				= create_dataref("laminar/B738/TCAS/y14", "number")
 B738DR_tcas_alt14			= create_dataref("laminar/B738/TCAS/alt14", "string")
-B738DR_tcas_alt_up_show14	= create_dataref("laminar/B738/TCAS/alt_up_show14", "number")
-B738DR_tcas_alt_dn_show14	= create_dataref("laminar/B738/TCAS/alt_dn_show14", "number")
-B738DR_tcas_arr_up_show14	= create_dataref("laminar/B738/TCAS/arrow_up_show14", "number")
-B738DR_tcas_arr_dn_show14	= create_dataref("laminar/B738/TCAS/arrow_dn_show14", "number")
-B738DR_tcas_box_show14		= create_dataref("laminar/B738/TCAS/box_show14", "number")
-B738DR_tcas_circle_show14	= create_dataref("laminar/B738/TCAS/circle_show14", "number")
-B738DR_tcas_diam_show14		= create_dataref("laminar/B738/TCAS/diamond_show14", "number")
-B738DR_tcas_diam_e_show14	= create_dataref("laminar/B738/TCAS/diamond_e_show14", "number")
-B738_EFIS_TCAS_show14		= create_dataref("laminar/B738/EFIS/tcas_show14", "number")
-
-B738DR_tcas_x15				= create_dataref("laminar/B738/TCAS/x15", "number")
-B738DR_tcas_y15				= create_dataref("laminar/B738/TCAS/y15", "number")
 B738DR_tcas_alt15			= create_dataref("laminar/B738/TCAS/alt15", "string")
-B738DR_tcas_alt_up_show15	= create_dataref("laminar/B738/TCAS/alt_up_show15", "number")
-B738DR_tcas_alt_dn_show15	= create_dataref("laminar/B738/TCAS/alt_dn_show15", "number")
-B738DR_tcas_arr_up_show15	= create_dataref("laminar/B738/TCAS/arrow_up_show15", "number")
-B738DR_tcas_arr_dn_show15	= create_dataref("laminar/B738/TCAS/arrow_dn_show15", "number")
-B738DR_tcas_box_show15		= create_dataref("laminar/B738/TCAS/box_show15", "number")
-B738DR_tcas_circle_show15	= create_dataref("laminar/B738/TCAS/circle_show15", "number")
-B738DR_tcas_diam_show15		= create_dataref("laminar/B738/TCAS/diamond_show15", "number")
-B738DR_tcas_diam_e_show15	= create_dataref("laminar/B738/TCAS/diamond_e_show15", "number")
-B738_EFIS_TCAS_show15		= create_dataref("laminar/B738/EFIS/tcas_show15", "number")
-
-B738DR_tcas_x16				= create_dataref("laminar/B738/TCAS/x16", "number")
-B738DR_tcas_y16				= create_dataref("laminar/B738/TCAS/y16", "number")
 B738DR_tcas_alt16			= create_dataref("laminar/B738/TCAS/alt16", "string")
-B738DR_tcas_alt_up_show16	= create_dataref("laminar/B738/TCAS/alt_up_show16", "number")
-B738DR_tcas_alt_dn_show16	= create_dataref("laminar/B738/TCAS/alt_dn_show16", "number")
-B738DR_tcas_arr_up_show16	= create_dataref("laminar/B738/TCAS/arrow_up_show16", "number")
-B738DR_tcas_arr_dn_show16	= create_dataref("laminar/B738/TCAS/arrow_dn_show16", "number")
-B738DR_tcas_box_show16		= create_dataref("laminar/B738/TCAS/box_show16", "number")
-B738DR_tcas_circle_show16	= create_dataref("laminar/B738/TCAS/circle_show16", "number")
-B738DR_tcas_diam_show16		= create_dataref("laminar/B738/TCAS/diamond_show16", "number")
-B738DR_tcas_diam_e_show16	= create_dataref("laminar/B738/TCAS/diamond_e_show16", "number")
-B738_EFIS_TCAS_show16		= create_dataref("laminar/B738/EFIS/tcas_show16", "number")
-
-B738DR_tcas_x17				= create_dataref("laminar/B738/TCAS/x17", "number")
-B738DR_tcas_y17				= create_dataref("laminar/B738/TCAS/y17", "number")
 B738DR_tcas_alt17			= create_dataref("laminar/B738/TCAS/alt17", "string")
-B738DR_tcas_alt_up_show17	= create_dataref("laminar/B738/TCAS/alt_up_show17", "number")
-B738DR_tcas_alt_dn_show17	= create_dataref("laminar/B738/TCAS/alt_dn_show17", "number")
-B738DR_tcas_arr_up_show17	= create_dataref("laminar/B738/TCAS/arrow_up_show17", "number")
-B738DR_tcas_arr_dn_show17	= create_dataref("laminar/B738/TCAS/arrow_dn_show17", "number")
-B738DR_tcas_box_show17		= create_dataref("laminar/B738/TCAS/box_show17", "number")
-B738DR_tcas_circle_show17	= create_dataref("laminar/B738/TCAS/circle_show17", "number")
-B738DR_tcas_diam_show17		= create_dataref("laminar/B738/TCAS/diamond_show17", "number")
-B738DR_tcas_diam_e_show17	= create_dataref("laminar/B738/TCAS/diamond_e_show17", "number")
-B738_EFIS_TCAS_show17		= create_dataref("laminar/B738/EFIS/tcas_show17", "number")
-
-B738DR_tcas_x18				= create_dataref("laminar/B738/TCAS/x18", "number")
-B738DR_tcas_y18				= create_dataref("laminar/B738/TCAS/y18", "number")
 B738DR_tcas_alt18			= create_dataref("laminar/B738/TCAS/alt18", "string")
-B738DR_tcas_alt_up_show18	= create_dataref("laminar/B738/TCAS/alt_up_show18", "number")
-B738DR_tcas_alt_dn_show18	= create_dataref("laminar/B738/TCAS/alt_dn_show18", "number")
-B738DR_tcas_arr_up_show18	= create_dataref("laminar/B738/TCAS/arrow_up_show18", "number")
-B738DR_tcas_arr_dn_show18	= create_dataref("laminar/B738/TCAS/arrow_dn_show18", "number")
-B738DR_tcas_box_show18		= create_dataref("laminar/B738/TCAS/box_show18", "number")
-B738DR_tcas_circle_show18	= create_dataref("laminar/B738/TCAS/circle_show18", "number")
-B738DR_tcas_diam_show18		= create_dataref("laminar/B738/TCAS/diamond_show18", "number")
-B738DR_tcas_diam_e_show18	= create_dataref("laminar/B738/TCAS/diamond_e_show18", "number")
-B738_EFIS_TCAS_show18		= create_dataref("laminar/B738/EFIS/tcas_show18", "number")
-
-B738DR_tcas_x19				= create_dataref("laminar/B738/TCAS/x19", "number")
-B738DR_tcas_y19				= create_dataref("laminar/B738/TCAS/y19", "number")
 B738DR_tcas_alt19			= create_dataref("laminar/B738/TCAS/alt19", "string")
-B738DR_tcas_alt_up_show19	= create_dataref("laminar/B738/TCAS/alt_up_show19", "number")
-B738DR_tcas_alt_dn_show19	= create_dataref("laminar/B738/TCAS/alt_dn_show19", "number")
-B738DR_tcas_arr_up_show19	= create_dataref("laminar/B738/TCAS/arrow_up_show19", "number")
-B738DR_tcas_arr_dn_show19	= create_dataref("laminar/B738/TCAS/arrow_dn_show19", "number")
-B738DR_tcas_box_show19		= create_dataref("laminar/B738/TCAS/box_show19", "number")
-B738DR_tcas_circle_show19	= create_dataref("laminar/B738/TCAS/circle_show19", "number")
-B738DR_tcas_diam_show19		= create_dataref("laminar/B738/TCAS/diamond_show19", "number")
-B738DR_tcas_diam_e_show19	= create_dataref("laminar/B738/TCAS/diamond_e_show19", "number")
-B738_EFIS_TCAS_show19		= create_dataref("laminar/B738/EFIS/tcas_show19", "number")
 
+-- TCAS First Officier
+B738DR_tcas_x_fo				= create_dataref("laminar/B738/TCAS/x_fo", "array[19]")
+B738DR_tcas_y_fo				= create_dataref("laminar/B738/TCAS/y_fo", "array[19]")
+B738DR_tcas_alt_dn_up_show_fo	= create_dataref("laminar/B738/TCAS/alt_dn_up_show_fo", "array[19]")
+B738DR_tcas_arr_dn_up_show_fo	= create_dataref("laminar/B738/TCAS/arrow_dn_up_show_fo", "array[19]")
+B738DR_tcas_type_show_fo		= create_dataref("laminar/B738/TCAS/type_show_fo", "array[19]")
+B738_EFIS_TCAS_ai_show_fo		= create_dataref("laminar/B738/EFIS/tcas_ai_show_fo", "array[19]")
 
+B738DR_tcas_alt_fo			= create_dataref("laminar/B738/TCAS/alt_fo", "string")
+B738DR_tcas_alt_fo2			= create_dataref("laminar/B738/TCAS/alt_fo2", "string")
+B738DR_tcas_alt_fo3			= create_dataref("laminar/B738/TCAS/alt_fo3", "string")
+B738DR_tcas_alt_fo4			= create_dataref("laminar/B738/TCAS/alt_fo4", "string")
+B738DR_tcas_alt_fo5			= create_dataref("laminar/B738/TCAS/alt_fo5", "string")
+B738DR_tcas_alt_fo6			= create_dataref("laminar/B738/TCAS/alt_fo6", "string")
+B738DR_tcas_alt_fo7			= create_dataref("laminar/B738/TCAS/alt_fo7", "string")
+B738DR_tcas_alt_fo8			= create_dataref("laminar/B738/TCAS/alt_fo8", "string")
+B738DR_tcas_alt_fo9			= create_dataref("laminar/B738/TCAS/alt_fo9", "string")
+B738DR_tcas_alt_fo10		= create_dataref("laminar/B738/TCAS/alt_fo10", "string")
+B738DR_tcas_alt_fo11		= create_dataref("laminar/B738/TCAS/alt_fo11", "string")
+B738DR_tcas_alt_fo12		= create_dataref("laminar/B738/TCAS/alt_fo12", "string")
+B738DR_tcas_alt_fo13		= create_dataref("laminar/B738/TCAS/alt_fo13", "string")
+B738DR_tcas_alt_fo14		= create_dataref("laminar/B738/TCAS/alt_fo14", "string")
+B738DR_tcas_alt_fo15		= create_dataref("laminar/B738/TCAS/alt_fo15", "string")
+B738DR_tcas_alt_fo16		= create_dataref("laminar/B738/TCAS/alt_fo16", "string")
+B738DR_tcas_alt_fo17		= create_dataref("laminar/B738/TCAS/alt_fo17", "string")
+B738DR_tcas_alt_fo18		= create_dataref("laminar/B738/TCAS/alt_fo18", "string")
+B738DR_tcas_alt_fo19		= create_dataref("laminar/B738/TCAS/alt_fo19", "string")
 
+---------
 
 B738DR_apu_power_bus1		= create_dataref("laminar/B738/electrical/apu_power_bus1", "number")
 B738DR_apu_power_bus2		= create_dataref("laminar/B738/electrical/apu_power_bus2", "number")
@@ -6128,7 +5947,7 @@ function B738_brake_power(brake_power, tire_speed)
 	weight_k = weight_k + 1
 	tire_spd = tire_spd / 10
 	tire_spd = tire_spd * tire_spd * 1.1
-	return tire_spd * brake_power * weight_k * 0.047 * SIM_PERIOD	-- 0.017 -- 0.021
+	return tire_spd * brake_power * weight_k * 0.028 * SIM_PERIOD	-- 0.047 -- 0.017 -- 0.021
 
 end
 
@@ -6550,112 +6369,16 @@ end
 
 function tcas_clr(ai_plane)
 	
-	if ai_plane == 1 then
-		B738DR_tcas_box_show = 0
-		B738DR_tcas_circle_show = 0
-		B738DR_tcas_diam_show = 0
-		B738DR_tcas_diam_e_show = 0
-		-- tcas_dis_1 = 0
-		-- tcas_el_1 = 0
-	elseif ai_plane == 2 then
-		B738DR_tcas_box_show2 = 0
-		B738DR_tcas_circle_show2 = 0
-		B738DR_tcas_diam_show2 = 0
-		B738DR_tcas_diam_e_show2 = 0
-		-- tcas_dis_2 = 0
-		-- tcas_el_2 = 0
-	elseif ai_plane == 3 then
-		B738DR_tcas_box_show3 = 0
-		B738DR_tcas_circle_show3 = 0
-		B738DR_tcas_diam_show3 = 0
-		B738DR_tcas_diam_e_show3 = 0
-		-- tcas_dis_3 = 0
-		-- tcas_el_3 = 0
-	elseif ai_plane == 4 then
-		B738DR_tcas_box_show4 = 0
-		B738DR_tcas_circle_show4 = 0
-		B738DR_tcas_diam_show4 = 0
-		B738DR_tcas_diam_e_show4 = 0
-		-- tcas_dis_4 = 0
-		-- tcas_el_4 = 0
-	elseif ai_plane == 5 then
-		B738DR_tcas_box_show5 = 0
-		B738DR_tcas_circle_show5 = 0
-		B738DR_tcas_diam_show5 = 0
-		B738DR_tcas_diam_e_show5 = 0
-		-- tcas_dis_5 = 0
-		-- tcas_el_5 = 0
-	elseif ai_plane == 6 then
-		B738DR_tcas_box_show6 = 0
-		B738DR_tcas_circle_show6 = 0
-		B738DR_tcas_diam_show6 = 0
-		B738DR_tcas_diam_e_show6 = 0
-	elseif ai_plane == 7 then
-		B738DR_tcas_box_show7 = 0
-		B738DR_tcas_circle_show7 = 0
-		B738DR_tcas_diam_show7 = 0
-		B738DR_tcas_diam_e_show7 = 0
-	elseif ai_plane == 8 then
-		B738DR_tcas_box_show8 = 0
-		B738DR_tcas_circle_show8 = 0
-		B738DR_tcas_diam_show8 = 0
-		B738DR_tcas_diam_e_show8 = 0
-	elseif ai_plane == 9 then
-		B738DR_tcas_box_show9 = 0
-		B738DR_tcas_circle_show9 = 0
-		B738DR_tcas_diam_show9 = 0
-		B738DR_tcas_diam_e_show9 = 0
-	elseif ai_plane == 10 then
-		B738DR_tcas_box_show10 = 0
-		B738DR_tcas_circle_show10 = 0
-		B738DR_tcas_diam_show10 = 0
-		B738DR_tcas_diam_e_show10 = 0
-	elseif ai_plane == 11 then
-		B738DR_tcas_box_show11 = 0
-		B738DR_tcas_circle_show11 = 0
-		B738DR_tcas_diam_show11 = 0
-		B738DR_tcas_diam_e_show11 = 0
-	elseif ai_plane == 12 then
-		B738DR_tcas_box_show12 = 0
-		B738DR_tcas_circle_show12 = 0
-		B738DR_tcas_diam_show12 = 0
-		B738DR_tcas_diam_e_show12 = 0
-	elseif ai_plane == 13 then
-		B738DR_tcas_box_show13 = 0
-		B738DR_tcas_circle_show13 = 0
-		B738DR_tcas_diam_show13 = 0
-		B738DR_tcas_diam_e_show13 = 0
-	elseif ai_plane == 14 then
-		B738DR_tcas_box_show14 = 0
-		B738DR_tcas_circle_show14 = 0
-		B738DR_tcas_diam_show14 = 0
-		B738DR_tcas_diam_e_show14 = 0
-	elseif ai_plane == 15 then
-		B738DR_tcas_box_show15 = 0
-		B738DR_tcas_circle_show15 = 0
-		B738DR_tcas_diam_show15 = 0
-		B738DR_tcas_diam_e_show15 = 0
-	elseif ai_plane == 16 then
-		B738DR_tcas_box_show16 = 0
-		B738DR_tcas_circle_show16 = 0
-		B738DR_tcas_diam_show16 = 0
-		B738DR_tcas_diam_e_show16 = 0
-	elseif ai_plane == 17 then
-		B738DR_tcas_box_show17 = 0
-		B738DR_tcas_circle_show17 = 0
-		B738DR_tcas_diam_show17 = 0
-		B738DR_tcas_diam_e_show17 = 0
-	elseif ai_plane == 18 then
-		B738DR_tcas_box_show18 = 0
-		B738DR_tcas_circle_show18 = 0
-		B738DR_tcas_diam_show10 = 0
-		B738DR_tcas_diam_e_show18 = 0
-	elseif ai_plane == 19 then
-		B738DR_tcas_box_show19 = 0
-		B738DR_tcas_circle_show19 = 0
-		B738DR_tcas_diam_show19 = 0
-		B738DR_tcas_diam_e_show19 = 0
-	end
+	local ai_idx = ai_plane - 1
+	B738DR_tcas_type_show[ai_idx] = 0
+	
+end
+
+function tcas_clr_fo(ai_plane)
+	
+	local ai_idx = ai_plane - 1
+	B738DR_tcas_type_show_fo[ai_idx] = 0
+	
 end
 
 function B738_tcas_calc()
@@ -6667,7 +6390,6 @@ function B738_tcas(ai_plane)
 	local mag_hdg = 0 --simDR_mag_hdg - simDR_mag_variation
 	local tcas_alt = 0
 	local tcas_abs_alt = 0
-	--local tcas_dis = 0
 	local tcas_dis_old = 0
 	local tcas_hdg = 0
 	local tcas_x = 0
@@ -6679,10 +6401,12 @@ function B738_tcas(ai_plane)
 	local tcas_el_old = 0
 	local delta_hdg = 0
 	local delta_el = 0
-  local delta_elev = 0
+	local delta_elev = 0
 	local tcas_on_off = 0
+	local tcas_on_off2 = 0
 	local tcas_zoom = 0
 	local tcas_traffic = 0
+	local tcas_traffic2 = 0
 	local range_tau = 0
 	local vertical_tau = 0
 	local ta_tau = 0
@@ -6692,6 +6416,9 @@ function B738_tcas(ai_plane)
 	local ta_zthr = 0
 	local ra_zthr = 0
 	local check_gl = 0
+	local ai_idx = ai_plane - 1
+	local tcas_disable = 0
+	local tcas_disable_fo = 0
 	
 	tcas_dis = 99
 	
@@ -6701,8 +6428,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_1_el
 		tcas_z = simDR_ai_1_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_1
-			tcas_el_old = tcas_el_1
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 2 then
 		tcas_lat2 = simDR_ai_2_lat
@@ -6710,8 +6437,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_2_el
 		tcas_z = simDR_ai_2_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_2
-			tcas_el_old = tcas_el_2
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 3 then
 		tcas_lat2 = simDR_ai_3_lat
@@ -6719,8 +6446,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_3_el
 		tcas_z = simDR_ai_3_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_3
-			tcas_el_old = tcas_el_3
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 4 then
 		tcas_lat2 = simDR_ai_4_lat
@@ -6728,8 +6455,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_4_el
 		tcas_z = simDR_ai_4_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_4
-			tcas_el_old = tcas_el_4
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 5 then
 		tcas_lat2 = simDR_ai_5_lat
@@ -6737,8 +6464,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_5_el
 		tcas_z = simDR_ai_5_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_5
-			tcas_el_old = tcas_el_5
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 6 then
 		tcas_lat2 = simDR_ai_6_lat
@@ -6746,8 +6473,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_6_el
 		tcas_z = simDR_ai_6_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_6
-			tcas_el_old = tcas_el_6
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 7 then
 		tcas_lat2 = simDR_ai_7_lat
@@ -6755,8 +6482,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_7_el
 		tcas_z = simDR_ai_7_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_7
-			tcas_el_old = tcas_el_7
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 8 then
 		tcas_lat2 = simDR_ai_8_lat
@@ -6764,8 +6491,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_8_el
 		tcas_z = simDR_ai_8_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_8
-			tcas_el_old = tcas_el_8
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 9 then
 		tcas_lat2 = simDR_ai_9_lat
@@ -6773,8 +6500,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_9_el
 		tcas_z = simDR_ai_9_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_9
-			tcas_el_old = tcas_el_9
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 10 then
 		tcas_lat2 = simDR_ai_10_lat
@@ -6782,8 +6509,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_10_el
 		tcas_z = simDR_ai_10_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_10
-			tcas_el_old = tcas_el_10
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 11 then
 		tcas_lat2 = simDR_ai_11_lat
@@ -6791,8 +6518,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_11_el
 		tcas_z = simDR_ai_11_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_11
-			tcas_el_old = tcas_el_11
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 12 then
 		tcas_lat2 = simDR_ai_12_lat
@@ -6800,8 +6527,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_12_el
 		tcas_z = simDR_ai_12_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_12
-			tcas_el_old = tcas_el_12
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 13 then
 		tcas_lat2 = simDR_ai_13_lat
@@ -6809,8 +6536,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_13_el
 		tcas_z = simDR_ai_13_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_13
-			tcas_el_old = tcas_el_13
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 14 then
 		tcas_lat2 = simDR_ai_14_lat
@@ -6818,8 +6545,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_14_el
 		tcas_z = simDR_ai_14_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_14
-			tcas_el_old = tcas_el_14
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 15 then
 		tcas_lat2 = simDR_ai_15_lat
@@ -6827,8 +6554,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_15_el
 		tcas_z = simDR_ai_15_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_15
-			tcas_el_old = tcas_el_15
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 16 then
 		tcas_lat2 = simDR_ai_16_lat
@@ -6836,8 +6563,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_16_el
 		tcas_z = simDR_ai_16_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_16
-			tcas_el_old = tcas_el_16
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 17 then
 		tcas_lat2 = simDR_ai_17_lat
@@ -6845,8 +6572,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_17_el
 		tcas_z = simDR_ai_17_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_17
-			tcas_el_old = tcas_el_17
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 18 then
 		tcas_lat2 = simDR_ai_18_lat
@@ -6854,8 +6581,8 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_18_el
 		tcas_z = simDR_ai_18_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_18
-			tcas_el_old = tcas_el_18
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	elseif ai_plane == 19 then
 		tcas_lat2 = simDR_ai_19_lat
@@ -6863,11 +6590,11 @@ function B738_tcas(ai_plane)
 		tcas_el2 = simDR_ai_19_el
 		tcas_z = simDR_ai_19_z
 		if tcas_tara == 1 then
-			tcas_dis_old = tcas_dis_19
-			tcas_el_old = tcas_el_19
+			tcas_dis_old = tcas_dis_ai[ai_idx]
+			tcas_el_old = tcas_el_ai[ai_idx]
 		end
 	end
-
+	
 	tcas_alt = tcas_el2 - tcas_el
 	tcas_alt = tcas_alt * 3.2808399
 	tcas_alt = tcas_alt / 100
@@ -7005,9 +6732,10 @@ function B738_tcas(ai_plane)
 					end
 				end
 			end
+			tcas_traffic2 = tcas_traffic
 			
-			
-			if B738DR_capt_map_mode < 2 then
+			-- Captain
+			if B738DR_capt_map_mode < 2 and B738DR_capt_exp_map_mode == 1 then
 				mag_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
 			elseif B738DR_capt_map_mode == 2 then
 				if B738DR_track_up == 0 then
@@ -7020,7 +6748,8 @@ function B738_tcas(ai_plane)
 					end
 				end
 			else
-				mag_hdg = simDR_mag_hdg - simDR_mag_variation
+				--mag_hdg = simDR_mag_hdg - simDR_mag_variation
+				tcas_disable = 1
 			end
 			
 			
@@ -7082,6 +6811,10 @@ function B738_tcas(ai_plane)
 				tcas_x = -tcas_dis * math.cos(delta_hdg)
 			end
 			
+			if tcas_disable == 1 then
+				tcas_on_off = 0
+			end
+			
 			if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 				tcas_zoom = 2
 			elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
@@ -7106,1425 +6839,630 @@ function B738_tcas(ai_plane)
 				tcas_on_off = 0
 			end
 			
-			-- if simDR_map_mode_is_HSI == 1 then
-				-- tcas_y = tcas_y + 5
-			-- end
+			
+			B738DR_tcas_x[ai_idx] = tcas_x
+			B738DR_tcas_y[ai_idx] = tcas_y
+			
+			if tcas_tara == 1 then
+				delta_elev = tcas_el2 - tcas_el_old
+				delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
+				if delta_elev > 500 then
+					B738DR_tcas_arr_dn_up_show[ai_idx] = 2
+				elseif delta_elev < -500 then
+					B738DR_tcas_arr_dn_up_show[ai_idx] = 1
+				else
+					B738DR_tcas_arr_dn_up_show[ai_idx] = 0
+				end
+				
+				tcas_dis_ai[ai_idx] = tcas_dis
+				tcas_el_ai[ai_idx] = tcas_el2
+				B738DR_tcas_type_show[ai_idx] = 4 - tcas_traffic	-- + 1
+			end
 			
 			if ai_plane == 1 then
-			
-				B738DR_tcas_x = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show = 1
-					B738DR_tcas_alt_dn_show = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show = 0
-					B738DR_tcas_alt_dn_show = 1
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show = 1
-						B738DR_tcas_arr_dn_show = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show = 0
-						B738DR_tcas_arr_dn_show = 1
-					else
-						B738DR_tcas_arr_up_show = 0
-						B738DR_tcas_arr_dn_show = 0
-					end
-					
-					tcas_dis_1 = tcas_dis
-					tcas_el_1 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show = 0
-						B738DR_tcas_circle_show = 0
-						B738DR_tcas_diam_show = 0
-						B738DR_tcas_diam_e_show = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show = 0
-						B738DR_tcas_circle_show = 0
-						B738DR_tcas_diam_show = 1
-						B738DR_tcas_diam_e_show = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show = 0
-						B738DR_tcas_circle_show = 1
-						B738DR_tcas_diam_show = 0
-						B738DR_tcas_diam_e_show = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show = 1
-						B738DR_tcas_circle_show = 0
-						B738DR_tcas_diam_show = 0
-						B738DR_tcas_diam_e_show = 0
-					end
-				end
-			
 			elseif ai_plane == 2 then
-			
-				B738DR_tcas_x2 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y2 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt2 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show2 = 1
-					B738DR_tcas_alt_dn_show2 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt2 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show2 = 0
-					B738DR_tcas_alt_dn_show2 = 1
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show2 = 1
-						B738DR_tcas_arr_dn_show2 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show2 = 0
-						B738DR_tcas_arr_dn_show2 = 1
-					else
-						B738DR_tcas_arr_up_show2 = 0
-						B738DR_tcas_arr_dn_show2 = 0
-					end
-					
-					tcas_dis_2 = tcas_dis
-					tcas_el_2 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show2 = 0
-						B738DR_tcas_circle_show2 = 0
-						B738DR_tcas_diam_show2 = 0
-						B738DR_tcas_diam_e_show2 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show2 = 0
-						B738DR_tcas_circle_show2 = 0
-						B738DR_tcas_diam_show2 = 1
-						B738DR_tcas_diam_e_show2 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show2 = 0
-						B738DR_tcas_circle_show2 = 1
-						B738DR_tcas_diam_show2 = 0
-						B738DR_tcas_diam_e_show2 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show2 = 1
-						B738DR_tcas_circle_show2 = 0
-						B738DR_tcas_diam_show2 = 0
-						B738DR_tcas_diam_e_show2 = 0
-					end
-				end
-			
 			elseif ai_plane == 3 then
-			
-				B738DR_tcas_x3 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y3 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt3 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show3 = 1
-					B738DR_tcas_alt_dn_show3 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt3 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show3 = 0
-					B738DR_tcas_alt_dn_show3 = 1
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
-				
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show3 = 1
-						B738DR_tcas_arr_dn_show3 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show3 = 0
-						B738DR_tcas_arr_dn_show3 = 1
-					else
-						B738DR_tcas_arr_up_show3 = 0
-						B738DR_tcas_arr_dn_show3 = 0
-					end
-					
-					tcas_dis_3 = tcas_dis
-					tcas_el_3 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show3 = 0
-						B738DR_tcas_circle_show3 = 0
-						B738DR_tcas_diam_show3 = 0
-						B738DR_tcas_diam_e_show3 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show3 = 0
-						B738DR_tcas_circle_show3 = 0
-						B738DR_tcas_diam_show3 = 1
-						B738DR_tcas_diam_e_show3 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show3 = 0
-						B738DR_tcas_circle_show3 = 1
-						B738DR_tcas_diam_show3 = 0
-						B738DR_tcas_diam_e_show3 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show3 = 1
-						B738DR_tcas_circle_show3 = 0
-						B738DR_tcas_diam_show3 = 0
-						B738DR_tcas_diam_e_show3 = 0
-					end
-				end
-				
 			elseif ai_plane == 4 then
-			
-				B738DR_tcas_x4 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y4 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt4 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show4 = 1
-					B738DR_tcas_alt_dn_show4 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt4 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show4 = 0
-					B738DR_tcas_alt_dn_show4 = 1
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show4 = 1
-						B738DR_tcas_arr_dn_show4 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show4 = 0
-						B738DR_tcas_arr_dn_show4 = 1
-					else
-						B738DR_tcas_arr_up_show4 = 0
-						B738DR_tcas_arr_dn_show4 = 0
-					end
-					
-					tcas_dis_4 = tcas_dis
-					tcas_el_4 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show4 = 0
-						B738DR_tcas_circle_show4 = 0
-						B738DR_tcas_diam_show4 = 0
-						B738DR_tcas_diam_e_show4 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show4 = 0
-						B738DR_tcas_circle_show4 = 0
-						B738DR_tcas_diam_show4 = 1
-						B738DR_tcas_diam_e_show4 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show4 = 0
-						B738DR_tcas_circle_show4 = 1
-						B738DR_tcas_diam_show4 = 0
-						B738DR_tcas_diam_e_show4 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show4 = 1
-						B738DR_tcas_circle_show4 = 0
-						B738DR_tcas_diam_show4 = 0
-						B738DR_tcas_diam_e_show4 = 0
-					end
-				end
-			
 			elseif ai_plane == 5 then
-			
-				B738DR_tcas_x5 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y5 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt5 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show5 = 1
-					B738DR_tcas_alt_dn_show5 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt5 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show5 = 0
-					B738DR_tcas_alt_dn_show5 = 1
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show5 = 1
-						B738DR_tcas_arr_dn_show5 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show5 = 0
-						B738DR_tcas_arr_dn_show5 = 1
-					else
-						B738DR_tcas_arr_up_show5 = 0
-						B738DR_tcas_arr_dn_show5 = 0
-					end
-					
-					tcas_dis_5 = tcas_dis
-					tcas_el_5 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show5 = 0
-						B738DR_tcas_circle_show5 = 0
-						B738DR_tcas_diam_show5 = 0
-						B738DR_tcas_diam_e_show5 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show5 = 0
-						B738DR_tcas_circle_show5 = 0
-						B738DR_tcas_diam_show5 = 1
-						B738DR_tcas_diam_e_show5 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show5 = 0
-						B738DR_tcas_circle_show5 = 1
-						B738DR_tcas_diam_show5 = 0
-						B738DR_tcas_diam_e_show5 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show5 = 1
-						B738DR_tcas_circle_show5 = 0
-						B738DR_tcas_diam_show5 = 0
-						B738DR_tcas_diam_e_show5 = 0
-					end
-				end
-			
 			elseif ai_plane == 6 then
-			
-				B738DR_tcas_x6 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y6 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt6 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show6 = 1
-					B738DR_tcas_alt_dn_show6 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt6 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show6 = 0
-					B738DR_tcas_alt_dn_show6 = 1
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show6 = 1
-						B738DR_tcas_arr_dn_show6 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show6 = 0
-						B738DR_tcas_arr_dn_show6 = 1
-					else
-						B738DR_tcas_arr_up_show6 = 0
-						B738DR_tcas_arr_dn_show6 = 0
-					end
-					
-					tcas_dis_6 = tcas_dis
-					tcas_el_6 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show6 = 0
-						B738DR_tcas_circle_show6 = 0
-						B738DR_tcas_diam_show6 = 0
-						B738DR_tcas_diam_e_show6 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show6 = 0
-						B738DR_tcas_circle_show6 = 0
-						B738DR_tcas_diam_show6 = 1
-						B738DR_tcas_diam_e_show6 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show6 = 0
-						B738DR_tcas_circle_show6 = 1
-						B738DR_tcas_diam_show6 = 0
-						B738DR_tcas_diam_e_show6 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show6 = 1
-						B738DR_tcas_circle_show6 = 0
-						B738DR_tcas_diam_show6 = 0
-						B738DR_tcas_diam_e_show6 = 0
-					end
-				end
-			
 			elseif ai_plane == 7 then
-			
-				B738DR_tcas_x7 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y7 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt7 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show7 = 1
-					B738DR_tcas_alt_dn_show7 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt7 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show7 = 0
-					B738DR_tcas_alt_dn_show7 = 1
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show7 = 1
-						B738DR_tcas_arr_dn_show7 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show7 = 0
-						B738DR_tcas_arr_dn_show7 = 1
-					else
-						B738DR_tcas_arr_up_show7 = 0
-						B738DR_tcas_arr_dn_show7 = 0
-					end
-					
-					tcas_dis_7 = tcas_dis
-					tcas_el_7 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show7 = 0
-						B738DR_tcas_circle_show7 = 0
-						B738DR_tcas_diam_show7 = 0
-						B738DR_tcas_diam_e_show7 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show7 = 0
-						B738DR_tcas_circle_show7 = 0
-						B738DR_tcas_diam_show7 = 1
-						B738DR_tcas_diam_e_show7 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show7 = 0
-						B738DR_tcas_circle_show7 = 1
-						B738DR_tcas_diam_show7 = 0
-						B738DR_tcas_diam_e_show7 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show7 = 1
-						B738DR_tcas_circle_show7 = 0
-						B738DR_tcas_diam_show7 = 0
-						B738DR_tcas_diam_e_show7 = 0
-					end
-				end
-			
 			elseif ai_plane == 8 then
-			
-				B738DR_tcas_x8 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y8 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt8 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show8 = 1
-					B738DR_tcas_alt_dn_show8 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt8 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show8 = 0
-					B738DR_tcas_alt_dn_show8 = 1
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show8 = 1
-						B738DR_tcas_arr_dn_show8 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show8 = 0
-						B738DR_tcas_arr_dn_show8 = 1
-					else
-						B738DR_tcas_arr_up_show8 = 0
-						B738DR_tcas_arr_dn_show8 = 0
-					end
-					
-					tcas_dis_8 = tcas_dis
-					tcas_el_8 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show8 = 0
-						B738DR_tcas_circle_show8 = 0
-						B738DR_tcas_diam_show8 = 0
-						B738DR_tcas_diam_e_show8 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show8 = 0
-						B738DR_tcas_circle_show8 = 0
-						B738DR_tcas_diam_show8 = 1
-						B738DR_tcas_diam_e_show8 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show8 = 0
-						B738DR_tcas_circle_show8 = 1
-						B738DR_tcas_diam_show8 = 0
-						B738DR_tcas_diam_e_show8 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show8 = 1
-						B738DR_tcas_circle_show8 = 0
-						B738DR_tcas_diam_show8 = 0
-						B738DR_tcas_diam_e_show8 = 0
-					end
-				end
-			
 			elseif ai_plane == 9 then
-			
-				B738DR_tcas_x9 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y9 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt9 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show9 = 1
-					B738DR_tcas_alt_dn_show9 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt9 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show9 = 0
-					B738DR_tcas_alt_dn_show9 = 1
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show9 = 1
-						B738DR_tcas_arr_dn_show9 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show9 = 0
-						B738DR_tcas_arr_dn_show9 = 1
-					else
-						B738DR_tcas_arr_up_show9 = 0
-						B738DR_tcas_arr_dn_show9 = 0
-					end
-					
-					tcas_dis_9 = tcas_dis
-					tcas_el_9 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show9 = 0
-						B738DR_tcas_circle_show9 = 0
-						B738DR_tcas_diam_show9 = 0
-						B738DR_tcas_diam_e_show9 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show9 = 0
-						B738DR_tcas_circle_show9 = 0
-						B738DR_tcas_diam_show9 = 1
-						B738DR_tcas_diam_e_show9 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show9 = 0
-						B738DR_tcas_circle_show9 = 1
-						B738DR_tcas_diam_show9 = 0
-						B738DR_tcas_diam_e_show9 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show9 = 1
-						B738DR_tcas_circle_show9 = 0
-						B738DR_tcas_diam_show9 = 0
-						B738DR_tcas_diam_e_show9 = 0
-					end
-				end
-			
 			elseif ai_plane == 10 then
-			
-				B738DR_tcas_x10 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y10 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt10 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show10 = 1
-					B738DR_tcas_alt_dn_show10 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt10 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show10 = 0
-					B738DR_tcas_alt_dn_show10 = 1
-				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show10 = 1
-						B738DR_tcas_arr_dn_show10 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show10 = 0
-						B738DR_tcas_arr_dn_show10 = 1
-					else
-						B738DR_tcas_arr_up_show10 = 0
-						B738DR_tcas_arr_dn_show10 = 0
-					end
-					
-					tcas_dis_10 = tcas_dis
-					tcas_el_10 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show10 = 0
-						B738DR_tcas_circle_show10 = 0
-						B738DR_tcas_diam_show10 = 0
-						B738DR_tcas_diam_e_show10 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show10 = 0
-						B738DR_tcas_circle_show10 = 0
-						B738DR_tcas_diam_show10 = 1
-						B738DR_tcas_diam_e_show10 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show10 = 0
-						B738DR_tcas_circle_show10 = 1
-						B738DR_tcas_diam_show10 = 0
-						B738DR_tcas_diam_e_show10 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show10 = 1
-						B738DR_tcas_circle_show10 = 0
-						B738DR_tcas_diam_show10 = 0
-						B738DR_tcas_diam_e_show10 = 0
-					end
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
 			elseif ai_plane == 11 then
-			
-				B738DR_tcas_x11 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y11 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt11 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show11 = 1
-					B738DR_tcas_alt_dn_show11 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt11 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show11 = 0
-					B738DR_tcas_alt_dn_show11 = 1
-				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show11 = 1
-						B738DR_tcas_arr_dn_show11 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show11 = 0
-						B738DR_tcas_arr_dn_show11 = 1
-					else
-						B738DR_tcas_arr_up_show11 = 0
-						B738DR_tcas_arr_dn_show11 = 0
-					end
-					
-					tcas_dis_11 = tcas_dis
-					tcas_el_11 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show11 = 0
-						B738DR_tcas_circle_show11 = 0
-						B738DR_tcas_diam_show11 = 0
-						B738DR_tcas_diam_e_show11 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show11 = 0
-						B738DR_tcas_circle_show11 = 0
-						B738DR_tcas_diam_show11 = 1
-						B738DR_tcas_diam_e_show11 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show11 = 0
-						B738DR_tcas_circle_show11 = 1
-						B738DR_tcas_diam_show11 = 0
-						B738DR_tcas_diam_e_show11 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show11 = 1
-						B738DR_tcas_circle_show11 = 0
-						B738DR_tcas_diam_show11 = 0
-						B738DR_tcas_diam_e_show11 = 0
-					end
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
 			elseif ai_plane == 12 then
-			
-				B738DR_tcas_x12 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y12 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt12 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show12 = 1
-					B738DR_tcas_alt_dn_show12 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt12 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show12 = 0
-					B738DR_tcas_alt_dn_show12 = 1
-				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show12 = 1
-						B738DR_tcas_arr_dn_show12 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show12 = 0
-						B738DR_tcas_arr_dn_show12 = 1
-					else
-						B738DR_tcas_arr_up_show12 = 0
-						B738DR_tcas_arr_dn_show12 = 0
-					end
-					
-					tcas_dis_12 = tcas_dis
-					tcas_el_12 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show12 = 0
-						B738DR_tcas_circle_show12 = 0
-						B738DR_tcas_diam_show12 = 0
-						B738DR_tcas_diam_e_show12 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show12 = 0
-						B738DR_tcas_circle_show12 = 0
-						B738DR_tcas_diam_show12 = 1
-						B738DR_tcas_diam_e_show12 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show12 = 0
-						B738DR_tcas_circle_show12 = 1
-						B738DR_tcas_diam_show12 = 0
-						B738DR_tcas_diam_e_show12 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show12 = 1
-						B738DR_tcas_circle_show12 = 0
-						B738DR_tcas_diam_show12 = 0
-						B738DR_tcas_diam_e_show12 = 0
-					end
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
 			elseif ai_plane == 13 then
-			
-				B738DR_tcas_x13 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y13 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt13 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show13 = 1
-					B738DR_tcas_alt_dn_show13 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt13 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show13 = 0
-					B738DR_tcas_alt_dn_show13 = 1
-				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show13 = 1
-						B738DR_tcas_arr_dn_show13 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show13 = 0
-						B738DR_tcas_arr_dn_show13 = 1
-					else
-						B738DR_tcas_arr_up_show13 = 0
-						B738DR_tcas_arr_dn_show13 = 0
-					end
-					
-					tcas_dis_13 = tcas_dis
-					tcas_el_13 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show13 = 0
-						B738DR_tcas_circle_show13 = 0
-						B738DR_tcas_diam_show13 = 0
-						B738DR_tcas_diam_e_show13 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show13 = 0
-						B738DR_tcas_circle_show13 = 0
-						B738DR_tcas_diam_show13 = 1
-						B738DR_tcas_diam_e_show13 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show13 = 0
-						B738DR_tcas_circle_show13 = 1
-						B738DR_tcas_diam_show13 = 0
-						B738DR_tcas_diam_e_show13 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show13 = 1
-						B738DR_tcas_circle_show13 = 0
-						B738DR_tcas_diam_show13 = 0
-						B738DR_tcas_diam_e_show13 = 0
-					end
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
 			elseif ai_plane == 14 then
-			
-				B738DR_tcas_x14 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y14 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt14 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show14 = 1
-					B738DR_tcas_alt_dn_show14 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt14 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show14 = 0
-					B738DR_tcas_alt_dn_show14 = 1
-				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show14 = 1
-						B738DR_tcas_arr_dn_show14 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show14 = 0
-						B738DR_tcas_arr_dn_show14 = 1
-					else
-						B738DR_tcas_arr_up_show14 = 0
-						B738DR_tcas_arr_dn_show14 = 0
-					end
-					
-					tcas_dis_14 = tcas_dis
-					tcas_el_14 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show14 = 0
-						B738DR_tcas_circle_show14 = 0
-						B738DR_tcas_diam_show14 = 0
-						B738DR_tcas_diam_e_show14 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show14 = 0
-						B738DR_tcas_circle_show14 = 0
-						B738DR_tcas_diam_show14 = 1
-						B738DR_tcas_diam_e_show14 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show14 = 0
-						B738DR_tcas_circle_show14 = 1
-						B738DR_tcas_diam_show14 = 0
-						B738DR_tcas_diam_e_show14 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show14 = 1
-						B738DR_tcas_circle_show14 = 0
-						B738DR_tcas_diam_show14 = 0
-						B738DR_tcas_diam_e_show14 = 0
-					end
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
 			elseif ai_plane == 15 then
-			
-				B738DR_tcas_x15 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y15 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt15 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show15 = 1
-					B738DR_tcas_alt_dn_show15 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt15 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show15 = 0
-					B738DR_tcas_alt_dn_show15 = 1
-				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show15 = 1
-						B738DR_tcas_arr_dn_show15 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show15 = 0
-						B738DR_tcas_arr_dn_show15 = 1
-					else
-						B738DR_tcas_arr_up_show15 = 0
-						B738DR_tcas_arr_dn_show15 = 0
-					end
-					
-					tcas_dis_15 = tcas_dis
-					tcas_el_15 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show15 = 0
-						B738DR_tcas_circle_show15 = 0
-						B738DR_tcas_diam_show15 = 0
-						B738DR_tcas_diam_e_show15 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show15 = 0
-						B738DR_tcas_circle_show15 = 0
-						B738DR_tcas_diam_show15 = 1
-						B738DR_tcas_diam_e_show15 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show15 = 0
-						B738DR_tcas_circle_show15 = 1
-						B738DR_tcas_diam_show15 = 0
-						B738DR_tcas_diam_e_show15 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show15 = 1
-						B738DR_tcas_circle_show15 = 0
-						B738DR_tcas_diam_show15 = 0
-						B738DR_tcas_diam_e_show15 = 0
-					end
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
 			elseif ai_plane == 16 then
-			
-				B738DR_tcas_x16 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y16 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt16 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show16 = 1
-					B738DR_tcas_alt_dn_show16 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt16 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show16 = 0
-					B738DR_tcas_alt_dn_show16 = 1
-				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show16 = 1
-						B738DR_tcas_arr_dn_show16 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show16 = 0
-						B738DR_tcas_arr_dn_show16 = 1
-					else
-						B738DR_tcas_arr_up_show16 = 0
-						B738DR_tcas_arr_dn_show16 = 0
-					end
-					
-					tcas_dis_16 = tcas_dis
-					tcas_el_16 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show16 = 0
-						B738DR_tcas_circle_show16 = 0
-						B738DR_tcas_diam_show16 = 0
-						B738DR_tcas_diam_e_show16 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show16 = 0
-						B738DR_tcas_circle_show16 = 0
-						B738DR_tcas_diam_show16 = 1
-						B738DR_tcas_diam_e_show16 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show16 = 0
-						B738DR_tcas_circle_show16 = 1
-						B738DR_tcas_diam_show16 = 0
-						B738DR_tcas_diam_e_show16 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show16 = 1
-						B738DR_tcas_circle_show16 = 0
-						B738DR_tcas_diam_show16 = 0
-						B738DR_tcas_diam_e_show16 = 0
-					end
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
 			elseif ai_plane == 17 then
-			
-				B738DR_tcas_x17 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y17 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt17 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show17 = 1
-					B738DR_tcas_alt_dn_show17 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt17 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show17 = 0
-					B738DR_tcas_alt_dn_show17 = 1
-				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show17 = 1
-						B738DR_tcas_arr_dn_show17 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show17 = 0
-						B738DR_tcas_arr_dn_show17 = 1
-					else
-						B738DR_tcas_arr_up_show17 = 0
-						B738DR_tcas_arr_dn_show17 = 0
-					end
-					
-					tcas_dis_17 = tcas_dis
-					tcas_el_17 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show17 = 0
-						B738DR_tcas_circle_show17 = 0
-						B738DR_tcas_diam_show17 = 0
-						B738DR_tcas_diam_e_show17 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show17 = 0
-						B738DR_tcas_circle_show17 = 0
-						B738DR_tcas_diam_show17 = 1
-						B738DR_tcas_diam_e_show17 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show17 = 0
-						B738DR_tcas_circle_show17 = 1
-						B738DR_tcas_diam_show17 = 0
-						B738DR_tcas_diam_e_show17 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show17 = 1
-						B738DR_tcas_circle_show17 = 0
-						B738DR_tcas_diam_show17 = 0
-						B738DR_tcas_diam_e_show17 = 0
-					end
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
 			elseif ai_plane == 18 then
-			
-				B738DR_tcas_x18 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y18 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt18 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show18 = 1
-					B738DR_tcas_alt_dn_show18 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt18 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show18 = 0
-					B738DR_tcas_alt_dn_show18 = 1
-				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show18 = 1
-						B738DR_tcas_arr_dn_show18 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show18 = 0
-						B738DR_tcas_arr_dn_show18 = 1
-					else
-						B738DR_tcas_arr_up_show18 = 0
-						B738DR_tcas_arr_dn_show18 = 0
-					end
-					
-					tcas_dis_18 = tcas_dis
-					tcas_el_18 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show18 = 0
-						B738DR_tcas_circle_show18 = 0
-						B738DR_tcas_diam_show18 = 0
-						B738DR_tcas_diam_e_show18 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show18 = 0
-						B738DR_tcas_circle_show18 = 0
-						B738DR_tcas_diam_show18 = 1
-						B738DR_tcas_diam_e_show18 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show18 = 0
-						B738DR_tcas_circle_show18 = 1
-						B738DR_tcas_diam_show18 = 0
-						B738DR_tcas_diam_e_show18 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show18 = 1
-						B738DR_tcas_circle_show18 = 0
-						B738DR_tcas_diam_show18 = 0
-						B738DR_tcas_diam_e_show18 = 0
-					end
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
 			elseif ai_plane == 19 then
-			
-				B738DR_tcas_x19 = tcas_x --* tcas_zoom		-- zoom
-				B738DR_tcas_y19 = tcas_y --* tcas_zoom		-- zoom
-				
 				tcas_alt = math.floor(tcas_alt + 0.5)
-				-- if tcas_alt == 0 then
-					-- B738DR_tcas_alt = ""
-					-- B738DR_tcas_alt_up_show = 0
-					-- B738DR_tcas_alt_dn_show = 0
 				if tcas_alt >= 0 then
 					B738DR_tcas_alt19 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
-					B738DR_tcas_alt_up_show19 = 1
-					B738DR_tcas_alt_dn_show19 = 0
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 1
 				elseif tcas_alt < 0 then
 					B738DR_tcas_alt19 = string.format("%03d", tcas_alt)
-					B738DR_tcas_alt_up_show19 = 0
-					B738DR_tcas_alt_dn_show19 = 1
+					B738DR_tcas_alt_dn_up_show[ai_idx] = 0
 				end
-			
-				if tcas_tara == 1 then
-					delta_elev = tcas_el2 - tcas_el_old
-					delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
-					if delta_elev > 500 then
-						B738DR_tcas_arr_up_show19 = 1
-						B738DR_tcas_arr_dn_show19 = 0
-					elseif delta_elev < -500 then
-						B738DR_tcas_arr_up_show19 = 0
-						B738DR_tcas_arr_dn_show19 = 1
-					else
-						B738DR_tcas_arr_up_show19 = 0
-						B738DR_tcas_arr_dn_show19 = 0
-					end
-					
-					tcas_dis_19 = tcas_dis
-					tcas_el_19 = tcas_el2
-					
-					if tcas_traffic == 0 then
-						-- other traffic
-						B738DR_tcas_box_show19 = 0
-						B738DR_tcas_circle_show19 = 0
-						B738DR_tcas_diam_show19 = 0
-						B738DR_tcas_diam_e_show19 = 1
-					elseif tcas_traffic == 1 then
-						-- proximate traffic
-						B738DR_tcas_box_show19 = 0
-						B738DR_tcas_circle_show19 = 0
-						B738DR_tcas_diam_show19 = 1
-						B738DR_tcas_diam_e_show19 = 0
-					elseif tcas_traffic == 2 then
-						-- TA traffic
-						B738DR_tcas_box_show19 = 0
-						B738DR_tcas_circle_show19 = 1
-						B738DR_tcas_diam_show19 = 0
-						B738DR_tcas_diam_e_show19 = 0
-					elseif tcas_traffic == 3 then
-						-- RA traffic
-						B738DR_tcas_box_show19 = 1
-						B738DR_tcas_circle_show19 = 0
-						B738DR_tcas_diam_show19 = 0
-						B738DR_tcas_diam_e_show19 = 0
-					end
-				end
-			
 			end
+			
+			
+			-- First Officier
+			tcas_traffic = tcas_traffic2
+			
+			if B738DR_fo_map_mode < 2 and B738DR_fo_exp_map_mode == 1 then
+				mag_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
+			elseif B738DR_fo_map_mode == 2 then
+				if B738DR_track_up == 0 then
+					mag_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
+				else
+					if B738DR_track_up_active == 0 then
+						mag_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
+					else
+						mag_hdg = simDR_mag_hdg - simDR_mag_variation
+					end
+				end
+			else
+				--mag_hdg = simDR_mag_hdg - simDR_mag_variation
+				tcas_disable_fo = 1
+			end
+			
+			
+			tcas_y = math.sin(tcas_lon2 - tcas_lon) * math.cos(tcas_lat2)
+			tcas_x = math.cos(tcas_lat) * math.sin(tcas_lat2) - math.sin(tcas_lat) * math.cos(tcas_lat2) * math.cos(tcas_lon2 - tcas_lon)
+			tcas_hdg = math.atan2(tcas_y, tcas_x)
+			tcas_hdg = math.deg(tcas_hdg)
+			tcas_hdg = (tcas_hdg + 360) % 360
+			
+			delta_hdg = ((((tcas_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			
+			if delta_hdg >= 0 and delta_hdg <= 90 then
+				-- right
+				tcas_on_off2 = 1
+				delta_hdg = 90 - delta_hdg
+				delta_hdg = math.rad(delta_hdg)
+				tcas_y = tcas_dis * math.sin(delta_hdg)
+				tcas_x = tcas_dis * math.cos(delta_hdg)
+			elseif delta_hdg < 0 and delta_hdg >= -90 then
+				-- left
+				tcas_on_off2 = 1
+				delta_hdg = 90 + delta_hdg
+				delta_hdg = math.rad(delta_hdg)
+				tcas_y = tcas_dis * math.sin(delta_hdg)
+				tcas_x = -tcas_dis * math.cos(delta_hdg)
+			elseif delta_hdg > 90 then
+				-- right back
+				tcas_on_off2 = 1
+				if tcas_traffic == 3 then
+					if tcas_dis > ra_dmod and tcas_abs_alt > ra_zthr then
+						tcas_traffic = 2
+					end
+				end
+				if tcas_traffic == 2 then
+					if tcas_dis > ta_dmod and tcas_abs_alt > ta_zthr then
+						tcas_traffic = 1
+					end
+				end
+				delta_hdg = delta_hdg - 90
+				delta_hdg = math.rad(delta_hdg)
+				tcas_y = -tcas_dis * math.sin(delta_hdg)
+				tcas_x = tcas_dis * math.cos(delta_hdg)
+			elseif delta_hdg < -90 then
+				-- left back
+				tcas_on_off2 = 1
+				if tcas_traffic == 3 then
+					if tcas_dis > ra_dmod and tcas_abs_alt > ra_zthr then
+						tcas_traffic = 2
+					end
+				end
+				if tcas_traffic == 2 then
+					if tcas_dis > ta_dmod and tcas_abs_alt > ta_zthr then
+						tcas_traffic = 1
+					end
+				end
+				delta_hdg = -90 - delta_hdg
+				delta_hdg = math.rad(delta_hdg)
+				tcas_y = -tcas_dis * math.sin(delta_hdg)
+				tcas_x = -tcas_dis * math.cos(delta_hdg)
+			end
+			
+			if tcas_disable_fo == 1 then
+				tcas_on_off2 = 0
+			end
+			
+			if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+				tcas_zoom = 2
+			elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+				tcas_zoom = 1
+			elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+				tcas_zoom = 0.5
+			elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+				tcas_zoom = 0.25
+			elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+				tcas_zoom = 0.125
+			else
+				tcas_on_off2 = 0
+			end
+			
+			tcas_x = tcas_x * tcas_zoom		-- zoom
+			tcas_y = tcas_y * tcas_zoom		-- zoom
+			
+			if tcas_y > 7.5 or tcas_y < -2 then
+				tcas_on_off2 = 0
+			end
+			if tcas_x < -6.0 or tcas_x > 6.0 then
+				tcas_on_off2 = 0
+			end
+			
+			
+			B738DR_tcas_x_fo[ai_idx] = tcas_x
+			B738DR_tcas_y_fo[ai_idx] = tcas_y
+			
+			if tcas_tara == 1 then
+				delta_elev = tcas_el2 - tcas_el_old
+				delta_elev = ((delta_elev * 3.2808399) / 2) * 60		-- vvi
+				if delta_elev > 500 then
+					B738DR_tcas_arr_dn_up_show_fo[ai_idx] = 2
+				elseif delta_elev < -500 then
+					B738DR_tcas_arr_dn_up_show_fo[ai_idx] = 1
+				else
+					B738DR_tcas_arr_dn_up_show_fo[ai_idx] = 0
+				end
+				
+				tcas_dis_ai[ai_idx] = tcas_dis
+				tcas_el_ai[ai_idx] = tcas_el2
+				B738DR_tcas_type_show_fo[ai_idx] = 4 - tcas_traffic	-- + 1
+			end
+			
+			if ai_plane == 1 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 2 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo2 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo2 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 3 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo3 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo3 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 4 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo4 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo4 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 5 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo5 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo5 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 6 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo6 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo6 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 7 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo7 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo7 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 8 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo8 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo8 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 9 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo9 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo9 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 10 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo10 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo10 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 11 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo11 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo11 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 12 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo12 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo12 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 13 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo13 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo13 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 14 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo14 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo14 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 15 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo15 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo15 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 16 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo16 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo16 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 17 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo17 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo17 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 18 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo18 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo18 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			elseif ai_plane == 19 then
+				-- tcas_alt = math.floor(tcas_alt + 0.5)
+				if tcas_alt >= 0 then
+					B738DR_tcas_alt_fo19 = "+" .. string.sub(string.format("%03d", tcas_alt), 2, 3)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 1
+				elseif tcas_alt < 0 then
+					B738DR_tcas_alt_fo19 = string.format("%03d", tcas_alt)
+					B738DR_tcas_alt_dn_up_show_fo[ai_idx] = 0
+				end
+			end
+			
 		end
 	end
 	
 	if tcas_on_off == 0 then
-		if ai_plane == 1 then
-			B738_EFIS_TCAS_show1 = 0
-			-- B738DR_tcas_box_show = 0
-			-- B738DR_tcas_circle_show = 0
-			-- B738DR_tcas_diam_show = 0
-			-- B738DR_tcas_diam_e_show = 0
-		elseif ai_plane == 2 then
-			B738_EFIS_TCAS_show2 = 0
-			-- B738DR_tcas_box_show2 = 0
-			-- B738DR_tcas_circle_show2 = 0
-			-- B738DR_tcas_diam_show2 = 0
-			-- B738DR_tcas_diam_e_show2 = 0
-		elseif ai_plane == 3 then
-			B738_EFIS_TCAS_show3 = 0
-			-- B738DR_tcas_box_show3 = 0
-			-- B738DR_tcas_circle_show3 = 0
-			-- B738DR_tcas_diam_show3 = 0
-			-- B738DR_tcas_diam_e_show3 = 0
-		elseif ai_plane == 4 then
-			B738_EFIS_TCAS_show4 = 0
-			-- B738DR_tcas_box_show4 = 0
-			-- B738DR_tcas_circle_show4 = 0
-			-- B738DR_tcas_diam_show4 = 0
-			-- B738DR_tcas_diam_e_show4 = 0
-		elseif ai_plane == 5 then
-			B738_EFIS_TCAS_show5 = 0
-			-- B738DR_tcas_box_show5 = 0
-			-- B738DR_tcas_circle_show5 = 0
-			-- B738DR_tcas_diam_show5 = 0
-			-- B738DR_tcas_diam_e_show5 = 0
-		elseif ai_plane == 6 then
-			B738_EFIS_TCAS_show6 = 0
-			-- B738DR_tcas_box_show6 = 0
-			-- B738DR_tcas_circle_show6 = 0
-			-- B738DR_tcas_diam_show6 = 0
-			-- B738DR_tcas_diam_e_show6 = 0
-		elseif ai_plane == 7 then
-			B738_EFIS_TCAS_show7 = 0
-			-- B738DR_tcas_box_show7 = 0
-			-- B738DR_tcas_circle_show7 = 0
-			-- B738DR_tcas_diam_show7 = 0
-			-- B738DR_tcas_diam_e_show7 = 0
-		elseif ai_plane == 8 then
-			B738_EFIS_TCAS_show8 = 0
-			-- B738DR_tcas_box_show8 = 0
-			-- B738DR_tcas_circle_show8 = 0
-			-- B738DR_tcas_diam_show8 = 0
-			-- B738DR_tcas_diam_e_show8 = 0
-		elseif ai_plane == 9 then
-			B738_EFIS_TCAS_show9 = 0
-			-- B738DR_tcas_box_show9 = 0
-			-- B738DR_tcas_circle_show9 = 0
-			-- B738DR_tcas_diam_show9 = 0
-			-- B738DR_tcas_diam_e_show9 = 0
-		elseif ai_plane == 10 then
-			B738_EFIS_TCAS_show10 = 0
-			-- B738DR_tcas_box_show10 = 0
-			-- B738DR_tcas_circle_show10 = 0
-			-- B738DR_tcas_diam_show10 = 0
-			-- B738DR_tcas_diam_e_show10 = 0
-		elseif ai_plane == 11 then
-			B738_EFIS_TCAS_show11 = 0
-		elseif ai_plane == 12 then
-			B738_EFIS_TCAS_show12 = 0
-		elseif ai_plane == 13 then
-			B738_EFIS_TCAS_show13 = 0
-		elseif ai_plane == 14 then
-			B738_EFIS_TCAS_show14 = 0
-		elseif ai_plane == 15 then
-			B738_EFIS_TCAS_show15 = 0
-		elseif ai_plane == 16 then
-			B738_EFIS_TCAS_show16 = 0
-		elseif ai_plane == 17 then
-			B738_EFIS_TCAS_show17 = 0
-		elseif ai_plane == 18 then
-			B738_EFIS_TCAS_show18 = 0
-		elseif ai_plane == 19 then
-			B738_EFIS_TCAS_show19 = 0
-		end
+		B738_EFIS_TCAS_ai_show[ai_idx] = 0
 	else
-		if ai_plane == 1 then
-			B738_EFIS_TCAS_show1 = 1
-		elseif ai_plane == 2 then
-			B738_EFIS_TCAS_show2 = 1
-		elseif ai_plane == 3 then
-			B738_EFIS_TCAS_show3 = 1
-		elseif ai_plane == 4 then
-			B738_EFIS_TCAS_show4 = 1
-		elseif ai_plane == 5 then
-			B738_EFIS_TCAS_show5 = 1
-		elseif ai_plane == 6 then
-			B738_EFIS_TCAS_show6 = 1
-		elseif ai_plane == 7 then
-			B738_EFIS_TCAS_show7 = 1
-		elseif ai_plane == 8 then
-			B738_EFIS_TCAS_show8 = 1
-		elseif ai_plane == 9 then
-			B738_EFIS_TCAS_show9 = 1
-		elseif ai_plane == 10 then
-			B738_EFIS_TCAS_show10 = 1
-		elseif ai_plane == 11 then
-			B738_EFIS_TCAS_show11 = 1
-		elseif ai_plane == 12 then
-			B738_EFIS_TCAS_show12 = 1
-		elseif ai_plane == 13 then
-			B738_EFIS_TCAS_show13 = 1
-		elseif ai_plane == 14 then
-			B738_EFIS_TCAS_show14 = 1
-		elseif ai_plane == 15 then
-			B738_EFIS_TCAS_show15 = 1
-		elseif ai_plane == 16 then
-			B738_EFIS_TCAS_show16 = 1
-		elseif ai_plane == 17 then
-			B738_EFIS_TCAS_show17 = 1
-		elseif ai_plane == 18 then
-			B738_EFIS_TCAS_show18 = 1
-		elseif ai_plane == 19 then
-			B738_EFIS_TCAS_show19 = 1
-		end
+		B738_EFIS_TCAS_ai_show[ai_idx] = 1
 	end
-
+	
+	if tcas_on_off2 == 0 then
+		B738_EFIS_TCAS_ai_show_fo[ai_idx] = 0
+	else
+		B738_EFIS_TCAS_ai_show_fo[ai_idx] = 1
+	end
+	
 end
 
 function tcas_test()
 
-		local tcas_zoom = 0
-		-- traffic test
-		tcas_clr(1)
-		tcas_clr(2)
-		tcas_clr(3)
-		tcas_clr(4)
-		tcas_clr(5)
-		tcas_clr(6)
-		tcas_clr(7)
-		tcas_clr(8)
-		tcas_clr(9)
-		tcas_clr(10)
-		tcas_clr(11)
-		tcas_clr(12)
-		tcas_clr(13)
-		tcas_clr(14)
-		tcas_clr(15)
-		tcas_clr(16)
-		tcas_clr(17)
-		tcas_clr(18)
-		tcas_clr(19)
-		if B738DR_efis_map_range_capt == 0 then	-- 5 NM
-			tcas_zoom = 2
-		elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
-			tcas_zoom = 1
-		elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
-			tcas_zoom = 0.5
-		elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
-			tcas_zoom = 0.25
-		elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
-			tcas_zoom = 0.125
-		else
-			tcas_zoom = 0.125
-		end
-		B738_EFIS_traffic_ra = 1
-		B738_EFIS_traffic_ta = 0
-		-- AI 1
-		B738DR_tcas_box_show = 1
-		B738DR_tcas_x = 1.2 * tcas_zoom
-		B738DR_tcas_y = 1 * tcas_zoom
-		B738DR_tcas_arr_up_show = 0
-		B738DR_tcas_arr_dn_show = 0
-		B738DR_tcas_alt = "+00"
-		B738DR_tcas_alt_up_show = 1
-		B738DR_tcas_alt_dn_show = 0
-		B738_EFIS_TCAS_show1 = 1
-		-- AI 2
-		B738DR_tcas_circle_show2 = 1
-		B738DR_tcas_x2 = -1.2 * tcas_zoom
-		B738DR_tcas_y2 = 1 * tcas_zoom
-		B738DR_tcas_arr_up_show2 = 0
-		B738DR_tcas_arr_dn_show2 = 0
-		B738DR_tcas_alt2 = "-05"
-		B738DR_tcas_alt_up_show2 = 0
-		B738DR_tcas_alt_dn_show2 = 1
-		B738_EFIS_TCAS_show2 = 1
-		-- AI 3
-		B738DR_tcas_diam_show3 = 1
-		B738DR_tcas_x3 = 1.2 * tcas_zoom
-		B738DR_tcas_y3 = 3 * tcas_zoom
-		B738DR_tcas_arr_up_show3 = 0
-		B738DR_tcas_arr_dn_show3 = 1
-		B738DR_tcas_alt3 = ""
-		B738DR_tcas_alt_up_show3 = 0
-		B738DR_tcas_alt_dn_show3 = 0
-		B738_EFIS_TCAS_show3 = 1
-		-- AI 4
-		B738DR_tcas_diam_e_show4 = 1
-		B738DR_tcas_x4 = -1.2 * tcas_zoom
-		B738DR_tcas_y4 = 3 * tcas_zoom
-		B738DR_tcas_arr_up_show4 = 1
-		B738DR_tcas_arr_dn_show4 = 0
-		B738DR_tcas_alt4 = "+24"
-		B738DR_tcas_alt_up_show4 = 1
-		B738DR_tcas_alt_dn_show4 = 0
-		B738_EFIS_TCAS_show4 = 1
-		
-		B738_EFIS_TCAS_show = 1
+	local tcas_zoom = 0
+	local ii = 0
+	
+	-- traffic test
+	for ii = 1, 19 do
+		tcas_clr(ii)
+		tcas_clr_fo(ii)
+	end
+	
+	-- Captain
+	if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+		tcas_zoom = 2
+	elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+		tcas_zoom = 1
+	elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+		tcas_zoom = 0.5
+	elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+		tcas_zoom = 0.25
+	elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+		tcas_zoom = 0.125
+	else
+		tcas_zoom = 0.125
+	end
+	B738_EFIS_traffic_ra = 1
+	B738_EFIS_traffic_ta = 0
+	-- AI 1
+	B738DR_tcas_type_show[0] = 1
+	B738DR_tcas_x[0] = 1.2 * tcas_zoom
+	B738DR_tcas_y[0] = 1 * tcas_zoom
+	B738DR_tcas_arr_dn_up_show[0] = 2
+	B738DR_tcas_alt = "+00"
+	B738DR_tcas_alt_dn_up_show[0] = 0
+	B738_EFIS_TCAS_ai_show[0] = 1
+	-- AI 2
+	B738DR_tcas_type_show[1] = 2
+	B738DR_tcas_x[1] = -1.2 * tcas_zoom
+	B738DR_tcas_y[1] = 1 * tcas_zoom
+	B738DR_tcas_arr_dn_up_show[1] = 1
+	B738DR_tcas_alt2 = "-05"
+	B738DR_tcas_alt_dn_up_show[1] = 0
+	B738_EFIS_TCAS_ai_show[1] = 1
+	-- AI 3
+	B738DR_tcas_type_show[2] = 3
+	B738DR_tcas_x[2] = 1.2 * tcas_zoom
+	B738DR_tcas_y[2] = 3 * tcas_zoom
+	B738DR_tcas_arr_dn_up_show[2] = 1
+	B738DR_tcas_alt3 = ""
+	B738DR_tcas_alt_dn_up_show[2] = 0
+	B738_EFIS_TCAS_ai_show[2] = 1
+	-- AI 4
+	B738DR_tcas_type_show[3] = 4
+	B738DR_tcas_x[3] = -1.2 * tcas_zoom
+	B738DR_tcas_y[3] = 3 * tcas_zoom
+	B738DR_tcas_arr_dn_up_show[3] = 2
+	B738DR_tcas_alt4 = "+24"
+	B738DR_tcas_alt_dn_up_show[3] = 1
+	B738_EFIS_TCAS_ai_show[3] = 1
+	
+	B738_EFIS_TCAS_show = 1
+	
+	-- First Officier
+	if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+		tcas_zoom = 2
+	elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+		tcas_zoom = 1
+	elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+		tcas_zoom = 0.5
+	elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+		tcas_zoom = 0.25
+	elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+		tcas_zoom = 0.125
+	else
+		tcas_zoom = 0.125
+	end
+	B738_EFIS_traffic_ra_fo = 1
+	B738_EFIS_traffic_ta_fo = 0
+	-- AI 1
+	B738DR_tcas_type_show_fo[0] = 1
+	B738DR_tcas_x_fo[0] = 1.2 * tcas_zoom
+	B738DR_tcas_y_fo[0] = 1 * tcas_zoom
+	B738DR_tcas_arr_dn_up_show_fo[0] = 2
+	B738DR_tcas_alt_fo = "+00"
+	B738DR_tcas_alt_dn_up_show_fo[0] = 0
+	B738_EFIS_TCAS_ai_show_fo[0] = 1
+	-- AI 2
+	B738DR_tcas_type_show_fo[1] = 2
+	B738DR_tcas_x_fo[1] = -1.2 * tcas_zoom
+	B738DR_tcas_y_fo[1] = 1 * tcas_zoom
+	B738DR_tcas_arr_dn_up_show_fo[1] = 1
+	B738DR_tcas_alt_fo2 = "-05"
+	B738DR_tcas_alt_dn_up_show_fo[1] = 0
+	B738_EFIS_TCAS_ai_show_fo[1] = 1
+	-- AI 3
+	B738DR_tcas_type_show_fo[2] = 3
+	B738DR_tcas_x_fo[2] = 1.2 * tcas_zoom
+	B738DR_tcas_y_fo[2] = 3 * tcas_zoom
+	B738DR_tcas_arr_dn_up_show_fo[2] = 1
+	B738DR_tcas_alt_fo3 = ""
+	B738DR_tcas_alt_dn_up_show_fo[2] = 0
+	B738_EFIS_TCAS_ai_show_fo[2] = 1
+	-- AI 4
+	B738DR_tcas_type_show_fo[3] = 4
+	B738DR_tcas_x_fo[3] = -1.2 * tcas_zoom
+	B738DR_tcas_y_fo[3] = 3 * tcas_zoom
+	B738DR_tcas_arr_dn_up_show_fo[3] = 2
+	B738DR_tcas_alt_fo4 = "+24"
+	B738DR_tcas_alt_dn_up_show_fo[3] = 1
+	B738_EFIS_TCAS_ai_show_fo[3] = 1
+	
+	B738_EFIS_TCAS_show_fo = 1
+	
 end
 
 function B738_tcas_system()
@@ -8541,7 +7479,6 @@ function B738_tcas_system()
 	if B738DR_transponder_knob_pos > 0 then
 		local tcas_tara_test = 0
 		local nearest_plane = 99
-		--tcas_tara_status = 0
 		
 		for ii = 1, 19 do
 			B738_tcas(ii)
@@ -8550,82 +7487,6 @@ function B738_tcas_system()
 			end
 		end
 		
-		-- B738_tcas(1)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(2)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(3)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(4)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(5)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(6)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(7)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(8)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(9)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(10)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(11)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(12)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(13)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(14)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(15)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(16)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(17)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(18)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
-		-- B738_tcas(19)
-		-- if tcas_dis < nearest_plane then
-			-- nearest_plane = tcas_dis
-		-- end
 		B738DR_tcas_nearest_plane_m = nearest_plane * 1852
 		
 		if tcas_tara == 1 then
@@ -8633,197 +7494,139 @@ function B738_tcas_system()
 		end
 		tcas_tara = 0
 		
-		if B738_EFIS_TCAS_show1 == 1 and B738DR_tcas_box_show == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show2 == 1 and B738DR_tcas_box_show2 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show3 == 1 and B738DR_tcas_box_show3 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show4 == 1 and B738DR_tcas_box_show4 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show5 == 1 and B738DR_tcas_box_show5 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show6 == 1 and B738DR_tcas_box_show6 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show7 == 1 and B738DR_tcas_box_show7 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show8 == 1 and B738DR_tcas_box_show8 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show9 == 1 and B738DR_tcas_box_show9 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show10 == 1 and B738DR_tcas_box_show10 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show11 == 1 and B738DR_tcas_box_show11 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show12 == 1 and B738DR_tcas_box_show12 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show13 == 1 and B738DR_tcas_box_show13 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show14 == 1 and B738DR_tcas_box_show14 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show15 == 1 and B738DR_tcas_box_show15 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show16 == 1 and B738DR_tcas_box_show16 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show17 == 1 and B738DR_tcas_box_show17 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show18 == 1 and B738DR_tcas_box_show18 == 1 then
-			tcas_tara_test = 1
-		end
-		if B738_EFIS_TCAS_show19 == 1 and B738DR_tcas_box_show19 == 1 then
-			tcas_tara_test = 1
+		for ii = 0, 18 do
+			if B738_EFIS_TCAS_ai_show[ii] == 1 and B738DR_tcas_type_show[ii] == 1 then
+				tcas_tara_test = 1
+			end
+			if B738_EFIS_TCAS_ai_show_fo[ii] == 1 and B738DR_tcas_type_show_fo[ii] == 1 then
+				tcas_tara_test = 1
+			end
 		end
 		
 		if tcas_tara_test == 1 then
 			if B738DR_transponder_knob_pos == 5 then
 				B738_EFIS_traffic_ra = 1
 				B738_EFIS_traffic_ta = 0
+				B738_EFIS_traffic_ra_fo = 1
+				B738_EFIS_traffic_ta_fo = 0
 			else
 				B738_EFIS_traffic_ra = 0
 				B738_EFIS_traffic_ta = 1
+				B738_EFIS_traffic_ra_fo = 1
+				B738_EFIS_traffic_ta_fo = 0
 			end
 		else
 			tcas_tara_test = 0
-			if B738_EFIS_TCAS_show1 == 1 and B738DR_tcas_circle_show == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show2 == 1 and B738DR_tcas_circle_show2 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show3 == 1 and B738DR_tcas_circle_show3 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show4 == 1 and B738DR_tcas_circle_show4 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show5 == 1 and B738DR_tcas_circle_show5 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show6 == 1 and B738DR_tcas_circle_show6 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show7 == 1 and B738DR_tcas_circle_show7 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show8 == 1 and B738DR_tcas_circle_show8 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show9 == 1 and B738DR_tcas_circle_show9 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show10 == 1 and B738DR_tcas_circle_show10 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show11 == 1 and B738DR_tcas_circle_show11 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show12 == 1 and B738DR_tcas_circle_show12 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show13 == 1 and B738DR_tcas_circle_show13 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show14 == 1 and B738DR_tcas_circle_show14 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show15 == 1 and B738DR_tcas_circle_show15 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show16 == 1 and B738DR_tcas_circle_show16 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show17 == 1 and B738DR_tcas_circle_show17 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show18 == 1 and B738DR_tcas_circle_show18 == 1 then
-				tcas_tara_test = 1
-			end
-			if B738_EFIS_TCAS_show19 == 1 and B738DR_tcas_circle_show19 == 1 then
-				tcas_tara_test = 1
+			for ii = 0, 18 do
+				if B738_EFIS_TCAS_ai_show[ii] == 1 and B738DR_tcas_type_show[ii] == 2 then
+					tcas_tara_test = 1
+				end
+				if B738_EFIS_TCAS_ai_show_fo[ii] == 1 and B738DR_tcas_type_show_fo[ii] == 2 then
+					tcas_tara_test = 1
+				end
 			end
 			if tcas_tara_test == 1 then
 				B738_EFIS_traffic_ra = 0
 				B738_EFIS_traffic_ta = 1
+				B738_EFIS_traffic_ra_fo = 0
+				B738_EFIS_traffic_ta_fo = 1
 			else
 				B738_EFIS_traffic_ra = 0
 				B738_EFIS_traffic_ta = 0
+				B738_EFIS_traffic_ra_fo = 0
+				B738_EFIS_traffic_ta_fo = 0
 			end
 		end
 	end
 	
 	B738_EFIS_tcas_fail_show = 0
+	B738_EFIS_tcas_fail_show_fo = 0
 	
 	if B738DR_transponder_knob_pos == 0 then
 		B738_EFIS_tfc_show = 0
 		B738_EFIS_ta_only_show = 0
 		B738_EFIS_tcas_test_show = 1
 		B738_EFIS_tcas_off_show = 0
-		-- B738_EFIS_tfc_show_fo = 0
-		-- B738_EFIS_ta_only_show_fo = 0
-		-- B738_EFIS_tcas_test_show_fo = 1
-		-- B738_EFIS_tcas_off_show_fo = 0
-		--B738_EFIS_TCAS_show = 0
+		B738_EFIS_tfc_show_fo = 0
+		B738_EFIS_ta_only_show_fo = 0
+		B738_EFIS_tcas_test_show_fo = 1
+		B738_EFIS_tcas_off_show_fo = 0
 		tcas_test()
 	elseif B738DR_transponder_knob_pos < 4 then
 		B738_EFIS_tfc_show = 0
 		B738_EFIS_ta_only_show = 0
 		B738_EFIS_tcas_test_show = 0
 		B738_EFIS_tcas_off_show = 1
-		-- B738_EFIS_tfc_show_fo = 0
-		-- B738_EFIS_ta_only_show_fo = 0
-		-- B738_EFIS_tcas_test_show_fo = 0
-		-- B738_EFIS_tcas_off_show_fo = 1
+		B738_EFIS_tfc_show_fo = 0
+		B738_EFIS_ta_only_show_fo = 0
+		B738_EFIS_tcas_test_show_fo = 0
+		B738_EFIS_tcas_off_show_fo = 1
 		B738_EFIS_TCAS_show = 0
+		B738_EFIS_TCAS_show_fo = 0
 	elseif B738DR_transponder_knob_pos == 4 then
 		B738_EFIS_tfc_show = 0
 		B738_EFIS_ta_only_show = 1
 		B738_EFIS_tcas_test_show = 0
 		B738_EFIS_tcas_off_show = 0
-		-- B738_EFIS_tfc_show_fo = 0
-		-- B738_EFIS_ta_only_show_fo = 1
-		-- B738_EFIS_tcas_test_show_fo = 0
-		-- B738_EFIS_tcas_off_show_fo = 0
+		B738_EFIS_tfc_show_fo = 0
+		B738_EFIS_ta_only_show_fo = 1
+		B738_EFIS_tcas_test_show_fo = 0
+		B738_EFIS_tcas_off_show_fo = 0
 		B738_EFIS_TCAS_show = 1
+		B738_EFIS_TCAS_show_fo = 1
 	elseif B738DR_transponder_knob_pos == 5 then
 		B738_EFIS_tfc_show = 1
 		B738_EFIS_ta_only_show = 0
 		B738_EFIS_tcas_test_show = 0
 		B738_EFIS_tcas_off_show = 0
-		-- B738_EFIS_tfc_show_fo = 1
-		-- B738_EFIS_ta_only_show_fo = 0
-		-- B738_EFIS_tcas_test_show_fo = 0
-		-- B738_EFIS_tcas_off_show_fo = 0
+		B738_EFIS_tfc_show_fo = 1
+		B738_EFIS_ta_only_show_fo = 0
+		B738_EFIS_tcas_test_show_fo = 0
+		B738_EFIS_tcas_off_show_fo = 0
 		B738_EFIS_TCAS_show = 1
+		B738_EFIS_TCAS_show_fo = 1
 	end
 	
-	if B738DR_EFIS_TCAS_on == 0 
-	or (B738DR_capt_map_mode < 2 and B738DR_capt_exp_map_mode == 0)
-	or B738DR_capt_map_mode == 3 then
+	
+	if B738DR_EFIS_TCAS_on == 0 then
 		B738_EFIS_TCAS_show = 0
 		B738_EFIS_tfc_show = 0
 		B738_EFIS_ta_only_show = 0
 		B738_EFIS_tcas_test_show = 0
-		B738_EFIS_TCAS_show = 0
 		
 		B738_EFIS_traffic_ra = 0
 		B738_EFIS_traffic_ta = 0
+		tcas_tara = 1
+	elseif B738DR_capt_map_mode < 2 and B738DR_capt_exp_map_mode == 0 then
+		B738_EFIS_tfc_show = 0
+		B738_EFIS_traffic_ra = 0
+		B738_EFIS_traffic_ta = 0
+		tcas_tara = 1
+	elseif B738DR_capt_map_mode == 3 then
+		B738_EFIS_tfc_show = 0
+		B738_EFIS_traffic_ra = 0
+		B738_EFIS_traffic_ta = 0
+		tcas_tara = 1
+	end
+	
+	if B738DR_EFIS_TCAS_on_fo == 0 then
+		B738_EFIS_TCAS_show_fo = 0
+		B738_EFIS_tfc_show_fo = 0
+		B738_EFIS_ta_only_show_fo = 0
+		B738_EFIS_tcas_test_show_fo = 0
+		
+		B738_EFIS_traffic_ra_fo = 0
+		B738_EFIS_traffic_ta_fo = 0
+		tcas_tara = 1
+	elseif B738DR_fo_map_mode < 2 and B738DR_fo_exp_map_mode == 0 then
+		B738_EFIS_tfc_show_fo = 0
+		B738_EFIS_traffic_ra_fo = 0
+		B738_EFIS_traffic_ta_fo = 0
+		tcas_tara = 1
+	elseif B738DR_fo_map_mode == 3 then
+		B738_EFIS_tfc_show_fo = 0
+		B738_EFIS_traffic_ra_fo = 0
+		B738_EFIS_traffic_ta_fo = 0
 		tcas_tara = 1
 	end
 	
@@ -8832,32 +7635,22 @@ function B738_tcas_system()
 		B738_EFIS_traffic_ra = 0
 		B738_EFIS_traffic_ta = 0
 	end
+	if B738_EFIS_TCAS_show_fo == 0 then
+		B738_EFIS_traffic_ra_fo = 0
+		B738_EFIS_traffic_ta_fo = 0
+	end
+	
 	-------------
 
 end
 
 function tcas_show1_19()
-
-	B738_EFIS_TCAS_show1 = 1
-	B738_EFIS_TCAS_show2 = 1
-	B738_EFIS_TCAS_show3 = 1
-	B738_EFIS_TCAS_show4 = 1
-	B738_EFIS_TCAS_show5 = 1
-	B738_EFIS_TCAS_show6 = 1
-	B738_EFIS_TCAS_show7 = 1
-	B738_EFIS_TCAS_show8 = 1
-	B738_EFIS_TCAS_show9 = 1
-	B738_EFIS_TCAS_show10 = 1
-	B738_EFIS_TCAS_show11 = 1
-	B738_EFIS_TCAS_show12 = 1
-	B738_EFIS_TCAS_show13 = 1
-	B738_EFIS_TCAS_show14 = 1
-	B738_EFIS_TCAS_show15 = 1
-	B738_EFIS_TCAS_show16 = 1
-	B738_EFIS_TCAS_show17 = 1
-	B738_EFIS_TCAS_show18 = 1
-	B738_EFIS_TCAS_show19 = 1
-
+	
+	local ii = 0
+	
+	for ii = 0, 18 do
+		B738_EFIS_TCAS_ai_show[ii] = 1
+	end
 end
 
 function B738_hydropumps()
