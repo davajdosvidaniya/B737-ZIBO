@@ -844,6 +844,7 @@ simDR_gs_flag					= find_dataref("sim/cockpit2/radios/indicators/nav1_flag_glide
 simDR_nav1_vdef_dots			= find_dataref("sim/cockpit2/radios/indicators/nav1_vdef_dots_pilot")
 simDR_nav1_vert_signal			= find_dataref("sim/cockpit2/radios/indicators/nav1_display_vertical")
 
+xfirst_time2			= find_dataref("laminar/B738/fms/xfirst_time2")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM DATAREFS             			    	 **--
@@ -1065,6 +1066,9 @@ B738_EFIS_traffic_ra_fo 	= create_dataref("laminar/B738/TCAS/traffic_ra_fo", "nu
 B738_EFIS_traffic_ta_fo 	= create_dataref("laminar/B738/TCAS/traffic_ta_fo", "number")
 
 B738DR_tcas_nearest_plane_m	= create_dataref("laminar/B738/TCAS/nearest_plane_m", "number")
+
+B738DR_tcas_ring			= create_dataref("laminar/B738/nd/tcas_ring", "number")
+B738DR_tcas_ring_fo			= create_dataref("laminar/B738/nd/tcas_ring_fo", "number")
 
 
 --- TCAS captain
@@ -7622,7 +7626,7 @@ function B738_tcas_system()
 		run_at_interval(B738_tcas_calc, 2)		-- calc every 2 seconds
 	end
 
-	if B738DR_transponder_knob_pos > 0 then
+	if B738DR_transponder_knob_pos > 0 and xfirst_time2 == 0 then
 		local tcas_tara_test = 0
 		local nearest_plane = 99
 		
@@ -7787,7 +7791,19 @@ function B738_tcas_system()
 	end
 	
 	-------------
-
+	
+	-- TCAS Ring
+	if B738_EFIS_TCAS_show == 1 and B738DR_efis_map_range_capt <= 4 then
+		B738DR_tcas_ring = 1
+	else
+		B738DR_tcas_ring = 0
+	end
+	if B738_EFIS_TCAS_show_fo == 1 and B738DR_efis_map_range_fo <= 4 then
+		B738DR_tcas_ring_fo = 1
+	else
+		B738DR_tcas_ring_fo = 0
+	end
+	
 end
 
 function tcas_show1_19()
@@ -10162,6 +10178,7 @@ function B738_pressurization2()
 		end
 	end
 	
+	target_cabin_vvi = simDR_cabin_vvi
 	B738DR_cabin_vvi = B738_set_anim_value(B738DR_cabin_vvi, target_cabin_vvi, -4500, 4500, 0.8)
 	
 	B738DR_outflow_valve = B738_set_anim_value(B738DR_outflow_valve, tgt_outflow_valve, 0, 1, 0.8)
@@ -10170,7 +10187,6 @@ function B738_pressurization2()
 	B738DR_pressurization_mode = press_mode
 	simDR_dump_all = dump_all_on
 	
-	target_cabin_vvi = simDR_cabin_vvi
 	B738DR_cabin_alt = simDR_cabin_alt
 	simDR_press_set_vvi = 800
 	

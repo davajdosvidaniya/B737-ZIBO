@@ -131,7 +131,7 @@ FILE_NAME_FMOD_CFG = "b738x_fmod.cfg"
 FILE_NAME_FMOD = "fmod/b738.snd"
 
 MAX_NUM_SCRATCH = 24
-MAX_LEGS_DATA = 40
+MAX_LEGS_DATA = 41
 
 -- MESSAGES --
 INVALID_INPUT 				= "INVALID ENTRY"
@@ -1009,7 +1009,7 @@ fmod_preset[3] = {}
 fmod_preset[4] = {}
 fmod_preset[5] = {}
 
-xfirst_time2 = 0
+--xfirst_time2 = 0
 precalc_done = 0
 
 mag_dec = {}
@@ -1152,12 +1152,12 @@ ff_sample = 0
 	ref_icao_lon = 0
 	des_icao_lat = 0
 	des_icao_lon = 0
-	ref_icao_alt = 0
+	--ref_icao_alt = 0
 	ref_tns_alt = 0
 	ref_tns_lvl = 0
 	des_tns_alt = 0
 	des_tns_lvl = 0
-	des_icao_alt = 0
+	--des_icao_alt = 0
 	
 	------
 	ref_gate_x = "-----"
@@ -3060,18 +3060,25 @@ B738DR_fms_light_pilot		= create_dataref("laminar/B738/push_button/fms_light_pil
 B738DR_fms_light_fo			= create_dataref("laminar/B738/push_button/fms_light_fo", "number")
 
 -- LEGS as string
-B738DR_fms_legs				= create_dataref("laminar/B738/fms/legs", "string")
-B738DR_fms_legs_lat        = create_dataref("laminar/B738/fms/legs_lat", "array[100]")
-B738DR_fms_legs_lon        = create_dataref("laminar/B738/fms/legs_lon", "array[100]")
-B738DR_fms_legs_type        = create_dataref("laminar/B738/fms/legs_type", "array[100]")
+B738DR_fms_legs					= create_dataref("laminar/B738/fms/legs", "string")
+B738DR_fms_legs_lat 			= create_dataref("laminar/B738/fms/legs_lat", "array[255]")
+B738DR_fms_legs_lon 			= create_dataref("laminar/B738/fms/legs_lon", "array[255]")
+B738DR_fms_legs_type 			= create_dataref("laminar/B738/fms/legs_type", "array[255]")
+B738DR_fms_legs_alt_rest1 		= create_dataref("laminar/B738/fms/legs_alt_rest1", "array[255]")
+B738DR_fms_legs_alt_rest2 		= create_dataref("laminar/B738/fms/legs_alt_rest2", "array[255]")
+B738DR_fms_legs_alt_rest_type 	= create_dataref("laminar/B738/fms/legs_alt_rest_type", "array[255]")
+B738DR_fms_legs_alt_calc		= create_dataref("laminar/B738/fms/legs_alt_calc", "array[255]")
 
-B738DR_fms_legs2			= create_dataref("laminar/B738/fms/legs2", "string")
+-- B738DR_fms_legs2			= create_dataref("laminar/B738/fms/legs2", "string")
 B738DR_fms_legs_num2		= create_dataref("laminar/B738/fms/legs_num2", "number")
-B738DR_fms_legs_lat2 		= create_dataref("laminar/B738/fms/legs_lat2", "array[100]")
-B738DR_fms_legs_lon2 		= create_dataref("laminar/B738/fms/legs_lon2", "array[100]")
-B738DR_fms_legs_type2 		= create_dataref("laminar/B738/fms/legs_type2", "array[100]")
-B738DR_fms_legs_connect2	= create_dataref("laminar/B738/fms/legs_connect2", "array[100]")
+-- B738DR_fms_legs_lat2 		= create_dataref("laminar/B738/fms/legs_lat2", "array[100]")
+-- B738DR_fms_legs_lon2 		= create_dataref("laminar/B738/fms/legs_lon2", "array[100]")
+-- B738DR_fms_legs_type2 		= create_dataref("laminar/B738/fms/legs_type2", "array[100]")
+-- B738DR_fms_legs_connect2	= create_dataref("laminar/B738/fms/legs_connect2", "array[100]")
 
+
+ref_icao_alt				= create_dataref("laminar/B738/fms/ref_icao_alt", "number")
+des_icao_alt				= create_dataref("laminar/B738/fms/des_icao_alt", "number")
 
 B738DR_wind_show			= create_dataref("laminar/B738/nd/wind_show", "number")
 
@@ -3172,6 +3179,8 @@ simDR_pos_vz		= find_dataref("sim/flightmodel/position/local_vz")
 simDR_pos_ax		= find_dataref("sim/flightmodel/position/local_ax")
 simDR_pos_ay		= find_dataref("sim/flightmodel/position/local_ay")
 simDR_pos_az		= find_dataref("sim/flightmodel/position/local_az")
+
+xfirst_time2		= create_dataref("laminar/B738/fms/xfirst_time2", "number")
 
 --*************************************************************************************--
 --** 				              CUSTOM COMMAND HANDLERS            			     **--
@@ -5804,6 +5813,7 @@ function fpln_add_leg_disco(idx_disco)
 	legs_data2[legs_num2][38] = ""
 	legs_data2[legs_num2][39] = ""
 	legs_data2[legs_num2][40] = 0
+	legs_data2[legs_num2][41] = 0
 	
 end
 
@@ -5868,6 +5878,7 @@ function fpln_add_leg_dir2(idx_copy, idx_paste, idx_via)
 				legs_data2[legs_num2][38] = ""
 				legs_data2[legs_num2][39] = ""
 				legs_data2[legs_num2][40] = 0
+				legs_data2[legs_num2][41] = 0
 			else
 				legs_data2[legs_num2] = {}
 				legs_data2[legs_num2][1] = leg_wpt_id	--entry
@@ -5910,6 +5921,7 @@ function fpln_add_leg_dir2(idx_copy, idx_paste, idx_via)
 				legs_data2[legs_num2][38] = ""
 				legs_data2[legs_num2][39] = ""
 				legs_data2[legs_num2][40] = 0
+				legs_data2[legs_num2][41] = 0
 			end
 			
 		end
@@ -5984,6 +5996,7 @@ function fpln_add_leg_dir(idx_copy, idx_paste, idx_via, wpt_idx)
 	legs_data2[legs_num2][38] = ""
 	legs_data2[legs_num2][39] = ""
 	legs_data2[legs_num2][40] = 0
+	legs_data2[legs_num2][41] = 0
 		
 	if dir_disco == 1 then
 		-- add DISCO
@@ -7021,6 +7034,7 @@ function use_import_data(name_of_file)
 				legs_data2[legs_num2][38] = ""
 				legs_data2[legs_num2][39] = ""
 				legs_data2[legs_num2][40] = 0
+				legs_data2[legs_num2][41] = 0
 			else
 				kk = 1
 			end
@@ -7092,6 +7106,7 @@ function use_import_data(name_of_file)
 				legs_data2[legs_num2][38] = ""
 				legs_data2[legs_num2][39] = ""
 				legs_data2[legs_num2][40] = 0
+				legs_data2[legs_num2][41] = 0
 			end
 			
 			-- DES ICAO
@@ -7198,6 +7213,7 @@ function use_import_data(name_of_file)
 				legs_data2[legs_num2][38] = ""
 				legs_data2[legs_num2][39] = ""
 				legs_data2[legs_num2][40] = 0
+				legs_data2[legs_num2][41] = 0
 			else
 				kk = 1
 			end
@@ -11503,6 +11519,7 @@ function copy_to_legsdata()
 	local ii = 0
 	local jj = 0
 	local kk = 0
+	local fms_line = ""
 	
 	legs_num = 0
 	legs_data = {}
@@ -11516,9 +11533,43 @@ function copy_to_legsdata()
 			for jj = 1, MAX_LEGS_DATA do
 				legs_data[ii][jj] = legs_data2[ii][jj]
 			end
+			
+			
+			if ii < 255 then
+				-- legs data + lat,lon
+				if ii == 1 then
+					fms_line = legs_data[1][1]
+				else
+					fms_line = fms_line .. " " .. legs_data[ii][1]
+				end
+				B738DR_fms_legs_lat[ii] = legs_data[ii][7]
+				B738DR_fms_legs_lon[ii] = legs_data[ii][8]
+				B738DR_fms_legs_alt_rest1[ii] = legs_data[ii][5]
+				if legs_data[ii][6] == 45 then	-- Below
+					B738DR_fms_legs_alt_rest_type[ii] = 1
+					B738DR_fms_legs_alt_rest2[ii] = 0
+				elseif legs_data[ii][6] == 43 then	-- Above
+					B738DR_fms_legs_alt_rest_type[ii] = 2
+					B738DR_fms_legs_alt_rest2[ii] = 0
+				--elseif legs_data[ii][6] == 41 then	-- Between
+					--B738DR_fms_legs_alt_rest_type[ii] = 3
+					--B738DR_fms_legs_alt_rest2[ii] = 0
+				else	-- At
+					B738DR_fms_legs_alt_rest_type[ii] = 0
+					B738DR_fms_legs_alt_rest2[ii] = 0
+				end
+				B738DR_fms_legs_alt_calc[ii] = legs_data[ii][10]
+				if legs_data[ii][32] ~= 0 then
+					B738DR_fms_legs_type[ii] = 5
+				else
+					B738DR_fms_legs_type[ii] = 0
+				end
+			end
+			
 		end
 		legs_num = legs_num2
 	end
+	B738DR_fms_legs = fms_line
 	calc_rte_enable = 1
 
 end
@@ -11527,7 +11578,7 @@ function copy_to_legsdata2()
 
 	local ii = 0
 	local jj = 0
-	local fms_line = ""
+	--local fms_line = ""
 	
 	legs_num2 = 0
 	legs_data2 = {}
@@ -11539,27 +11590,27 @@ function copy_to_legsdata2()
 				legs_data2[ii][jj] = legs_data[ii][jj]
 			end
 			
-			-- legs data2 + lat,lon
+			-- -- legs data2 + lat,lon
 			
-			if ii == 1 then
-				fms_line = legs_data2[1][1]
-			else
-				fms_line = fms_line .. " " .. legs_data2[ii][1]
-			end
-			B738DR_fms_legs_lat2[ii] = legs_data2[ii][7]
-			B738DR_fms_legs_lon2[ii] = legs_data2[ii][8]
-			if legs_data2[ii][32] ~= 0 then
-				B738DR_fms_legs_type2[ii] = 5
-			else
-				B738DR_fms_legs_type2[ii] = 0
-			end
-			if legs_data2[ii][17] > 199 then
-				B738DR_fms_legs_connect2[ii] = 2
-			elseif legs_data2[ii][17] > 99 then
-				B738DR_fms_legs_connect2[ii] = 1
-			else
-				B738DR_fms_legs_connect2[ii] = 0
-			end
+			-- if ii == 1 then
+				-- fms_line = legs_data2[1][1]
+			-- else
+				-- fms_line = fms_line .. " " .. legs_data2[ii][1]
+			-- end
+			-- B738DR_fms_legs_lat2[ii] = legs_data2[ii][7]
+			-- B738DR_fms_legs_lon2[ii] = legs_data2[ii][8]
+			-- if legs_data2[ii][32] ~= 0 then
+				-- B738DR_fms_legs_type2[ii] = 5
+			-- else
+				-- B738DR_fms_legs_type2[ii] = 0
+			-- end
+			-- if legs_data2[ii][17] > 199 then
+				-- B738DR_fms_legs_connect2[ii] = 2
+			-- elseif legs_data2[ii][17] > 99 then
+				-- B738DR_fms_legs_connect2[ii] = 1
+			-- else
+				-- B738DR_fms_legs_connect2[ii] = 0
+			-- end
 		end
 		legs_num2 = legs_num
 	end
@@ -11676,6 +11727,7 @@ function rte_add_wpt2(wpt_idx)
 			legs_data2[legs_num2][38] = ""
 			legs_data2[legs_num2][39] = ""
 			legs_data2[legs_num2][40] = 0
+			legs_data2[legs_num2][41] = 0
 			rte_lat = legs_data2[legs_num2][7]
 			rte_lon = legs_data2[legs_num2][8]
 			
@@ -11765,6 +11817,7 @@ function rte_add_wpt(aaa, entry_in, mode_in)
 				legs_data2[legs_num2][38] = ""
 				legs_data2[legs_num2][39] = ""
 				legs_data2[legs_num2][40] = 0
+				legs_data2[legs_num2][41] = 0
 				rte_lat = legs_data2[legs_num2][7]
 				rte_lon = legs_data2[legs_num2][8]
 				
@@ -12006,6 +12059,7 @@ function rte_add_wpt3(aaa, id_nav, id_brg, id_dist, entry_in, mode_in)
 					legs_data2[legs_num2][38] = ""
 					legs_data2[legs_num2][39] = ""
 					legs_data2[legs_num2][40] = 0
+					legs_data2[legs_num2][41] = 0
 					rte_lat = legs_data2[legs_num2][7]
 					rte_lon = legs_data2[legs_num2][8]
 					
@@ -12135,6 +12189,7 @@ function rte_add_wpt4(wpt_idx)
 			legs_data2[legs_num2][38] = ""
 			legs_data2[legs_num2][39] = ""
 			legs_data2[legs_num2][40] = 0
+			legs_data2[legs_num2][41] = 0
 			rte_lat = legs_data2[legs_num2][7]
 			rte_lon = legs_data2[legs_num2][8]
 			
@@ -12247,6 +12302,7 @@ function rte_add_wpt_cust(aaa, id_cust, lat_cust, lon_cust, entry_in, mode_in)
 				legs_data2[legs_num2][38] = ""
 				legs_data2[legs_num2][39] = ""
 				legs_data2[legs_num2][40] = 0
+				legs_data2[legs_num2][41] = 0
 				rte_lat = legs_data2[legs_num2][7]
 				rte_lon = legs_data2[legs_num2][8]
 				
@@ -12383,6 +12439,7 @@ function rte_add_hold(aaa)
 	legs_data2[legs_num2][38] = ""
 	legs_data2[legs_num2][39] = ""
 	legs_data2[legs_num2][40] = 0
+	legs_data2[legs_num2][41] = 0
 	rte_lat = legs_data2[legs_num2][7]
 	rte_lon = legs_data2[legs_num2][8]
 	
@@ -12452,6 +12509,7 @@ function rte_add_disco(aaa)
 	legs_data2[aaa][38] = ""
 	legs_data2[aaa][39] = ""
 	legs_data2[aaa][40] = 0
+	legs_data2[aaa][41] = 0
 	
 end
 
@@ -12500,6 +12558,7 @@ function rte_add_discob(aaa)
 	legs_data2b[aaa][38] = ""
 	legs_data2b[aaa][39] = ""
 	legs_data2b[aaa][40] = 0
+	legs_data2b[aaa][41] = 0
 	
 end
 
@@ -12747,6 +12806,7 @@ function rte_add_sid2()
 							legs_data2b[legs_num2b][38] = ""
 							legs_data2b[legs_num2b][39] = ""
 							legs_data2b[legs_num2b][40] = 0
+							legs_data2b[legs_num2b][41] = 0
 							break
 						end
 					end
@@ -12827,11 +12887,22 @@ function rte_add_sid2()
 											xx_temp = 0
 										end
 										legs_data2b[legs_num2b][5] = xx_temp		-- altitude
+										if string.sub(rte_sid[gg][23], 1, 2) == "FL" then
+											xx_temp = tonumber(string.sub(rte_sid[gg][23], 3, -1)) * 100
+										else
+											xx_temp = tonumber(rte_sid[gg][23])
+										end
+										if xx_temp == nil then
+											xx_temp = 0
+										end
+										legs_data2b[legs_num2b][41] = xx_temp		-- altitude2
 										xx_temp = 0
 										if rte_sid[gg][6] == "+" then
 											xx_temp = 43
 										elseif rte_sid[gg][6] == "-" then
 											xx_temp = 45
+										elseif rte_sid[gg][6] == "B" then
+											xx_temp = 41
 										end
 										legs_data2b[legs_num2b][6] = xx_temp	-- altitude type
 									else
@@ -12954,13 +13025,25 @@ function rte_add_sid2()
 									if xx_temp == nil then
 										legs_data2b[legs_num2b][5] = legs_data2b[legs_num2b-1][5]
 										legs_data2b[legs_num2b][6] = legs_data2b[legs_num2b-1][6]
+										legs_data2b[legs_num2b][41] = legs_data2b[legs_num2b-1][41]
 									else
 										legs_data2b[legs_num2b][5] = xx_temp		-- altitude
+										if string.sub(rte_sid[gg][23], 1, 2) == "FL" then
+											xx_temp = tonumber(string.sub(rte_sid[gg][23], 3, -1)) * 100
+										else
+											xx_temp = tonumber(rte_sid[gg][23])
+										end
+										if xx_temp == nil then
+											xx_temp = 0
+										end
+										legs_data2b[legs_num2b][41] = xx_temp		-- altitude2
 										xx_temp = 0
 										if rte_sid[gg][6] == "+" then
 											xx_temp = 43
 										elseif rte_sid[gg][6] == "-" then
 											xx_temp = 45
+										elseif rte_sid[gg][6] == "B" then
+											xx_temp = 41
 										end
 										legs_data2b[legs_num2b][6] = xx_temp	-- altitude type
 									end
@@ -12971,9 +13054,9 @@ function rte_add_sid2()
 									end
 									legs_data2b[legs_num2b][4] = xx_temp		-- speed
 									xx_temp = tonumber(rte_sid[gg][5])
-									if xx_temp == nil then
-										xx_temp = 0
-									end
+									-- if xx_temp == nil then
+										-- xx_temp = 0
+									-- end
 									if string.sub(rte_sid[gg][5], 1, 2) == "FL" then
 										xx_temp = tonumber(string.sub(rte_sid[gg][5], 3, -1)) * 100
 									else
@@ -12983,11 +13066,22 @@ function rte_add_sid2()
 										xx_temp = 0
 									end
 									legs_data2b[legs_num2b][5] = xx_temp		-- altitude
+									if string.sub(rte_sid[gg][23], 1, 2) == "FL" then
+										xx_temp = tonumber(string.sub(rte_sid[gg][23], 3, -1)) * 100
+									else
+										xx_temp = tonumber(rte_sid[gg][23])
+									end
+									if xx_temp == nil then
+										xx_temp = 0
+									end
+									legs_data2b[legs_num2b][41] = xx_temp		-- altitude2
 									xx_temp = 0
 									if rte_sid[gg][6] == "+" then
 										xx_temp = 43
 									elseif rte_sid[gg][6] == "-" then
 										xx_temp = 45
+									elseif rte_sid[gg][6] == "B" then
+										xx_temp = 41
 									end
 									legs_data2b[legs_num2b][6] = xx_temp	-- altitude type
 								end
@@ -13035,6 +13129,7 @@ function rte_add_sid2()
 								legs_data2b[legs_num2b][38] = ""
 								legs_data2b[legs_num2b][39] = ""
 								legs_data2b[legs_num2b][40] = 0
+								--legs_data2b[legs_num2b][41] = 0
 							end
 						end
 					end
@@ -13224,11 +13319,22 @@ function rte_add_star2()
 										xx_temp = 0
 									end
 									legs_data2b[legs_num2b][5] = xx_temp		-- altitude
+									if string.sub(rte_star[gg][23], 1, 2) == "FL" then
+										xx_temp = tonumber(string.sub(rte_star[gg][23], 3, -1)) * 100
+									else
+										xx_temp = tonumber(rte_star[gg][23])
+									end
+									if xx_temp == nil then
+										xx_temp = 0
+									end
+									legs_data2b[legs_num2b][41] = xx_temp		-- altitude2
 									xx_temp = 0
 									if rte_star[gg][6] == "+" then
 										xx_temp = 43
 									elseif rte_star[gg][6] == "-" then
 										xx_temp = 45
+									elseif rte_star[gg][6] == "B" then
+										xx_temp = 41
 									end
 									legs_data2b[legs_num2b][6] = xx_temp	-- altitude type
 								else
@@ -13253,11 +13359,22 @@ function rte_add_star2()
 											xx_temp = 0
 										end
 										legs_data2b[legs_num2b][5] = xx_temp		-- altitude
+										if string.sub(rte_star[gg][23], 1, 2) == "FL" then
+											xx_temp = tonumber(string.sub(rte_star[gg][23], 3, -1)) * 100
+										else
+											xx_temp = tonumber(rte_star[gg][23])
+										end
+										if xx_temp == nil then
+											xx_temp = 0
+										end
+										legs_data2b[legs_num2b][41] = xx_temp		-- altitude2
 										xx_temp = 0
 										if rte_star[gg][6] == "+" then
 											xx_temp = 43
 										elseif rte_star[gg][6] == "-" then
 											xx_temp = 45
+										elseif rte_star[gg][6] == "B" then
+											xx_temp = 41
 										end
 										legs_data2b[legs_num2b][6] = xx_temp	-- altitude type
 									else
@@ -13374,13 +13491,25 @@ function rte_add_star2()
 								if xx_temp == nil then
 									legs_data2b[legs_num2b][5] = legs_data2b[legs_num2b-1][5]
 									legs_data2b[legs_num2b][6] = legs_data2b[legs_num2b-1][6]
+									legs_data2b[legs_num2b][41] = legs_data2b[legs_num2b-1][41]
 								else
 									legs_data2b[legs_num2b][5] = xx_temp		-- altitude
+									if string.sub(rte_star[gg][23], 1, 2) == "FL" then
+										xx_temp = tonumber(string.sub(rte_star[gg][23], 3, -1)) * 100
+									else
+										xx_temp = tonumber(rte_star[gg][23])
+									end
+									if xx_temp == nil then
+										xx_temp = 0
+									end
+									legs_data2b[legs_num2b][41] = xx_temp		-- altitude2
 									xx_temp = 0
 									if rte_star[gg][6] == "+" then
 										xx_temp = 43
 									elseif rte_star[gg][6] == "-" then
 										xx_temp = 45
+									elseif rte_star[gg][6] == "B" then
+										xx_temp = 41
 									end
 									legs_data2b[legs_num2b][6] = xx_temp	-- altitude type
 								end
@@ -13390,10 +13519,10 @@ function rte_add_star2()
 									xx_temp = 0
 								end
 								legs_data2b[legs_num2b][4] = xx_temp		-- speed
-								xx_temp = tonumber(rte_star[gg][5])
-								if xx_temp == nil then
-									xx_temp = 0
-								end
+								-- xx_temp = tonumber(rte_star[gg][5])
+								-- if xx_temp == nil then
+									-- xx_temp = 0
+								-- end
 								if string.sub(rte_star[gg][5], 1, 2) == "FL" then
 									xx_temp = tonumber(string.sub(rte_star[gg][5], 3, -1)) * 100
 								else
@@ -13403,11 +13532,22 @@ function rte_add_star2()
 									xx_temp = 0
 								end
 								legs_data2b[legs_num2b][5] = xx_temp		-- altitude
+								if string.sub(rte_star[gg][23], 1, 2) == "FL" then
+									xx_temp = tonumber(string.sub(rte_star[gg][23], 3, -1)) * 100
+								else
+									xx_temp = tonumber(rte_star[gg][23])
+								end
+								if xx_temp == nil then
+									xx_temp = 0
+								end
+								legs_data2b[legs_num2b][41] = xx_temp		-- altitude2
 								xx_temp = 0
 								if rte_star[gg][6] == "+" then
 									xx_temp = 43
 								elseif rte_star[gg][6] == "-" then
 									xx_temp = 45
+								elseif rte_star[gg][6] == "B" then
+									xx_temp = 41
 								end
 								legs_data2b[legs_num2b][6] = xx_temp	-- altitude type
 							end
@@ -13456,6 +13596,7 @@ function rte_add_star2()
 							legs_data2b[legs_num2b][38] = ""
 							legs_data2b[legs_num2b][39] = ""
 							legs_data2b[legs_num2b][40] = 0
+							--legs_data2b[legs_num2b][41] = 0
 						end
 						
 					end
@@ -13571,6 +13712,15 @@ function rte_add_app2()
 												xx_temp = 0
 											end
 											legs_data2b[legs_num2b][5] = xx_temp		-- altitude
+											if string.sub(rte_app[gg][23], 1, 2) == "FL" then
+												xx_temp = tonumber(string.sub(rte_app[gg][23], 3, -1)) * 100
+											else
+												xx_temp = tonumber(rte_app[gg][23])
+											end
+											if xx_temp == nil then
+												xx_temp = 0
+											end
+											legs_data2b[legs_num2b][41] = xx_temp		-- altitude2
 											xx_temp = 0
 											if rte_app[gg][6] == "+" then
 												xx_temp = 43
@@ -13604,11 +13754,22 @@ function rte_add_app2()
 												xx_temp = 0
 											end
 											legs_data2b[legs_num2b][5] = xx_temp		-- altitude
+											if string.sub(rte_app[gg][23], 1, 2) == "FL" then
+												xx_temp = tonumber(string.sub(rte_app[gg][23], 3, -1)) * 100
+											else
+												xx_temp = tonumber(rte_app[gg][23])
+											end
+											if xx_temp == nil then
+												xx_temp = 0
+											end
+											legs_data2b[legs_num2b][41] = xx_temp		-- altitude2
 											xx_temp = 0
 											if rte_app[gg][6] == "+" then
 												xx_temp = 43
 											elseif rte_app[gg][6] == "-" then
 												xx_temp = 45
+											elseif rte_app[gg][6] == "B" then
+												xx_temp = 41
 											end
 											legs_data2b[legs_num2b][6] = xx_temp	-- altitude type
 										else
@@ -13731,13 +13892,25 @@ function rte_add_app2()
 									if xx_temp == nil then
 										legs_data2b[legs_num2b][5] = legs_data2b[legs_num2b-1][5]
 										legs_data2b[legs_num2b][6] = legs_data2b[legs_num2b-1][6]
+										legs_data2b[legs_num2b][41] = legs_data2b[legs_num2b-1][41]
 									else
 										legs_data2b[legs_num2b][5] = xx_temp		-- altitude
+										if string.sub(rte_app[gg][23], 1, 2) == "FL" then
+											xx_temp = tonumber(string.sub(rte_app[gg][23], 3, -1)) * 100
+										else
+											xx_temp = tonumber(rte_app[gg][23])
+										end
+										if xx_temp == nil then
+											xx_temp = 0
+										end
+										legs_data2b[legs_num2b][41] = xx_temp		-- altitude2
 										xx_temp = 0
 										if rte_app[gg][6] == "+" then
 											xx_temp = 43
 										elseif rte_app[gg][6] == "-" then
 											xx_temp = 45
+										elseif rte_app[gg][6] == "B" then
+											xx_temp = 41
 										end
 										legs_data2b[legs_num2b][6] = xx_temp	-- altitude type
 									end
@@ -13747,10 +13920,10 @@ function rte_add_app2()
 										xx_temp = 0
 									end
 									legs_data2b[legs_num2b][4] = xx_temp		-- speed
-									xx_temp = tonumber(rte_app[gg][5])
-									if xx_temp == nil then
-										xx_temp = 0
-									end
+									-- xx_temp = tonumber(rte_app[gg][5])
+									-- if xx_temp == nil then
+										-- xx_temp = 0
+									-- end
 									if string.sub(rte_app[gg][5], 1, 2) == "FL" then
 										xx_temp = tonumber(string.sub(rte_app[gg][5], 3, -1)) * 100
 									else
@@ -13760,11 +13933,22 @@ function rte_add_app2()
 										xx_temp = 0
 									end
 									legs_data2b[legs_num2b][5] = xx_temp		-- altitude
+									if string.sub(rte_app[gg][23], 1, 2) == "FL" then
+										xx_temp = tonumber(string.sub(rte_app[gg][23], 3, -1)) * 100
+									else
+										xx_temp = tonumber(rte_app[gg][23])
+									end
+									if xx_temp == nil then
+										xx_temp = 0
+									end
+									legs_data2b[legs_num2b][41] = xx_temp		-- altitude2
 									xx_temp = 0
 									if rte_app[gg][6] == "+" then
 										xx_temp = 43
 									elseif rte_app[gg][6] == "-" then
 										xx_temp = 45
+									elseif rte_app[gg][6] == "B" then
+										xx_temp = 41
 									end
 									legs_data2b[legs_num2b][6] = xx_temp	-- altitude type
 								end
@@ -13812,6 +13996,7 @@ function rte_add_app2()
 								legs_data2b[legs_num2b][38] = ""
 								legs_data2b[legs_num2b][39] = ""
 								legs_data2b[legs_num2b][40] = 0
+								--legs_data2b[legs_num2b][41] = 0
 								
 								--end
 								
@@ -14084,6 +14269,8 @@ function read_ref_data(ddd_ref_icao)
 			rte_sid[rte_sid_num][20] = fms_word[5]	-- navaid_id_cifs
 			rte_sid[rte_sid_num][4] = fms_word[28]	-- restrict speed
 			rte_sid[rte_sid_num][5] = fms_word[24]	-- restrict altitude
+			rte_sid[rte_sid_num][23] = fms_word[25]	-- restrict altitude2
+			
 			if fms_word[23] == "B" then
 				rte_sid[rte_sid_num][6] = "-"	-- restrict altitude +,-,B
 			else
@@ -14451,6 +14638,7 @@ function read_des_data(ddd_des_icao)
 			rte_star[rte_star_num][20] = fms_word[5]	-- navaid_id_cifs
 			rte_star[rte_star_num][4] = fms_word[28]	-- restrict speed
 			rte_star[rte_star_num][5] = fms_word[24]	-- restrict altitude
+			rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude2
 			if fms_word[23] == "B" then
 				rte_star[rte_star_num][6] = "-"	-- restrict altitude +,-,B
 			else
@@ -14561,16 +14749,20 @@ function read_des_data(ddd_des_icao)
 			rte_app[rte_app_num][20] = fms_word[5]	-- navaid_id_cifs
 			rte_app[rte_app_num][4] = fms_word[28]	-- restrict speed
 			if fms_word[23] == "G" or fms_word[23] == "I" then
-				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude
+				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
+				rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
 				rte_app[rte_app_num][6] = " "	-- restrict altitude +,-,B
 			elseif fms_word[23] == "H" or fms_word[23] == "J" then
-				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude
+				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
+				rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
 				rte_app[rte_app_num][6] = "+"	-- restrict altitude +,-,B
 			elseif fms_word[23] == "B" then
-				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude
+				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
+				rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
 				rte_app[rte_app_num][6] = "-"	-- restrict altitude +,-,B
 			else
-				rte_app[rte_app_num][5] = fms_word[24]	-- restrict altitude
+				rte_app[rte_app_num][5] = fms_word[24]	-- restrict altitude1
+				rte_app[rte_app_num][23] = fms_word[25]	-- restrict altitude2
 				rte_app[rte_app_num][6] = fms_word[23]	-- restrict altitude +,-,B
 			end
 			rte_app[rte_app_num][7] = fms_word[19]	-- course
@@ -14648,8 +14840,9 @@ function read_des_data(ddd_des_icao)
 				end
 				rte_app[rte_app_num][20] = fms_word[5]	-- navaid_id_cifs
 				rte_app[rte_app_num][4] = "   "	-- restrict speed
-				rte_app[rte_app_num][5] = "     "	-- restrict alt
+				rte_app[rte_app_num][5] = "     "	-- restrict alt1
 				rte_app[rte_app_num][6] = " "		-- restrict alt type
+				rte_app[rte_app_num][23] = "     "	-- restrict altitude2
 				rte_app[rte_app_num][7] = fms_word[19]	-- course
 				rte_app[rte_app_num][8] = fms_word[29]	-- vpa
 				rte_app[rte_app_num][10] = fms_word[22]	-- distance
@@ -16520,6 +16713,8 @@ function dump_leg()
 				--fms_line = legs_data2[vvv][1] .. "\n"
 				file_navdata2:write(fms_line)
 			end
+			fms_line = tostring(offset)
+			file_navdata2:write(fms_line)
 		end
 		file_navdata2:close()
 	end
@@ -16764,23 +16959,40 @@ function B738_find_rnav()
 					last_miss_app_idx = ii
 				end
 			end
-			-- legs data + lat,lon
-			if ii == 1 then
-				fms_line = legs_data[1][1]
-			else
-				fms_line = fms_line .. " " .. legs_data[ii][1]
-			end
-			B738DR_fms_legs_lat[ii] = legs_data[ii][7]
-			B738DR_fms_legs_lon[ii] = legs_data[ii][8]
-			if legs_data[ii][32] ~= 0 then
-				B738DR_fms_legs_type[ii] = 5
-			else
-				B738DR_fms_legs_type[ii] = 0
-			end
+			-- if ii < 255 then
+				-- -- legs data + lat,lon
+				-- if ii == 1 then
+					-- fms_line = legs_data[1][1]
+				-- else
+					-- fms_line = fms_line .. " " .. legs_data[ii][1]
+				-- end
+				-- B738DR_fms_legs_lat[ii] = legs_data[ii][7]
+				-- B738DR_fms_legs_lon[ii] = legs_data[ii][8]
+				-- B738DR_fms_legs_alt_rest1[ii] = legs_data[ii][5]
+				-- if legs_data[ii][6] == 45 then	-- Below
+					-- B738DR_fms_legs_alt_rest_type[ii] = 1
+					-- B738DR_fms_legs_alt_rest2[ii] = 0
+				-- elseif legs_data[ii][6] == 43 then	-- Above
+					-- B738DR_fms_legs_alt_rest_type[ii] = 2
+					-- B738DR_fms_legs_alt_rest2[ii] = 0
+				-- --elseif legs_data[ii][6] == 41 then	-- Between
+					-- --B738DR_fms_legs_alt_rest_type[ii] = 3
+					-- --B738DR_fms_legs_alt_rest2[ii] = 0
+				-- else	-- At
+					-- B738DR_fms_legs_alt_rest_type[ii] = 0
+					-- B738DR_fms_legs_alt_rest2[ii] = 0
+				-- end
+				-- B738DR_fms_legs_alt_calc[ii] = legs_data[ii][10]
+				-- if legs_data[ii][32] ~= 0 then
+					-- B738DR_fms_legs_type[ii] = 5
+				-- else
+					-- B738DR_fms_legs_type[ii] = 0
+				-- end
+			-- end
 		end
 	end
 	
-	B738DR_fms_legs = fms_line
+	--B738DR_fms_legs = fms_line
 	vnav_update = 1
 
 end
@@ -16863,29 +17075,29 @@ function B738_find_rnav_mod()
 			
 			-- legs data2 + lat,lon
 			
-			if ii == 1 then
-				fms_line = legs_data2[1][1]
-			else
-				fms_line = fms_line .. " " .. legs_data2[ii][1]
-			end
-			B738DR_fms_legs_lat2[ii] = legs_data2[ii][7]
-			B738DR_fms_legs_lon2[ii] = legs_data2[ii][8]
-			if legs_data2[ii][32] ~= 0 then
-				B738DR_fms_legs_type2[ii] = 5
-			else
-				B738DR_fms_legs_type2[ii] = 0
-			end
-			if legs_data2[ii][17] > 199 then
-				B738DR_fms_legs_connect2[ii] = 2
-			elseif legs_data2[ii][17] > 99 then
-				B738DR_fms_legs_connect2[ii] = 1
-			else
-				B738DR_fms_legs_connect2[ii] = 0
-			end
+			-- if ii == 1 then
+				-- fms_line = legs_data2[1][1]
+			-- else
+				-- fms_line = fms_line .. " " .. legs_data2[ii][1]
+			-- end
+			-- B738DR_fms_legs_lat2[ii] = legs_data2[ii][7]
+			-- B738DR_fms_legs_lon2[ii] = legs_data2[ii][8]
+			-- if legs_data2[ii][32] ~= 0 then
+				-- B738DR_fms_legs_type2[ii] = 5
+			-- else
+				-- B738DR_fms_legs_type2[ii] = 0
+			-- end
+			-- if legs_data2[ii][17] > 199 then
+				-- B738DR_fms_legs_connect2[ii] = 2
+			-- elseif legs_data2[ii][17] > 99 then
+				-- B738DR_fms_legs_connect2[ii] = 1
+			-- else
+				-- B738DR_fms_legs_connect2[ii] = 0
+			-- end
 		end
 	end
 	
-	B738DR_fms_legs2 = fms_line
+	--B738DR_fms_legs2 = fms_line
 	vnav_update_mod = 1
 
 end
@@ -17611,75 +17823,81 @@ function B738_mod_change()
 	local found_mod_idx = 0
 	local add_new_enable = 0
 	
-	if offset ~= last_offset then
-		if legs_delete ~= 0 then
-			if mod_offset == 0 then
-				mod_offset = last_offset
-			end
-		else
-			mod_offset = 0
-		end
-	end
-	if mod_offset ~= 0 and rte_add_sid_act == 0 and rte_add_star_act == 0 and rte_add_app_act == 0 then
-		if legs_data[offset][1] == legs_data2[offset][1] and legs_data[offset][7] == legs_data2[offset][7]
-		and legs_data[offset][8] == legs_data2[offset][8] then
-			mod_idx = offset	-- + 1
-			mod_idx2 = offset
-		else
-			if offset + 1 > legs_num + 1 then
-				mod_idx = mod_offset + 1
-				mod_idx2 = offset + 1
+	if simDR_radio_height_pilot_ft > 50 then
+		if offset ~= last_offset then
+			if legs_delete ~= 0 then
+				if mod_offset == 0 then
+					mod_offset = last_offset
+				end
 			else
-				if legs_data[offset+1][1] == legs_data2[offset][1] and legs_data[offset+1][7] == legs_data2[offset][7]
-				and legs_data[offset+1][8] == legs_data2[offset][8] then
-					mod_idx = offset 	--+ 1
+				mod_offset = 0
+			end
+		end
+		if offset <= legs_num and offset <= legs_num2 and offset > 0 then
+			if mod_offset ~= 0 and rte_add_sid_act == 0 and rte_add_star_act == 0 and rte_add_app_act == 0 then
+				if legs_data[offset][1] == legs_data2[offset][1] and legs_data[offset][7] == legs_data2[offset][7]
+				and legs_data[offset][8] == legs_data2[offset][8] then
+					mod_idx = offset	-- + 1
 					mod_idx2 = offset
 				else
-					mod_idx = mod_offset + 1
-					mod_idx2 = offset + 1
+					if offset + 1 > legs_num + 1 then
+						mod_idx = mod_offset + 1
+						mod_idx2 = offset + 1
+					else
+						if legs_data[offset+1][1] == legs_data2[offset][1] and legs_data[offset+1][7] == legs_data2[offset][7]
+						and legs_data[offset+1][8] == legs_data2[offset][8] then
+							mod_idx = offset 	--+ 1
+							mod_idx2 = offset
+						else
+							mod_idx = mod_offset + 1
+							mod_idx2 = offset + 1
+						end
+					end
 				end
+				if mod_idx <= legs_num2 + 1 and mod_idx > 0 then
+					-- copy to legs_data2b
+					kk = 0
+					legs_data2b = {}
+					for ii = mod_idx, legs_num2 + 1 do
+						kk = kk + 1
+						legs_data2b[kk] = {}
+						for jj = 1, MAX_LEGS_DATA do
+							legs_data2b[kk][jj] = legs_data2[ii][jj]
+						end
+					end
+					legs_num2b = kk - 1
+					
+					-- copy legs to legs2
+					if offset <= legs_num2 then
+						if legs_data2[offset][17] > 99 then
+							add_new_enable = 1
+						end
+					end
+					copy_to_legsdata2()
+					
+					-- copy mod changes
+					kk = mod_idx2 - 1	--offset
+					for ii = 1, legs_num2b + 1 do
+						kk = kk + 1
+						legs_data2[kk] = {}
+						for jj = 1, MAX_LEGS_DATA do
+							legs_data2[kk][jj] = legs_data2b[ii][jj]
+						end
+					end
+					legs_num2 = kk - 1
+					
+					if add_new_enable == 1 and offset <= legs_num2 then
+						legs_data2[offset][17] = legs_data2[offset][17] + 100
+					end
+					
+				end
+				mod_offset = 0
 			end
 		end
-		if mod_idx <= legs_num2 + 1 and mod_idx > 0 then
-			-- copy to legs_data2b
-			kk = 0
-			legs_data2b = {}
-			for ii = mod_idx, legs_num2 + 1 do
-				kk = kk + 1
-				legs_data2b[kk] = {}
-				for jj = 1, MAX_LEGS_DATA do
-					legs_data2b[kk][jj] = legs_data2[ii][jj]
-				end
-			end
-			legs_num2b = kk - 1
-			
-			-- copy legs to legs2
-			if offset <= legs_num2 then
-				if legs_data2[offset][17] > 99 then
-					add_new_enable = 1
-				end
-			end
-			copy_to_legsdata2()
-			
-			-- copy mod changes
-			kk = mod_idx2 - 1	--offset
-			for ii = 1, legs_num2b + 1 do
-				kk = kk + 1
-				legs_data2[kk] = {}
-				for jj = 1, MAX_LEGS_DATA do
-					legs_data2[kk][jj] = legs_data2b[ii][jj]
-				end
-			end
-			legs_num2 = kk - 1
-			
-			if add_new_enable == 1 and offset <= legs_num2 then
-				legs_data2[offset][17] = legs_data2[offset][17] + 100
-			end
-			
-		end
+	else
 		mod_offset = 0
 	end
-	
+	--B738DR_fms_test = mod_offset
 end
 
 
@@ -23862,6 +24080,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 									legs_data2[legs_num2][38] = ""
 									legs_data2[legs_num2][39] = ""
 									legs_data2[legs_num2][40] = 0
+									legs_data2[legs_num2][41] = 0
 									
 									-- DES ICAO
 									legs_num2 = legs_num2 + 1
@@ -23906,6 +24125,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 									legs_data2[legs_num2][38] = ""
 									legs_data2[legs_num2][39] = ""
 									legs_data2[legs_num2][40] = 0
+									legs_data2[legs_num2][41] = 0
 									legs_num2 = legs_num2 - 1
 									----
 									copy_to_legsdata()
@@ -27510,8 +27730,15 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 			end
 			if exec_enable == 1 then
 				if page_legs > 0 or page_dep > 0 or page_arr > 0 or page_rte_init > 0 or page_climb > 0 or page_rte_legs > 0 then
+					
 					if legs_delete == 1 or rte_exec == 1 then
 						
+						if simDR_radio_height_pilot_ft < 50 and ref_rwy ~= ref_rwy2 then
+							offset = 1
+							last_offset = 1
+						end
+						--dump_leg()
+					
 						if exec_load_fpln == 2 then
 							exec_load_fpln = 0
 							ref_icao = ref_icao_x
@@ -27762,6 +27989,7 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 							legs_data2[legs_num2][38] = ""
 							legs_data2[legs_num2][39] = ""
 							legs_data2[legs_num2][40] = 0
+							legs_data2[legs_num2][41] = 0
 							legs_num2 = legs_num2 - 1
 						end
 					end
@@ -28010,6 +28238,7 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 				legs_data2[legs_num2][38] = ""
 				legs_data2[legs_num2][39] = ""
 				legs_data2[legs_num2][40] = 0
+				legs_data2[legs_num2][41] = 0
 				legs_num2 = legs_num2 - 1
 				----
 				arr_data = 0
@@ -35547,6 +35776,7 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 									legs_data2[legs_num2][38] = ""
 									legs_data2[legs_num2][39] = ""
 									legs_data2[legs_num2][40] = 0
+									legs_data2[legs_num2][41] = 0
 									
 									-- DES ICAO
 									legs_num2 = legs_num2 + 1
@@ -35591,6 +35821,7 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 									legs_data2[legs_num2][38] = ""
 									legs_data2[legs_num2][39] = ""
 									legs_data2[legs_num2][40] = 0
+									legs_data2[legs_num2][41] = 0
 									legs_num2 = legs_num2 - 1
 									----
 									copy_to_legsdata()
@@ -38812,8 +39043,14 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 			end
 			if exec_enable == 1 then
 				if page_legs2 > 0 or page_dep2 > 0 or page_arr2 > 0 or page_rte_init2 > 0 or page_climb2 > 0 or page_rte_legs2 > 0 then
+					
 					if legs_delete == 1 or rte_exec == 1 then
 						
+						if simDR_radio_height_pilot_ft < 50 and ref_rwy ~= ref_rwy2 then
+							offset = 1
+							last_offset = 1
+						end
+					
 						if exec_load_fpln == 2 then
 							exec_load_fpln = 0
 							ref_icao = ref_icao_x
@@ -38980,7 +39217,6 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 						offset_side = 0
 						-- add SID
 						--rte_add_sid()
-						rte_add_sid_act = 1
 					end
 					if des_star_exec == 1 or des_star_tns_exec == 1 then
 						-- rte_add_star()
@@ -39064,6 +39300,7 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 							legs_data2[legs_num2][38] = ""
 							legs_data2[legs_num2][39] = ""
 							legs_data2[legs_num2][40] = 0
+							legs_data2[legs_num2][41] = 0
 							legs_num2 = legs_num2 - 1
 						end
 					end
@@ -39312,6 +39549,7 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 				legs_data2[legs_num2][38] = ""
 				legs_data2[legs_num2][39] = ""
 				legs_data2[legs_num2][40] = 0
+				legs_data2[legs_num2][41] = 0
 				legs_num2 = legs_num2 - 1
 				----
 				arr_data = 0
@@ -49446,7 +49684,7 @@ function B738_flight_phase3()
 		or simDR_on_ground_2 == 1 then
 			
 			-- reset FMC
-			if reset_fmc_act == 1 and simDR_airspeed_pilot < 80 and B738DR_flight_phase > 0 then
+			if reset_fmc_act == 1 and simDR_airspeed_pilot < 50 and B738DR_flight_phase > 0 then
 				--reset_fmc_act = 0
 				B738_init2()
 				legs_num = 0
@@ -55251,7 +55489,7 @@ function B738_vnav_calc()
 							ignored = 0
 							
 							-- fixed restrict altitude
-							if legs_restr_alt[ii][4] == 45 or legs_restr_alt[ii][4] == 43 then
+							if legs_restr_alt[ii][4] == 45 or legs_restr_alt[ii][4] == 43 then	--or legs_restr_alt[ii][4] == 41 then
 								ignored = 1
 							else
 								--if idx_temp >= td_idx then
@@ -55505,6 +55743,17 @@ function B738_vnav_calc()
 										ignored = 1
 									end
 								end
+							-- elseif legs_restr_alt[ii][4] == 41 then 	-- Between
+								-- if legs_data[idx_temp][11] == 0 then
+									-- if crz_alt_num >= legs_restr_alt[ii][3] then
+														-- legs_restr_alt[ii][5]
+										-- ignored = 1
+									-- end
+								-- else
+									-- if legs_data[idx_temp][11] >= legs_restr_alt[ii][3] then
+										-- ignored = 1
+									-- end
+								-- end
 							else
 								ignored = 1
 							end
@@ -56205,6 +56454,9 @@ function B738_vnav_calc()
 			end
 		end
 		msg_chk_alt_constr = 1
+		for n = 1, legs_num do
+			B738DR_fms_legs_alt_calc[n] = legs_data[n][10]
+		end
 	end
 	
 	if legs_delete == 0 and calc_rte_enable == 0 and legs_num > 1 and exec_load_fpln == 0 and hold_exec == 0 then
@@ -56349,19 +56601,24 @@ function B738_vnav_calc_mod()
 	
 	--if crz_alt_num > 0 and legs_num2 > 0 and offset > 0 and cost_index ~= "***" and ref_icao ~= "----" and des_icao ~= "****" then
 	if crz_alt_num > 0 and legs_num2 > 0 and offset > 0 and perf_exec > 0 and ref_icao ~= "----" and des_icao ~= "****" then
-		if offset > legs_num2 then
-			offset = legs_num2
-		end
-		-- if offset == 0 then
-			-- offset = 1
+		-- if offset > legs_num2 then
+			-- offset = legs_num2
 		-- end
 
-		if legs_data2[offset][1] == ref_icao and ground_air == 0 then
-			offset2 = 2
-		else
-			offset2 = offset
+		-- if legs_data2[offset2][1] == ref_icao and ground_air == 0 then
+			-- offset2 = 2
+		-- else
+			-- offset2 = offset
+		-- end
+	
+		offset2 = offset
+		if offset2 > legs_num2 then
+			offset2 = legs_num2
 		end
-
+		if legs_data2[offset2][1] == ref_icao and ground_air == 0 then
+			offset2 = 2
+		end
+		
 		--clear calculations data
 		--for n = offset2, (legs_num2 + 1) do
 		for n = 1, (legs_num2 + 1) do
@@ -60970,9 +61227,19 @@ function B738_calc_navaid()
 			from0 = 1
 			to0 = math.floor(page_max / 2)
 		else
-			from0 = math.floor(page_max / 2)
+			from0 = math.floor(page_max / 2) + 1
 			to0 = page_max
 		end
+		-- if xfirst_time2 == 1 then
+			-- from0 = 1
+			-- to0 = math.floor(page_max / 3)
+		-- elseif xfirst_time2 == 2 then
+			-- from0 = math.floor(page_max / 3) + 1
+			-- to0 = 2 * math.floor(page_max / 3) + 1
+		-- else
+			-- from0 = 2 * math.floor(page_max / 3) + 2
+			-- to0 = page_max
+		-- end
 		
 		if to0 == 0 or to0 > page_max then
 			to0 = page_max
@@ -62532,6 +62799,12 @@ function B738_restrict_data()
 										B738DR_rest_wpt_alt_idx = legs_restr_alt[ii][2]
 										break
 									end
+								elseif legs_restr_alt[ii][4] == 41 then	-- between
+									B738DR_rest_wpt_alt_id = legs_restr_alt[ii][1]
+									B738DR_rest_wpt_alt = legs_restr_alt2[ii][3]
+									B738DR_rest_wpt_alt_t = legs_restr_alt[ii][4]
+									B738DR_rest_wpt_alt_idx = legs_restr_alt[ii][2]
+									break
 								else
 									B738DR_rest_wpt_alt_id = legs_restr_alt[ii][1]
 									B738DR_rest_wpt_alt = legs_restr_alt[ii][3]
@@ -64417,65 +64690,71 @@ function B738_fmc_calc()
 						-- relative_brg2 = relative_brg2 - 360
 					-- end
 					
-					if legs_data[offset][32] == 0 then
-						-- Current wpt
-						if legs_data[offset][31] == "AF" or legs_data[offset][31] == "RF" then
-							-- temporary
-							relative_brg2 = (simDR_fmc_trk - simDR_ahars_mag_hdg + 360) % 360
-							if relative_brg2 > 180 then
-								relative_brg2 = relative_brg2 - 360
-							end
-							if nd_dis < 0.8 then
-								if relative_brg2 > -75 and relative_brg2 < 75 then
-									if relative_brg > 80 or relative_brg < -80 then
-										next_wpt_enable = 1
+					if simDR_radio_height_pilot_ft > 50 or offset > 2 then
+						if legs_data[offset][32] == 0 then
+							-- Current wpt
+							if legs_data[offset][31] == "AF" or legs_data[offset][31] == "RF" then
+								-- temporary
+								relative_brg2 = (simDR_fmc_trk - simDR_ahars_mag_hdg + 360) % 360
+								if relative_brg2 > 180 then
+									relative_brg2 = relative_brg2 - 360
+								end
+								if nd_dis < 0.8 then
+									if relative_brg2 > -75 and relative_brg2 < 75 then
+										if relative_brg > 80 or relative_brg < -80 then
+											next_wpt_enable = 1
+										end
 									end
 								end
-							end
-						else
-							if legs_data[offset+1][1] == "DISCONTINUITY" or legs_data[offset+1][1] == "VECTOR" 
-							or legs_data[offset+1][31] == "DF" or string.sub(legs_data[offset+1][31], 1, 1) == "H" then
-								relative_brg2 = (simDR_fmc_trk - simDR_ahars_mag_hdg + 360) % 360
 							else
-								relative_brg2 = (math.deg(legs_data[offset+1][2]) - simDR_ahars_mag_hdg + 360) % 360
-							end
-							if relative_brg2 > 180 then
-								relative_brg2 = relative_brg2 - 360
-							end
-							if nd_dis < 3 then
-								if relative_brg2 > -75 and relative_brg2 < 75 then
-									if relative_brg > 90 or relative_brg < -90 then
-										next_wpt_enable = 1
-										if nav_mode == 5 and legs_data[offset+1][3] > 0 then
-											if legs_data[offset+1][31] ~= "HA" and legs_data[offset+1][31] ~= "HF" and legs_data[offset+1][31] ~= "HM" then
-												-- Course to Fix
-												if legs_data[offset+1][31] ~= "CF" then
-													legs_data[offset+1][31] = "CF"
-													legs_data[offset+1][18] = math.rad(((math.deg(legs_data[offset+1][2]) + simDR_mag_variation) + 360) % 360)
+								if legs_data[offset+1][1] == "DISCONTINUITY" or legs_data[offset+1][1] == "VECTOR" 
+								or legs_data[offset+1][31] == "DF" or string.sub(legs_data[offset+1][31], 1, 1) == "H" then
+									relative_brg2 = (simDR_fmc_trk - simDR_ahars_mag_hdg + 360) % 360
+								else
+									relative_brg2 = (math.deg(legs_data[offset+1][2]) - simDR_ahars_mag_hdg + 360) % 360
+								end
+								if relative_brg2 > 180 then
+									relative_brg2 = relative_brg2 - 360
+								end
+								if nd_dis < 3 then
+									if relative_brg2 > -75 and relative_brg2 < 75 then
+										if relative_brg > 90 or relative_brg < -90 then
+											next_wpt_enable = 1
+											if nav_mode == 5 and legs_data[offset+1][3] > 0 then
+												if legs_data[offset+1][31] ~= "HA" and legs_data[offset+1][31] ~= "HF" and legs_data[offset+1][31] ~= "HM" then
+													-- Course to Fix
+													if legs_data[offset+1][31] ~= "CF" then
+														legs_data[offset+1][31] = "CF"
+														legs_data[offset+1][18] = math.rad(((math.deg(legs_data[offset+1][2]) + simDR_mag_variation) + 360) % 360)
+													end
+													legs_data[offset+1][21] = -1
 												end
-												legs_data[offset+1][21] = -1
 											end
 										end
 									end
 								end
 							end
-						end
-						if nd_dis < dist_thrshld then
-							next_wpt_enable = 1
-						end
-					else
-						
-						-- Fly over wpt
-						if nd_dis < 1 then
-							relative_brg2 = (simDR_fmc_trk - simDR_ahars_mag_hdg + 360) % 360
-							if relative_brg2 > 180 then
-								relative_brg2 = relative_brg2 - 360
+							if nd_dis < dist_thrshld then
+								next_wpt_enable = 1
 							end
-							if relative_brg2 > -75 and relative_brg2 < 75 then		-- 55
-								if relative_brg > 70 or relative_brg < -70 then		-- 90
-									next_wpt_enable = 1
+						else
+							
+							-- Fly over wpt
+							if nd_dis < 1 then
+								relative_brg2 = (simDR_fmc_trk - simDR_ahars_mag_hdg + 360) % 360
+								if relative_brg2 > 180 then
+									relative_brg2 = relative_brg2 - 360
+								end
+								if relative_brg2 > -75 and relative_brg2 < 75 then		-- 55
+									if relative_brg > 70 or relative_brg < -70 then		-- 90
+										next_wpt_enable = 1
+									end
 								end
 							end
+						end
+					else
+						if nd_dis < dist_thrshld then
+							next_wpt_enable = 1
 						end
 					end
 					
@@ -65661,6 +65940,7 @@ function B738_fmc_calc()
 					legs_restr_alt[legs_restr_alt_n][2] = n					-- idx
 					legs_restr_alt[legs_restr_alt_n][3] = legs_data[n][5]	-- alt restrict
 					legs_restr_alt[legs_restr_alt_n][4] = legs_data[n][6]	-- alt restrict A,B,-
+					legs_restr_alt[legs_restr_alt_n][5] = legs_data[n][41]
 				end
 				distance = distance + legs_data[n][3]
 			end
@@ -67658,8 +67938,7 @@ temp_ils4 = ""
 	atis_send_time = "     "
 	receive_msg = 0
 	
-	--entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.258"
+	version = "v3.259"
 
 end
 
@@ -68027,6 +68306,7 @@ function after_physics()
 		B738DR_fms_test1 = 11
 		B738_legs_step2()
 
+		if B738DR_kill_fms_navaid2 == 0 then
 		if xfirst_time2 == 0 then
 			B738DR_fms_test1 = 12
 			B738_displ_tc()
@@ -68036,6 +68316,7 @@ function after_physics()
 			B738_displ_decel()
 			B738DR_fms_test1 = 15
 			B738_displ_rnw()
+		end
 		end
 		
 		B738DR_fms_test1 = 16
@@ -68062,6 +68343,7 @@ function after_physics()
 				else
 					B738_calc_navaid()
 					if xfirst_time2 == 2 then
+					--if xfirst_time2 == 3 then
 						precalc_done = 1
 					end
 				end
@@ -68070,12 +68352,14 @@ function after_physics()
 			end
 		end
 		
+		if B738DR_kill_fms_navaid3 == 0 then
 		B738DR_fms_test1 = 18
 		if calc_rte_enable == 0 then
 			if xfirst_time2 == 0 then
 				B738_displ_wpt()
 				B738_displ_acf()
 			end
+		end
 		end
 
 		B738DR_fms_test1 = 19
@@ -68085,6 +68369,7 @@ function after_physics()
 		
 		xfirst_time2 = xfirst_time2 + 1
 		if xfirst_time2 > 2 then
+		--if xfirst_time2 > 3 then
 			xfirst_time2 = 0
 		else
 			ndx_lat = simDR_latitude

@@ -1335,6 +1335,7 @@ lock_throttle				= create_dataref("laminar/B738/autopilot/lock_throttle", "numbe
 
 B738DR_track_up_active		= create_dataref("laminar/B738/fms/track_up_active", "number")
 
+
 -- RADIOS
 -- NAV1
 simDR_nav1_flag_gs			= find_dataref("sim/cockpit2/radios/indicators/nav1_flag_glideslope")
@@ -5893,6 +5894,13 @@ function B738_vert_spd_up_CMDhandler(phase, duration)
 	end
 end
 
+function B738_heading_sync_CMDhandler(phase, duration)
+	--hdgsk
+	if phase == 0 then
+		B738DR_mcp_hdg_dial = simDR_ahars_mag_hdg
+	end
+end
+
 --*************************************************************************************--
 --** 				             REPLACE X-PLANE COMMANDS                  	    	 **--
 --*************************************************************************************--
@@ -5913,6 +5921,7 @@ simCMD_reverse_hold			= replace_command("sim/engines/thrust_reverse_hold", B738_
 simCMD_vert_spd_down		= replace_command("sim/autopilot/vertical_speed_down", B738_vert_spd_down_CMDhandler)
 simCMD_vert_spd_up			= replace_command("sim/autopilot/vertical_speed_up", B738_vert_spd_up_CMDhandler)
 
+simCMD_heading_sync			= replace_command("sim/autopilot/heading_sync", B738_heading_sync_CMDhandler)
 
 --*************************************************************************************--
 --** 				              WRAP X-PLANE COMMANDS                  	    	 **--
@@ -15365,6 +15374,8 @@ function B738_vor_sel()
 		simDR_hsi_crs2 = simDR_nav1_obs_copilot
 	-- end
 	
+	if xfirst_time2 == 0 then
+	
 	--if B738DR_capt_exp_map_mode == 1 and B738DR_capt_map_mode ~= 3 then
 	if B738DR_capt_map_mode == 2 then
 		
@@ -15632,6 +15643,8 @@ function B738_vor_sel()
 		B738DR_vor2_show = 0
 	end
 	
+	end
+	
 	if B738DR_capt_map_mode < 2 then
 		vor_hdg =  simDR_ahars_mag_hdg
 	elseif B738DR_capt_map_mode == 2 then
@@ -15652,6 +15665,7 @@ function B738_vor_sel()
 	B738DR_adf2_arrow = simDR_adf2_bearing - vor_hdg
 	
 	
+	if xfirst_time2 == 0 then
 	
 	--if B738DR_fo_exp_map_mode == 1 and B738DR_fo_map_mode ~= 3 then
 	if B738DR_fo_map_mode == 2 then
@@ -15937,6 +15951,8 @@ function B738_vor_sel()
 	else
 		B738DR_vor1_copilot_show = 0
 		B738DR_vor2_copilot_show = 0
+	end
+	
 	end
 	
 	if B738DR_fo_map_mode < 2 then
@@ -17001,7 +17017,6 @@ function B738_nd()
 		end
 	end
 	B738DR_efis_fo_rings = efis_rings
-	
 	
 end
 
