@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.253:
+------
+- fixed small bugs
+- changed manipulators for Xplane 11.20b4
+
 3.252:
 ------
 - fixed bugs (VNAV descent, FO FMC ...)
