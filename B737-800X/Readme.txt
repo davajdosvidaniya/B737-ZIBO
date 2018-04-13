@@ -77,6 +77,14 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.251:
+-----
+- First Officer FMC working
+- add MAP CTR mode
+- update xchecklist file modify by @curvian (thanks)
+- fixed small bugs and graphic correction
+Note: if you use terrain plugin by DrGluck, Terrain plugin will draw terrain correctly after update new version (I hope soon).
+
 3.25z:
 ------
 - graphic correction on both NDs

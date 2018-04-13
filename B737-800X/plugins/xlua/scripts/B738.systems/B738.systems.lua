@@ -6829,10 +6829,18 @@ function B738_tcas(ai_plane)
 				tcas_on_off = 0
 			end
 			
+			if B738DR_capt_exp_map_mode == 0 then
+				tcas_zoom = tcas_zoom / 2
+			end
+
 			tcas_x = tcas_x * tcas_zoom		-- zoom
 			tcas_y = tcas_y * tcas_zoom		-- zoom
 			
-			if tcas_y > 7.5 or tcas_y < -2 then
+			if B738DR_capt_exp_map_mode == 0 then
+				tcas_y = tcas_y + 4.1	-- adjust center
+			end
+			
+			if tcas_y > 7.5 or tcas_y < -7.5 then
 				tcas_on_off = 0
 			end
 			if tcas_x < -6.0 or tcas_x > 6.0 then
@@ -7130,10 +7138,18 @@ function B738_tcas(ai_plane)
 				tcas_on_off2 = 0
 			end
 			
+			if B738DR_fo_exp_map_mode == 0 then
+				tcas_zoom = tcas_zoom / 2
+			end
+
 			tcas_x = tcas_x * tcas_zoom		-- zoom
 			tcas_y = tcas_y * tcas_zoom		-- zoom
 			
-			if tcas_y > 7.5 or tcas_y < -2 then
+			if B738DR_fo_exp_map_mode == 0 then
+				tcas_y = tcas_y + 4.1	-- adjust center
+			end
+			
+			if tcas_y > 7.5 or tcas_y < -7.5 then
 				tcas_on_off2 = 0
 			end
 			if tcas_x < -6.0 or tcas_x > 6.0 then
@@ -7410,6 +7426,13 @@ function tcas_test()
 	B738DR_tcas_alt_dn_up_show[3] = 1
 	B738_EFIS_TCAS_ai_show[3] = 1
 	
+	if B738DR_capt_exp_map_mode == 0 then
+		B738DR_tcas_y[0] = B738DR_tcas_y[0] + 4.1	-- adjust center
+		B738DR_tcas_y[1] = B738DR_tcas_y[1] + 4.1	-- adjust center
+		B738DR_tcas_y[2] = B738DR_tcas_y[2] + 4.1	-- adjust center
+		B738DR_tcas_y[3] = B738DR_tcas_y[3] + 4.1	-- adjust center
+	end
+	
 	B738_EFIS_TCAS_show = 1
 	
 	-- First Officier
@@ -7460,6 +7483,13 @@ function tcas_test()
 	B738DR_tcas_alt_fo4 = "+24"
 	B738DR_tcas_alt_dn_up_show_fo[3] = 1
 	B738_EFIS_TCAS_ai_show_fo[3] = 1
+	
+	if B738DR_fo_exp_map_mode == 0 then
+		B738DR_tcas_y_fo[0] = B738DR_tcas_y_fo[0] + 4.1	-- adjust center
+		B738DR_tcas_y_fo[1] = B738DR_tcas_y_fo[1] + 4.1	-- adjust center
+		B738DR_tcas_y_fo[2] = B738DR_tcas_y_fo[2] + 4.1	-- adjust center
+		B738DR_tcas_y_fo[3] = B738DR_tcas_y_fo[3] + 4.1	-- adjust center
+	end
 	
 	B738_EFIS_TCAS_show_fo = 1
 	

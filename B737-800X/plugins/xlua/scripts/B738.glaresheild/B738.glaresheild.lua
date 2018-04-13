@@ -460,6 +460,13 @@ ghust_detect2 = 0
 
 altitude_mode_old = 0
 
+capt_exp_map_mode = 0
+fo_exp_map_mode = 0
+capt_vsd_map_mode = 0
+fo_vsd_map_mode = 0
+capt_exp_vor_app_mode = 0
+fo_exp_vor_app_mode = 0
+
 --*************************************************************************************--
 --** 				             FIND X-PLANE DATAREFS            			    	 **--
 --*************************************************************************************--
@@ -874,6 +881,10 @@ B738DR_radii_turn_act		= find_dataref("laminar/B738/fms/radii_turn_act")
 B738DR_radii_correct		= find_dataref("laminar/B738/fms/radii_correct")
 
 B738DR_fms_approach_wind_corr	= find_dataref("laminar/B738/FMS/approach_wind_corr")
+
+B738DR_enable_gpwstest_long		= find_dataref("laminar/b738/fmodpack/fmod_gpwstest_long_on")
+B738DR_enable_gpwstest_short	= find_dataref("laminar/b738/fmodpack/fmod_gpwstest_short_on")
+B738DR_windshear				= find_dataref("laminar/b738/fmodpack/msg_windshear")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
@@ -1511,6 +1522,9 @@ B738DR_capt_map_mode		= create_dataref("laminar/B738/EFIS_control/capt/map_mode_
 B738DR_fo_map_mode			= create_dataref("laminar/B738/EFIS_control/fo/map_mode_pos", "number", B738DR_fo_map_mode_DRhandler)
 B738DR_capt_exp_map_mode	= create_dataref("laminar/B738/EFIS_control/capt/exp_map", "number", B738DR_capt_exp_map_mode_DRhandler)
 B738DR_fo_exp_map_mode		= create_dataref("laminar/B738/EFIS_control/fo/exp_map", "number", B738DR_fo_exp_map_mode_DRhandler)
+
+B738DR_capt_vsd_map_mode	= create_dataref("laminar/B738/EFIS_control/capt/vsd_map", "number")
+B738DR_fo_vsd_map_mode		= create_dataref("laminar/B738/EFIS_control/fo/vsd_map", "number")
 
 B738DR_efis_map_range_capt 		= create_dataref("laminar/B738/EFIS/capt/map_range", "number", B738DR_efis_map_range_capt_DRhandler)
 B738DR_efis_map_range_fo 		= create_dataref("laminar/B738/EFIS/fo/map_range", "number", B738DR_efis_map_range_fo_DRhandler)
@@ -2364,18 +2378,40 @@ end
 function B738_efis_ctr_capt_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_efis_ctr_capt = 1
-		if B738DR_capt_map_mode < 2 then
-			if B738DR_capt_exp_map_mode == 0 then
-				B738DR_capt_exp_map_mode = 1
-			else
-				B738DR_capt_exp_map_mode = 0
-			end
-		end
-		-- if simDR_map_mode_is_HSI == 0 then
-			-- simDR_map_mode_is_HSI = 1
-		-- elseif simDR_map_mode_is_HSI == 1 then
-			-- simDR_map_mode_is_HSI = 0
+		-- if B738DR_capt_map_mode < 2 then
+			-- if B738DR_capt_exp_map_mode == 0 then
+				-- B738DR_capt_exp_map_mode = 1
+			-- else
+				-- B738DR_capt_exp_map_mode = 0
+			-- end
 		-- end
+		if B738DR_capt_map_mode < 2 then
+			-- APP/VOR mode
+			if capt_exp_vor_app_mode == 0 then
+				capt_exp_vor_app_mode = 1
+			else
+				capt_exp_vor_app_mode = 0
+			end
+			B738DR_capt_exp_map_mode = capt_exp_vor_app_mode
+			B738DR_capt_vsd_map_mode = 0
+		elseif B738DR_capt_map_mode == 2 then
+			-- MAP mode
+			if capt_vsd_map_mode == 1 then
+				capt_vsd_map_mode = 0
+				capt_exp_map_mode = 1
+			elseif capt_exp_map_mode == 0 then
+				capt_vsd_map_mode = 1
+			else
+				capt_exp_map_mode = 0
+			end
+			B738DR_capt_exp_map_mode = capt_exp_map_mode
+			B738DR_capt_vsd_map_mode = capt_vsd_map_mode
+		else
+			-- PLN mode
+			B738DR_capt_exp_map_mode = 1
+			B738DR_capt_vsd_map_mode = 0
+		end
+		
 	elseif phase == 2 then
 		B738DR_efis_ctr_capt = 0
 	end
@@ -3223,18 +3259,41 @@ end
 function B738_efis_ctr_fo_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_efis_ctr_fo = 1
-		if B738DR_fo_map_mode < 2 then
-			if B738DR_fo_exp_map_mode == 0 then
-				B738DR_fo_exp_map_mode = 1
-			else
-				B738DR_fo_exp_map_mode = 0
-			end
-		end
-		-- if simDR_map_mode_is_HSI == 0 then
-			-- simDR_map_mode_is_HSI = 1
-		-- elseif simDR_map_mode_is_HSI == 1 then
-			-- simDR_map_mode_is_HSI = 0
+		-- if B738DR_fo_map_mode < 2 then
+			-- if B738DR_fo_exp_map_mode == 0 then
+				-- B738DR_fo_exp_map_mode = 1
+			-- else
+				-- B738DR_fo_exp_map_mode = 0
+			-- end
 		-- end
+		
+		if B738DR_fo_map_mode < 2 then
+			-- APP/VOR mode
+			if fo_exp_vor_app_mode == 0 then
+				fo_exp_vor_app_mode = 1
+			else
+				fo_exp_vor_app_mode = 0
+			end
+			B738DR_fo_exp_map_mode = fo_exp_vor_app_mode
+			B738DR_fo_vsd_map_mode = 0
+		elseif B738DR_fo_map_mode == 2 then
+			-- MAP mode
+			if fo_vsd_map_mode == 1 then
+				fo_vsd_map_mode = 0
+				fo_exp_map_mode = 1
+			elseif fo_exp_map_mode == 0 then
+				fo_vsd_map_mode = 1
+			else
+				fo_exp_map_mode = 0
+			end
+			B738DR_fo_exp_map_mode = fo_exp_map_mode
+			B738DR_fo_vsd_map_mode = fo_vsd_map_mode
+		else
+			-- PLN mode
+			B738DR_fo_exp_map_mode = 1
+			B738DR_fo_vsd_map_mode = 0
+		end
+		
 	elseif phase == 2 then
 		B738DR_efis_ctr_fo = 0
 	end
@@ -8427,7 +8486,11 @@ function B738_vnav6()
 				if B738DR_autopilot_autothr_arm_pos == 0 then
 					B738DR_fmc_climb_speed_l = math.min (flaps_speed, v2_20_speed, vnav_speed, spd_250_10000)
 				else
-					B738DR_fmc_climb_speed_l = math.min (flaps_speed, v2_20_speed, vnav_speed, spd_250_10000, B738DR_afs_spd_limit_max)
+					if simDR_airspeed_is_mach == 0 then
+						B738DR_fmc_climb_speed_l = math.min (flaps_speed, v2_20_speed, vnav_speed, spd_250_10000, B738DR_afs_spd_limit_max)
+					else
+						B738DR_fmc_climb_speed_l = math.min (flaps_speed, v2_20_speed, vnav_speed, spd_250_10000)
+					end
 				end
 				
 				if simDR_airspeed_is_mach == 0 then
@@ -9230,7 +9293,7 @@ function B738_vnav6()
 										delta_vvi = 1
 									end
 								else
-									if simDR_mach_no > 0.8 then
+									if simDR_mach_no > 0.80 then
 										delta_vvi = 1
 									end
 								end
@@ -15010,7 +15073,7 @@ function B738_draw_arc()
 				arc_dist = simDR_ground_spd * arc_time * 0.00054	-- m to NM
 				
 				-- Captain
-				if B738DR_capt_map_mode == 2 then 	--and B738DR_capt_exp_map_mode == 1 then
+				if B738DR_capt_map_mode == 2 and B738DR_capt_exp_map_mode == 1 then
 					arc_zoom = 0
 					if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 						arc_zoom = 0.226
@@ -15039,7 +15102,7 @@ function B738_draw_arc()
 				end
 				
 				-- First Officer
-				if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode == 1 then
+				if B738DR_fo_map_mode == 2 and B738DR_fo_exp_map_mode == 1 then
 					arc_zoom = 0
 					if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 						arc_zoom = 0.226
@@ -15085,7 +15148,7 @@ function B738_draw_arc()
 				arc_dist = simDR_ground_spd * arc_time * 0.00054	-- m to NM
 				
 				-- Captain
-				if B738DR_capt_map_mode == 2 then	--and B738DR_capt_exp_map_mode == 1 then
+				if B738DR_capt_map_mode == 2 and B738DR_capt_exp_map_mode == 1 then
 					arc_zoom = 0
 					if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 						arc_zoom = 0.226
@@ -15114,7 +15177,7 @@ function B738_draw_arc()
 				end
 				
 				-- First Officer
-				if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode == 1 then
+				if B738DR_fo_map_mode == 2 and B738DR_fo_exp_map_mode == 1 then
 					arc_zoom = 0
 					if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 						arc_zoom = 0.226
@@ -15161,7 +15224,7 @@ function B738_draw_arc()
 					arc_dist = simDR_ground_spd * arc_time * 0.00054	-- m to NM
 				
 					-- Captain
-					if B738DR_capt_map_mode == 2 then	--and B738DR_capt_exp_map_mode == 1 then
+					if B738DR_capt_map_mode == 2 and B738DR_capt_exp_map_mode == 1 then
 						arc_zoom = 0
 						if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 							arc_zoom = 0.226
@@ -15190,7 +15253,7 @@ function B738_draw_arc()
 					end
 					
 					-- First Officer
-					if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode == 1 then
+					if B738DR_fo_map_mode == 2 and B738DR_fo_exp_map_mode == 1 then
 						arc_zoom = 0
 						if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 							arc_zoom = 0.226
@@ -15401,8 +15464,18 @@ function B738_vor_sel()
 					out_of_range = 1
 				end
 				
+				if B738DR_capt_exp_map_mode == 0 then
+					efis_zoom = efis_zoom / 2
+				end
+				
 				vor_x = vor_x * efis_zoom		-- zoom
 				vor_y = vor_y * efis_zoom		-- zoom
+				
+				if B738DR_capt_map_mode == 3 then
+					vor_y = vor_y + 4.1	-- adjust center
+				elseif B738DR_capt_exp_map_mode == 0 then
+					vor_y = vor_y + 4.1	-- adjust center
+				end
 				
 				if vor_y > 7.5 or vor_y < 0 then
 					out_of_range = 1
@@ -15570,8 +15643,18 @@ function B738_vor_sel()
 					out_of_range = 1
 				end
 				
+				if B738DR_capt_exp_map_mode == 0 then
+					efis_zoom = efis_zoom / 2
+				end
+				
 				vor_x = vor_x * efis_zoom		-- zoom
 				vor_y = vor_y * efis_zoom		-- zoom
+				
+				if B738DR_capt_map_mode == 3 then
+					vor_y = vor_y + 4.1	-- adjust center
+				elseif B738DR_capt_exp_map_mode == 0 then
+					vor_y = vor_y + 4.1	-- adjust center
+				end
 				
 				if vor_y > 7.5 or vor_y < 0 then
 					out_of_range = 1
@@ -15771,8 +15854,18 @@ function B738_vor_sel()
 					out_of_range = 1
 				end
 				
+				if B738DR_fo_exp_map_mode == 0 then
+					efis_zoom = efis_zoom / 2
+				end
+				
 				vor_x = vor_x * efis_zoom		-- zoom
 				vor_y = vor_y * efis_zoom		-- zoom
+				
+				if B738DR_fo_map_mode == 3 then
+					vor_y = vor_y + 4.1	-- adjust center
+				elseif B738DR_fo_exp_map_mode == 0 then
+					vor_y = vor_y + 4.1	-- adjust center
+				end
 				
 				if vor_y > 7.5 or vor_y < 0 then
 					out_of_range = 1
@@ -15932,8 +16025,18 @@ function B738_vor_sel()
 					out_of_range = 1
 				end
 				
+				if B738DR_fo_exp_map_mode == 0 then
+					efis_zoom = efis_zoom / 2
+				end
+				
 				vor_x = vor_x * efis_zoom		-- zoom
 				vor_y = vor_y * efis_zoom		-- zoom
+				
+				if B738DR_fo_map_mode == 3 then
+					vor_y = vor_y + 4.1	-- adjust center
+				elseif B738DR_fo_exp_map_mode == 0 then
+					vor_y = vor_y + 4.1	-- adjust center
+				end
 				
 				if vor_y > 7.5 or vor_y < 0 then
 					out_of_range = 1
@@ -16596,27 +16699,32 @@ function B738_nd()
 			-- HDG-UP
 			B738DR_mcp_hdg_dial_nd = B738DR_mcp_hdg_dial - simDR_ahars_mag_hdg
 			B738DR_nd_crs = B738DR_course_pilot - simDR_ahars_mag_hdg
-			-- if B738DR_capt_exp_map_mode == 0 then
-				-- B738DR_mcp_hdg_dial_nd_show = 0
-			-- else
-				-- B738DR_mcp_hdg_dial_nd_show = 1
-			-- end
+			if B738DR_capt_exp_map_mode == 0 then
+				B738DR_mcp_hdg_dial_nd_show = 2
+			else
+				B738DR_mcp_hdg_dial_nd_show = 1
+			end
 		else
 			-- TRK-UP
 			if simDR_ground_spd < 45 then
 				-- TRK/HDG
 				B738DR_mcp_hdg_dial_nd = B738DR_mcp_hdg_dial - simDR_ahars_mag_hdg
 				B738DR_nd_crs = B738DR_course_pilot - simDR_ahars_mag_hdg
-				-- if B738DR_capt_exp_map_mode == 0 then
-					-- B738DR_mcp_hdg_dial_nd_show = 0
-				-- else
-					-- B738DR_mcp_hdg_dial_nd_show = 1
-				-- end
+				if B738DR_capt_exp_map_mode == 0 then
+					B738DR_mcp_hdg_dial_nd_show = 2
+				else
+					B738DR_mcp_hdg_dial_nd_show = 1
+				end
 			else
 				B738DR_mcp_hdg_dial_nd = B738DR_mcp_hdg_dial - simDR_mag_hdg
+				if B738DR_capt_exp_map_mode == 0 then
+					B738DR_mcp_hdg_dial_nd_show = 2
+				else
+					B738DR_mcp_hdg_dial_nd_show = 1
+				end
 			end
 		end
-		B738DR_mcp_hdg_dial_nd_show = 1
+		--B738DR_mcp_hdg_dial_nd_show = 1
 		
 		if cpt_tcas_enable == 0 then
 			B738DR_EFIS_TCAS_on = 0
@@ -16719,7 +16827,7 @@ function B738_nd()
 			B738DR_mcp_hdg_dial_nd_fo = B738DR_mcp_hdg_dial - simDR_ahars_mag_hdg
 			B738DR_nd_crs_fo = B738DR_course_copilot - simDR_ahars_mag_hdg
 			if B738DR_fo_exp_map_mode == 0 then
-				B738DR_mcp_hdg_dial_nd_fo_show = 0
+				B738DR_mcp_hdg_dial_nd_fo_show = 2
 			else
 				B738DR_mcp_hdg_dial_nd_fo_show = 1
 			end
@@ -16729,16 +16837,21 @@ function B738_nd()
 				B738DR_mcp_hdg_dial_nd_fo = B738DR_mcp_hdg_dial - simDR_ahars_mag_hdg
 				B738DR_nd_crs_fo = B738DR_course_copilot - simDR_ahars_mag_hdg
 				if B738DR_fo_exp_map_mode == 0 then
-					B738DR_mcp_hdg_dial_nd_fo_show = 0
+					B738DR_mcp_hdg_dial_nd_fo_show = 2
 				else
 					B738DR_mcp_hdg_dial_nd_fo_show = 1
 				end
 			else
 				-- TRK-UP
 				B738DR_mcp_hdg_dial_nd_fo = B738DR_mcp_hdg_dial - simDR_mag_hdg
+				if B738DR_fo_exp_map_mode == 0 then
+					B738DR_mcp_hdg_dial_nd_fo_show = 2
+				else
+					B738DR_mcp_hdg_dial_nd_fo_show = 1
+				end
 			end
 		end
-		B738DR_mcp_hdg_dial_nd_fo_show = 1
+		--B738DR_mcp_hdg_dial_nd_fo_show = 1
 		if fo_tcas_enable == 0 then
 			B738DR_EFIS_TCAS_on_fo = 0
 		else
@@ -16866,121 +16979,43 @@ function B738_nd()
 		hide_hdg_line_fo = 0
 	end
 
-	-- if B738DR_hdg_mag_nd_show == 0 then
-		-- B7378DR_hdg_line_enable = 0
-	-- else
-		if hide_hdg_line == 0 then
-			B7378DR_hdg_line_enable = 1
-		else
-			B7378DR_hdg_line_enable = 0
-		end
-	-- end
-	
-	-- if B738DR_hdg_mag_nd_fo_show == 0 then
-		-- B7378DR_hdg_line_fo_enable = 0
-	-- else
-		if hide_hdg_line_fo == 0 then
-			B7378DR_hdg_line_fo_enable = 1
-		else
-			B7378DR_hdg_line_fo_enable = 0
-		end
-	-- end
+	if hide_hdg_line == 0 then
+		B7378DR_hdg_line_enable = 1
+	else
+		B7378DR_hdg_line_enable = 0
+	end
+	if hide_hdg_line_fo == 0 then
+		B7378DR_hdg_line_fo_enable = 1
+	else
+		B7378DR_hdg_line_fo_enable = 0
+	end
 	
 	mcp_hdg_dial_old = B738DR_mcp_hdg_dial
 	
-	-- WEATHER RADAR
-	if B738DR_efis_wxr_on == 0 and B738DR_efis_fo_wxr_on == 0 then
-		-- turn off WX
-		if simDR_efis_wxr_on == 1 then
-			simCMD_efis_wxr:once()
+	-- TERRAIN
+	if B738DR_windshear == 1 and B738DR_enable_gpwstest_long == 0 and B738DR_enable_gpwstest_short == 0 then
+		-- detected windshear
+		if B738DR_efis_wxr_on == 1 then
+			cpt_terr_enable = 0
 		end
-	else
-		if B738DR_efis_wxr_on == 0 then
-			-- First Officer
-			if B738DR_fo_map_mode == 2 then
-				-- MAP mode
-				if B738DR_efis_map_range_fo == 0 then
-					-- turn off WX for range 5NM
-					if simDR_efis_wxr_on == 1 then
-						simCMD_efis_wxr:once()
-					end
-				else
-					-- turn on WW for First Officer
-					if simDR_efis_wxr_on == 0 then
-						simCMD_efis_wxr:once()
-					end
-					simDR_efis_map_range = B738DR_efis_map_range_fo
-				end
-			elseif B738DR_fo_map_mode < 2 then
-				-- APP, VOR mode
-				if B738DR_fo_exp_map_mode == 0 then
-					-- turn off WX for CTR mode
-					if simDR_efis_wxr_on == 1 then
-						simCMD_efis_wxr:once()
-					end
-				elseif B738DR_efis_map_range_fo == 0 then
-					-- turn off WX for range 5NM
-					if simDR_efis_wxr_on == 1 then
-						simCMD_efis_wxr:once()
-					end
-				else
-					-- turn on WW for First Officer
-					if simDR_efis_wxr_on == 0 then	--and B738DR_fo_exp_map_mode == 1 then
-						simCMD_efis_wxr:once()
-					end
-					simDR_efis_map_range = B738DR_efis_map_range_fo
-				end
-			else
-				-- turn off WX for PLN mode
-				if simDR_efis_wxr_on == 1 then
-					simCMD_efis_wxr:once()
-				end
-			end
-		else
-			-- Captain
-			if B738DR_capt_map_mode == 2 then
-				-- MAP mode
-				if B738DR_efis_map_range_capt == 0 then
-					-- turn off WX for range 5NM
-					if simDR_efis_wxr_on == 1 then
-						simCMD_efis_wxr:once()
-					end
-				else
-				-- turn on WW for Captain
-					if simDR_efis_wxr_on == 0 then
-						simCMD_efis_wxr:once()
-					end
-					simDR_efis_map_range = B738DR_efis_map_range_capt
-				end
-			elseif B738DR_capt_map_mode < 2 then
-				-- APP, VOR mode
-				if B738DR_capt_exp_map_mode == 0 then
-					-- turn off WX for CTR mode
-					if simDR_efis_wxr_on == 1 then
-						simCMD_efis_wxr:once()
-					end
-				elseif B738DR_efis_map_range_capt == 0 then
-					-- turn off WX for range 5NM
-					if simDR_efis_wxr_on == 1 then
-						simCMD_efis_wxr:once()
-					end
-				else
-				-- turn on WX for Captain
-					if simDR_efis_wxr_on == 0 then	--and B738DR_capt_exp_map_mode == 1 then
-						simCMD_efis_wxr:once()
-					end
-					simDR_efis_map_range = B738DR_efis_map_range_capt
-				end
-			else
-				-- turn off WX for PLN mode
-				if simDR_efis_wxr_on == 1 then
-					simCMD_efis_wxr:once()
-				end
-			end
+		if B738DR_efis_fo_wxr_on == 1 then
+			fo_terr_enable = 0
 		end
 	end
 	
-	-- TERRAIN
+	-- one terrain radar at the same time
+	if cpt_terr_enable == 0 and fo_terr_enable == 0 then
+		-- terrain turn off
+		B738DR_efis_terr_on = 0
+		B738DR_efis_fo_terr_on = 0
+	else
+		if cpt_terr_enable == 1 then
+			fo_terr_enable = 0
+		else
+			cpt_terr_enable = 0
+		end
+	end
+	
 	local terr_enable = cpt_terr_enable
 	if B738DR_capt_exp_map_mode == 0 and B738DR_capt_map_mode < 2 then
 		terr_enable = 0
@@ -16997,13 +17032,86 @@ function B738_nd()
 	end
 	B738DR_efis_fo_terr_on = terr_enable
 	
+	-- WEATHER RADAR
+	-- one weather radar at the same time
+	if B738DR_efis_wxr_on == 0 and B738DR_efis_fo_wxr_on == 0 then
+		-- turn off WX
+		if simDR_efis_wxr_on == 1 then
+			simCMD_efis_wxr:once()
+		end
+	else
+		if B738DR_efis_wxr_on == 0 then
+			-- First Officer
+			if B738DR_fo_map_mode <= 2 then
+				-- APP, VOR mode
+				if B738DR_fo_exp_map_mode == 0 then
+					-- turn off WX for CTR mode
+					if simDR_efis_wxr_on == 1 then
+						simCMD_efis_wxr:once()
+					end
+				elseif B738DR_efis_map_range_fo == 0 then
+					-- turn off WX for range 5NM
+					if simDR_efis_wxr_on == 1 then
+						simCMD_efis_wxr:once()
+					end
+				else
+					if B738DR_efis_fo_terr_on == 0 then
+						-- turn on WW for First Officer
+						if simDR_efis_wxr_on == 0 then	--and B738DR_fo_exp_map_mode == 1 then
+							simCMD_efis_wxr:once()
+						end
+						simDR_efis_map_range = B738DR_efis_map_range_fo
+					else
+						if simDR_efis_wxr_on == 1 then
+							simCMD_efis_wxr:once()
+						end
+					end
+				end
+			else
+				-- turn off WX for PLN mode
+				if simDR_efis_wxr_on == 1 then
+					simCMD_efis_wxr:once()
+				end
+			end
+		else
+			-- Captain
+			if B738DR_capt_map_mode <= 2 then
+				-- APP, VOR mode
+				if B738DR_capt_exp_map_mode == 0 then
+					-- turn off WX for CTR mode
+					if simDR_efis_wxr_on == 1 then
+						simCMD_efis_wxr:once()
+					end
+				elseif B738DR_efis_map_range_capt == 0 then
+					-- turn off WX for range 5NM
+					if simDR_efis_wxr_on == 1 then
+						simCMD_efis_wxr:once()
+					end
+				else
+				-- turn on WX for Captain
+					if B738DR_efis_terr_on == 0 then
+						if simDR_efis_wxr_on == 0 then	--and B738DR_capt_exp_map_mode == 1 then
+							simCMD_efis_wxr:once()
+						end
+						simDR_efis_map_range = B738DR_efis_map_range_capt
+					else
+						if simDR_efis_wxr_on == 1 then
+							simCMD_efis_wxr:once()
+						end
+					end
+				end
+			else
+				-- turn off WX for PLN mode
+				if simDR_efis_wxr_on == 1 then
+					simCMD_efis_wxr:once()
+				end
+			end
+		end
+	end
+	
 	-- ND Rings
 	local efis_rings = 0
-	if B738DR_capt_exp_map_mode == 1 and B738DR_capt_map_mode < 2 then
-		if B738DR_efis_terr_on == 1 or B738DR_efis_wxr_on == 1 or B738DR_EFIS_TCAS_on == 1 then
-			efis_rings = 1
-		end
-	elseif B738DR_capt_map_mode == 2 then
+	if B738DR_capt_exp_map_mode == 1 and B738DR_capt_map_mode <= 2 then
 		if B738DR_efis_terr_on == 1 or B738DR_efis_wxr_on == 1 or B738DR_EFIS_TCAS_on == 1 then
 			efis_rings = 1
 		end
@@ -17011,16 +17119,47 @@ function B738_nd()
 	B738DR_efis_rings = efis_rings
 	
 	efis_rings = 0
-	if B738DR_fo_exp_map_mode == 1 and B738DR_fo_map_mode < 2 then
-		if B738DR_efis_fo_terr_on == 1 or B738DR_efis_fo_wxr_on == 1 or B738DR_EFIS_TCAS_on_fo == 1 then
-			efis_rings = 1
-		end
-	elseif B738DR_fo_map_mode == 2 then
+	if B738DR_fo_exp_map_mode == 1 and B738DR_fo_map_mode <= 2 then
 		if B738DR_efis_fo_terr_on == 1 or B738DR_efis_fo_wxr_on == 1 or B738DR_EFIS_TCAS_on_fo == 1 then
 			efis_rings = 1
 		end
 	end
 	B738DR_efis_fo_rings = efis_rings
+	
+	
+end
+
+function B738_ctr_exp_mode()
+	
+	-- Captain
+	if B738DR_capt_map_mode < 2 then
+		-- APP/VOR mode
+		B738DR_capt_exp_map_mode = capt_exp_vor_app_mode
+		B738DR_capt_vsd_map_mode = 0
+	elseif B738DR_capt_map_mode == 2 then
+		-- MAP mode
+		B738DR_capt_exp_map_mode = capt_exp_map_mode
+		B738DR_capt_vsd_map_mode = capt_vsd_map_mode
+	else
+		-- PLN mode
+		B738DR_capt_exp_map_mode = 1
+		B738DR_capt_vsd_map_mode = 0
+	end
+	
+	-- First Officier
+	if B738DR_fo_map_mode < 2 then
+		-- APP/VOR mode
+		B738DR_fo_exp_map_mode = fo_exp_vor_app_mode
+		B738DR_fo_vsd_map_mode = 0
+	elseif B738DR_fo_map_mode == 2 then
+		-- MAP mode
+		B738DR_fo_exp_map_mode = fo_exp_map_mode
+		B738DR_fo_vsd_map_mode = fo_vsd_map_mode
+	else
+		-- PLN mode
+		B738DR_fo_exp_map_mode = 1
+		B738DR_fo_vsd_map_mode = 0
+	end
 	
 	
 end
@@ -17109,25 +17248,41 @@ end
 function B738_afs_protect()
 	if B738DR_autopilot_autothr_arm_pos == 1 then
 		if at_mode == 0 and ap_pitch_mode ~= 5 then
-			if simDR_airspeed_pilot > (B738DR_afs_spd_limit_max - 8) then
-				simDR_airspeed_dial_kts = B738DR_afs_spd_limit_max
-				at_mode = 2
+			if simDR_airspeed_is_mach == 0 then
+				if simDR_airspeed_pilot > (B738DR_afs_spd_limit_max - 8) then
+					if simDR_airspeed_dial_kts > B738DR_afs_spd_limit_max then
+						simDR_airspeed_dial_kts = B738DR_afs_spd_limit_max
+					end
+					at_mode = 2
+				end
 			end
 		elseif at_mode ~= 3 and at_mode ~= 4 and at_mode ~= 5 and at_mode ~= 8 and ap_pitch_mode ~= 5 then
-			if simDR_airspeed_pilot > (B738DR_afs_spd_limit_max - 5) and simDR_airspeed_dial_kts > B738DR_afs_spd_limit_max then
-				simDR_airspeed_dial_kts = B738DR_afs_spd_limit_max
+			if simDR_airspeed_is_mach == 0 then
+				if simDR_airspeed_pilot > (B738DR_afs_spd_limit_max - 5) and simDR_airspeed_dial_kts > B738DR_afs_spd_limit_max then
+					if simDR_airspeed_dial_kts > B738DR_afs_spd_limit_max then
+						simDR_airspeed_dial_kts = B738DR_afs_spd_limit_max
+					end
+				end
 			end
 		end
 		
 		if simDR_radio_height_pilot_ft > 400 then
 			if at_mode == 0 and ap_pitch_mode ~= 5 then
-				if simDR_airspeed_pilot < (B738DR_pfd_min_speed + 13) then
-					simDR_airspeed_dial_kts = B738DR_pfd_min_speed + 5
-					at_mode = 2
+				if simDR_airspeed_is_mach == 0 then
+					if simDR_airspeed_pilot < (B738DR_pfd_min_speed + 13) then
+						if simDR_airspeed_dial_kts < B738DR_pfd_min_speed then
+							simDR_airspeed_dial_kts = B738DR_pfd_min_speed + 5
+						end
+						at_mode = 2
+					end
 				end
 			elseif at_mode ~= 3 and at_mode ~= 4 and at_mode ~= 5 and at_mode ~= 8 and ap_pitch_mode ~= 5 then
-				if simDR_airspeed_pilot < (B738DR_pfd_min_speed + 8) and simDR_airspeed_dial_kts < (B738DR_pfd_min_speed + 4) then
-					simDR_airspeed_dial_kts = B738DR_pfd_min_speed + 4
+				if simDR_airspeed_is_mach == 0 then
+					if simDR_airspeed_pilot < (B738DR_pfd_min_speed + 8) and simDR_airspeed_dial_kts < (B738DR_pfd_min_speed + 4) then
+						if simDR_airspeed_dial_kts < B738DR_pfd_min_speed then
+							simDR_airspeed_dial_kts = B738DR_pfd_min_speed + 4
+						end
+					end
 				end
 			end
 		end
@@ -17466,6 +17621,14 @@ airspeed_dial_kts_old = 0
 B738DR_alt_hold_mem = 0
 altitude_mode_old = 0
 
+capt_exp_map_mode = 1
+fo_exp_map_mode = 1
+capt_vsd_map_mode = 0
+fo_vsd_map_mode = 0
+capt_exp_vor_app_mode = 1
+fo_exp_vor_app_mode = 1
+
+
 B738DR_kp = 9.0		--10.5
 B738DR_ki = 1.6		--1.8		--0.5
 B738DR_kd = 1.0		--1.3		--1.5		--1.2
@@ -17495,7 +17658,8 @@ end
 function after_physics()
 	
 	if B738DR_kill_glareshield == 0 then
-	
+		
+		B738_ctr_exp_mode()
 		B738_nav1_nav2_source()
 		alt_updn_timer()
 		crs1_updn_timer()
