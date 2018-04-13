@@ -1367,7 +1367,7 @@ ff_sample = 0
 	fuel_tc = 0
 	fuel_td = 0
 	
-
+	first_alt_restrict = 0
 	
 --*************************************************************************************--
 --** 				             FIND X-PLANE DATAREFS            			    	 **--
@@ -47034,7 +47034,8 @@ function B738_displ_acf()
 				B738DR_acf_x = nd_x
 				B738DR_acf_y = nd_y
 				if simDR_radio_height_pilot_ft > 50 then
-					B738DR_acf_rot = ndx_mag_hdg
+					--B738DR_acf_rot = ndx_mag_hdg
+					B738DR_acf_rot = ndx_ahars_mag_hdg
 				else
 					B738DR_acf_rot = ndx_ahars_mag_hdg
 				end
@@ -47142,7 +47143,8 @@ function B738_displ_acf()
 				B738DR_acf_x_fo = nd_x
 				B738DR_acf_y_fo = nd_y
 				if simDR_radio_height_pilot_ft > 50 then
-					B738DR_acf_rot_fo = ndx_mag_hdg
+					--B738DR_acf_rot_fo = ndx_mag_hdg
+					B738DR_acf_rot_fo = ndx_ahars_mag_hdg
 				else
 					B738DR_acf_rot_fo = ndx_ahars_mag_hdg
 				end
@@ -47600,11 +47602,11 @@ function B738_displ_wpt()
 								txt_white_eta = ""
 								txt_cyan_id = legs_data[n][1]
 								if legs_data[n][13] <= 0 then
-									tmp_wpt_eta = "--.--Z"
+									tmp_wpt_eta = "----Z"	--"--.--Z"
 								else
 									tmp_wpt_eta2 = math.floor(legs_data[n][13])
 									tmp_wpt_eta3 = (legs_data[n][13] - tmp_wpt_eta2) * 60
-									tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) .. "."
+									tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) --.. "."
 									tmp_wpt_eta = tmp_wpt_eta .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
 									tmp_wpt_eta = tmp_wpt_eta .. "Z"
 								end
@@ -47615,10 +47617,10 @@ function B738_displ_wpt()
 										tmp_wpt_alt = legs_data[n][5]
 										tmp_wpt_type = legs_data[n][6]
 										wpt_data = 1
-									elseif legs_data[n][11] > 0 then
-										tmp_wpt_alt = legs_data[n][11]
-										tmp_wpt_type = 32
-										wpt_data = 1
+									-- elseif legs_data[n][11] > 0 then
+										-- tmp_wpt_alt = legs_data[n][11]
+										-- tmp_wpt_type = 32
+										-- wpt_data = 1
 									end
 									if wpt_data == 1 then
 										if B738DR_flight_phase < 5 then
@@ -47639,9 +47641,11 @@ function B738_displ_wpt()
 										elseif tmp_wpt_type == 45 then	-- Below
 											txt_cyan_alt = txt_cyan_alt .. "B"
 										end
-										txt_cyan_eta = tmp_wpt_eta		--"--.--Z"
+										txt_cyan_eta = tmp_wpt_eta
 									else
-										txt_cyan_alt = ""
+										-- txt_cyan_alt = ""
+										-- txt_cyan_eta = ""
+										txt_cyan_alt = tmp_wpt_eta
 										txt_cyan_eta = ""
 									end
 								else
@@ -47660,11 +47664,11 @@ function B738_displ_wpt()
 								txt_cyan_eta = ""
 								txt_white_id = legs_data[n][1]
 								if legs_data[n][13] <= 0 then
-									tmp_wpt_eta = "--.--Z"
+									tmp_wpt_eta = "----Z"	--"--.--Z"
 								else
 									tmp_wpt_eta2 = math.floor(legs_data[n][13])
 									tmp_wpt_eta3 = (legs_data[n][13] - tmp_wpt_eta2) * 60
-									tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) .. "."
+									tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) --.. "."
 									tmp_wpt_eta = tmp_wpt_eta .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
 									tmp_wpt_eta = tmp_wpt_eta .. "Z"
 								end
@@ -47674,10 +47678,10 @@ function B738_displ_wpt()
 										tmp_wpt_alt = legs_data[n][5]
 										tmp_wpt_type = legs_data[n][6]
 										wpt_data = 1
-									elseif legs_data[n][11] > 0 then
-										tmp_wpt_alt = legs_data[n][11]
-										tmp_wpt_type = 32
-										wpt_data = 1
+									-- elseif legs_data[n][11] > 0 then
+										-- tmp_wpt_alt = legs_data[n][11]
+										-- tmp_wpt_type = 32
+										-- wpt_data = 1
 									end
 									
 									if wpt_data == 1 then
@@ -47701,8 +47705,10 @@ function B738_displ_wpt()
 										end
 										txt_white_eta = tmp_wpt_eta		--"--.--Z"
 									else
-										txt_white_alt = ""
-										txt_white_eta = ""
+										-- txt_white_alt = ""
+										-- txt_white_eta = ""
+										txt_white_alt = tmp_wpt_eta
+										tmp_wpt_eta = ""
 									end
 								else
 									txt_white_alt = ""
@@ -49278,11 +49284,11 @@ function B738_displ_wpt()
 								txt_white_eta = ""
 								txt_cyan_id = legs_data[n][1]
 								if legs_data[n][13] <= 0 then
-									tmp_wpt_eta = "--.--Z"
+									tmp_wpt_eta = "----Z"	--"--.--Z"
 								else
 									tmp_wpt_eta2 = math.floor(legs_data[n][13])
 									tmp_wpt_eta3 = (legs_data[n][13] - tmp_wpt_eta2) * 60
-									tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) .. "."
+									tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) --.. "."
 									tmp_wpt_eta = tmp_wpt_eta .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
 									tmp_wpt_eta = tmp_wpt_eta .. "Z"
 								end
@@ -49293,10 +49299,10 @@ function B738_displ_wpt()
 										tmp_wpt_alt = legs_data[n][5]
 										tmp_wpt_type = legs_data[n][6]
 										wpt_data = 1
-									elseif legs_data[n][11] > 0 then
-										tmp_wpt_alt = legs_data[n][11]
-										tmp_wpt_type = 32
-										wpt_data = 1
+									-- elseif legs_data[n][11] > 0 then
+										-- tmp_wpt_alt = legs_data[n][11]
+										-- tmp_wpt_type = 32
+										-- wpt_data = 1
 									end
 									if wpt_data == 1 then
 										if B738DR_flight_phase < 5 then
@@ -49319,7 +49325,9 @@ function B738_displ_wpt()
 										end
 										txt_cyan_eta = tmp_wpt_eta		--"--.--Z"
 									else
-										txt_cyan_alt = ""
+										-- txt_cyan_alt = ""
+										-- txt_cyan_eta = ""
+										txt_cyan_alt = tmp_wpt_eta
 										txt_cyan_eta = ""
 									end
 								else
@@ -49338,11 +49346,11 @@ function B738_displ_wpt()
 								txt_cyan_eta = ""
 								txt_white_id = legs_data[n][1]
 								if legs_data[n][13] <= 0 then
-									tmp_wpt_eta = "--.--Z"
+									tmp_wpt_eta = "----Z"	--"--.--Z"
 								else
 									tmp_wpt_eta2 = math.floor(legs_data[n][13])
 									tmp_wpt_eta3 = (legs_data[n][13] - tmp_wpt_eta2) * 60
-									tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) .. "."
+									tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) --.. "."
 									tmp_wpt_eta = tmp_wpt_eta .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
 									tmp_wpt_eta = tmp_wpt_eta .. "Z"
 								end
@@ -49352,10 +49360,10 @@ function B738_displ_wpt()
 										tmp_wpt_alt = legs_data[n][5]
 										tmp_wpt_type = legs_data[n][6]
 										wpt_data = 1
-									elseif legs_data[n][11] > 0 then
-										tmp_wpt_alt = legs_data[n][11]
-										tmp_wpt_type = 32
-										wpt_data = 1
+									-- elseif legs_data[n][11] > 0 then
+										-- tmp_wpt_alt = legs_data[n][11]
+										-- tmp_wpt_type = 32
+										-- wpt_data = 1
 									end
 									
 									if wpt_data == 1 then
@@ -49379,7 +49387,9 @@ function B738_displ_wpt()
 										end
 										txt_white_eta = tmp_wpt_eta		--"--.--Z"
 									else
-										txt_white_alt = ""
+										-- txt_white_alt = ""
+										-- txt_white_eta = ""
+										txt_white_alt = tmp_wpt_eta
 										txt_white_eta = ""
 									end
 								else
@@ -51321,6 +51331,7 @@ function B738_vnav_calc()
 			
 			td_idx = 0
 			
+			first_alt_restrict = 0
 			-- find E/D
 			ed_found = 0
 			discon = 0
@@ -51918,7 +51929,7 @@ function B738_vnav_calc()
 									----------------------------------
 									if B738DR_fms_test == 4 and ed_fix_num == B738DR_fms_test3 then
 										dump_leg_mod()
-										B738DR_fms_test3 = first_restrict
+										--B738DR_fms_test3 = first_restrict
 										--B738DR_fms_test = 0
 									end
 									----------------------------------
@@ -52359,6 +52370,9 @@ function B738_vnav_calc()
 								legs_data[ii][38] = crz_wind_dir .. "`/" .. crz_wind_spd
 							end
 						end
+					end
+					if first_alt_restrict == 0 and legs_data[ii][5] > 0 then
+						first_alt_restrict = ii
 					end
 				end
 			end
@@ -61892,12 +61906,14 @@ function B738_fmc_calc()
 				end
 				if simDR_fmc_trk_turn2 == 2 then
 					-- left
-					if relative_brg >= -5 and relative_brg < 90 then
+					--if relative_brg >= -5 and relative_brg < 90 then
+					if relative_brg >= -35 then
 						B738DR_hold_phase = 2
 					end
 				else
 					-- right
-					if relative_brg <= 5 and relative_brg > -90 then
+					--if relative_brg <= -5 and relative_brg > 90 then
+					if relative_brg <= 35 then
 						B738DR_hold_phase = 2
 					end
 				end
@@ -62026,12 +62042,14 @@ function B738_fmc_calc()
 				end
 				if simDR_fmc_trk_turn2 == 2 then
 					-- left
-					if relative_brg >= -5 and relative_brg < 90 then
+					--if relative_brg >= -5 and relative_brg < 90 then
+					if relative_brg >= -35 then
 						B738DR_hold_phase = 0
 					end
 				else
 					-- right
-					if relative_brg <= 5 and relative_brg > -90 then
+					--if relative_brg <= 5 and relative_brg > -90 then
+					if relative_brg <= 35 then
 						B738DR_hold_phase = 0
 					end
 				end
@@ -62083,6 +62101,7 @@ function B738_fmc_calc()
 			-- nd_hdg = math.deg(nd_hdg)
 			-- nd_hdg = (nd_hdg + 360) % 360
 			
+			nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 			nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
 			
 			true_brg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
@@ -62224,6 +62243,7 @@ function B738_fmc_calc()
 			-- nd_hdg = math.deg(nd_hdg)
 			-- nd_hdg = (nd_hdg + 360) % 360
 			
+			nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 			nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
 			
 			true_brg = (simDR_fmc_trk + simDR_mag_variation + 360) % 360
@@ -62291,12 +62311,14 @@ function B738_fmc_calc()
 			end
 			if radii_turn_dir == 2 then
 				-- left
-				if relative_brg >= -9 then
+				--if relative_brg >= -9 then
+				if relative_brg >= -15 then
 					nav_mode = 0
 				end
 			else
 				-- right
-				if relative_brg <= 9 then
+				--if relative_brg <= 9 then
+				if relative_brg <= 15 then
 					nav_mode = 0
 				end
 			end
@@ -63089,12 +63111,15 @@ function B738_vnav_desc_spd()
 	local vnav_desc_spd_disable = 0
 	
 	if B738DR_autopilot_vnav_status == 1 then
-		if legs_num > 0 and offset > 0 and  offset < (legs_num + 1) then
-			if legs_data[offset][9] == des_app
-			or legs_data[offset][9] == des_app_tns
+		if legs_num > 0 and offset > 1 and offset < (legs_num + 1) then
+			if legs_data[offset-1][9] == des_app
+			or legs_data[offset-1][9] == des_app_tns
 			or offset > ed_found then
 				vnav_desc_spd_disable = 1
 			end
+		end
+		if first_alt_restrict ~= 0 and offset > first_alt_restrict then
+			vnav_desc_spd_disable = 1
 		end
 		if simDR_flaps_ratio > 0 then
 			vnav_desc_spd_disable = 1
@@ -64634,9 +64659,10 @@ temp_ils4 = ""
 	ndx_mag_hdg = simDR_mag_hdg
 	ndx_ahars_mag_hdg = simDR_ahars_mag_hdg
 	precalc_done = 0
+	first_alt_restrict = 0
 	
 	entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.25w"
+	version = "v3.25y"
 
 end
 

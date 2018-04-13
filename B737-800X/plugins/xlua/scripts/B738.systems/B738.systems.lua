@@ -950,6 +950,7 @@ simDR_adf1_brg					= find_dataref("sim/cockpit2/radios/indicators/adf1_relative_
 simDR_adf2_brg					= find_dataref("sim/cockpit2/radios/indicators/adf2_relative_bearing_deg")
 
 simDR_throttle_used_ratio		= find_dataref("sim/flightmodel2/engines/throttle_used_ratio")
+B738DR_speed_mode				= find_dataref("laminar/B738/autopilot/speed_mode")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
@@ -9806,11 +9807,10 @@ function B738_gpws()
 					gpws_minimum = 0
 				end
 			end
-			
 				
 			-- MODE 3
-			if B738DR_flight_phase > 7 then
-				if B738DR_thrust1_leveler > 0.7 or B738DR_thrust2_leveler > 0.7 then
+			if B738DR_flight_phase >= 6 then
+				if B738DR_speed_mode == 4 or B738DR_speed_mode == 5 or B738DR_speed_mode == 8 then
 					gpws_goaround = 1	-- activated Go around
 				end
 			else

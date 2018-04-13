@@ -77,6 +77,13 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.25y:
+------
+- tuned A/T code
+- tuned A/P
+- small graphics correction
+- fixed bugs (holding pattern,...)
+
 3.25x:
 ------
 - tuned A/T code

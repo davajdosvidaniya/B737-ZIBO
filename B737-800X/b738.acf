@@ -155,10 +155,10 @@ P _gear/0/_latN 0.0
 P _gear/0/_latR 0.0
 P _gear/0/_leg_len 4.300000191
 P _gear/0/_lonE 0.0
-P _gear/0/_lonN 63.665382385
+P _gear/0/_lonN 0.0
 P _gear/0/_lonR 111.0
 P _gear/0/_scon 112094.945312500
-P _gear/0/_stat_def 0.105244748
+P _gear/0/_stat_def 0.105244756
 P _gear/0/_steerdeg_hispeed 6.0
 P _gear/0/_steerdeg_lospeed 63.0
 P _gear/0/_strut_comp 0.0
@@ -169,7 +169,7 @@ P _gear/0/_strut_t2 0.336608171
 P _gear/0/_tire_radius 1.139999986
 P _gear/0/_tire_swidth 0.850000024
 P _gear/1/_axiE 0.0
-P _gear/1/_axiN 4.014934063
+P _gear/1/_axiN 0.0
 P _gear/1/_axiR 7.0
 P _gear/1/_cyc_time 9.600000381
 P _gear/1/_damp 18500.0
@@ -185,14 +185,14 @@ P _gear/1/_gear_x -9.350000381
 P _gear/1/_gear_y -2.640000105
 P _gear/1/_gear_z 64.080001831
 P _gear/1/_latE 0.0
-P _gear/1/_latN 45.311397552
+P _gear/1/_latN 0.0
 P _gear/1/_latR 79.0
 P _gear/1/_leg_len 6.800000191
 P _gear/1/_lonE -4.0
-P _gear/1/_lonN -1.705752015
+P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 112094.945312500
-P _gear/1/_stat_def 0.724415541
+P _gear/1/_stat_def 0.724415839
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -203,7 +203,7 @@ P _gear/1/_strut_t2 0.338203460
 P _gear/1/_tire_radius 1.850000024
 P _gear/1/_tire_swidth 0.689999998
 P _gear/2/_axiE 0.0
-P _gear/2/_axiN -4.014934063
+P _gear/2/_axiN 0.0
 P _gear/2/_axiR -7.0
 P _gear/2/_cyc_time 9.0
 P _gear/2/_damp 18500.0
@@ -219,14 +219,14 @@ P _gear/2/_gear_x 9.350000381
 P _gear/2/_gear_y -2.640000105
 P _gear/2/_gear_z 64.080001831
 P _gear/2/_latE 0.0
-P _gear/2/_latN -45.311397552
+P _gear/2/_latN 0.0
 P _gear/2/_latR -79.0
 P _gear/2/_leg_len 6.800000191
 P _gear/2/_lonE -4.0
-P _gear/2/_lonN -1.705752015
+P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 112094.945312500
-P _gear/2/_stat_def 0.724415541
+P _gear/2/_stat_def 0.724415839
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -38711,7 +38711,7 @@ P acf/_cyclic_lf_trim_rat 0.250000000
 P acf/_cyclic_rt_trim_rat 0.250000000
 P acf/_cyclic_up_trim_rat 0.500000000
 P acf/_deg_psi_per_deg_def 8.0
-P acf/_deg_the_per_deg_def 7.0
+P acf/_deg_the_per_deg_def 6.0
 P acf/_delta3 0.0
 P acf/_descrip Boeing 737-800X
 P acf/_diff_coll_with_hdng 0.0
@@ -39482,7 +39482,7 @@ P acf/_oilT_is_C 1
 P acf/_ott_asi_kts_off_for_full_def 47.0
 P acf/_ott_asi_sec_into_future 15.0
 P acf/_ott_asi_thro_per_sec 0.079999998
-P acf/_ott_gls_sec_into_future 15.0
+P acf/_ott_gls_sec_into_future 10.0
 P acf/_ott_phi_deg_off_for_full_def 34.0
 P acf/_ott_phi_sec_into_future 2.0
 P acf/_ott_phi_sec_to_tune 2.0
