@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.252:
+------
+- fixed bugs (VNAV descent, FO FMC ...)
+- graphics correction
+
 3.251:
 -----
 - First Officer FMC working

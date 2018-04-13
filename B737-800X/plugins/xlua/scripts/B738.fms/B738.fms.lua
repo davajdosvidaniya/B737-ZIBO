@@ -5491,15 +5491,19 @@ function via_via_check()
 	end
 end
 
-function via_via_add()
+function via_via_add(entry_in, mode_in)
 	
 	local idx_tmp = 0
 	local idx_tmp2 = 0
 	
 	via_via_ok = 0
 	
-	if find_via_via(fpln_data2[fpln_num2-1][1], fpln_data2[fpln_num2-1][3], fpln_data2[fpln_num2][2], entry) == 0 then
-		entry = ">INVALID ENTRY"
+	if find_via_via(fpln_data2[fpln_num2-1][1], fpln_data2[fpln_num2-1][3], fpln_data2[fpln_num2][2], entry_in) == 0 then
+		if mode_in == 0 then
+			entry = ">INVALID ENTRY"
+		else
+			entry2 = ">INVALID ENTRY"
+		end
 	else
 		--entry = tostring(awy_path_num)
 		--dump_awy2()
@@ -5511,10 +5515,14 @@ function via_via_add()
 		idx_tmp2 = fpln_data2[fpln_num2][4]
 		fpln_add_leg_dir2(idx_tmp, idx_tmp2, fpln_data2[fpln_num2][2])
 		
-		via_via_entry = entry
+		via_via_entry = entry_in
 		via_via_ok = 1
 		
-		entry = ""
+		if mode_in == 0 then
+			entry = ""
+		else
+			entry2 = ""
+		end
 		
 		if legs_num > 1 then
 			rte_exec = 1
@@ -5884,21 +5892,25 @@ function find_via_viax(awy_from, awy_from_rc, awy1, awy2)
 end
 
 
-function via_add(awy_from2, awy_from_rc2)
+function via_add(awy_from2, awy_from_rc2, entry_in, mode_in)
 	
 	-- check via
-	if find_awy(awy_from2, awy_from_rc2, entry) == 0 then
-		entry = ">INVALID ENTRY"
+	if find_awy(awy_from2, awy_from_rc2, entry_in) == 0 then
+		entry_in = ">INVALID ENTRY"
 	else
 		-- add fpln -> via
 		fpln_num2 = fpln_num2 + 1
 		fpln_data2[fpln_num2] = {}
 		fpln_data2[fpln_num2][1] = ""
-		fpln_data2[fpln_num2][2] = entry
+		fpln_data2[fpln_num2][2] = entry_in
 		fpln_data2[fpln_num2][3] = ""
 		fpln_data2[fpln_num2][4] = 1	--legs_data_idx
 		fpln_data2[fpln_num2][5] = 0	-- num_legs_data
-		entry = ""
+		if mode_in == 0 then
+			entry = ""
+		else
+			entry2 = ""
+		end
 		
 		if legs_num > 1 then
 			rte_exec = 1
@@ -5907,22 +5919,30 @@ function via_add(awy_from2, awy_from_rc2)
 	
 end
 
-function via_chg(awy_from2, awy_from_rc2, via_id)
+function via_chg(awy_from2, awy_from_rc2, via_id, entry_in, mode_in)
 	
 	local idx_tmp = 0
 	local idx_tmp2 = 0
 	
 	-- check via
-	if find_awy(awy_from2, awy_from_rc2, entry) == 0 then
-		entry = ">INVALID ENTRY"
+	if find_awy(awy_from2, awy_from_rc2, entry_in) == 0 then
+		if mode_in == 0 then
+			entry = ">INVALID ENTRY"
+		else
+			entry2 = ">INVALID ENTRY"
+		end
 	else
 		if fpln_data2[via_id][1] == "" then
-			fpln_data2[via_id][2] = entry
+			fpln_data2[via_id][2] = entry_in
 			idx_tmp = fpln_data2[via_id-1][4] + fpln_data2[via_id-1][5]
-			legs_data2[idx_tmp][9] = entry
+			legs_data2[idx_tmp][9] = entry_in
 		else
-			if find_awy_path(awy_from2, awy_from_rc2, fpln_data2[via_id][1], fpln_data2[via_id][3], entry) == 0 then
-				entry = ">INVALID ENTRY"
+			if find_awy_path(awy_from2, awy_from_rc2, fpln_data2[via_id][1], fpln_data2[via_id][3], entry_in) == 0 then
+				if mode_in == 0 then
+					entry = ">INVALID ENTRY"
+				else
+					entry2 = ">INVALID ENTRY"
+				end
 			else
 				if via_id == 1 then
 					fpln_data2[via_id][4] = 2	--legs_data_idx
@@ -5936,12 +5956,15 @@ function via_chg(awy_from2, awy_from_rc2, via_id)
 				
 				-- add airways waypoints
 				idx_tmp2 = fpln_data2[via_id][4]
-				fpln_add_leg_dir2(idx_tmp, idx_tmp2, entry)
+				fpln_add_leg_dir2(idx_tmp, idx_tmp2, entry_in)
 			end
 		end
 		--dump_leg()
-		
-		entry = ""
+		if mode_in == 0 then
+			entry = ""
+		else
+			entry2 = ""
+		end
 		
 		if legs_num > 1 then
 			rte_exec = 1
@@ -5951,7 +5974,7 @@ function via_chg(awy_from2, awy_from_rc2, via_id)
 end
 
 
-function dir_via_add(awy_from2, awy_from_rc2, awy_to2, awy_to_rc2, via2, via_idx)
+function dir_via_add(awy_from2, awy_from_rc2, awy_to2, awy_to_rc2, via2, via_idx, entry_in, mode_in)
 	
 	local idx_tmp = 0
 	local idx_tmp2 = 0
@@ -5963,7 +5986,7 @@ function dir_via_add(awy_from2, awy_from_rc2, awy_to2, awy_to_rc2, via2, via_idx
 	if via2 == "" then
 		-- check navaid
 		-- nav mode => distance from 0-PPOS, 1-REF ICAO, 2-DES ICAO
-		find_navaid(entry, "", 0, "")
+		find_navaid(entry_in, "", 0, "")
 		if navaid_list_n == 0 then
 			-- fmc_message_num = fmc_message_num + 1
 			-- fmc_message[fmc_message_num] = NOT_IN_DATABASE
@@ -6009,7 +6032,11 @@ function dir_via_add(awy_from2, awy_from_rc2, awy_to2, awy_to_rc2, via2, via_idx
 			-- add legs direct waypoint
 			fpln_add_leg_dir(idx_tmp, idx_tmp2, "DIRECT", 1)
 			
-			entry = ""
+			if mode_in == 0 then
+				entry = ""
+			else
+				entry2 = ""
+			end
 			if legs_num > 1 then
 				rte_exec = 1
 			end
@@ -6020,10 +6047,14 @@ function dir_via_add(awy_from2, awy_from_rc2, awy_to2, awy_to_rc2, via2, via_idx
 			page_rte_init = 0
 			act_page_old = act_page
 			act_page = 1
-			entry = ""
+			if mode_in == 0 then
+				entry = ""
+			else
+				entry2 = ""
+			end
 		end
 	elseif via2 == "DIRECT" then
-		find_navaid(entry, "", 0, "")
+		find_navaid(entry_in, "", 0, "")
 		if navaid_list_n == 0 then
 			-- fmc_message_num = fmc_message_num + 1
 			-- fmc_message[fmc_message_num] = NOT_IN_DATABASE
@@ -6047,7 +6078,11 @@ function dir_via_add(awy_from2, awy_from_rc2, awy_to2, awy_to_rc2, via2, via_idx
 			-- change legs direct waypoint
 			fpln_add_leg_dir(idx_tmp, idx_tmp2, "DIRECT", 1)
 			
-			entry = ""
+			if mode_in == 0 then
+				entry = ""
+			else
+				entry2 = ""
+			end
 			if legs_num > 1 then
 				rte_exec = 1
 			end
@@ -6058,14 +6093,22 @@ function dir_via_add(awy_from2, awy_from_rc2, awy_to2, awy_to_rc2, via2, via_idx
 			page_rte_init = 0
 			act_page_old = act_page
 			act_page = 1
-			entry = ""
+			if mode_in == 0 then
+				entry = ""
+			else
+				entry2 = ""
+			end
 			dir_change = 1
 		end
 	else
 		-- add fpln -> via navaid
 		find_awy(awy_from2, awy_from_rc2, via2)
 		if find_awy_path(awy_from2, awy_from_rc2, awy_to2, awy_to_rc2, via2) == 0 then
-			entry = ">INVALID ENTRY"
+			if mode_in == 0 then
+				entry = ">INVALID ENTRY"
+			else
+				entry2 = ">INVALID ENTRY"
+			end
 		else
 			fpln_data2[via_idx][1] = awy_path[awy_path_num][1]	--entry
 			fpln_data2[via_idx][3] = awy_path[awy_path_num][2]	--reg_code
@@ -6084,7 +6127,11 @@ function dir_via_add(awy_from2, awy_from_rc2, awy_to2, awy_to_rc2, via2, via_idx
 			idx_tmp2 = fpln_data2[via_idx][4]
 			fpln_add_leg_dir2(idx_tmp, idx_tmp2, via2)
 			
-			entry = ""
+			if mode_in == 0 then
+				entry = ""
+			else
+				entry2 = ""
+			end
 			if legs_num > 1 then
 				rte_exec = 1
 			end
@@ -6093,7 +6140,7 @@ function dir_via_add(awy_from2, awy_from_rc2, awy_to2, awy_to_rc2, via2, via_idx
 	
 end
 
-function dir_add(awy_idx)
+function dir_add(awy_idx, entry_in, mode_in)
 	
 	local idx_tmp = 0
 	local idx_tmp2 = 0
@@ -6169,7 +6216,11 @@ function dir_add(awy_idx)
 		fpln_add_leg_dir(idx_tmp, idx_tmp2, "DIRECT", awy_idx)
 	end
 	
-	entry = ""
+	if mode_in == 0 then
+		entry = ""
+	else
+		entry2 = ""
+	end
 	if legs_num > 1 then
 		rte_exec = 1
 	end
@@ -6181,7 +6232,7 @@ function dir_add(awy_idx)
 end
 
 
-function del_via(via_id)
+function del_via(via_id, mode_in)
 	
 	local idx_tmp = 0
 	local idx_tmp2 = 0
@@ -6208,7 +6259,11 @@ function del_via(via_id)
 		end
 	end
 	
-	entry = ""
+	if mode_in == 0 then
+		entry = ""
+	else
+		entry2 = ""
+	end
 	
 end
 
@@ -6480,15 +6535,15 @@ end
 
 
 
-function del_fpln(via_id)
+-- function del_fpln(via_id, entry_in)
 	
-	fpln_num2 = via_id - 1
-	entry = ""
-	if legs_num > 1 then
-		rte_exec = 1
-	end
+	-- fpln_num2 = via_id - 1
+	-- entry_in = ""
+	-- if legs_num > 1 then
+		-- rte_exec = 1
+	-- end
 	
-end
+-- end
 
 
 function copy_fpln(fpln_idx)
@@ -13509,15 +13564,15 @@ function rte_add_wpt2(wpt_idx)
 	
 end
 
-function rte_add_wpt(aaa)
+function rte_add_wpt(aaa, entry_in, mode_in)
 
 	local ii = aaa + 1
 	local jj = legs_num2 + 1
 	
 	-- add WPT
-	if legs_data2[aaa][1] ~= entry and legs_data2[aaa-1][1] ~= entry then
+	if legs_data2[aaa][1] ~= entry_in and legs_data2[aaa-1][1] ~= entry_in then
 	
-		find_navaid(entry, "", 0, "")
+		find_navaid(entry_in, "", 0, "")
 		if navaid_list_n > 0 then
 		
 			
@@ -13610,14 +13665,17 @@ function rte_add_wpt(aaa)
 			add_fmc_msg(NOT_IN_DATABASE, 1)
 		end
 	end
-	entry = ""
-	
+	if mode_in == 0 then
+		entry = ""
+	else
+		entry2 = ""
+	end
 
 end
 
 
 -- add SEA330/10
-function rte_add_wpt3(aaa, id_nav, id_brg, id_dist)
+function rte_add_wpt3(aaa, id_nav, id_brg, id_dist, entry_in, mode_in)
 
 	local ii = aaa + 1
 	local jj = legs_num2 + 1
@@ -13653,11 +13711,11 @@ function rte_add_wpt3(aaa, id_nav, id_brg, id_dist)
 				ll = 1
 			end
 	else
-		aa,bb = string.find(entry, "/")
-		aa_str = string.sub(entry, 1, aa-1)
+		aa,bb = string.find(entry_in, "/")
+		aa_str = string.sub(entry_in, 1, aa-1)
 		if aa_str == legs_data2[item_sel][1] then
 			id_nav = "WPT" --aa_str
-			along_dist = tonumber(string.sub(entry, aa+1, -1))	-- distance
+			along_dist = tonumber(string.sub(entry_in, aa+1, -1))	-- distance
 			if along_dist == nil then
 				ll = 1
 			else
@@ -13855,7 +13913,11 @@ function rte_add_wpt3(aaa, id_nav, id_brg, id_dist)
 			-- fmc_message[fmc_message_num] = NOT_IN_DATABASE
 			add_fmc_msg(NOT_IN_DATABASE, 1)
 		end
-		entry = ""
+		if mode_in == 0 then
+			entry = ""
+		else
+			entry2 = ""
+		end
 	else
 		--add_fmc_msg(INVALID_INPUT, 1)
 		add_fmc_msg(INVALID_INPUT, 1)
@@ -13969,7 +14031,7 @@ function rte_add_wpt4(wpt_idx)
 	
 end
 
-function rte_add_wpt_cust(aaa, id_cust, lat_cust, lon_cust)
+function rte_add_wpt_cust(aaa, id_cust, lat_cust, lon_cust, entry_in, mode_in)
 
 	local ii = aaa + 1
 	local jj = legs_num2 + 1
@@ -14101,26 +14163,12 @@ function rte_add_wpt_cust(aaa, id_cust, lat_cust, lon_cust)
 				rte_paste(ii)
 				legs_delete = 1
 				calc_rte_enable2 = 1
-			
-			-- else
-				-- page_sel_wpt3 = 1
-				-- page_legs = 0
-				-- act_page_old = act_page
-				-- act_page = 1
-				-- wpt_id_nav_tmp = id_nav
-				-- wpt_id_brg_tmp = id_brg
-				-- wpt_id_dist_tmp = id_dist
-			-- end
-			
-		-- else
-			-- -- fmc_message_num = fmc_message_num + 1
-			-- -- fmc_message[fmc_message_num] = NOT_IN_DATABASE
-			-- add_fmc_msg(NOT_IN_DATABASE)
-		-- end
-		entry = ""
-	-- else
-		-- add_fmc_msg(INVALID_INPUT, 1)
-	-- end
+		
+		if mode_in == 0 then
+			entry = ""
+		else
+			entry2 = ""
+		end
 	
 end
 
@@ -21411,20 +21459,20 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if item > 1 then
 					if entry == ">DELETE" then
-						del_via(item)
+						del_via(item, 0)
 					else
 						if item == tmp_tmp then
 							if fpln_data2[fpln_num2][1] == "" and fpln_data2[fpln_num2][2] ~= "" then
 								-- add new via via
-								via_via_add()
+								via_via_add(entry, 0)
 							elseif fpln_data2[fpln_num2][1] ~= "" then
 								-- add new via
-								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3])
+								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3], entry, 0)
 							end
 							item_sel_via = 0
 						elseif item <= fpln_num2 then --and fpln_num2 > 1 then
 							-- change via
-							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item)
+							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item, entry, 0)
 							item_sel_via = 0
 						end
 					end
@@ -21464,7 +21512,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 			item = (act_page - 1) * 5 + button
 			if item <= navaid_list_n then
 				-- select item
-				dir_add(item)
+				dir_add(item, entry, 0)
 			end
 		elseif page_sel_wpt3 == 1 then
 			
@@ -21641,14 +21689,14 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					if string.len(entry) > 1 and string.len(entry) < 6 and item_sel == 0 then
 						if wpt_lat_lon(entry) == true then
 							legs_data2[item][31] = "TF"
-							rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+							rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
 						else
 						-- add waypoint last
-							rte_add_wpt(item)
+							rte_add_wpt(item, entry, 0)
 						end
 						item_sel = 0
 					elseif jj ~= nil then
-						rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1))
+						rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 						item_sel = 0
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
@@ -21687,13 +21735,13 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
 							-- add waypoint
-							rte_add_wpt(item)
+							rte_add_wpt(item, entry, 0)
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry, 0)
 					end
 					if act_page == 1 then
 						legs_intdir = 1
@@ -21713,11 +21761,11 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					end
 					item_sel = 0
 				elseif jj ~= nil then
-					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1))
+					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					item_sel = 0
 				elseif wpt_lat_lon(entry) == true and item_sel == 0 then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
 						if act_page == 1 then
 							legs_intdir = 1
 							legs_intdir_idx = item
@@ -22893,7 +22941,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 			item = (act_page - 1) * 5 + button
 			if item <= navaid_list_n then
 				-- select item
-				dir_add(item)
+				dir_add(item, entry, 0)
 			end
 		elseif page_sel_wpt3 == 1 then
 			
@@ -23056,12 +23104,12 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 				if item == tmp_tmp then
 					if wpt_lat_lon(entry) == true then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
 					elseif jj ~= nil then
-						rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1))
+						rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					elseif item_sel == 0 then
 						-- add waypoint last
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry, 0)
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
@@ -23097,21 +23145,21 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
 							-- add waypoint
-							rte_add_wpt(item)
+							rte_add_wpt(item, entry, 0)
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry, 0)
 					end
 					item_sel = 0
 				elseif jj ~= nil then
-					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1))
+					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					item_sel = 0
 				elseif wpt_lat_lon(entry) == true and item_sel == 0 then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
 				elseif item_sel == 0 then
 					if string.len(entry) == 0 then
 						if offset_act == 3 then
@@ -23266,20 +23314,20 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if entry == ">DELETE" then
-						del_via(item)
+						del_via(item, 0)
 					else
 						if item == tmp_tmp then
 							if fpln_data2[fpln_num2][1] == "" and fpln_data2[fpln_num2][2] ~= "" then
 								-- add new via via
-								via_via_add()
+								via_via_add(entry, 0)
 							elseif fpln_data2[fpln_num2][1] ~= "" then
 								-- add new via
-								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3])
+								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3], entry, 0)
 							end
 							item_sel_via = 0
 						elseif item <= fpln_num2 and fpln_num2 > 1 then
 							-- change via
-							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item)
+							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item, entry, 0)
 							item_sel_via = 0
 						end
 					end
@@ -24026,7 +24074,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 			item = (act_page - 1) * 5 + button
 			if item <= navaid_list_n then
 				-- select item
-				dir_add(item)
+				dir_add(item, entry, 0)
 			end
 		elseif page_sel_wpt3 == 1 then
 			
@@ -24272,20 +24320,20 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if entry == ">DELETE" then
-						del_via(item)
+						del_via(item, 0)
 					else
 						if item == tmp_tmp then
 							if fpln_data2[fpln_num2][1] == "" and fpln_data2[fpln_num2][2] ~= "" then
 								-- add new via via
-								via_via_add()
+								via_via_add(entry, 0)
 							elseif fpln_data2[fpln_num2][1] ~= "" then
 								-- add new via
-								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3])
+								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3], entry, 0)
 							end
 							item_sel_via = 0
 						elseif item <= fpln_num2 and fpln_num2 > 1 then
 							-- change via
-							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item)
+							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item, entry, 0)
 							item_sel_via = 0
 						end
 					end
@@ -24383,12 +24431,12 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 				if item == tmp_tmp then
 					if wpt_lat_lon(entry) == true then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
 					elseif jj ~= nil then
-						rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1))
+						rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					elseif item_sel == 0 then
 						-- add waypoint last
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry, 0)
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
@@ -24424,21 +24472,21 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
 							-- add waypoint
-							rte_add_wpt(item)
+							rte_add_wpt(item, entry, 0)
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry, 0)
 					end
 					item_sel = 0
 				elseif jj ~= nil then
-					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1))
+					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					item_sel = 0
 				elseif wpt_lat_lon(entry) == true and item_sel == 0 then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
 				elseif item_sel == 0 then
 					if string.len(entry) == 0 then
 						if offset_act == 3 then
@@ -25045,7 +25093,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 			item = (act_page - 1) * 5 + button
 			if item <= navaid_list_n then
 				-- select item
-				dir_add(item)
+				dir_add(item, entry, 0)
 			end
 		elseif page_sel_wpt3 == 1 then
 			
@@ -25094,20 +25142,20 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if entry == ">DELETE" then
-						del_via(item)
+						del_via(item, 0)
 					else
 						if item == tmp_tmp then
 							if fpln_data2[fpln_num2][1] == "" and fpln_data2[fpln_num2][2] ~= "" then
 								-- add new via via
-								via_via_add()
+								via_via_add(entry, 0)
 							elseif fpln_data2[fpln_num2][1] ~= "" then
 								-- add new via
-								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3])
+								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3], entry, 0)
 							end
 							item_sel_via = 0
 						elseif item <= fpln_num2 and fpln_num2 > 1 then
 							-- change via
-							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item)
+							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item, entry, 0)
 							item_sel_via = 0
 						end
 					end
@@ -25316,12 +25364,12 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 				if item == tmp_tmp then
 					if wpt_lat_lon(entry) == true then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
 					elseif jj ~= nil then
-						rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1))
+						rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					elseif item_sel == 0 then
 						-- add waypoint last
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry, 0)
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
@@ -25357,21 +25405,21 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
 							-- add waypoint
-							rte_add_wpt(item)
+							rte_add_wpt(item, entry, 0)
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry, 0)
 					end
 					item_sel = 0
 				elseif jj ~= nil then
-					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1))
+					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					item_sel = 0
 				elseif wpt_lat_lon(entry) == true and item_sel == 0 then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
 				elseif item_sel == 0 then
 					if string.len(entry) == 0 then
 						if offset_act == 3 then
@@ -25943,7 +25991,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 			item = (act_page - 1) * 5 + button
 			if item <= navaid_list_n then
 				-- select item
-				dir_add(item)
+				dir_add(item, entry, 0)
 			end
 		elseif page_sel_wpt3 == 1 then
 			
@@ -25993,20 +26041,20 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if entry == ">DELETE" then
-						del_via(item)
+						del_via(item, 0)
 					else
 						if item == tmp_tmp then
 							if fpln_data2[fpln_num2][1] == "" and fpln_data2[fpln_num2][2] ~= "" then
 								-- add new via via
-								via_via_add()
+								via_via_add(entry, 0)
 							elseif fpln_data2[fpln_num2][1] ~= "" then
 								-- add new via
-								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3])
+								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3], entry, 0)
 							end
 							item_sel_via = 0
 						elseif item <= fpln_num2 and fpln_num2 > 1 then
 							-- change via
-							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item)
+							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item, entry, 0)
 							item_sel_via = 0
 						end
 					end
@@ -26189,12 +26237,12 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 				if item == tmp_tmp then
 					if wpt_lat_lon(entry) == true then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
 					elseif jj ~= nil then
-						rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1))
+						rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					elseif item_sel == 0 then
 						-- add waypoint last
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry, 0)
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
@@ -26229,22 +26277,22 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
 							-- add waypoint
-							rte_add_wpt(item)
+							rte_add_wpt(item, entry, 0)
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry, 0)
 					end
 					item_sel = 0
 				elseif jj ~= nil then
-					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1))
+					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					item_sel = 0
 				elseif wpt_lat_lon(entry) == true and item_sel == 0 then
 						--custom lat/lon wpt
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
 						item_sel = 0
 				elseif item_sel == 0 then
 					if string.len(entry) == 0 then
@@ -27246,7 +27294,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if item == tmp_tmp then
-						dir_via_add("", "", entry, "", "", item)
+						dir_via_add("", "", entry, "", "", item, entry, 0)
 						item_sel_via = 0
 					elseif string.len(entry) == 0 then
 						item_sel_via = item
@@ -27262,9 +27310,9 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 						entry = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
 						if item == 1 then
-							dir_via_add("", "", entry, "", "", item)
+							dir_via_add("", "", entry, "", "", item, entry, 0)
 						else
-							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry, "", fpln_data2[item][2], item)
+							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry, "", fpln_data2[item][2], item, entry, 0)
 						end
 						item_sel_via = 0
 					end
@@ -27272,7 +27320,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 					-- first waypoint
 					if item == tmp_tmp then
 						-- add new direct to navaid
-						dir_via_add("", "", entry, "", "", item)
+						dir_via_add("", "", entry, "", "", item, entry, 0)
 					end
 					item_sel_via = 0
 				end
@@ -27836,7 +27884,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if item == tmp_tmp then
-						dir_via_add("", "", entry, "", "", item)
+						dir_via_add("", "", entry, "", "", item, entry, 0)
 						item_sel_via = 0
 					elseif string.len(entry) == 0 then
 						item_sel_via = item
@@ -27853,9 +27901,9 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
 						-- add new via to navaid
 						if item == 1 then
-							dir_via_add("", "", entry, "", "", item)
+							dir_via_add("", "", entry, "", "", item, entry, 0)
 						else
-							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry, "", fpln_data2[item][2], item)
+							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry, "", fpln_data2[item][2], item, entry, 0)
 						end
 						item_sel_via = 0
 					end
@@ -28273,7 +28321,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if item == tmp_tmp then
-						dir_via_add("", "", entry, "", "", item)
+						dir_via_add("", "", entry, "", "", item, entry, 0)
 						item_sel_via = 0
 					elseif string.len(entry) == 0 then
 						item_sel_via = item
@@ -28289,9 +28337,9 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 						entry = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
 						if item == 1 then
-							dir_via_add("", "", entry, "", "", item)
+							dir_via_add("", "", entry, "", "", item, entry, 0)
 						else
-							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry, "", fpln_data2[item][2], item)
+							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry, "", fpln_data2[item][2], item, entry, 0)
 						end
 						item_sel_via = 0
 					end
@@ -28846,7 +28894,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if item == tmp_tmp then
-						dir_via_add("", "", entry, "", "", item)
+						dir_via_add("", "", entry, "", "", item, entry, 0)
 						item_sel_via = 0
 					elseif string.len(entry) == 0 then
 						item_sel_via = item
@@ -28862,9 +28910,9 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 						entry = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
 						if item == 1 then
-							dir_via_add("", "", entry, "", "", item)
+							dir_via_add("", "", entry, "", "", item, entry, 0)
 						else
-							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry, "", fpln_data2[item][2], item)
+							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry, "", fpln_data2[item][2], item, entry, 0)
 						end
 						item_sel_via = 0
 					end
@@ -29378,7 +29426,7 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if item == tmp_tmp then
-						dir_via_add("", "", entry, "", "", item)
+						dir_via_add("", "", entry, "", "", item, entry, 0)
 						item_sel_via = 0
 					elseif string.len(entry) == 0 then
 						item_sel_via = item
@@ -29394,9 +29442,9 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 						entry = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
 						if item == 1 then
-							dir_via_add("", "", entry, "", "", item)
+							dir_via_add("", "", entry, "", "", item, entry, 0)
 						else
-							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry, "", fpln_data2[item][2], item)
+							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry, "", fpln_data2[item][2], item, entry, 0)
 						end
 						item_sel_via = 0
 					end
@@ -33002,20 +33050,20 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if item > 1 then
 					if entry2 == ">DELETE" then
-						del_via(item)
+						del_via(item, 1)
 					else
 						if item == tmp_tmp then
 							if fpln_data2[fpln_num2][1] == "" and fpln_data2[fpln_num2][2] ~= "" then
 								-- add new via via
-								via_via_add()
+								via_via_add(entry2, 1)
 							elseif fpln_data2[fpln_num2][1] ~= "" then
 								-- add new via
-								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3])
+								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3], entry2, 1)
 							end
 							item_sel_via2 = 0
 						elseif item <= fpln_num2 then --and fpln_num2 > 1 then
 							-- change via
-							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item)
+							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item, entry2, 1)
 							item_sel_via2 = 0
 						end
 					end
@@ -33055,7 +33103,7 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 			item = (act_page2 - 1) * 5 + button
 			if item <= navaid_list_n then
 				-- select item
-				dir_add(item)
+				dir_add(item, entry2, 1)
 			end
 		elseif page_sel_wpt3_2 == 1 then
 			
@@ -33232,14 +33280,14 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 					if string.len(entry2) > 1 and string.len(entry2) < 6 and item_sel2 == 0 then
 						if wpt_lat_lon(entry2) == true then
 							legs_data2[item][31] = "TF"
-							rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+							rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
 						else
 						-- add waypoint last
-							rte_add_wpt(item)
+							rte_add_wpt(item, entry2, 1)
 						end
 						item_sel2 = 0
 					elseif jj ~= nil then
-						rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1))
+						rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 						item_sel2 = 0
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
@@ -33278,13 +33326,13 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
 							-- add waypoint
-							rte_add_wpt(item)
+							rte_add_wpt(item, entry2, 1)
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry2, 1)
 					end
 					if act_page2 == 1 then
 						legs_intdir = 1
@@ -33304,11 +33352,11 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 					end
 					item_sel2 = 0
 				elseif jj ~= nil then
-					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1))
+					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					item_sel2 = 0
 				elseif wpt_lat_lon(entry2) == true and item_sel2 == 0 then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
 						if act_page2 == 1 then
 							legs_intdir = 1
 							legs_intdir_idx = item
@@ -34484,7 +34532,7 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 			item = (act_page2 - 1) * 5 + button
 			if item <= navaid_list_n then
 				-- select item
-				dir_add(item)
+				dir_add(item, entry2, 1)
 			end
 		elseif page_sel_wpt3_2 == 1 then
 			
@@ -34647,12 +34695,12 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 				if item == tmp_tmp then
 					if wpt_lat_lon(entry2) == true then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
 					elseif jj ~= nil then
-						rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1))
+						rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					elseif item_sel2 == 0 then
 						-- add waypoint last
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry2, 1)
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
@@ -34688,21 +34736,21 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
 							-- add waypoint
-							rte_add_wpt(item)
+							rte_add_wpt(item, entry2, 1)
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry2, 1)
 					end
 					item_sel2 = 0
 				elseif jj ~= nil then
-					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1))
+					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					item_sel2 = 0
 				elseif wpt_lat_lon(entry2) == true and item_sel2 == 0 then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
 				elseif item_sel2 == 0 then
 					if string.len(entry2) == 0 then
 						if offset_act == 3 then
@@ -34857,20 +34905,20 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if entry2 == ">DELETE" then
-						del_via(item)
+						del_via(item, 1)
 					else
 						if item == tmp_tmp then
 							if fpln_data2[fpln_num2][1] == "" and fpln_data2[fpln_num2][2] ~= "" then
 								-- add new via via
-								via_via_add()
+								via_via_add(entry2, 1)
 							elseif fpln_data2[fpln_num2][1] ~= "" then
 								-- add new via
-								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3])
+								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3], entry2, 1)
 							end
 							item_sel_via2 = 0
 						elseif item <= fpln_num2 and fpln_num2 > 1 then
 							-- change via
-							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item)
+							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item, entry2, 1)
 							item_sel_via2 = 0
 						end
 					end
@@ -35617,7 +35665,7 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 			item = (act_page2 - 1) * 5 + button
 			if item <= navaid_list_n then
 				-- select item
-				dir_add(item)
+				dir_add(item, entry2, 1)
 			end
 		elseif page_sel_wpt3_2 == 1 then
 			
@@ -35863,20 +35911,20 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if entry2 == ">DELETE" then
-						del_via(item)
+						del_via(item, 1)
 					else
 						if item == tmp_tmp then
 							if fpln_data2[fpln_num2][1] == "" and fpln_data2[fpln_num2][2] ~= "" then
 								-- add new via via
-								via_via_add()
+								via_via_add(entry2, 1)
 							elseif fpln_data2[fpln_num2][1] ~= "" then
 								-- add new via
-								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3])
+								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3], entry2, 1)
 							end
 							item_sel_via2 = 0
 						elseif item <= fpln_num2 and fpln_num2 > 1 then
 							-- change via
-							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item)
+							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item, entry2, 1)
 							item_sel_via2 = 0
 						end
 					end
@@ -35974,12 +36022,12 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 				if item == tmp_tmp then
 					if wpt_lat_lon(entry2) == true then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
 					elseif jj ~= nil then
-						rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1))
+						rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					elseif item_sel2 == 0 then
 						-- add waypoint last
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry2, 1)
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
@@ -36015,21 +36063,21 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
 							-- add waypoint
-							rte_add_wpt(item)
+							rte_add_wpt(item, entry2, 1)
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry2, 1)
 					end
 					item_sel2 = 0
 				elseif jj ~= nil then
-					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1))
+					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					item_sel2 = 0
 				elseif wpt_lat_lon(entry2) == true and item_sel2 == 0 then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
 				elseif item_sel2 == 0 then
 					if string.len(entry2) == 0 then
 						if offset_act == 3 then
@@ -36636,7 +36684,7 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 			item = (act_page2 - 1) * 5 + button
 			if item <= navaid_list_n then
 				-- select item
-				dir_add(item)
+				dir_add(item, entry2, 1)
 			end
 		elseif page_sel_wpt3_2 == 1 then
 			
@@ -36685,20 +36733,20 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if entry2 == ">DELETE" then
-						del_via(item)
+						del_via(item, 1)
 					else
 						if item == tmp_tmp then
 							if fpln_data2[fpln_num2][1] == "" and fpln_data2[fpln_num2][2] ~= "" then
 								-- add new via via
-								via_via_add()
+								via_via_add(entry2, 1)
 							elseif fpln_data2[fpln_num2][1] ~= "" then
 								-- add new via
-								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3])
+								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3], entry2, 1)
 							end
 							item_sel_via2 = 0
 						elseif item <= fpln_num2 and fpln_num2 > 1 then
 							-- change via
-							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item)
+							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item, entry2, 1)
 							item_sel_via2 = 0
 						end
 					end
@@ -36907,12 +36955,12 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 				if item == tmp_tmp then
 					if wpt_lat_lon(entry2) == true then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
 					elseif jj ~= nil then
-						rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1))
+						rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					elseif item_sel2 == 0 then
 						-- add waypoint last
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry2, 1)
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
@@ -36948,21 +36996,21 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
 							-- add waypoint
-							rte_add_wpt(item)
+							rte_add_wpt(item, entry2, 1)
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry2, 1)
 					end
 					item_sel2 = 0
 				elseif jj ~= nil then
-					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1))
+					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					item_sel2 = 0
 				elseif wpt_lat_lon(entry2) == true and item_sel2 == 0 then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
 				elseif item_sel2 == 0 then
 					if string.len(entry2) == 0 then
 						if offset_act == 3 then
@@ -37534,7 +37582,7 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 			item = (act_page2 - 1) * 5 + button
 			if item <= navaid_list_n then
 				-- select item
-				dir_add(item)
+				dir_add(item, entry2, 1)
 			end
 		elseif page_sel_wpt3_2 == 1 then
 			
@@ -37584,20 +37632,20 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if entry2 == ">DELETE" then
-						del_via(item)
+						del_via(item, 1)
 					else
 						if item == tmp_tmp then
 							if fpln_data2[fpln_num2][1] == "" and fpln_data2[fpln_num2][2] ~= "" then
 								-- add new via via
-								via_via_add()
+								via_via_add(entry2, 1)
 							elseif fpln_data2[fpln_num2][1] ~= "" then
 								-- add new via
-								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3])
+								via_add(fpln_data2[fpln_num2][1], fpln_data2[fpln_num2][3], entry2, 1)
 							end
 							item_sel_via2 = 0
 						elseif item <= fpln_num2 and fpln_num2 > 1 then
 							-- change via
-							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item)
+							via_chg(fpln_data2[item-1][1], fpln_data2[item-1][3], item, entry2, 1)
 							item_sel_via2 = 0
 						end
 					end
@@ -37780,12 +37828,12 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 				if item == tmp_tmp then
 					if wpt_lat_lon(entry2) == true then
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
 					elseif jj ~= nil then
-						rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1))
+						rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					elseif item_sel2 == 0 then
 						-- add waypoint last
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry2, 1)
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
@@ -37820,22 +37868,22 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
 							-- add waypoint
-							rte_add_wpt(item)
+							rte_add_wpt(item, entry2, 1)
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					else
 						-- add waypoint
-						rte_add_wpt(item)
+						rte_add_wpt(item, entry2, 1)
 					end
 					item_sel2 = 0
 				elseif jj ~= nil then
-					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1))
+					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					item_sel2 = 0
 				elseif wpt_lat_lon(entry2) == true and item_sel2 == 0 then
 						--custom lat/lon wpt
 						legs_data2[item][31] = "TF"
-						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon)
+						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
 						item_sel2 = 0
 				elseif item_sel2 == 0 then
 					if string.len(entry2) == 0 then
@@ -38837,7 +38885,7 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if item == tmp_tmp then
-						dir_via_add("", "", entry2, "", "", item)
+						dir_via_add("", "", entry2, "", "", item, entry2, 1)
 						item_sel_via2 = 0
 					elseif string.len(entry2) == 0 then
 						item_sel_via2 = item
@@ -38853,9 +38901,9 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 						entry2 = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
 						if item == 1 then
-							dir_via_add("", "", entry2, "", "", item)
+							dir_via_add("", "", entry2, "", "", item, entry2, 1)
 						else
-							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry2, "", fpln_data2[item][2], item)
+							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry2, "", fpln_data2[item][2], item, entry2, 1)
 						end
 						item_sel_via2 = 0
 					end
@@ -38863,7 +38911,7 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 					-- first waypoint
 					if item == tmp_tmp then
 						-- add new direct to navaid
-						dir_via_add("", "", entry2, "", "", item)
+						dir_via_add("", "", entry2, "", "", item, entry2, 1)
 					end
 					item_sel_via2 = 0
 				end
@@ -39427,7 +39475,7 @@ function B738_fmc2_2R_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if item == tmp_tmp then
-						dir_via_add("", "", entry2, "", "", item)
+						dir_via_add("", "", entry2, "", "", item, entry2, 1)
 						item_sel_via2 = 0
 					elseif string.len(entry2) == 0 then
 						item_sel_via2 = item
@@ -39444,9 +39492,9 @@ function B738_fmc2_2R_CMDhandler(phase, duration)
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
 						-- add new via to navaid
 						if item == 1 then
-							dir_via_add("", "", entry2, "", "", item)
+							dir_via_add("", "", entry2, "", "", item, entry2, 1)
 						else
-							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry2, "", fpln_data2[item][2], item)
+							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry2, "", fpln_data2[item][2], item, entry2, 1)
 						end
 						item_sel_via2 = 0
 					end
@@ -39864,7 +39912,7 @@ function B738_fmc2_3R_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if item == tmp_tmp then
-						dir_via_add("", "", entry2, "", "", item)
+						dir_via_add("", "", entry2, "", "", item, entry2, 1)
 						item_sel_via2 = 0
 					elseif string.len(entry2) == 0 then
 						item_sel_via2 = item
@@ -39880,9 +39928,9 @@ function B738_fmc2_3R_CMDhandler(phase, duration)
 						entry2 = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
 						if item == 1 then
-							dir_via_add("", "", entry2, "", "", item)
+							dir_via_add("", "", entry2, "", "", item, entry2, 1)
 						else
-							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry2, "", fpln_data2[item][2], item)
+							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry2, "", fpln_data2[item][2], item, entry2, 1)
 						end
 						item_sel_via2 = 0
 					end
@@ -40437,7 +40485,7 @@ function B738_fmc2_4R_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if item == tmp_tmp then
-						dir_via_add("", "", entry2, "", "", item)
+						dir_via_add("", "", entry2, "", "", item, entry2, 1)
 						item_sel_via2 = 0
 					elseif string.len(entry2) == 0 then
 						item_sel_via2 = item
@@ -40453,9 +40501,9 @@ function B738_fmc2_4R_CMDhandler(phase, duration)
 						entry2 = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
 						if item == 1 then
-							dir_via_add("", "", entry2, "", "", item)
+							dir_via_add("", "", entry2, "", "", item, entry2, 1)
 						else
-							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry2, "", fpln_data2[item][2], item)
+							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry2, "", fpln_data2[item][2], item, entry2, 1)
 						end
 						item_sel_via2 = 0
 					end
@@ -40969,7 +41017,7 @@ function B738_fmc2_5R_CMDhandler(phase, duration)
 				tmp_tmp = fpln_num2 + 1
 				if fpln_num2 > 0 then
 					if item == tmp_tmp then
-						dir_via_add("", "", entry2, "", "", item)
+						dir_via_add("", "", entry2, "", "", item, entry2, 1)
 						item_sel_via2 = 0
 					elseif string.len(entry2) == 0 then
 						item_sel_via2 = item
@@ -40985,9 +41033,9 @@ function B738_fmc2_5R_CMDhandler(phase, duration)
 						entry2 = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
 						if item == 1 then
-							dir_via_add("", "", entry2, "", "", item)
+							dir_via_add("", "", entry2, "", "", item, entry2, 1)
 						else
-							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry2, "", fpln_data2[item][2], item)
+							dir_via_add(fpln_data2[item-1][1], fpln_data2[item-1][3], entry2, "", fpln_data2[item][2], item, entry2, 1)
 						end
 						item_sel_via2 = 0
 					end
@@ -48094,7 +48142,7 @@ function B738_fmc_legs2()
 end
 
 
-function B738_fmc_legs99(step_in, map_mode_in, new_hold_in)
+function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 
 	if page_legs == 1 then
 		--act_page = 1
@@ -48667,7 +48715,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in)
 		
 		max_page = max_page_legs
 		
-		if B738DR_fmc_exec_lights == 1 then
+		if exec_light_in == 1 then
 			if legs_num > 1 then
 				line0_inv = " MOD"
 				line0_l   = "     "
@@ -48684,7 +48732,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in)
 		end
 		
 		line6_x = "------------------------"
-		if B738DR_fmc_exec_lights == 1 then
+		if exec_light_in == 1 then
 			if legs_intdir == 0 then
 				if legs_num > 1 then
 					if map_mode_in == 3 then
@@ -52586,7 +52634,7 @@ function B738_fmc_disp_capt()
 		B738_fmc_rte_init()
 	elseif page_legs > 0 then
 		--B738_fmc_legs()
-		B738_fmc_legs99(legs_step, B738DR_capt_map_mode, new_hold)
+		B738_fmc_legs99(legs_step, B738DR_capt_map_mode, new_hold, B738DR_fmc_exec_lights)
 	elseif page_dep_arr > 0 then
 		B738_fmc_dep_arr()
 	elseif page_dep > 0 then
@@ -52808,7 +52856,7 @@ function B738_fmc_disp_fo()
 		B738_fmc_rte_init()
 	elseif page_legs > 0 then
 		--B738_fmc_legs2()
-		B738_fmc_legs99(legs_step2, B738DR_fo_map_mode, new_hold2)
+		B738_fmc_legs99(legs_step2, B738DR_fo_map_mode, new_hold2, B738DR_fmc_exec_lights_fo)
 	elseif page_dep_arr > 0 then
 		B738_fmc_dep_arr()
 	elseif page_dep > 0 then
@@ -62091,8 +62139,8 @@ function B738_displ_tc()
 		
 		if B738DR_fo_map_mode == 3 then
 			-- temporary
-			ils_disable = 1
-			rte_plan_mode = 1
+			--ils_disable = 1
+			--rte_plan_mode = 1
 			-- if legs_step == 0 then
 				-- ils_lat = math.rad(legs_data[1][7])
 				-- ils_lon = math.rad(legs_data[1][8])
@@ -62101,6 +62149,16 @@ function B738_displ_tc()
 				-- ils_lon = math.rad(legs_data[legs_step][8])
 			-- end
 			-- mag_hdg = -simDR_mag_variation
+			if legs_step2 == 0 then
+				ils_lat = legs_data2[1][7]
+				ils_lon = legs_data2[1][8]
+			else
+				ils_lat = legs_data2[legs_step2][7]
+				ils_lon = legs_data2[legs_step2][8]
+			end
+			
+			mag_hdg = -simDR_mag_variation
+			rte_plan_mode = 1
 		elseif B738DR_fo_map_mode == 2 then
 			-- if B738DR_fo_map_mode < 2 then
 				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
@@ -62436,8 +62494,18 @@ function B738_displ_decel()
 		ils_lon = ndx_lon 
 		
 		if B738DR_fo_map_mode == 3 then
-			-- temporary
-			ils_disable = 1
+			-- -- temporary
+			-- ils_disable = 1
+			-- rte_plan_mode = 1
+			if legs_step2 == 0 then
+				ils_lat = legs_data2[1][7]
+				ils_lon = legs_data2[1][8]
+			else
+				ils_lat = legs_data2[legs_step2][7]
+				ils_lon = legs_data2[legs_step2][8]
+			end
+			
+			mag_hdg = -simDR_mag_variation
 			rte_plan_mode = 1
 		elseif B738DR_fo_map_mode == 2 then
 			-- if B738DR_fo_map_mode < 2 then
@@ -62780,8 +62848,18 @@ function B738_displ_td()
 		ils_lat = ndx_lat 
 		ils_lon = ndx_lon 
 		if B738DR_fo_map_mode == 3 then
-			-- temporary
-			ils_disable = 1
+			-- -- temporary
+			-- ils_disable = 1
+			-- rte_plan_mode = 1
+			if legs_step2 == 0 then
+				ils_lat = legs_data2[1][7]
+				ils_lon = legs_data2[1][8]
+			else
+				ils_lat = legs_data2[legs_step2][7]
+				ils_lon = legs_data2[legs_step2][8]
+			end
+			
+			mag_hdg = -simDR_mag_variation
 			rte_plan_mode = 1
 		elseif B738DR_fo_map_mode == 2 then
 			-- if B738DR_fo_map_mode < 2 then
@@ -67782,19 +67860,19 @@ function B738_vnav_pth3()
 					vnav_vvi_trg = simDR_vvi_fpm_pilot + B738DR_vnav_vvi_corr
 					
 					vnav_vvi_trg = vnav_vvi_trg / 1000
-					vnav_vvi_trg = math.max (vnav_vvi_trg, -2.7)
+					vnav_vvi_trg = math.max (vnav_vvi_trg, -2.9)
 					vnav_vvi_trg = math.min (vnav_vvi_trg, 0)
 					vnav_vvi_tmp = B738DR_vnav_vvi / 1000
 					
 					if B738DR_altitude_mode == 5 and simDR_autopilot_altitude_mode ~= 6 then -- VNAV
-						vnav_vvi_tmp = B738_set_anim_value2(vnav_vvi_tmp, vnav_vvi_trg, -2.7, 0, 2, 0.02)
+						vnav_vvi_tmp = B738_set_anim_value2(vnav_vvi_tmp, vnav_vvi_trg, -2.9, 0, 2, 0.02)
 						B738DR_vnav_vvi = vnav_vvi_tmp * 1000
 					else
 						B738DR_vnav_vvi = 0
 					end
 					
-					if B738DR_vnav_vvi < -2700 then		-- max descent vvi -2500
-						B738DR_vnav_vvi= -2700
+					if B738DR_vnav_vvi < -2900 then		-- max descent vvi -2500
+						B738DR_vnav_vvi= -2900
 					end
 					if B738DR_vnav_vvi > 0 then		-- min descent vvi 0
 						B738DR_vnav_vvi = 0
@@ -72405,7 +72483,7 @@ temp_ils4 = ""
 	first_alt_restrict = 0
 	
 	--entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.251"
+	version = "v3.252"
 
 end
 
