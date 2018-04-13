@@ -1403,6 +1403,7 @@ B738DR_nav_type_fo			= create_dataref("laminar/radios/copilot/nav_type", "number
 
 B738DR_alt_hold_mem 		= create_dataref("laminar/autopilot/alt_hold_mem", "number")
 
+
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
 --*************************************************************************************--
@@ -15079,7 +15080,7 @@ function B738_draw_arc()
 				arc_dist = simDR_ground_spd * arc_time * 0.00054	-- m to NM
 				
 				-- Captain
-				if B738DR_capt_map_mode == 2 and B738DR_capt_exp_map_mode == 1 then
+				if B738DR_capt_map_mode == 2 then	--and B738DR_capt_exp_map_mode == 1 then
 					arc_zoom = 0
 					if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 						arc_zoom = 0.226
@@ -15099,7 +15100,11 @@ function B738_draw_arc()
 						if arc_dist2 < 0.005 or arc_dist2 > 1.0 then
 							B738DR_green_arc_show = 0
 						else
-							B738DR_green_arc = arc_dist2
+							if B738DR_capt_exp_map_mode == 0 then
+								B738DR_green_arc = arc_dist2 + 0.465294
+							else
+								B738DR_green_arc = arc_dist2
+							end
 							B738DR_green_arc_show = 1
 						end
 					end
@@ -15108,7 +15113,7 @@ function B738_draw_arc()
 				end
 				
 				-- First Officer
-				if B738DR_fo_map_mode == 2 and B738DR_fo_exp_map_mode == 1 then
+				if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode == 1 then
 					arc_zoom = 0
 					if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 						arc_zoom = 0.226
@@ -15128,7 +15133,11 @@ function B738_draw_arc()
 						if arc_dist2 < 0.005 or arc_dist2 > 1.0 then
 							B738DR_green_arc_fo_show = 0
 						else
-							B738DR_green_arc_fo = arc_dist2
+							if B738DR_fo_exp_map_mode == 0 then
+								B738DR_green_arc_fo = arc_dist2 + 0.465294
+							else
+								B738DR_green_arc_fo = arc_dist2
+							end
 							B738DR_green_arc_fo_show = 1
 						end
 					end
@@ -15154,7 +15163,7 @@ function B738_draw_arc()
 				arc_dist = simDR_ground_spd * arc_time * 0.00054	-- m to NM
 				
 				-- Captain
-				if B738DR_capt_map_mode == 2 and B738DR_capt_exp_map_mode == 1 then
+				if B738DR_capt_map_mode == 2 then	--and B738DR_capt_exp_map_mode == 1 then
 					arc_zoom = 0
 					if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 						arc_zoom = 0.226
@@ -15174,7 +15183,11 @@ function B738_draw_arc()
 						if arc_dist2 < 0.005 or arc_dist2 > 1.0 then
 							B738DR_green_arc_show = 0
 						else
-							B738DR_green_arc = arc_dist2
+							if B738DR_capt_exp_map_mode == 0 then
+								B738DR_green_arc = arc_dist2 + 0.465294
+							else
+								B738DR_green_arc = arc_dist2
+							end
 							B738DR_green_arc_show = 1
 						end
 					end
@@ -15183,7 +15196,7 @@ function B738_draw_arc()
 				end
 				
 				-- First Officer
-				if B738DR_fo_map_mode == 2 and B738DR_fo_exp_map_mode == 1 then
+				if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode == 1 then
 					arc_zoom = 0
 					if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 						arc_zoom = 0.226
@@ -15203,7 +15216,11 @@ function B738_draw_arc()
 						if arc_dist2 < 0.005 or arc_dist2 > 1.0 then
 							B738DR_green_arc_fo_show = 0
 						else
-							B738DR_green_arc_fo = arc_dist2
+							if B738DR_fo_exp_map_mode == 0 then
+								B738DR_green_arc_fo = arc_dist2 + 0.465294
+							else
+								B738DR_green_arc_fo = arc_dist2
+							end
 							B738DR_green_arc_fo_show = 1
 						end
 					end
@@ -15230,7 +15247,7 @@ function B738_draw_arc()
 					arc_dist = simDR_ground_spd * arc_time * 0.00054	-- m to NM
 				
 					-- Captain
-					if B738DR_capt_map_mode == 2 and B738DR_capt_exp_map_mode == 1 then
+					if B738DR_capt_map_mode == 2 then	--and B738DR_capt_exp_map_mode == 1 then
 						arc_zoom = 0
 						if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 							arc_zoom = 0.226
@@ -15250,7 +15267,11 @@ function B738_draw_arc()
 							if arc_dist2 < 0.005 or arc_dist2 > 1.0 then
 								B738DR_green_arc_show = 0
 							else
-								B738DR_green_arc = arc_dist2
+								if B738DR_capt_exp_map_mode == 0 then
+									B738DR_green_arc = arc_dist2 + 0.465294
+								else
+									B738DR_green_arc = arc_dist2
+								end
 								B738DR_green_arc_show = 1
 							end
 						end
@@ -15259,7 +15280,7 @@ function B738_draw_arc()
 					end
 					
 					-- First Officer
-					if B738DR_fo_map_mode == 2 and B738DR_fo_exp_map_mode == 1 then
+					if B738DR_fo_map_mode == 2 then	--and B738DR_fo_exp_map_mode == 1 then
 						arc_zoom = 0
 						if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 							arc_zoom = 0.226
@@ -15279,7 +15300,11 @@ function B738_draw_arc()
 							if arc_dist2 < 0.005 or arc_dist2 > 1.0 then
 								B738DR_green_arc_fo_show = 0
 							else
-								B738DR_green_arc_fo = arc_dist2
+								if B738DR_fo_exp_map_mode == 0 then
+									B738DR_green_arc_fo = arc_dist2 + 0.465294
+								else
+									B738DR_green_arc_fo = arc_dist2
+								end
 								B738DR_green_arc_fo_show = 1
 							end
 						end
@@ -15325,6 +15350,7 @@ function B738_vor_sel()
 	local vor_y = 0
 	local vor_quadr = 0
 	local vor2_sel_disable = 0
+	local relative_brg = 0
 	
 	-- if simDR_autopilot_source ~= 2 then
 		simDR_hsi_crs1 = simDR_nav1_obs_pilot
@@ -15373,16 +15399,6 @@ function B738_vor_sel()
 					B738DR_vor1_sel_bcrs = string.format("%3d", vor_bcrs)
 				end
 				
-				-- if simDR_efis_sub_mode < 2 then
-					-- vor_hdg = simDR_ahars_mag_hdg	-- + 4.49		-- adjust
-					-- if simDR_efis_map_mode == 0 then
-						-- nav_disable = 1
-					-- end
-				-- elseif simDR_efis_sub_mode == 4 then
-					-- vor_hdg = 0		--4.49
-				-- else
-					-- vor_hdg = simDR_mag_hdg 	-- + 4.49		-- adjust
-				-- end
 				if B738DR_track_up == 0 then
 					vor_hdg = simDR_ahars_mag_hdg -- simDR_mag_variation
 				else
@@ -15391,71 +15407,36 @@ function B738_vor_sel()
 					else
 						vor_hdg = simDR_mag_hdg
 					end
-					-- vor_hdg = simDR_mag_hdg
 				end
 				
 				vor_bearing = simDR_nav1_bearing
 				vor_distance = simDR_nav1_dme
-				vor_bear_l = (vor_hdg + 270) % 360
-				vor_bear_r = (vor_hdg + 90) % 360
-				if vor_hdg < vor_bear_r then
-					if vor_bearing >= vor_hdg and vor_bearing <= vor_bear_r then
-						vor_quadr = 1
-					end
-				end
-				if vor_hdg > vor_bear_l then
-					if vor_bearing >= vor_bear_l and vor_bearing <= vor_hdg then
-						vor_quadr = 2
-					end
-				end
-				if vor_hdg < vor_bear_l then
-					if vor_bearing >= vor_bear_l and vor_bearing <= 360 then
-						vor_quadr = 3
-					elseif vor_bearing >= 0 and vor_bearing <= vor_hdg then
-						vor_quadr = 4
-					end
-				end
-				if vor_hdg > vor_bear_r then
-					if vor_bearing >= vor_hdg and vor_bearing <= 360 then
-						vor_quadr = 5
-					elseif vor_bearing >= 0 and vor_bearing <= vor_bear_r then
-						vor_quadr = 6
-					end
+				
+				relative_brg = (vor_bearing - vor_hdg + 360) % 360
+				if relative_brg > 180 then
+					relative_brg = relative_brg - 360
 				end
 				
-				if vor_quadr == 1 then
-					vor_angle = vor_bearing - vor_hdg
-					vor_angle = math.rad(vor_angle)
+				if relative_brg >= 0 and relative_brg < 90 then
+					vor_angle = math.rad(relative_brg)
 					vor_y = vor_distance * math.cos(vor_angle)
 					vor_x = vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 2 then
-					vor_angle = vor_hdg - vor_bearing
+				elseif relative_brg >= 90 and relative_brg <= 180 then
+					vor_angle = math.rad(relative_brg - 90)
+					vor_x = vor_distance * math.cos(vor_angle)
+					vor_y = -vor_distance * math.sin(vor_angle)
+				elseif relative_brg >= -180 and relative_brg < -90 then
+					vor_angle = -relative_brg
+					vor_angle = math.rad(vor_angle - 90)
+					vor_x = -vor_distance * math.cos(vor_angle)
+					vor_y = -vor_distance * math.sin(vor_angle)
+				elseif relative_brg >= -90 and relative_brg < 0 then
+					vor_angle = -relative_brg
 					vor_angle = math.rad(vor_angle)
 					vor_y = vor_distance * math.cos(vor_angle)
 					vor_x = -vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 3 then
-					vor_angle = 360 - vor_bearing + vor_hdg
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = -vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 4 then
-					vor_angle = vor_hdg - vor_bearing
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = -vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 5 then
-					vor_angle = vor_bearing - vor_hdg
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 6 then
-					vor_angle = 360 - vor_hdg + vor_bearing
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = vor_distance * math.sin(vor_angle)
-				else
-					out_of_range = 1
 				end
+				
 				if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 					efis_zoom = 2
 				elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
@@ -15470,10 +15451,6 @@ function B738_vor_sel()
 					out_of_range = 1
 				end
 				
-				if B738DR_capt_exp_map_mode == 0 then
-					efis_zoom = efis_zoom / 2
-				end
-				
 				vor_x = vor_x * efis_zoom		-- zoom
 				vor_y = vor_y * efis_zoom		-- zoom
 				
@@ -15483,10 +15460,10 @@ function B738_vor_sel()
 					vor_y = vor_y + 4.1	-- adjust center
 				end
 				
-				if vor_y > 7.5 or vor_y < 0 then
+				if vor_y > 11.0 or vor_y < -15.0 then
 					out_of_range = 1
 				end
-				if vor_x < -6.0 or vor_x > 6.0 then
+				if vor_x < -15.0 or vor_x > 15.0 then
 					out_of_range = 1
 				end
 				
@@ -15552,16 +15529,7 @@ function B738_vor_sel()
 				else
 					B738DR_vor2_sel_bcrs = string.format("%3d", vor_bcrs)
 				end
-				-- if simDR_efis_sub_mode < 2 then
-					-- vor_hdg = simDR_ahars_mag_hdg	-- + 4.49		-- adjust
-					-- if simDR_efis_map_mode == 0 then
-						-- nav_disable = 1
-					-- end
-				-- elseif simDR_efis_sub_mode == 4 then
-					-- vor_hdg = 0		--4.49
-				-- else
-					-- vor_hdg = simDR_mag_hdg 	-- + 4.49		-- adjust
-				-- end
+				
 				if B738DR_track_up == 0 then
 					vor_hdg = simDR_ahars_mag_hdg -- simDR_mag_variation
 				else
@@ -15575,66 +15543,33 @@ function B738_vor_sel()
 				
 				vor_bearing = simDR_nav2_bearing
 				vor_distance = simDR_nav2_dme
-				vor_bear_l = (vor_hdg + 270) % 360
-				vor_bear_r = (vor_hdg + 90) % 360
-				if vor_hdg < vor_bear_r then
-					if vor_bearing >= vor_hdg and vor_bearing <= vor_bear_r then
-						vor_quadr = 1
-					end
-				end
-				if vor_hdg > vor_bear_l then
-					if vor_bearing >= vor_bear_l and vor_bearing <= vor_hdg then
-						vor_quadr = 2
-					end
-				end
-				if vor_hdg < vor_bear_l then
-					if vor_bearing >= vor_bear_l and vor_bearing <= 360 then
-						vor_quadr = 3
-					elseif vor_bearing >= 0 and vor_bearing <= vor_hdg then
-						vor_quadr = 4
-					end
-				end
-				if vor_hdg > vor_bear_r then
-					if vor_bearing >= vor_hdg and vor_bearing <= 360 then
-						vor_quadr = 5
-					elseif vor_bearing >= 0 and vor_bearing <= vor_bear_r then
-						vor_quadr = 6
-					end
+				
+				relative_brg = (vor_bearing - vor_hdg + 360) % 360
+				if relative_brg > 180 then
+					relative_brg = relative_brg - 360
 				end
 				
-				if vor_quadr == 1 then
-					vor_angle = vor_bearing - vor_hdg
-					vor_angle = math.rad(vor_angle)
+				if relative_brg >= 0 and relative_brg < 90 then
+					vor_angle = math.rad(relative_brg)
 					vor_y = vor_distance * math.cos(vor_angle)
 					vor_x = vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 2 then
-					vor_angle = vor_hdg - vor_bearing
+				elseif relative_brg >= 90 and relative_brg <= 180 then
+					vor_angle = math.rad(relative_brg - 90)
+					vor_x = vor_distance * math.cos(vor_angle)
+					vor_y = -vor_distance * math.sin(vor_angle)
+				elseif relative_brg >= -180 and relative_brg < -90 then
+					vor_angle = -relative_brg
+					vor_angle = math.rad(vor_angle - 90)
+					vor_x = -vor_distance * math.cos(vor_angle)
+					vor_y = -vor_distance * math.sin(vor_angle)
+				elseif relative_brg >= -90 and relative_brg < 0 then
+					vor_angle = -relative_brg
 					vor_angle = math.rad(vor_angle)
 					vor_y = vor_distance * math.cos(vor_angle)
 					vor_x = -vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 3 then
-					vor_angle = 360 - vor_bearing + vor_hdg
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = -vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 4 then
-					vor_angle = vor_hdg - vor_bearing
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = -vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 5 then
-					vor_angle = vor_bearing - vor_hdg
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 6 then
-					vor_angle = 360 - vor_hdg + vor_bearing
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = vor_distance * math.sin(vor_angle)
-				else
-					out_of_range = 1
 				end
+				
+				out_of_range = 0
 				if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 					efis_zoom = 2
 				elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
@@ -15649,10 +15584,6 @@ function B738_vor_sel()
 					out_of_range = 1
 				end
 				
-				if B738DR_capt_exp_map_mode == 0 then
-					efis_zoom = efis_zoom / 2
-				end
-				
 				vor_x = vor_x * efis_zoom		-- zoom
 				vor_y = vor_y * efis_zoom		-- zoom
 				
@@ -15662,10 +15593,10 @@ function B738_vor_sel()
 					vor_y = vor_y + 4.1	-- adjust center
 				end
 				
-				if vor_y > 7.5 or vor_y < 0 then
+				if vor_y > 11.0 or vor_y < -15.0 then
 					out_of_range = 1
 				end
-				if vor_x < -6.0 or vor_x > 6.0 then
+				if vor_x < -15.0 or vor_x > 15.0 then
 					out_of_range = 1
 				end
 				
@@ -15786,66 +15717,33 @@ function B738_vor_sel()
 				
 				vor_bearing = simDR_nav1_bearing
 				vor_distance = simDR_nav1_dme
-				vor_bear_l = (vor_hdg + 270) % 360
-				vor_bear_r = (vor_hdg + 90) % 360
-				if vor_hdg < vor_bear_r then
-					if vor_bearing >= vor_hdg and vor_bearing <= vor_bear_r then
-						vor_quadr = 1
-					end
-				end
-				if vor_hdg > vor_bear_l then
-					if vor_bearing >= vor_bear_l and vor_bearing <= vor_hdg then
-						vor_quadr = 2
-					end
-				end
-				if vor_hdg < vor_bear_l then
-					if vor_bearing >= vor_bear_l and vor_bearing <= 360 then
-						vor_quadr = 3
-					elseif vor_bearing >= 0 and vor_bearing <= vor_hdg then
-						vor_quadr = 4
-					end
-				end
-				if vor_hdg > vor_bear_r then
-					if vor_bearing >= vor_hdg and vor_bearing <= 360 then
-						vor_quadr = 5
-					elseif vor_bearing >= 0 and vor_bearing <= vor_bear_r then
-						vor_quadr = 6
-					end
+				
+				relative_brg = (vor_bearing - vor_hdg + 360) % 360
+				if relative_brg > 180 then
+					relative_brg = relative_brg - 360
 				end
 				
-				if vor_quadr == 1 then
-					vor_angle = vor_bearing - vor_hdg
-					vor_angle = math.rad(vor_angle)
+				if relative_brg >= 0 and relative_brg < 90 then
+					vor_angle = math.rad(relative_brg)
 					vor_y = vor_distance * math.cos(vor_angle)
 					vor_x = vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 2 then
-					vor_angle = vor_hdg - vor_bearing
+				elseif relative_brg >= 90 and relative_brg <= 180 then
+					vor_angle = math.rad(relative_brg - 90)
+					vor_x = vor_distance * math.cos(vor_angle)
+					vor_y = -vor_distance * math.sin(vor_angle)
+				elseif relative_brg >= -180 and relative_brg < -90 then
+					vor_angle = -relative_brg
+					vor_angle = math.rad(vor_angle - 90)
+					vor_x = -vor_distance * math.cos(vor_angle)
+					vor_y = -vor_distance * math.sin(vor_angle)
+				elseif relative_brg >= -90 and relative_brg < 0 then
+					vor_angle = -relative_brg
 					vor_angle = math.rad(vor_angle)
 					vor_y = vor_distance * math.cos(vor_angle)
 					vor_x = -vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 3 then
-					vor_angle = 360 - vor_bearing + vor_hdg
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = -vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 4 then
-					vor_angle = vor_hdg - vor_bearing
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = -vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 5 then
-					vor_angle = vor_bearing - vor_hdg
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 6 then
-					vor_angle = 360 - vor_hdg + vor_bearing
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = vor_distance * math.sin(vor_angle)
-				else
-					out_of_range = 1
 				end
+				
+				out_of_range = 0
 				if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 					efis_zoom = 2
 				elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
@@ -15860,10 +15758,6 @@ function B738_vor_sel()
 					out_of_range = 1
 				end
 				
-				if B738DR_fo_exp_map_mode == 0 then
-					efis_zoom = efis_zoom / 2
-				end
-				
 				vor_x = vor_x * efis_zoom		-- zoom
 				vor_y = vor_y * efis_zoom		-- zoom
 				
@@ -15873,10 +15767,10 @@ function B738_vor_sel()
 					vor_y = vor_y + 4.1	-- adjust center
 				end
 				
-				if vor_y > 7.5 or vor_y < 0 then
+				if vor_y > 11.0 or vor_y < -15.0 then
 					out_of_range = 1
 				end
-				if vor_x < -6.0 or vor_x > 6.0 then
+				if vor_x < -15.0 or vor_x > 15.0 then
 					out_of_range = 1
 				end
 				
@@ -15957,66 +15851,32 @@ function B738_vor_sel()
 				
 				vor_bearing = simDR_nav2_bearing
 				vor_distance = simDR_nav2_dme
-				vor_bear_l = (vor_hdg + 270) % 360
-				vor_bear_r = (vor_hdg + 90) % 360
-				if vor_hdg < vor_bear_r then
-					if vor_bearing >= vor_hdg and vor_bearing <= vor_bear_r then
-						vor_quadr = 1
-					end
-				end
-				if vor_hdg > vor_bear_l then
-					if vor_bearing >= vor_bear_l and vor_bearing <= vor_hdg then
-						vor_quadr = 2
-					end
-				end
-				if vor_hdg < vor_bear_l then
-					if vor_bearing >= vor_bear_l and vor_bearing <= 360 then
-						vor_quadr = 3
-					elseif vor_bearing >= 0 and vor_bearing <= vor_hdg then
-						vor_quadr = 4
-					end
-				end
-				if vor_hdg > vor_bear_r then
-					if vor_bearing >= vor_hdg and vor_bearing <= 360 then
-						vor_quadr = 5
-					elseif vor_bearing >= 0 and vor_bearing <= vor_bear_r then
-						vor_quadr = 6
-					end
+				
+				relative_brg = (vor_bearing - vor_hdg + 360) % 360
+				if relative_brg > 180 then
+					relative_brg = relative_brg - 360
 				end
 				
-				if vor_quadr == 1 then
-					vor_angle = vor_bearing - vor_hdg
-					vor_angle = math.rad(vor_angle)
+				if relative_brg >= 0 and relative_brg < 90 then
+					vor_angle = math.rad(relative_brg)
 					vor_y = vor_distance * math.cos(vor_angle)
 					vor_x = vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 2 then
-					vor_angle = vor_hdg - vor_bearing
+				elseif relative_brg >= 90 and relative_brg <= 180 then
+					vor_angle = math.rad(relative_brg - 90)
+					vor_x = vor_distance * math.cos(vor_angle)
+					vor_y = -vor_distance * math.sin(vor_angle)
+				elseif relative_brg >= -180 and relative_brg < -90 then
+					vor_angle = -relative_brg
+					vor_angle = math.rad(vor_angle - 90)
+					vor_x = -vor_distance * math.cos(vor_angle)
+					vor_y = -vor_distance * math.sin(vor_angle)
+				elseif relative_brg >= -90 and relative_brg < 0 then
+					vor_angle = -relative_brg
 					vor_angle = math.rad(vor_angle)
 					vor_y = vor_distance * math.cos(vor_angle)
 					vor_x = -vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 3 then
-					vor_angle = 360 - vor_bearing + vor_hdg
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = -vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 4 then
-					vor_angle = vor_hdg - vor_bearing
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = -vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 5 then
-					vor_angle = vor_bearing - vor_hdg
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = vor_distance * math.sin(vor_angle)
-				elseif vor_quadr == 6 then
-					vor_angle = 360 - vor_hdg + vor_bearing
-					vor_angle = math.rad(vor_angle)
-					vor_y = vor_distance * math.cos(vor_angle)
-					vor_x = vor_distance * math.sin(vor_angle)
-				else
-					out_of_range = 1
 				end
+				
 				if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 					efis_zoom = 2
 				elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
@@ -16031,10 +15891,6 @@ function B738_vor_sel()
 					out_of_range = 1
 				end
 				
-				if B738DR_fo_exp_map_mode == 0 then
-					efis_zoom = efis_zoom / 2
-				end
-				
 				vor_x = vor_x * efis_zoom		-- zoom
 				vor_y = vor_y * efis_zoom		-- zoom
 				
@@ -16044,10 +15900,10 @@ function B738_vor_sel()
 					vor_y = vor_y + 4.1	-- adjust center
 				end
 				
-				if vor_y > 7.5 or vor_y < 0 then
+				if vor_y > 11.0 or vor_y < -15.0 then
 					out_of_range = 1
 				end
-				if vor_x < -6.0 or vor_x > 6.0 then
+				if vor_x < -15.0 or vor_x > 15.0 then
 					out_of_range = 1
 				end
 				

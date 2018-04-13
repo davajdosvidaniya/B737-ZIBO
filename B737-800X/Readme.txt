@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.257
+-----
+- graphics correction on ND
+- fixed small bugs
+
 3.256:
 ------
 - fixed bugs (FMC freeze)

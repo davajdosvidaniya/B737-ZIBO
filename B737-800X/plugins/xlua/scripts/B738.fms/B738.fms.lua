@@ -1113,6 +1113,11 @@ ff_sample = 0
 	
 	item_sel = 0
 	item_sel2 = 0
+	item_sel_act = 0
+	item_sel_len = 0
+	item_sel_act2 = 0
+	item_sel_len2 = 0
+	
 	
 	item_sel_via = 0
 	item_sel_via2 = 0
@@ -18103,6 +18108,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					fix_data[fix_data_num][37] = 0	-- dtg calc
 					fix_data[fix_data_num][38] = 0	-- alt calc
 					item_sel = 0
+					item_sel_act = 0
 					entry = ""
 				else
 					-- add new fix from sel desires
@@ -18184,9 +18190,11 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							rte_add_wpt(item, entry, 0)
 						end
 						item_sel = 0
+						item_sel_act = 0
 					elseif jj ~= nil then
 						rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 						item_sel = 0
+						item_sel_act = 0
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
@@ -18220,6 +18228,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						entry = ""
 					end
 					item_sel = 0
+					item_sel_act = 0
 				elseif string.len(entry) > 1 and string.len(entry) < 6 and item_sel == 0 then
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
@@ -18249,9 +18258,11 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						legs_intdir_crs_mod = (nd_hdg + simDR_mag_variation) % 360
 					end
 					item_sel = 0
+					item_sel_act = 0
 				elseif jj ~= nil then
 					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					item_sel = 0
+					item_sel_act = 0
 				elseif wpt_lat_lon(entry) == true and item_sel == 0 then
 						legs_data2[item][31] = "TF"
 						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
@@ -18279,27 +18290,35 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 								if legs_data2[item][1] == "DISCONTINUITY" then
 									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel = 0
+									item_sel_act = 0
 								else
 									item_sel = item
 									entry = legs_data2[item][1]
+									item_sel_act = item
+									item_sel_len = string.len(entry)
 								end
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
+								item_sel_act = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
+								item_sel_act = 0
 							else
 								item_sel = item
 								entry = legs_data2[item][1]
+								item_sel_act = item
+								item_sel_len = string.len(entry)
 							end
 						end
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel = 0
+						item_sel_act = 0
 					end
 				else
 					if offset_act == 3 then
@@ -18342,6 +18361,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							end
 							entry = ""
 							item_sel = 0
+							item_sel_act = 0
 							legs_delete = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
@@ -18400,9 +18420,11 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						end
 						entry = ""
 						item_sel = 0
+						item_sel_act = 0
 						legs_delete = 1
 					end
 					item_sel = 0
+					item_sel_act = 0
 				end
 			end
 		elseif page_takeoff == 1 then
@@ -19608,6 +19630,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					item_sel = 0
+					item_sel_act = 0
 				else
 					add_fmc_msg(INVALID_INPUT, 1)
 				end
@@ -19648,9 +19671,11 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						rte_add_wpt(item, entry, 0)
 					end
 					item_sel = 0
+					item_sel_act = 0
 				elseif jj ~= nil then
 					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					item_sel = 0
+					item_sel_act = 0
 				elseif wpt_lat_lon(entry) == true and item_sel == 0 then
 						legs_data2[item][31] = "TF"
 						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
@@ -19662,27 +19687,35 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								if legs_data2[item][1] == "DISCONTINUITY" then
 									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel = 0
+									item_sel_act = 0
 								else
 									item_sel = item
 									entry = legs_data2[item][1]
+									item_sel_act = item
+									item_sel_len = string.len(entry)
 								end
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
+								item_sel_act = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
+								item_sel_act = 0
 							else
 								item_sel = item
 								entry = legs_data2[item][1]
+								item_sel_act = item
+								item_sel_len = string.len(entry)
 							end
 						end
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel = 0
+						item_sel_act = 0
 					end
 				else
 					if offset_act == 3 then
@@ -19707,6 +19740,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 							end
 							entry = ""
 							item_sel = 0
+							item_sel_act = 0
 							legs_delete = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
@@ -19732,9 +19766,11 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						end
 						entry = ""
 						item_sel = 0
+						item_sel_act = 0
 						legs_delete = 1
 					end
 					item_sel = 0
+					item_sel_act = 0
 				end
 			end
 		elseif page_pos_init == 1 and in_flight_mode == 0 then	-- only on the ground
@@ -20953,6 +20989,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					item_sel = 0
+					item_sel_act = 0
 				else
 					add_fmc_msg(INVALID_INPUT, 1)
 				end
@@ -20993,9 +21030,11 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						rte_add_wpt(item, entry, 0)
 					end
 					item_sel = 0
+					item_sel_act = 0
 				elseif jj ~= nil then
 					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					item_sel = 0
+					item_sel_act = 0
 				elseif wpt_lat_lon(entry) == true and item_sel == 0 then
 						legs_data2[item][31] = "TF"
 						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
@@ -21007,27 +21046,35 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 								if legs_data2[item][1] == "DISCONTINUITY" then
 									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel = 0
+									item_sel_act = 0
 								else
 									item_sel = item
 									entry = legs_data2[item][1]
+									item_sel_act = item
+									item_sel_len = string.len(entry)
 								end
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
+								item_sel_act = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
+								item_sel_act = 0
 							else
 								item_sel = item
 								entry = legs_data2[item][1]
+								item_sel_act = item
+								item_sel_len = string.len(entry)
 							end
 						end
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel = 0
+						item_sel_act = 0
 					end
 				else
 					if offset_act == 3 then
@@ -21052,6 +21099,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							end
 							entry = ""
 							item_sel = 0
+							item_sel_act = 0
 							legs_delete = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
@@ -21077,9 +21125,11 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						end
 						entry = ""
 						item_sel = 0
+						item_sel_act = 0
 						legs_delete = 1
 					end
 					item_sel = 0
+					item_sel_act = 0
 				end
 			end
 		elseif page_takeoff == 1 then
@@ -21886,6 +21936,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					item_sel = 0
+					item_sel_act = 0
 				else
 					add_fmc_msg(INVALID_INPUT, 1)
 				end
@@ -21926,9 +21977,11 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						rte_add_wpt(item, entry, 0)
 					end
 					item_sel = 0
+					item_sel_act = 0
 				elseif jj ~= nil then
 					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					item_sel = 0
+					item_sel_act = 0
 				elseif wpt_lat_lon(entry) == true and item_sel == 0 then
 						legs_data2[item][31] = "TF"
 						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
@@ -21940,27 +21993,35 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 								if legs_data2[item][1] == "DISCONTINUITY" then
 									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel = 0
+									item_sel_act = 0
 								else
 									item_sel = item
 									entry = legs_data2[item][1]
+									item_sel_act = item
+									item_sel_len = string.len(entry)
 								end
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
+								item_sel_act = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
+								item_sel_act = 0
 							else
 								item_sel = item
 								entry = legs_data2[item][1]
+								item_sel_act = item
+								item_sel_len = string.len(entry)
 							end
 						end
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel = 0
+						item_sel_act = 0
 					end
 				else
 					if offset_act == 3 then
@@ -21985,6 +22046,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 							end
 							entry = ""
 							item_sel = 0
+							item_sel_act = 0
 							legs_delete = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
@@ -22010,9 +22072,11 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						end
 						entry = ""
 						item_sel = 0
+						item_sel_act = 0
 						legs_delete = 1
 					end
 					item_sel = 0
+					item_sel_act = 0
 				end
 			end
 		elseif page_init == 1 then
@@ -22759,6 +22823,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					item_sel = 0
+					item_sel_act = 0
 				else
 					add_fmc_msg(INVALID_INPUT, 1)
 				end
@@ -22798,14 +22863,17 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 						rte_add_wpt(item, entry, 0)
 					end
 					item_sel = 0
+					item_sel_act = 0
 				elseif jj ~= nil then
 					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					item_sel = 0
+					item_sel_act = 0
 				elseif wpt_lat_lon(entry) == true and item_sel == 0 then
 						--custom lat/lon wpt
 						legs_data2[item][31] = "TF"
 						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
 						item_sel = 0
+						item_sel_act = 0
 				elseif item_sel == 0 then
 					if string.len(entry) == 0 then
 						if offset_act == 3 then
@@ -22814,27 +22882,35 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 								if legs_data2[item][1] == "DISCONTINUITY" then
 									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel = 0
+									item_sel_act = 0
 								else
 									item_sel = item
 									entry = legs_data2[item][1]
+									item_sel_act = item
+									item_sel_len = string.len(entry)
 								end
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
+								item_sel_act = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel = 0
+								item_sel_act = 0
 							else
 								item_sel = item
 								entry = legs_data2[item][1]
+								item_sel_act = item
+								item_sel_len = string.len(entry)
 							end
 						end
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel = 0
+						item_sel_act = 0
 					end
 				else
 					if offset_act == 3 then
@@ -22860,10 +22936,12 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 							entry = ""
 							item_sel = 0
 							item_sel_via = 0
+							item_sel_act = 0
 							legs_delete = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 							item_sel = 0
+							item_sel_act = 0
 							item_sel_via = 0
 						end
 					else
@@ -22887,6 +22965,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 						end
 						entry = ""
 						item_sel = 0
+						item_sel_act = 0
 						item_sel_via = 0
 						legs_delete = 1
 					end
@@ -23370,6 +23449,7 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 							act_page = 1
 							new_hold = 0
 							item_sel = 0
+							item_sel_act = 0
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
@@ -23386,6 +23466,7 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 					hold_exec = 0
 					new_hold_idx = 0
 					item_sel = 0
+					item_sel_act = 0
 					item_sel_via = 0
 				else
 					hold_term = 0
@@ -26357,6 +26438,7 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 						page_rte_init = 0
 						page_offset = 1
 						item_sel = 0
+						item_sel_act = 0
 						item_sel_via = 0
 					end
 				else
@@ -26379,6 +26461,7 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 							page_rte_init = 0
 							page_offset = 1
 							item_sel = 0
+							item_sel_act = 0
 							item_sel_via = 0
 						end
 					end
@@ -26460,6 +26543,7 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 							if in_flight_mode == 1 then
 								-- HOLD at PPOS
 								item_sel = 0
+								item_sel_act = 0
 								item_sel_via = 0
 								new_hold_wpt = "PPOS"
 								entry = ""
@@ -26904,13 +26988,25 @@ function B738_fmc1_clr_CMDhandler(phase, duration)
 				if string.sub(entry, 1, 1) == ">" then
 					entry = ""
 				elseif fmc1_msg_alt == 0 then
+					if item_sel_act > 0 then
+						if lenstr <= item_sel_len then
+							item_sel = 0
+							item_sel_act = 0
+						elseif lenstr == item_sel_len + 1 then
+							if item_sel_act ~= 0 then
+								item_sel = item_sel_act
+							else
+								item_sel = 0
+							end
+						end
+					end
 					entry = string.sub(entry, 1, -2)
 				end
 				display_update = 1
 			end
 		end
 		
-		item_sel = 0
+		--item_sel = 0
 		item_sel_via = 0
 		
 		--fmc1_msg_alt_rst = 0
@@ -26941,6 +27037,7 @@ function B738_fmc1_del_CMDhandler(phase, duration)
 		end
 		item_sel = 0
 		item_sel_via = 0
+		item_sel_act = 0
 		display_update = 1
 		
 	elseif phase == 2 then
@@ -28018,6 +28115,7 @@ function B738_fmc1_A_CMDhandler(phase, duration)
 			entry = (entry .. "A")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28030,6 +28128,7 @@ function B738_fmc1_B_CMDhandler(phase, duration)
 			entry = (entry .. "B")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28042,6 +28141,7 @@ function B738_fmc1_C_CMDhandler(phase, duration)
 			entry = (entry .. "C")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28054,6 +28154,7 @@ function B738_fmc1_D_CMDhandler(phase, duration)
 			entry = (entry .. "D")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28066,6 +28167,7 @@ function B738_fmc1_E_CMDhandler(phase, duration)
 			entry = (entry .. "E")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28078,6 +28180,7 @@ function B738_fmc1_F_CMDhandler(phase, duration)
 			entry = (entry .. "F")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28090,6 +28193,7 @@ function B738_fmc1_G_CMDhandler(phase, duration)
 			entry = (entry .. "G")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28102,6 +28206,7 @@ function B738_fmc1_H_CMDhandler(phase, duration)
 			entry = (entry .. "H")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28114,6 +28219,7 @@ function B738_fmc1_I_CMDhandler(phase, duration)
 			entry = (entry .. "I")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28126,6 +28232,7 @@ function B738_fmc1_J_CMDhandler(phase, duration)
 			entry = (entry .. "J")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28138,6 +28245,7 @@ function B738_fmc1_K_CMDhandler(phase, duration)
 			entry = (entry .. "K")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28150,6 +28258,7 @@ function B738_fmc1_L_CMDhandler(phase, duration)
 			entry = (entry .. "L")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28162,6 +28271,7 @@ function B738_fmc1_M_CMDhandler(phase, duration)
 			entry = (entry .. "M")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28174,6 +28284,7 @@ function B738_fmc1_N_CMDhandler(phase, duration)
 			entry = (entry .. "N")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28186,6 +28297,7 @@ function B738_fmc1_O_CMDhandler(phase, duration)
 			entry = (entry .. "O")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28198,6 +28310,7 @@ function B738_fmc1_P_CMDhandler(phase, duration)
 			entry = (entry .. "P")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28210,6 +28323,7 @@ function B738_fmc1_Q_CMDhandler(phase, duration)
 			entry = (entry .. "Q")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28222,6 +28336,7 @@ function B738_fmc1_R_CMDhandler(phase, duration)
 			entry = (entry .. "R")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28234,6 +28349,7 @@ function B738_fmc1_S_CMDhandler(phase, duration)
 			entry = (entry .. "S")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28246,6 +28362,7 @@ function B738_fmc1_T_CMDhandler(phase, duration)
 			entry = (entry .. "T")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28258,6 +28375,7 @@ function B738_fmc1_U_CMDhandler(phase, duration)
 			entry = (entry .. "U")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28270,6 +28388,7 @@ function B738_fmc1_V_CMDhandler(phase, duration)
 			entry = (entry .. "V")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28282,6 +28401,7 @@ function B738_fmc1_W_CMDhandler(phase, duration)
 			entry = (entry .. "W")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28294,6 +28414,7 @@ function B738_fmc1_X_CMDhandler(phase, duration)
 			entry = (entry .. "X")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28306,6 +28427,7 @@ function B738_fmc1_Y_CMDhandler(phase, duration)
 			entry = (entry .. "Y")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28318,6 +28440,7 @@ function B738_fmc1_Z_CMDhandler(phase, duration)
 			entry = (entry .. "Z")
 		end
 		item_sel = 0
+		item_sel_act = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28329,7 +28452,7 @@ function B738_fmc1_SP_CMDhandler(phase, duration)
 		if string.len(entry) < 24 then
 			entry = (entry .. " ")
 		end
-		item_sel = 0
+		--item_sel = 0
 		item_sel_via = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28627,6 +28750,8 @@ function B738_fmc2_A_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "A")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28638,6 +28763,8 @@ function B738_fmc2_B_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "B")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28649,6 +28776,8 @@ function B738_fmc2_C_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "C")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28660,6 +28789,8 @@ function B738_fmc2_D_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "D")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28671,6 +28802,8 @@ function B738_fmc2_E_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "E")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28682,6 +28815,8 @@ function B738_fmc2_F_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "F")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28693,6 +28828,8 @@ function B738_fmc2_G_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "G")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28704,6 +28841,8 @@ function B738_fmc2_H_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "H")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28715,6 +28854,8 @@ function B738_fmc2_I_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "I")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28726,6 +28867,8 @@ function B738_fmc2_J_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "J")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28737,6 +28880,8 @@ function B738_fmc2_K_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "K")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28748,6 +28893,8 @@ function B738_fmc2_L_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "L")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28759,6 +28906,8 @@ function B738_fmc2_M_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "M")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28770,6 +28919,8 @@ function B738_fmc2_N_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "N")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28781,6 +28932,8 @@ function B738_fmc2_O_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "O")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28792,6 +28945,8 @@ function B738_fmc2_P_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "P")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28803,6 +28958,8 @@ function B738_fmc2_Q_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "Q")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28814,6 +28971,8 @@ function B738_fmc2_R_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "R")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28825,6 +28984,8 @@ function B738_fmc2_S_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "S")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28836,6 +28997,8 @@ function B738_fmc2_T_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "T")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28847,6 +29010,8 @@ function B738_fmc2_U_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "U")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28858,6 +29023,8 @@ function B738_fmc2_V_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "V")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28869,6 +29036,8 @@ function B738_fmc2_W_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "W")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28880,6 +29049,8 @@ function B738_fmc2_X_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "X")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28891,6 +29062,8 @@ function B738_fmc2_Y_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "Y")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -28902,6 +29075,8 @@ function B738_fmc2_Z_CMDhandler(phase, duration)
 		if string.len(entry2) < 24 then
 			entry2 = (entry2 .. "Z")
 		end
+		item_sel2 = 0
+		item_sel_act2 = 0
 		item_sel_via2 = 0
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -29083,7 +29258,6 @@ function B738_fmc2_clr_CMDhandler(phase, duration)
 		B738DR_fms_key = 1
 		
 		local lenstr = string.len(entry2)
-		
 		if fmc_message_num ~= 0 then
 			fmc_message_num = fmc_message_num - 1
 			display_update = 1
@@ -29094,17 +29268,30 @@ function B738_fmc2_clr_CMDhandler(phase, duration)
 			elseif lenstr > 1 then
 				if string.sub(entry2, 1, 1) == ">" then
 					entry2 = ""
-				elseif fmc2_msg_light == 0 then
+				elseif fmc1_msg_alt == 0 then
+					if item_sel_act2 > 0 then
+						if lenstr <= item_sel_len2 then
+							item_sel2 = 0
+							item_sel_act2 = 0
+						elseif lenstr == item_sel_len2 + 1 then
+							if item_sel_act2 ~= 0 then
+								item_sel2 = item_sel_act2
+							else
+								item_sel2 = 0
+							end
+						end
+					end
 					entry2 = string.sub(entry2, 1, -2)
 				end
 				display_update = 1
 			end
 		end
 		
-		item_sel2 = 0
+		--item_sel2 = 0
 		item_sel_via2 = 0
 		
-		fmc2_msg_light = 0
+		--fmc1_msg_alt_rst = 0
+		fmc1_msg_alt = 0
 		
 	elseif phase == 1 then
 		if duration > 1 then
@@ -29114,6 +29301,48 @@ function B738_fmc2_clr_CMDhandler(phase, duration)
 	elseif phase == 2 then
 		B738DR_fms_key = 0
 	end
+	
+	
+	
+	
+	
+	
+	
+	-- if phase == 0 then
+		-- B738DR_fms_key = 1
+		
+		-- local lenstr = string.len(entry2)
+		
+		-- if fmc_message_num ~= 0 then
+			-- fmc_message_num = fmc_message_num - 1
+			-- display_update = 1
+		-- else
+			-- if lenstr == 1 then
+				-- entry2 = ""
+				-- display_update = 1
+			-- elseif lenstr > 1 then
+				-- if string.sub(entry2, 1, 1) == ">" then
+					-- entry2 = ""
+				-- elseif fmc2_msg_light == 0 then
+					-- entry2 = string.sub(entry2, 1, -2)
+				-- end
+				-- display_update = 1
+			-- end
+		-- end
+		
+		-- item_sel2 = 0
+		-- item_sel_via2 = 0
+		
+		-- fmc2_msg_light = 0
+		
+	-- elseif phase == 1 then
+		-- if duration > 1 then
+			-- entry2 = ""
+			-- fmc_message_num = 0
+		-- end
+	-- elseif phase == 2 then
+		-- B738DR_fms_key = 0
+	-- end
 	
 end
 
@@ -29132,6 +29361,7 @@ function B738_fmc2_del_CMDhandler(phase, duration)
 		end
 		item_sel2 = 0
 		item_sel_via2 = 0
+		item_sel_act2 = 0
 		display_update = 1
 	elseif phase == 2 then
 		B738DR_fms_key = 0
@@ -29563,6 +29793,7 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 					fix_data[fix_data_num][37] = 0	-- dtg calc
 					fix_data[fix_data_num][38] = 0	-- alt calc
 					item_sel2 = 0
+					item_sel_act2 = 0
 					entry2 = ""
 				else
 					-- add new fix from sel desires
@@ -29644,9 +29875,11 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 							rte_add_wpt(item, entry2, 1)
 						end
 						item_sel2 = 0
+						item_sel_act2 = 0
 					elseif jj ~= nil then
 						rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 						item_sel2 = 0
+						item_sel_act2 = 0
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
@@ -29680,6 +29913,7 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 						entry2 = ""
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				elseif string.len(entry2) > 1 and string.len(entry2) < 6 and item_sel2 == 0 then
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
@@ -29709,9 +29943,11 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 						legs_intdir_crs_mod = (nd_hdg + simDR_mag_variation) % 360
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				elseif jj ~= nil then
 					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					item_sel2 = 0
+					item_sel_act2 = 0
 				elseif wpt_lat_lon(entry2) == true and item_sel2 == 0 then
 						legs_data2[item][31] = "TF"
 						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
@@ -29739,27 +29975,35 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 								if legs_data2[item][1] == "DISCONTINUITY" then
 									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel2 = 0
+									item_sel_act2 = 0
 								else
 									item_sel2 = item
 									entry2 = legs_data2[item][1]
+									item_sel_act2 = item
+									item_sel_len2 = string.len(entry2)
 								end
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel2 = 0
+								item_sel_act2 = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel2 = 0
+								item_sel_act2 = 0
 							else
 								item_sel2 = item
 								entry2 = legs_data2[item][1]
+								item_sel_act2 = item
+								item_sel_len2 = string.len(entry2)
 							end
 						end
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel2 = 0
+						item_sel_act2 = 0
 					end
 				else
 					if offset_act == 3 then
@@ -29802,6 +30046,7 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 							end
 							entry2 = ""
 							item_sel2 = 0
+							item_sel_act2 = 0
 							legs_delete = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
@@ -29860,9 +30105,11 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 						end
 						entry2 = ""
 						item_sel2 = 0
+						item_sel_act2 = 0
 						legs_delete = 1
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				end
 			end
 		elseif page_takeoff2 == 1 then
@@ -31068,6 +31315,7 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				else
 					add_fmc_msg(INVALID_INPUT, 1)
 				end
@@ -31108,9 +31356,11 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 						rte_add_wpt(item, entry2, 1)
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				elseif jj ~= nil then
 					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					item_sel2 = 0
+					item_sel_act2 = 0
 				elseif wpt_lat_lon(entry2) == true and item_sel2 == 0 then
 						legs_data2[item][31] = "TF"
 						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
@@ -31122,27 +31372,35 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 								if legs_data2[item][1] == "DISCONTINUITY" then
 									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel2 = 0
+									item_sel_act2 = 0
 								else
 									item_sel2 = item
 									entry2 = legs_data2[item][1]
+									item_sel_act2 = item
+									item_sel_len2 = string.len(entry2)
 								end
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel2 = 0
+								item_sel_act2 = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel2 = 0
+								item_sel_act2 = 0
 							else
 								item_sel2 = item
 								entry2 = legs_data2[item][1]
+								item_sel_act2 = item
+								item_sel_len2 = string.len(entry2)
 							end
 						end
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel2 = 0
+						item_sel_act2 = 0
 					end
 				else
 					if offset_act == 3 then
@@ -31167,6 +31425,7 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 							end
 							entry2 = ""
 							item_sel2 = 0
+							item_sel_act2 = 0
 							legs_delete = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
@@ -31192,9 +31451,11 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 						end
 						entry2 = ""
 						item_sel2 = 0
+						item_sel_act2 = 0
 						legs_delete = 1
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				end
 			end
 		elseif page_pos_init2 == 1 and in_flight_mode == 0 then	-- only on the ground
@@ -32413,6 +32674,7 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				else
 					add_fmc_msg(INVALID_INPUT, 1)
 				end
@@ -32453,9 +32715,11 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 						rte_add_wpt(item, entry2, 1)
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				elseif jj ~= nil then
 					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					item_sel2 = 0
+					item_sel_act2 = 0
 				elseif wpt_lat_lon(entry2) == true and item_sel2 == 0 then
 						legs_data2[item][31] = "TF"
 						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
@@ -32467,27 +32731,35 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 								if legs_data2[item][1] == "DISCONTINUITY" then
 									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel2 = 0
+									item_sel_act2 = 0
 								else
 									item_sel2 = item
 									entry2 = legs_data2[item][1]
+									item_sel_act2 = item
+									item_sel_len2 = string.len(entry2)
 								end
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel2 = 0
+								item_sel_act2 = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel2 = 0
+								item_sel_act2 = 0
 							else
 								item_sel2 = item
 								entry2 = legs_data2[item][1]
+								item_sel_act2 = item
+								item_sel_len2 = string.len(entry2)
 							end
 						end
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel2 = 0
+						item_sel_act2 = 0
 					end
 				else
 					if offset_act == 3 then
@@ -32512,6 +32784,7 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 							end
 							entry2 = ""
 							item_sel2 = 0
+							item_sel_act2 = 0
 							legs_delete = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
@@ -32537,9 +32810,11 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 						end
 						entry2 = ""
 						item_sel2 = 0
+						item_sel_act2 = 0
 						legs_delete = 1
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				end
 			end
 		elseif page_takeoff2 == 1 then
@@ -33346,6 +33621,7 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				else
 					add_fmc_msg(INVALID_INPUT, 1)
 				end
@@ -33386,9 +33662,11 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 						rte_add_wpt(item, entry2, 1)
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				elseif jj ~= nil then
 					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					item_sel2 = 0
+					item_sel_act2 = 0
 				elseif wpt_lat_lon(entry2) == true and item_sel2 == 0 then
 						legs_data2[item][31] = "TF"
 						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
@@ -33400,27 +33678,35 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 								if legs_data2[item][1] == "DISCONTINUITY" then
 									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel2 = 0
+									item_sel_act2 = 0
 								else
 									item_sel2 = item
 									entry2 = legs_data2[item][1]
+									item_sel_act2 = item
+									item_sel_len2 = string.len(entry2)
 								end
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel2 = 0
+								item_sel_act2 = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel2 = 0
+								item_sel_act2 = 0
 							else
 								item_sel2 = item
 								entry2 = legs_data2[item][1]
+								item_sel_act2 = item
+								item_sel_len2 = string.len(entry2)
 							end
 						end
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel2 = 0
+						item_sel_act2 = 0
 					end
 				else
 					if offset_act == 3 then
@@ -33445,6 +33731,7 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 							end
 							entry2 = ""
 							item_sel2 = 0
+							item_sel_act2 = 0
 							legs_delete = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
@@ -33470,9 +33757,11 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 						end
 						entry2 = ""
 						item_sel2 = 0
+						item_sel_act2 = 0
 						legs_delete = 1
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				end
 			end
 		elseif page_init2 == 1 then
@@ -34219,6 +34508,7 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				else
 					add_fmc_msg(INVALID_INPUT, 1)
 				end
@@ -34258,14 +34548,17 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 						rte_add_wpt(item, entry2, 1)
 					end
 					item_sel2 = 0
+					item_sel_act2 = 0
 				elseif jj ~= nil then
 					rte_add_wpt3(item, string.sub(entry2, 1, jj-4), string.sub(entry2, jj-3, jj-1), string.sub(entry2, jj+1, -1), entry2, 1)
 					item_sel2 = 0
+					item_sel_act2 = 0
 				elseif wpt_lat_lon(entry2) == true and item_sel2 == 0 then
 						--custom lat/lon wpt
 						legs_data2[item][31] = "TF"
 						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry2, 1)
 						item_sel2 = 0
+						item_sel_act2 = 0
 				elseif item_sel2 == 0 then
 					if string.len(entry2) == 0 then
 						if offset_act == 3 then
@@ -34274,27 +34567,35 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 								if legs_data2[item][1] == "DISCONTINUITY" then
 									add_fmc_msg(INVALID_INPUT, 1)
 									item_sel2 = 0
+									item_sel_act2 = 0
 								else
 									item_sel2 = item
 									entry2 = legs_data2[item][1]
+									item_sel_act2 = item
+									item_sel_len2 = string.len(entry2)
 								end
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel2 = 0
+								item_sel_act2 = 0
 							end
 						else
 							-- select item
 							if legs_data2[item][1] == "DISCONTINUITY" then
 								add_fmc_msg(INVALID_INPUT, 1)
 								item_sel2 = 0
+								item_sel_act2 = 0
 							else
 								item_sel2 = item
 								entry2 = legs_data2[item][1]
+								item_sel_act2 = item
+								item_sel_len2 = string.len(entry2)
 							end
 						end
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 						item_sel2 = 0
+						item_sel_act2 = 0
 					end
 				else
 					if offset_act == 3 then
@@ -34319,11 +34620,13 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 							end
 							entry2 = ""
 							item_sel2 = 0
+							item_sel_act2 = 0
 							item_sel_via2 = 0
 							legs_delete = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 							item_sel2 = 0
+							item_sel_act2 = 0
 							item_sel_via2 = 0
 						end
 					else
@@ -34347,6 +34650,7 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 						end
 						entry2 = ""
 						item_sel2 = 0
+						item_sel_act2 = 0
 						item_sel_via2 = 0
 						legs_delete = 1
 					end
@@ -34830,6 +35134,7 @@ function B738_fmc2_6L_CMDhandler(phase, duration)
 							act_page2 = 1
 							new_hold2 = 0
 							item_sel2 = 0
+							item_sel_act2 = 0
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
@@ -34846,6 +35151,7 @@ function B738_fmc2_6L_CMDhandler(phase, duration)
 					hold_exec = 0
 					new_hold_idx = 0
 					item_sel2 = 0
+					item_sel_act2 = 0
 					item_sel_via2 = 0
 				else
 					hold_term = 0
@@ -37816,6 +38122,7 @@ function B738_fmc2_6R_CMDhandler(phase, duration)
 						page_rte_init2 = 0
 						page_offset2 = 1
 						item_sel2 = 0
+						item_sel_act2 = 0
 						item_sel_via2 = 0
 					end
 				else
@@ -37838,6 +38145,7 @@ function B738_fmc2_6R_CMDhandler(phase, duration)
 							page_rte_init2 = 0
 							page_offset2 = 1
 							item_sel2 = 0
+							item_sel_act2 = 0
 							item_sel_via2 = 0
 						end
 					end
@@ -37919,6 +38227,7 @@ function B738_fmc2_6R_CMDhandler(phase, duration)
 							if in_flight_mode == 1 then
 								-- HOLD at PPOS
 								item_sel2 = 0
+								item_sel_act2 = 0
 								item_sel_via2 = 0
 								new_hold_wpt = "PPOS"
 								entry2 = ""
@@ -47522,7 +47831,10 @@ function B738_fmc_ac_atis()
 		line2_x = " AIRPORT                "
 		-- line2_l = "----                    "
 		line2_l = ac_atis_icao
-		line5_l = "                   SEND>"
+		line5_l = "                   SEND"
+		if acars_atis_status == 0 and ac_atis_icao ~= "----" then
+			line5_l = line5_l .. ">"
+		end
 		line6_x = "      " .. vhf_in_prog .. "  " .. atis_send_time
 		line6_l = "<RETURN            "
 		if atis_msg_status ~= 0 and acars_atis_status == 0 then
@@ -47598,7 +47910,7 @@ function B738_read_atis()
 			run_after_time(send_time, 0.9)
 		end
 		if is_timer_scheduled(send_timer) == false then
-			run_after_time(send_timer, 2.8)
+			run_after_time(send_timer, 2.9)
 		end
 		atis_time = ""
 		atis_message = {}
@@ -47667,9 +47979,9 @@ function B738_read_atis()
 										line_buf = pom + 1
 									end
 								end
-								file_atis:close()
-								acars_atis_status = 3
-								break
+								-- file_atis:close()
+								-- acars_atis_status = 3
+								-- break
 							end
 						end
 					end
@@ -47686,7 +47998,7 @@ function B738_read_atis()
 			acars_atis_status = 3
 		end
 	else
-		B738DR_fms_test3 = atis_msg_status
+		--B738DR_fms_test3 = atis_msg_status
 		if acars_atis_status == 0 and vhf_in_prog == "VHF IN PROG" then
 			if is_timer_scheduled(rst_vhf_prog) == false then
 				run_after_time(rst_vhf_prog, 1.5)
@@ -50019,11 +50331,14 @@ function B738_fmc_msg()
 	if fmc1_msg_alt == 1 then
 		fmc1_msg_light = 1
 	end
-	if fmc2_msg_alt == 0 then
-		fmc2_msg_light = 0
-	elseif fmc2_msg_alt == 1 then
+	if fmc2_msg_alt == 1 then
 		fmc2_msg_light = 1
 	end
+	-- if fmc2_msg_alt == 0 then
+		-- fmc2_msg_light = 0
+	-- elseif fmc2_msg_alt == 1 then
+		-- fmc2_msg_light = 1
+	-- end
 	
 	if fmc_message_num > 0 then
 		fmc1_msg_light = 1
@@ -59545,57 +59860,57 @@ function B738_displ_fix()
 							if ii == 1 then
 								if jj == 0 then
 									B738DR_fix_fo_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_0[ii-1] = 0
+									B738DR_fix_fo_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 1 then
 									B738DR_fix_fo_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_1[ii-1] = 0
+									B738DR_fix_fo_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 2 then
 									B738DR_fix_fo_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_2[ii-1] = 0
+									B738DR_fix_fo_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								end
 							elseif ii == 2 then
 								if jj == 0 then
 									B738DR_fix_fo_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_0[ii-1] = 0
+									B738DR_fix_fo_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 1 then
 									B738DR_fix_fo_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_1[ii-1] = 0
+									B738DR_fix_fo_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 2 then
 									B738DR_fix_fo_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_2[ii-1] = 0
+									B738DR_fix_fo_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								end
 							elseif ii == 3 then
 								if jj == 0 then
 									B738DR_fix_fo_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_0[ii-1] = 0
+									B738DR_fix_fo_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 1 then
 									B738DR_fix_fo_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_1[ii-1] = 0
+									B738DR_fix_fo_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 2 then
 									B738DR_fix_fo_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_2[ii-1] = 0
+									B738DR_fix_fo_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								end
 							elseif ii == 4 then
 								if jj == 0 then
 									B738DR_fix_fo_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_0[ii-1] = 0
+									B738DR_fix_fo_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 1 then
 									B738DR_fix_fo_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_1[ii-1] = 0
+									B738DR_fix_fo_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 2 then
 									B738DR_fix_fo_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_2[ii-1] = 0
+									B738DR_fix_fo_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								end
 							elseif ii == 5 then
 								if jj == 0 then
 									B738DR_fix_fo_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_0[ii-1] = 0
+									B738DR_fix_fo_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 1 then
 									B738DR_fix_fo_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_1[ii-1] = 0
+									B738DR_fix_fo_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 2 then
 									B738DR_fix_fo_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_fo_dist_2[ii-1] = 0
+									B738DR_fix_fo_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								end
 							end
 						else
@@ -67004,6 +67319,10 @@ temp_ils4 = ""
 	item_sel2 = 0
 	item_sel_via = 0
 	item_sel_via2 = 0
+	item_sel_act = 0
+	item_sel_len = 0
+	item_sel_act2 = 0
+	item_sel_len2 = 0
 	
 	navaid_list = {}
 	navaid_list_n = 0
@@ -67178,7 +67497,7 @@ temp_ils4 = ""
 	receive_msg = 0
 	
 	--entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.256"
+	version = "v3.257"
 
 end
 

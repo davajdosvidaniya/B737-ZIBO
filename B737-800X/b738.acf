@@ -46212,11 +46212,10 @@ GROUP MFD CAPT FO
       ROTATE_OFFSET_X 771.000000
       ROTATE_OFFSET_Y 364.000000
       gen_rotary ND TRK LINE
-        POS 771.000000 666.000000
+        POS 771.000000 502.000000
         IMAGE EFIS/efis_trk_line2
         DATAREF 
         LOCKED
-        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 3
         BUS_SRC 3
@@ -46261,7 +46260,6 @@ GROUP MFD CAPT FO
       SHOW_LESS 0.000000 laminar/B738/perf/kill_fms_navaid
       LOCKED
       HIDE
-      GROUP_OPEN
       GROUP NDx FO
         LOCKED
         HIDE
@@ -72085,6 +72083,7 @@ GROUP MFD CAPT FO
       DATAREF 
       SHOW_EQUAL 2.000000 laminar/B738/nd/mcp_hdg_dial_fo_show
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 3
       BUS_SRC 3
@@ -72208,6 +72207,7 @@ GROUP MFD CAPT FO
         DATAREF 
         SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/fo/exp_map
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 3
         BUS_SRC 3
@@ -72584,7 +72584,6 @@ GROUP MFD CAPT FO
       SHOW_LESS 2.000000 laminar/B738/EFIS_control/fo/map_mode_pos
       SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/fo/exp_map
       LOCKED
-      GROUP_OPEN
       GROUP_ANIMATE_MODE TRANSLATE
       GROUP_WIDTH 490
       GROUP_HEIGHT 500
@@ -72700,9 +72699,45 @@ GROUP MFD CAPT FO
         KEY_FRAME -30.000000 -30.000000
         ROTATE_OFFSET_X 771.000000
         ROTATE_OFFSET_Y 502.000000
+        gen_pointer ND CRS to 2
+          POS 771.000000 550.000000
+          IMAGE EFIS/nd_from_to
+          DATAREF 
+          SHOW_LESS 0.000000 laminar/B738/nd/fo/efis_disagree
+          SHOW_EQUAL 1.000000 sim/cockpit2/radios/indicators/hsi_flag_from_to_copilot
+          SHOW_GREATER 1.000000 laminar/B738/EFIS_control/fo/map_mode_pos
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 2
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 6.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
+
+        gen_pointer ND CRS from 2
+          POS 771.000000 456.000000
+          IMAGE EFIS/nd_to_from
+          DATAREF 
+          SHOW_LESS 0.000000 laminar/B738/nd/fo/efis_disagree
+          SHOW_EQUAL 2.000000 sim/cockpit2/radios/indicators/hsi_flag_from_to_copilot
+          SHOW_GREATER 1.000000 laminar/B738/EFIS_control/fo/map_mode_pos
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 2
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 6.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
+
         gen_pointer ND CRS
           POS 771.000000 502.000000
-          IMAGE EFIS/nd_crs
+          IMAGE EFIS/nd_crs_ctr
           DATAREF 
           LOCKED
           HIDE
@@ -72959,7 +72994,6 @@ GROUP MFD CAPT FO
       SHOW_EQUAL 2.000000 laminar/B738/nd/mcp_hdg_dial_show
       LOCKED
       HIDE
-      GROUP_OPEN
       GROUP_ANIMATE_MODE ROTATE
       GROUP_WIDTH 0
       GROUP_HEIGHT 0
@@ -72970,10 +73004,11 @@ GROUP MFD CAPT FO
       ROTATE_OFFSET_X 771.000000
       ROTATE_OFFSET_Y -148.000000
       gen_rotary ND TRK LINE
-        POS 771.000000 154.000000
+        POS 771.000000 -10.000000
         IMAGE EFIS/efis_trk_line2
         DATAREF 
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 2
         BUS_SRC 3
@@ -99420,7 +99455,7 @@ GROUP MFD CAPT FO
       SHOW_LESS 1.000000 laminar/B738/EFIS_control/capt/map_mode_pos
       SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/capt/exp_map
       LOCKED
-      HIDE
+      GROUP_OPEN
       GROUP_ANIMATE_MODE TRANSLATE
       GROUP_WIDTH 400
       GROUP_HEIGHT 400
@@ -99433,7 +99468,6 @@ GROUP MFD CAPT FO
       OFFSET 0.000000
       GROUP ND CRS rot
         LOCKED
-        HIDE
         GROUP_OPEN
         GROUP_ANIMATE_MODE ROTATE
         GROUP_WIDTH 0
@@ -99444,12 +99478,45 @@ GROUP MFD CAPT FO
         KEY_FRAME -30.000000 -30.000000
         ROTATE_OFFSET_X 771.000000
         ROTATE_OFFSET_Y -10.000000
+        gen_pointer ND CRS to
+          POS 771.000000 38.000000
+          IMAGE EFIS/nd_from_to
+          DATAREF 
+          SHOW_LESS 0.000000 laminar/B738/nd/capt/efis_disagree
+          SHOW_EQUAL 1.000000 sim/cockpit2/radios/indicators/hsi_flag_from_to_pilot
+          SHOW_GREATER 1.000000 laminar/B738/EFIS_control/capt/map_mode_pos
+          LOCKED
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 2
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 6.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
+
+        gen_pointer ND CRS from
+          POS 771.000000 -56.000000
+          IMAGE EFIS/nd_to_from
+          DATAREF 
+          SHOW_LESS 0.000000 laminar/B738/nd/capt/efis_disagree
+          SHOW_EQUAL 2.000000 sim/cockpit2/radios/indicators/hsi_flag_from_to_pilot
+          SHOW_GREATER 1.000000 laminar/B738/EFIS_control/capt/map_mode_pos
+          LOCKED
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 2
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 6.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
+
         gen_pointer ND CRS
           POS 771.000000 -10.000000
-          IMAGE EFIS/nd_crs
+          IMAGE EFIS/nd_crs_ctr
           DATAREF 
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -99464,7 +99531,6 @@ GROUP MFD CAPT FO
           IMAGE EFIS/nd_crs_hor
           DATAREF 
           LOCKED
-          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 2
           BUS_SRC 3
@@ -99648,6 +99714,7 @@ GROUP MFD CAPT FO
       DATAREF 
       SHOW_LESS 1.000000 laminar/B738/EFIS_control/capt/map_mode_pos
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 2
       BUS_SRC 3
@@ -99898,6 +99965,7 @@ GROUP MFD CAPT FO
         DATAREF 
         SHOW_EQUAL 1.000000 laminar/B738/nd/hdg_bug_line
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 3
         BUS_SRC 3
@@ -99912,6 +99980,7 @@ GROUP MFD CAPT FO
         IMAGE EFIS/hdg_full
         DATAREF 
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 3
         BUS_SRC 3
@@ -103600,11 +103669,12 @@ GROUP MAP Range
   HIDE
   GROUP_OPEN
   gen_rotary Range Map Mode CTR
-    POS 750.000000 88.000000
+    POS 748.000000 73.000000
     IMAGE MFD/range_ctr
     DATAREF laminar/B738/EFIS/capt/map_range
     SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/capt/exp_map
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 2
     BUS_SRC 3
@@ -103628,11 +103698,12 @@ GROUP MAP Range
     CLICK_DY 0
 
   gen_rotary Range Map M CTR 2
-    POS 750.000000 -75.000000
+    POS 748.000000 -92.000000
     IMAGE MFD/range_ctr
     DATAREF laminar/B738/EFIS/capt/map_range
     SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/capt/exp_map
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 2
     BUS_SRC 3
@@ -103690,7 +103761,7 @@ GROUP MAP Range FO
   HIDE
   GROUP_OPEN
   gen_rotary Range Map M CTR FO
-    POS 750.000000 600.000000
+    POS 748.000000 585.000000
     IMAGE MFD/range_ctr
     DATAREF laminar/B738/EFIS/fo/map_range
     SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/fo/exp_map
@@ -103718,7 +103789,7 @@ GROUP MAP Range FO
     CLICK_DY 0
 
   gen_rotary Range Map M CTR FO 
-    POS 750.000000 437.000000
+    POS 748.000000 420.000000
     IMAGE MFD/range_ctr
     DATAREF laminar/B738/EFIS/fo/map_range
     SHOW_EQUAL 0.000000 laminar/B738/EFIS_control/fo/exp_map
