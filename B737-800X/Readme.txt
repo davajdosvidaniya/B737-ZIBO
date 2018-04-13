@@ -77,6 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.254:
+------
+- improved logic for change STAR/APP in flight
+- improved logic for detect flight phase
+- add code for Terrain plugin by DrGluck (for next update Terrain plugin)
+
 3.253:
 ------
 - fixed small bugs

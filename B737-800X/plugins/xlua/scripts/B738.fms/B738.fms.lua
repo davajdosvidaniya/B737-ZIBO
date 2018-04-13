@@ -823,6 +823,7 @@ pre_flt_dep = 0
 last_lat = 0 
 last_lon = 0 
 last_offset = 0
+mod_offset = 0
 
 rw_dist = 0
 
@@ -1051,6 +1052,11 @@ ff_sample = 0
 	des_star2 = "------"
 	des_star_trans2 = "------"
 	
+	des_star2_old = "------"
+	des_star_trans2_old = "------"
+	des_app2_old = "------"
+	des_app_tns2_old = "------"
+	
 	ref_exec = 0
 	des_exec = 0
 	ref_icao_x = "----"
@@ -1182,10 +1188,10 @@ ff_sample = 0
 	af_dist = 0
 	af_turn = 0
 	
-	flying_star = 0
-	flying_app = 0
-	change_star = 0
-	change_app = 0
+	--flying_star = 0
+	--flying_app = 0
+	--change_star = 0
+	--change_app = 0
 	legs_num_old = 0
 
 	last_miss_app_idx = 0
@@ -1662,6 +1668,8 @@ B738DR_calc_vspd			= find_dataref("laminar/B738/FMS/calc_vspd")
 B738DR_calc_trim 			= find_dataref("laminar/B738/FMS/calc_trim")
 B738DR_eng_out				= find_dataref("laminar/B738/FMS/eng_out")
 B738DR_pfd_flaps_up			= find_dataref("laminar/B738/pfd/flaps_up")
+
+B738DR_alt_hold_mem 		= find_dataref("laminar/autopilot/alt_hold_mem")
 
 -- FMOD by AudioBird XP
 B738DR_enable_pax_boarding	= find_dataref("laminar/b738/fmodpack/fmod_pax_boarding_on")
@@ -6753,6 +6761,8 @@ function import_star(i_star, i_star_tns)
 		des_star_trans2 = i_star_tns
 	end
 	rte_add_star_act = 1
+	des_star2_old = des_star2
+	des_star_trans2_old = des_star_trans2
 	
 end
 
@@ -6763,8 +6773,10 @@ function import_app(i_app, i_app_tns)
 	if i_app_tns ~= "" then
 		des_app_tns2 = i_app_tns
 	end
-	rte_add_star_act = 1
+	--rte_add_star_act = 1
 	rte_add_app_act = 1
+	des_app2_old = des_app2
+	des_app_tns2_old = des_app_tns2
 	
 end
 
@@ -10554,7 +10566,7 @@ function B738_calc_rte2()
 	local delta_crs = 0
 	
 	local calc_enable = 0
-	if rte_add_sid_act == 0 and rte_add_star_act == 0 and rte_add_app_act == 0 then
+	if rte_add_sid_act == 0 and rte_add_star_act == 0 and rte_add_app_act == 0 and mod_offset == 0 then
 		calc_enable = 1
 	end
 	if calc_rte_enable ~= 0 then
@@ -12564,6 +12576,15 @@ function rte_add_app()
 			rte_add_app_act = 2
 			add_ok = 0
 			if add_star == 0 then
+				-- copy to legs_data2b
+				legs_data2b = {}
+				for ii = 1, legs_num2 + 1 do
+					legs_data2b[ii] = {}
+					for jj = 1, MAX_LEGS_DATA do
+						legs_data2b[ii][jj] = legs_data2[ii][jj]
+					end
+				end
+				legs_num2b = legs_num2
 				--delete previous APP
 				rte_del_specb(7)
 			else
@@ -16504,7 +16525,7 @@ function dump_leg_mod()
 		end
 		file_navdata2:close()
 	end
-	B738DR_fms_test = 0
+	--B738DR_fms_test = 0
 end
 
 
@@ -17466,14 +17487,70 @@ function reset_fmc_pages_fo()
 	page_rte_legs2 = 0
 end
 
+function check_rte(idx_in, star_in, app_in)
+	
+	local ii = 0
+	
+	if legs_num2 > 0 and idx_in <= legs_num2 and idx_in > 1 then
+		for ii = 1, idx_in do
+			if star_in == 1 then
+				if legs_data2[ii][19] == 2 or legs_data2[ii][19] == 4 
+				or legs_data2[ii][19] == 7 or legs_data2[ii][19] == 8 
+				or legs_data2[ii][19] == 9 then
+					legs_data2[ii][19] = 0
+					legs_data2[ii][17] = 0
+				end
+			elseif app_in == 1 then
+				-- 8 -> STAR
+				-- 9 -> RTE
+				if legs_data2[ii][19] == 8 then
+					legs_data2[ii][19] = 2
+				elseif legs_data2[ii][19] == 9 then
+					legs_data2[ii][19] = 0
+				end
+				if legs_data2[ii][19] == 7 or legs_data2[ii][19] == 8 
+				or legs_data2[ii][19] == 9 then
+					legs_data2[ii][19] = 0
+					legs_data2[ii][17] = 0
+				end
+			end
+		end
+	end
+	
+end
+
 
 function rte_add_dep_arr()
+	
 	if ref_rwy_exec == 1 or ref_sid_exec == 1 or ref_tns_exec == 1 then
 		rte_add_sid_act = 1
 	end
 	if des_star_exec == 1 or des_star_tns_exec == 1 or des_app_exec == 1 or des_app_tns_exec == 1 then
-		rte_add_star_act = 1
-		rte_add_app_act = 1
+		
+		if simDR_radio_height_pilot_ft > 50 then
+			
+			if des_star2 ~= des_star2_old or des_star_trans2 ~= des_star_trans2_old then
+				--B738DR_fms_test3 = 99
+				rte_add_star_act = 1
+				rte_add_app_act = 1
+			end
+			if des_app2 ~= des_app2_old or des_app_tns2 ~= des_app_tns2_old then
+				rte_add_app_act = 1
+			end
+			
+			check_rte(offset, rte_add_star_act, rte_add_app_act)
+			--check_rte(B738DR_fms_test, rte_add_star_act, rte_add_app_act)
+		
+		else
+			rte_add_star_act = 1
+			rte_add_app_act = 1
+		end
+		
+		des_star2_old = des_star2
+		des_star_trans2_old = des_star_trans2
+		des_app2_old = des_app2
+		des_app_tns2_old = des_app_tns2
+		
 	end
 	ref_rwy_exec = 0
 	ref_sid_exec = 0
@@ -17484,8 +17561,96 @@ function rte_add_dep_arr()
 	des_app_tns_exec = 0
 	calc_rte_enable2 = 1
 	legs_delete = 1
+	
+	
 end
 
+
+	-- des_star2_old = "------"
+	-- des_star_trans2_old = "------"
+	-- des_app2_old = "------"
+	-- des_app_tns2_old = "------"
+
+function B738_mod_change()
+	
+	local ii = 0
+	local jj = 0
+	local kk = 0
+	local mod_idx = 0
+	local mod_idx2 = 0
+	local found_mod_idx = 0
+	local add_new_enable = 0
+	
+	if offset ~= last_offset then
+		if legs_delete ~= 0 then
+			if mod_offset == 0 then
+				mod_offset = last_offset
+			end
+		else
+			mod_offset = 0
+		end
+	end
+	if mod_offset ~= 0 and rte_add_sid_act == 0 and rte_add_star_act == 0 and rte_add_app_act == 0 then
+		if legs_data[offset][1] == legs_data2[offset][1] and legs_data[offset][7] == legs_data2[offset][7]
+		and legs_data[offset][8] == legs_data2[offset][8] then
+			mod_idx = offset	-- + 1
+			mod_idx2 = offset
+		else
+			if offset + 1 > legs_num + 1 then
+				mod_idx = mod_offset + 1
+				mod_idx2 = offset + 1
+			else
+				if legs_data[offset+1][1] == legs_data2[offset][1] and legs_data[offset+1][7] == legs_data2[offset][7]
+				and legs_data[offset+1][8] == legs_data2[offset][8] then
+					mod_idx = offset 	--+ 1
+					mod_idx2 = offset
+				else
+					mod_idx = mod_offset + 1
+					mod_idx2 = offset + 1
+				end
+			end
+		end
+		if mod_idx <= legs_num2 + 1 and mod_idx > 0 then
+			-- copy to legs_data2b
+			kk = 0
+			legs_data2b = {}
+			for ii = mod_idx, legs_num2 + 1 do
+				kk = kk + 1
+				legs_data2b[kk] = {}
+				for jj = 1, MAX_LEGS_DATA do
+					legs_data2b[kk][jj] = legs_data2[ii][jj]
+				end
+			end
+			legs_num2b = kk - 1
+			
+			-- copy legs to legs2
+			if offset <= legs_num2 then
+				if legs_data2[offset][17] > 99 then
+					add_new_enable = 1
+				end
+			end
+			copy_to_legsdata2()
+			
+			-- copy mod changes
+			kk = mod_idx2 - 1	--offset
+			for ii = 1, legs_num2b + 1 do
+				kk = kk + 1
+				legs_data2[kk] = {}
+				for jj = 1, MAX_LEGS_DATA do
+					legs_data2[kk][jj] = legs_data2b[ii][jj]
+				end
+			end
+			legs_num2 = kk - 1
+			
+			if add_new_enable == 1 and offset <= legs_num2 then
+				legs_data2[offset][17] = legs_data2[offset][17] + 100
+			end
+			
+		end
+		mod_offset = 0
+	end
+	
+end
 
 
 function nav_data_find(nav_data_inp)
@@ -22910,6 +23075,11 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 				des_app_tns2 = des_app_tns
 				des_star2 = des_star
 				des_star_trans2 = des_star_trans
+				
+				des_star2_old = des_star2
+				des_star_trans2_old = des_star_trans2
+				des_app2_old = des_app2
+				des_app_tns2_old = des_app_tns2
 			end
 		elseif page_arr == 1 then
 			if B738DR_fmc_exec_lights == 1 then
@@ -22941,6 +23111,11 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 				des_app_tns2 = des_app_tns
 				des_star2 = des_star
 				des_star_trans2 = des_star_trans
+				
+				des_star2_old = des_star2
+				des_star_trans2_old = des_star_trans2
+				des_app2_old = des_app2
+				des_app_tns2_old = des_app_tns2
 			end
 		elseif page_rte_init == 1 then
 			if B738DR_fmc_exec_lights == 1 then
@@ -23022,6 +23197,11 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 					des_star2 = des_star
 					des_star_trans2 = des_star_trans
 					co_route_x = co_route
+					
+					des_star2_old = des_star2
+					des_star_trans2_old = des_star_trans2
+					des_app2_old = des_app2
+					des_app_tns2_old = des_app_tns2
 				end
 			else
 				if exec_load_fpln == 1 and legs_num > 1 then
@@ -23045,6 +23225,11 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 					des_app_tns2 = des_app_tns
 					des_star2 = des_star
 					des_star_trans2 = des_star_trans
+					
+					des_star2_old = des_star2
+					des_star_trans2_old = des_star_trans2
+					des_app2_old = des_app2
+					des_app_tns2_old = des_app_tns2
 				end
 			end
 		elseif page_legs == 1 then
@@ -23074,6 +23259,11 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 					des_app_tns2 = des_app_tns
 					des_star2 = des_star
 					des_star_trans2 = des_star_trans
+					
+					des_star2_old = des_star2
+					des_star_trans2_old = des_star_trans2
+					des_app2_old = des_app2
+					des_app_tns2_old = des_app_tns2
 				end
 				if legs_intdir == 1 then
 					legs_intdir = 0
@@ -23103,6 +23293,11 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 					des_app_tns2 = des_app_tns
 					des_star2 = des_star
 					des_star_trans2 = des_star_trans
+					
+					des_star2_old = des_star2
+					des_star_trans2_old = des_star_trans2
+					des_app2_old = des_app2
+					des_app_tns2_old = des_app_tns2
 				elseif new_hold == 1 then
 					if item_sel ~= 0 then
 						new_hold_idx = item_sel
@@ -23271,6 +23466,11 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 					des_app_tns2 = des_app_tns
 					des_star2 = des_star
 					des_star_trans2 = des_star_trans
+					
+					des_star2_old = des_star2
+					des_star_trans2_old = des_star_trans2
+					des_app2_old = des_app2
+					des_app_tns2_old = des_app_tns2
 				end
 			end
 		elseif page_xtras_fuel == 1 then
@@ -27143,7 +27343,7 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 				end
 			end
 			
-			if rte_add_sid_act == 0 and rte_add_star_act == 0 and rte_add_app_act == 0 then
+			if rte_add_sid_act == 0 and rte_add_star_act == 0 and rte_add_app_act == 0 and mod_offset == 0 then
 				exec_enable = 1
 			end
 			if exec_enable == 1 then
@@ -27179,24 +27379,24 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 							offset = 0
 						end
 						
-						flying_star = 0
-						flying_app = 0
-						change_star = 0
-						change_app = 0
+						-- flying_star = 0
+						-- flying_app = 0
+						-- change_star = 0
+						-- change_app = 0
 						
-						if B738DR_missed_app_act == 0 and B738DR_flight_phase ~= 8 then
-							if first_app_idx ~= 0 and offset >= first_app_idx then
-								flying_app = 1
-							elseif first_star_idx ~= 0 and offset >= first_star_idx then
-								flying_star = 1
-							end
-							if des_star ~= des_star2 or des_star_trans ~= des_star_trans2 then
-								change_star = 1
-							end
-							if des_app ~= des_app2 or des_app_tns ~= des_app_tns2 then
-								change_app = 1
-							end
-						end
+						-- if B738DR_missed_app_act == 0 and B738DR_flight_phase ~= 8 then
+							-- if first_app_idx ~= 0 and offset >= first_app_idx then
+								-- flying_app = 1
+							-- elseif first_star_idx ~= 0 and offset >= first_star_idx then
+								-- flying_star = 1
+							-- end
+							-- if des_star ~= des_star2 or des_star_trans ~= des_star_trans2 then
+								-- change_star = 1
+							-- end
+							-- if des_app ~= des_app2 or des_app_tns ~= des_app_tns2 then
+								-- change_app = 1
+							-- end
+						-- end
 						
 						if rte_exec == 1 then
 							ref_rwy = ref_rwy2
@@ -27278,24 +27478,24 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 				if ref_sid_exec == 1 or ref_rwy_exec == 1 or ref_tns_exec == 1 
 				or des_star_exec == 1 or des_star_tns_exec == 1 or des_app_exec == 1 or des_app_tns_exec == 1 then
 					
-					flying_star = 0
-					flying_app = 0
-					change_star = 0
-					change_app = 0
+					-- flying_star = 0
+					-- flying_app = 0
+					-- change_star = 0
+					-- change_app = 0
 					
-					if B738DR_missed_app_act == 0 and B738DR_flight_phase ~= 8 then
-						if first_app_idx ~= 0 and offset >= first_app_idx then
-							flying_app = 1
-						elseif first_star_idx ~= 0 and offset >= first_star_idx then
-							flying_star = 1
-						end
-						if des_star ~= des_star2 or des_star_trans ~= des_star_trans2 then
-							change_star = 1
-						end
-						if des_app ~= des_app2 or des_app_tns ~= des_app_tns2 then
-							change_app = 1
-						end
-					end
+					-- if B738DR_missed_app_act == 0 and B738DR_flight_phase ~= 8 then
+						-- if first_app_idx ~= 0 and offset >= first_app_idx then
+							-- flying_app = 1
+						-- elseif first_star_idx ~= 0 and offset >= first_star_idx then
+							-- flying_star = 1
+						-- end
+						-- if des_star ~= des_star2 or des_star_trans ~= des_star_trans2 then
+							-- change_star = 1
+						-- end
+						-- if des_app ~= des_app2 or des_app_tns ~= des_app_tns2 then
+							-- change_app = 1
+						-- end
+					-- end
 					
 					if legs_num > 1 then -- flight plan active
 						ref_rwy = ref_rwy2
@@ -27327,7 +27527,7 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 					if des_app_exec == 1 or des_app_tns_exec == 1 then
 						-- rte_add_star()
 						-- rte_add_app()
-						rte_add_star_act = 1
+						--rte_add_star_act = 1
 						rte_add_app_act = 1
 					end
 					
@@ -34501,6 +34701,11 @@ function B738_fmc2_6L_CMDhandler(phase, duration)
 				des_app_tns2 = des_app_tns
 				des_star2 = des_star
 				des_star_trans2 = des_star_trans
+				
+				des_star2_old = des_star2
+				des_star_trans2_old = des_star_trans2
+				des_app2_old = des_app2
+				des_app_tns2_old = des_app_tns2
 			end
 		elseif page_arr2 == 1 then
 			if B738DR_fmc_exec_lights_fo == 1 then
@@ -34532,6 +34737,11 @@ function B738_fmc2_6L_CMDhandler(phase, duration)
 				des_app_tns2 = des_app_tns
 				des_star2 = des_star
 				des_star_trans2 = des_star_trans
+				
+				des_star2_old = des_star2
+				des_star_trans2_old = des_star_trans2
+				des_app2_old = des_app2
+				des_app_tns2_old = des_app_tns2
 			end
 		elseif page_rte_init2 == 1 then
 			if B738DR_fmc_exec_lights_fo == 1 then
@@ -34613,6 +34823,11 @@ function B738_fmc2_6L_CMDhandler(phase, duration)
 					des_star2 = des_star
 					des_star_trans2 = des_star_trans
 					co_route_x = co_route
+				
+					des_star2_old = des_star2
+					des_star_trans2_old = des_star_trans2
+					des_app2_old = des_app2
+					des_app_tns2_old = des_app_tns2
 				end
 			else
 				if exec_load_fpln == 1 and legs_num > 1 then
@@ -34636,6 +34851,11 @@ function B738_fmc2_6L_CMDhandler(phase, duration)
 					des_app_tns2 = des_app_tns
 					des_star2 = des_star
 					des_star_trans2 = des_star_trans
+				
+					des_star2_old = des_star2
+					des_star_trans2_old = des_star_trans2
+					des_app2_old = des_app2
+					des_app_tns2_old = des_app_tns2
 				end
 			end
 		elseif page_legs2 == 1 then
@@ -34665,6 +34885,11 @@ function B738_fmc2_6L_CMDhandler(phase, duration)
 					des_app_tns2 = des_app_tns
 					des_star2 = des_star
 					des_star_trans2 = des_star_trans
+				
+					des_star2_old = des_star2
+					des_star_trans2_old = des_star_trans2
+					des_app2_old = des_app2
+					des_app_tns2_old = des_app_tns2
 				end
 				if legs_intdir == 1 then
 					legs_intdir = 0
@@ -34694,6 +34919,11 @@ function B738_fmc2_6L_CMDhandler(phase, duration)
 					des_app_tns2 = des_app_tns
 					des_star2 = des_star
 					des_star_trans2 = des_star_trans
+				
+					des_star2_old = des_star2
+					des_star_trans2_old = des_star_trans2
+					des_app2_old = des_app2
+					des_app_tns2_old = des_app_tns2
 				elseif new_hold2 == 1 then
 					if item_sel2 ~= 0 then
 						new_hold_idx = item_sel2
@@ -34862,6 +35092,11 @@ function B738_fmc2_6L_CMDhandler(phase, duration)
 					des_app_tns2 = des_app_tns
 					des_star2 = des_star
 					des_star_trans2 = des_star_trans
+				
+					des_star2_old = des_star2
+					des_star_trans2_old = des_star_trans2
+					des_app2_old = des_app2
+					des_app_tns2_old = des_app_tns2
 				end
 			end
 		elseif page_xtras_fuel2 == 1 then
@@ -38353,7 +38588,7 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 				end
 			end
 			
-			if rte_add_sid_act == 0 and rte_add_star_act == 0 and rte_add_app_act == 0 then
+			if rte_add_sid_act == 0 and rte_add_star_act == 0 and rte_add_app_act == 0 and mod_offset == 0 then
 				exec_enable = 1
 			end
 			if exec_enable == 1 then
@@ -38389,24 +38624,24 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 							offset = 0
 						end
 						
-						flying_star = 0
-						flying_app = 0
-						change_star = 0
-						change_app = 0
+						-- flying_star = 0
+						-- flying_app = 0
+						-- change_star = 0
+						-- change_app = 0
 						
-						if B738DR_missed_app_act == 0 and B738DR_flight_phase ~= 8 then
-							if first_app_idx ~= 0 and offset >= first_app_idx then
-								flying_app = 1
-							elseif first_star_idx ~= 0 and offset >= first_star_idx then
-								flying_star = 1
-							end
-							if des_star ~= des_star2 or des_star_trans ~= des_star_trans2 then
-								change_star = 1
-							end
-							if des_app ~= des_app2 or des_app_tns ~= des_app_tns2 then
-								change_app = 1
-							end
-						end
+						-- if B738DR_missed_app_act == 0 and B738DR_flight_phase ~= 8 then
+							-- if first_app_idx ~= 0 and offset >= first_app_idx then
+								-- flying_app = 1
+							-- elseif first_star_idx ~= 0 and offset >= first_star_idx then
+								-- flying_star = 1
+							-- end
+							-- if des_star ~= des_star2 or des_star_trans ~= des_star_trans2 then
+								-- change_star = 1
+							-- end
+							-- if des_app ~= des_app2 or des_app_tns ~= des_app_tns2 then
+								-- change_app = 1
+							-- end
+						-- end
 						
 						if rte_exec == 1 then
 							ref_rwy = ref_rwy2
@@ -38488,24 +38723,24 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 				if ref_sid_exec == 1 or ref_rwy_exec == 1 or ref_tns_exec == 1 
 				or des_star_exec == 1 or des_star_tns_exec == 1 or des_app_exec == 1 or des_app_tns_exec == 1 then
 					
-					flying_star = 0
-					flying_app = 0
-					change_star = 0
-					change_app = 0
+					-- flying_star = 0
+					-- flying_app = 0
+					-- change_star = 0
+					-- change_app = 0
 					
-					if B738DR_missed_app_act == 0 and B738DR_flight_phase ~= 8 then
-						if first_app_idx ~= 0 and offset >= first_app_idx then
-							flying_app = 1
-						elseif first_star_idx ~= 0 and offset >= first_star_idx then
-							flying_star = 1
-						end
-						if des_star ~= des_star2 or des_star_trans ~= des_star_trans2 then
-							change_star = 1
-						end
-						if des_app ~= des_app2 or des_app_tns ~= des_app_tns2 then
-							change_app = 1
-						end
-					end
+					-- if B738DR_missed_app_act == 0 and B738DR_flight_phase ~= 8 then
+						-- if first_app_idx ~= 0 and offset >= first_app_idx then
+							-- flying_app = 1
+						-- elseif first_star_idx ~= 0 and offset >= first_star_idx then
+							-- flying_star = 1
+						-- end
+						-- if des_star ~= des_star2 or des_star_trans ~= des_star_trans2 then
+							-- change_star = 1
+						-- end
+						-- if des_app ~= des_app2 or des_app_tns ~= des_app_tns2 then
+							-- change_app = 1
+						-- end
+					-- end
 					
 					if legs_num > 1 then -- flight plan active
 						ref_rwy = ref_rwy2
@@ -38537,7 +38772,7 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 					if des_app_exec == 1 or des_app_tns_exec == 1 then
 						-- rte_add_star()
 						-- rte_add_app()
-						rte_add_star_act = 1
+						--rte_add_star_act = 1
 						rte_add_app_act = 1
 					end
 					
@@ -55459,10 +55694,26 @@ function B738_vnav_calc()
 	if is_timer_scheduled(vnav_timer) == false then
 		run_after_time(vnav_timer, 5)	-- 5 seconds
 	end
+	
+	
+	if td_idx ~= 0 and td_dist > 1.1 and crz_alt_num ~= 0 then
+		if B738DR_flight_phase == 5 or B738DR_flight_phase == 6 then
+			if simDR_autopilot_altitude_mode == 6 and B738DR_alt_hold_mem >= crz_alt_num then
+				B738DR_flight_phase = 2
+				B738DR_fms_descent_now = 0
+				altitude_last = simDR_altitude_pilot
+				msg_mcp_alt = 0
+			end
+			if simDR_altitude_pilot >= B738DR_fmc_cruise_alt then
+				B738DR_flight_phase = 2
+				B738DR_fms_descent_now = 0
+				altitude_last = simDR_altitude_pilot
+				msg_mcp_alt = 0
+			end
+		end
+	end
 
 end
-
-
 
 
 function B738_vnav_calc_mod()
@@ -58773,18 +59024,12 @@ function B738_displ_fix()
 					ils_y = ils_y + 4.1	-- adjust center
 				end
 				
-				-- if ils_y > 14 or ils_y < -5 then
+				-- if ils_y > 28 or ils_y < -28 then
 					-- ils_on_off = 0
 				-- end
-				-- if ils_x < -10.0 or ils_x > 10.0 then
+				-- if ils_x < -28 or ils_x > 28 then
 					-- ils_on_off = 0
 				-- end
-				if ils_y > 28 or ils_y < -28 then
-					ils_on_off = 0
-				end
-				if ils_x < -28 or ils_x > 28 then
-					ils_on_off = 0
-				end
 					
 				if ils_on_off == 1 then
 					
@@ -58895,62 +59140,62 @@ function B738_displ_fix()
 									B738DR_fix_rot_2[ii-1] = ils_hdg
 								end
 							end
-						elseif  fix_data[ii][kk+1] ~= -1 then
+						elseif fix_data[ii][kk+1] ~= -1 then
 							--distance
 							if ii == 1 then
 								if jj == 0 then
 									B738DR_fix_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_0[ii-1] = 0
+									B738DR_fix_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 1 then
 									B738DR_fix_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_1[ii-1] = 0
+									B738DR_fix_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 2 then
 									B738DR_fix_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_2[ii-1] = 0
+									B738DR_fix_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								end
 							elseif ii == 2 then
 								if jj == 0 then
 									B738DR_fix_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_0[ii-1] = 0
+									B738DR_fix_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 1 then
 									B738DR_fix_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_1[ii-1] = 0
+									B738DR_fix_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 2 then
 									B738DR_fix_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_2[ii-1] = 0
+									B738DR_fix_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								end
 							elseif ii == 3 then
 								if jj == 0 then
 									B738DR_fix_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_0[ii-1] = 0
+									B738DR_fix_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 1 then
 									B738DR_fix_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_1[ii-1] = 0
+									B738DR_fix_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 2 then
 									B738DR_fix_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_2[ii-1] = 0
+									B738DR_fix_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								end
 							elseif ii == 4 then
 								if jj == 0 then
 									B738DR_fix_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_0[ii-1] = 0
+									B738DR_fix_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 1 then
 									B738DR_fix_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_1[ii-1] = 0
+									B738DR_fix_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 2 then
 									B738DR_fix_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_2[ii-1] = 0
+									B738DR_fix_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								end
 							elseif ii == 5 then
 								if jj == 0 then
 									B738DR_fix_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_0[ii-1] = 0
+									B738DR_fix_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 1 then
 									B738DR_fix_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_1[ii-1] = 0
+									B738DR_fix_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								elseif jj == 2 then
 									B738DR_fix_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
-									B738DR_fix_dist_2[ii-1] = 0
+									B738DR_fix_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
 								end
 							end
 						else
@@ -62661,20 +62906,18 @@ function B738_vnav_pth3()
 		else
 			if offset == td_idx then
 				vnav_td_dist = simDR_fmc_dist - td_dist
+			elseif offset > td_idx then
+				vnav_td_dist = 0
 			else
-				-- if offset == td_idx then
-					-- vnav_td_dist = simDR_fmc_dist - td_dist
-				-- else
-					for ii = offset, td_idx do
-						if ii == offset then
-							vnav_td_dist = simDR_fmc_dist
-						elseif ii < td_idx then
-							vnav_td_dist = vnav_td_dist + legs_data[ii][3]
-						else
-							vnav_td_dist = vnav_td_dist + legs_data[ii][3] - td_dist
-						end
+				for ii = offset, td_idx do
+					if ii == offset then
+						vnav_td_dist = simDR_fmc_dist
+					elseif ii < td_idx then
+						vnav_td_dist = vnav_td_dist + legs_data[ii][3]
+					else
+						vnav_td_dist = vnav_td_dist + legs_data[ii][3] - td_dist
 					end
-				-- end
+				end
 			end
 			B738DR_vnav_td_dist = vnav_td_dist
 		end
@@ -63362,38 +63605,38 @@ function B738_fmc_calc()
 	
 	if calc_rte_enable == 0 then
 		
-		-- Detect change STAR, APP
-		if B738DR_missed_app_act == 0 and B738DR_flight_phase ~= 8 then
-			if flying_star == 1 and change_star == 1 then
-				-- LNAV disconnect
-				lnav_disco = 1
-			elseif flying_app == 1 then
-				if change_star == 1 or change_app == 1 then
-					-- LNAV disconnect
-					lnav_disco = 1
-				end
-			end
-		end
-		flying_star = 0
-		flying_app = 0
-		change_star = 0
-		change_app = 0
+		-- -- Detect change STAR, APP
+		-- if B738DR_missed_app_act == 0 and B738DR_flight_phase ~= 8 then
+			-- if flying_star == 1 and change_star == 1 then
+				-- -- LNAV disconnect
+				-- lnav_disco = 1
+			-- elseif flying_app == 1 then
+				-- if change_star == 1 or change_app == 1 then
+					-- -- LNAV disconnect
+					-- lnav_disco = 1
+				-- end
+			-- end
+		-- end
+		-- flying_star = 0
+		-- flying_app = 0
+		-- change_star = 0
+		-- change_app = 0
 		
-		if lnav_disco == 1 then
-			if first_star_idx == 0 then
-				offset = legs_num
-			else
-				offset = first_star_idx - 1
-			end
-			--if B738DR_heading_mode > 3 and B738DR_heading_mode < 7 then
-			if (B738DR_heading_mode > 3 and B738DR_heading_mode < 7) or B738DR_heading_mode == 8 or B738DR_heading_mode == 13 then
-				B738DR_lnav_disconnect = 1
-				--B738DR_vnav_disconnect = 1
-				add_fmc_msg(LNAV_DISCON, 2)
-				--B738DR_fmc_message_warn = 1
-			end
-			B738DR_vnav_disconnect = 1
-		end
+		-- if lnav_disco == 1 then
+			-- if first_star_idx == 0 then
+				-- offset = legs_num
+			-- else
+				-- offset = first_star_idx - 1
+			-- end
+			-- --if B738DR_heading_mode > 3 and B738DR_heading_mode < 7 then
+			-- if (B738DR_heading_mode > 3 and B738DR_heading_mode < 7) or B738DR_heading_mode == 8 or B738DR_heading_mode == 13 then
+				-- B738DR_lnav_disconnect = 1
+				-- --B738DR_vnav_disconnect = 1
+				-- add_fmc_msg(LNAV_DISCON, 2)
+				-- --B738DR_fmc_message_warn = 1
+			-- end
+			-- B738DR_vnav_disconnect = 1
+		-- end
 		
 		if legs_num > legs_num_old then
 			if nav_mode == 1 or nav_mode == 99 then	--cancel NAV to Dest ICAO
@@ -65050,6 +65293,7 @@ function B738_fmc_calc()
 			
 		end
 		
+		
 		--B738DR_fms_test1 = 105
 		
 		-- Detect Missed Approach
@@ -65351,7 +65595,6 @@ function B738_fmc_calc()
 			end
 		end
 		
-		last_offset = offset
 	else
 		legs_restr_spd_n = 0
 		legs_restr_alt_n = 0
@@ -67123,6 +67366,7 @@ temp_ils4 = ""
 	last_lat = 0 
 	last_lon = 0 
 	last_offset = 0
+	mod_offset = 0
 	ref_runway_lenght = 0
 	ref_runway_lat = 0
 	ref_runway_lon = 0
@@ -67198,6 +67442,12 @@ temp_ils4 = ""
 	des_app_tns2 = "------"
 	des_star2 = "------"
 	des_star_trans2 = "------"
+	
+	des_star2_old = "------"
+	des_star_trans2_old = "------"
+	des_app2_old = "------"
+	des_app_tns2_old = "------"
+	
 	ref_exec = 0
 	des_exec = 0
 	ref_icao_x = "----"
@@ -67308,10 +67558,10 @@ temp_ils4 = ""
 	del_execute = 0
 	B738DR_missed_app_alt = 0
 	
-	flying_star = 0
-	flying_app = 0
-	change_star = 0
-	change_app = 0
+	--flying_star = 0
+	--flying_app = 0
+	--change_star = 0
+	--change_app = 0
 	legs_num_old = 0
 	legs_num = 0
 	legs_num2 = 0
@@ -67388,7 +67638,7 @@ temp_ils4 = ""
 	first_alt_restrict = 0
 	
 	--entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.253"
+	version = "v3.254"
 
 end
 
@@ -67714,7 +67964,7 @@ function flight_start()
 		-- run_at_interval(B738_path_err, 0.3)
 	-- end
 	
-	B738DR_fms_test3 = 1
+	--B738DR_fms_test3 = 1
 	
 end
 
@@ -67904,7 +68154,11 @@ function after_physics()
 		
 		B738DR_fms_test1 = 38
 		chocks_on_start()
-		--B738_chock()
+		
+		B738_mod_change()
+		
+		last_offset = offset
+		
 		B738_legs_num = legs_num
 		B738DR_fms_legs_num2 = legs_num2
 		
@@ -67922,8 +68176,6 @@ function after_physics()
 end
 
 --function after_replay() end
-
-
 
 
 --*************************************************************************************--
