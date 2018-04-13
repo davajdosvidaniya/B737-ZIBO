@@ -18373,14 +18373,6 @@ ANIM_trans 0.000000 0.000000 0.000000 0.000000 -0.001239 -0.004635 0.000000 1.00
 ATTR_manip_command button laminar/B738/push_button/fo_six_pack First officer six pack
 TRIS 20079 30
 ANIM_end
-ANIM_begin
-ANIM_trans -0.807630 0.164700 2.078440 -0.807630 0.164700 2.078440 0.000000 0.000000 none
-ANIM_rotate 0.901404 0.000000 0.432978 48.180000 -48.180000 -39.000000 39.000000 sim/flightmodel2/gear/tire_steer_command_deg[0]
-ANIM_trans 0.807630 -0.164700 -2.078440 0.807630 -0.164700 -2.078440 0.000000 0.000000 none
-ATTR_no_cull
-ATTR_manip_drag_axis hand 0.000000 0.100000 -0.180000 -78.000000 78.000000 sim/flightmodel2/gear/tire_steer_command_deg[0] 
-TRIS 20109 120
-ANIM_end
 ATTR_manip_drag_rotate hand -0.807630 0.164700 2.078440 -0.901404 0.000000 0.432978 78 -78 0 78 -78 0 0 sim/flightmodel2/gear/tire_steer_command_deg[0]	Nosewheel steer
 ANIM_begin
 ANIM_trans -0.807630 0.164700 2.078440 -0.807630 0.164700 2.078440 0.000000 0.000000 none

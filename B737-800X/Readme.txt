@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.255:
+------
+- add ACARS - ATIS REQ for airport
+- fixed small bugs (FMC freeze,...)
+
 3.254:
 ------
 - improved logic for change STAR/APP in flight

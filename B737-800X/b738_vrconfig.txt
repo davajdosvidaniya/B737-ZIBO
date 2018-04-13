@@ -51,22 +51,22 @@ END_MANIP
 
 
 BEGIN_MANIP axis_knob sim/cockpit2/switches/generic_lights_switch[6]
-	ACTION axis_knob 0.0 1.0 0.006 0.006 sim/cockpit2/switches/generic_lights_switch[6]
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP axis_knob sim/cockpit2/switches/generic_lights_switch[7]
-	ACTION axis_knob 0.0 1.0 0.006 0.006 sim/cockpit2/switches/generic_lights_switch[7]
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP axis_knob sim/cockpit2/switches/generic_lights_switch[8]
-	ACTION axis_knob 0.0 1.0 0.006 0.006 sim/cockpit2/switches/generic_lights_switch[8]
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP axis_knob sim/cockpit2/switches/generic_lights_switch[10]
-	ACTION axis_knob 0.0 1.0 0.006 0.006 sim/cockpit2/switches/generic_lights_switch[10]
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP axis_knob sim/cockpit2/switches/generic_lights_switch[11]
-	ACTION axis_knob 0.0 1.0 0.006 0.006 sim/cockpit2/switches/generic_lights_switch[11]
+	DEG_PER_ACTION 8
 END_MANIP
 BEGIN_MANIP axis_knob sim/cockpit2/switches/generic_lights_switch[12]
-	ACTION axis_knob 0.0 1.0 0.006 0.006 sim/cockpit2/switches/generic_lights_switch[12]
+	DEG_PER_ACTION 8
 END_MANIP
 
 BEGIN_MANIP axis_knob laminar/B738/pressurization/knobs/landing_alt

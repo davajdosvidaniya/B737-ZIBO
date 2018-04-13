@@ -1326,7 +1326,7 @@ B738DR_hdg_bug_nd_fo				= create_dataref("laminar/B738/nd/hdg_bug_nd_fo", "numbe
 
 B7378DR_hdg_line_enable				= create_dataref("laminar/B738/nd/hdg_bug_line", "number")
 B7378DR_hdg_line_fo_enable			= create_dataref("laminar/B738/nd/hdg_bug_line_fo", "number")
-
+B738DR_track_pfd					= create_dataref("laminar/B738/pfd/track_line", "number")
 
 B738DR_gps_horizont			= create_dataref("laminar/B738/autopilot/gps_horizont", "number")
 B738DR_fac_horizont			= create_dataref("laminar/B738/autopilot/fac_horizont", "number")
@@ -10677,14 +10677,14 @@ function B738_ap_autoland()
 		-- rate of descent in fpm = tan(glideslope) * (speed in knots * 6076 / 60)
 		ra_fdpitch = math.min(2.5, simDR_fdir_pitch)
 		ra_fdpitch = math.max(0, simDR_fdir_pitch)
-		ra_thrshld = B738_rescale(0, 88, 2.5, 78, ra_fdpitch)
+		ra_thrshld = B738_rescale(0, 78, 2.5, 68, ra_fdpitch)
 		if B738DR_fms_approach_speed > 134 then
 			ra_thrshld = ra_thrshld - (1.5 * (B738DR_fms_approach_speed - 135))
 			if ra_thrshld < 50 then
 				ra_thrshld = 50
 			end
-			if ra_thrshld > 78 then
-				ra_thrshld = 78
+			if ra_thrshld > 68 then
+				ra_thrshld = 68
 			end
 		end
 		--ra_thrshld = B738_rescale(0, 78, 2.5, 68, ra_fdpitch)
@@ -16807,6 +16807,7 @@ function B738_nd()
 			-- PLN mode
 			--B738DR_hdg_mag_nd_show = 0
 		end
+		
 	
 	if B738DR_capt_exp_map_mode == 0 then
 		--B738DR_hdg_mag_nd_show = 0
@@ -16926,11 +16927,22 @@ function B738_nd()
 			-- PLN mode
 			--B738DR_hdg_mag_nd_fo_show = 0
 		end
+		
 	if B738DR_fo_exp_map_mode == 0 then
 		--B738DR_hdg_mag_nd_fo_show = 0
 		B738DR_hdg_mag_nd_fo = -simDR_ahars_mag_hdg
 	end
 	
+	-- PFD TRACK LINE
+	relative_brg = (simDR_ahars_mag_hdg - simDR_mag_hdg + 360) % 360
+	if relative_brg > 180 then
+		relative_brg = relative_brg - 360
+	end
+	if simDR_ground_spd < 45 then
+		B738DR_track_pfd = 0
+	else
+		B738DR_track_pfd = relative_brg
+	end
 	
 	-- HDG LINE
 	if B738DR_capt_map_mode == 2 then
