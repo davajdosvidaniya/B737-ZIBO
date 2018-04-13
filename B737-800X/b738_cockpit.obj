@@ -14695,20 +14695,21 @@ ANIM_trans 0.084500 -0.043600 -2.414200 0.084500 -0.043600 -2.414200 0.000000 0.
 ATTR_manip_command button sim/flight_controls/brakes_toggle_max Parking Brake
 TRIS 4230 6
 ANIM_end
+ATTR_manip_drag_rotate hand 0.025000 -0.006900 2.251700 -1.000000 0.000000 0.000000 0 43 0 0 1 0 0 laminar/B738/engine/mixture_ratio2 Mixture Engine 2
 ANIM_begin
 ANIM_trans 0.025000 -0.006900 2.251700 0.025000 -0.006900 2.251700 0.000000 0.000000 none
 ANIM_rotate -1.000000 0.000000 0.000000 0.000000 43.000000 0.000000 1.000000 laminar/B738/engine/mixture_ratio2
 ANIM_trans -0.025000 0.006900 -2.251700 -0.025000 0.006900 -2.251700 0.000000 0.000000 none
-ATTR_manip_drag_axis hand 0.000000 0.050000 -0.100000 0.000000 1.000000 laminar/B738/engine/mixture_ratio2 Mixture Engine 2
 TRIS 4236 30
 ANIM_end
+ATTR_manip_drag_rotate hand -0.025000 -0.006900 2.251700 -1.000000 0.000000 0.000000 0 43 0 0 1 0 0 laminar/B738/engine/mixture_ratio1 Mixture Engine 1
 ANIM_begin
 ANIM_trans -0.025000 -0.006900 2.251700 -0.025000 -0.006900 2.251700 0.000000 0.000000 none
 ANIM_rotate -1.000000 0.000000 0.000000 0.000000 43.000000 0.000000 1.000000 laminar/B738/engine/mixture_ratio1
 ANIM_trans 0.025000 0.006900 -2.251700 0.025000 0.006900 -2.251700 0.000000 0.000000 none
-ATTR_manip_drag_axis hand 0.000000 0.050000 -0.100000 0.000000 1.000000 laminar/B738/engine/mixture_ratio1 Mixture Engine 1
 TRIS 4266 30
 ANIM_end
+ATTR_manip_drag_rotate hand -0.026500 0.235700 2.312600 1.000000 0.000000 0.000000 0 120 0 0 1 0 0 sim/cockpit2/engine/actuators/throttle_ratio[0] Reverse Throttle 1
 ANIM_begin
 ANIM_hide 0.000000 2.000000 sim/cockpit2/engine/actuators/prop_mode[0]
 ANIM_show 2.000000 3.000000 sim/cockpit2/engine/actuators/prop_mode[0]
@@ -14716,7 +14717,6 @@ ANIM_begin
 ANIM_trans -0.026500 0.235700 2.312600 -0.026500 0.235700 2.312600 0.000000 0.000000 none
 ANIM_rotate 1.000000 0.000000 0.000000 0.000000 120.000000 0.000000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio[0]
 ANIM_trans 0.026500 -0.235700 -2.312600 0.026500 -0.235700 -2.312600 0.000000 0.000000 none
-ATTR_manip_drag_axis hand 0.000000 0.050000 -0.150000 0.000000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio[0] Reverse Throttle 1
 TRIS 4296 120
 ANIM_end
 ANIM_begin
@@ -14725,6 +14725,7 @@ ATTR_manip_command hand sim/engines/thrust_reverse_toggle_1 Disengage Reverse 1
 TRIS 4416 120
 ANIM_end
 ANIM_end
+ATTR_manip_drag_rotate hand 0.026500 0.235700 2.312600 1.000000 0.000000 0.000000 0 120 0 0 1 0 0 sim/cockpit2/engine/actuators/throttle_ratio[1] Reverse Throttle 2
 ANIM_begin
 ANIM_hide 0.000000 2.000000 sim/cockpit2/engine/actuators/prop_mode[1]
 ANIM_show 2.000000 3.000000 sim/cockpit2/engine/actuators/prop_mode[1]
@@ -14732,7 +14733,6 @@ ANIM_begin
 ANIM_trans 0.026500 0.235700 2.312600 0.026500 0.235700 2.312600 0.000000 0.000000 none
 ANIM_rotate 1.000000 0.000000 0.000000 0.000000 120.000000 0.000000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio[1]
 ANIM_trans -0.026500 -0.235700 -2.312600 -0.026500 -0.235700 -2.312600 0.000000 0.000000 none
-ATTR_manip_drag_axis hand 0.000000 0.050000 -0.150000 0.000000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio[1] Reverse Throttle 2
 TRIS 4536 120
 ANIM_end
 ANIM_begin
@@ -14741,13 +14741,13 @@ ATTR_manip_command hand sim/engines/thrust_reverse_toggle_2 Disengage Reverse 2
 TRIS 4656 120
 ANIM_end
 ANIM_end
+ATTR_manip_drag_rotate hand 0.050000 -0.006900 2.251700 -1.000000 0.000000 0.000000 0 50 0 0 1 0 0 sim/cockpit2/engine/actuators/throttle_ratio[1] Throttle Engine 2
 ANIM_begin
 ANIM_show 0.000000 2.000000 sim/cockpit2/engine/actuators/prop_mode[1]
 ANIM_hide 2.000000 3.000000 sim/cockpit2/engine/actuators/prop_mode[1]
 ANIM_trans 0.050000 -0.006900 2.251700 0.050000 -0.006900 2.251700 0.000000 0.000000 none
 ANIM_rotate -1.000000 0.000000 0.000000 0.000000 50.000000 0.000000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio[1]
 ANIM_trans -0.050000 0.006900 -2.251700 -0.050000 0.006900 -2.251700 0.000000 0.000000 none
-ATTR_manip_drag_axis hand 0.000000 0.100000 -0.180000 0.000000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio[1] Throttle Engine 2
 TRIS 4776 120
 ANIM_begin
 ANIM_hide 0.050000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio[1]
@@ -14765,13 +14765,13 @@ ATTR_manip_command button laminar/B738/autopilot/right_toga_press Right TO/GA bu
 TRIS 5064 48
 ANIM_end
 ANIM_end
+ATTR_manip_drag_rotate hand -0.050000 -0.006900 2.251700 -1.000000 0.000000 0.000000 0 50 0 0 1 0 0 sim/cockpit2/engine/actuators/throttle_ratio[0] Throttle Engine 1
 ANIM_begin
 ANIM_show 0.000000 2.000000 sim/cockpit2/engine/actuators/prop_mode[0]
 ANIM_hide 2.000000 3.000000 sim/cockpit2/engine/actuators/prop_mode[0]
 ANIM_trans -0.050000 -0.006900 2.251700 -0.050000 -0.006900 2.251700 0.000000 0.000000 none
 ANIM_rotate -1.000000 0.000000 0.000000 0.000000 50.000000 0.000000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio[0]
 ANIM_trans 0.050000 0.006900 -2.251700 0.050000 0.006900 -2.251700 0.000000 0.000000 none
-ATTR_manip_drag_axis hand 0.000000 0.100000 -0.180000 0.000000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio[0] Throttle Engine 1
 TRIS 5112 120
 ANIM_begin
 ANIM_hide 0.050000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio[0]
@@ -17473,13 +17473,13 @@ ANIM_trans 0.146400 -1.037600 -2.626600 0.146400 -1.037600 -2.626600 0.000000 0.
 ATTR_manip_command_knob rotate_medium laminar/B738/knob/dc_power_up laminar/B738/knob/dc_power_dn DC Power Status Selector
 TRIS 15447 36
 ANIM_end
+ATTR_manip_drag_rotate hand 0.000000 -0.006900 2.251700 -1.000000 0.000000 0.000000 0 50 0 0 1 0 0 sim/cockpit2/engine/actuators/throttle_ratio_all Throttle All
 ANIM_begin
 ANIM_show 0.000000 0.500000 laminar/B738/engine/prop_mode_sync
 ANIM_hide 0.500000 2.000000 laminar/B738/engine/prop_mode_sync
 ANIM_trans 0.000000 -0.006900 2.251700 0.000000 -0.006900 2.251700 0.000000 0.000000 none
 ANIM_rotate -1.000000 0.000000 0.000000 0.000000 50.000000 0.000000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio_all
 ANIM_trans -0.000000 0.006900 -2.251700 -0.000000 0.006900 -2.251700 0.000000 0.000000 none
-ATTR_manip_drag_axis hand 0.000000 0.100000 -0.180000 0.000000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio_all Throttle All
 TRIS 15483 48
 ANIM_begin
 ANIM_hide 0.050000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio_all
@@ -17496,11 +17496,11 @@ ANIM_hide 0.050000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio_all
 ATTR_manip_command hand sim/engines/thrust_reverse_toggle Disengage Reverse Both
 TRIS 15579 48
 ANIM_end
+ATTR_manip_drag_rotate hand 0.000000 0.235700 2.312600 1.000000 0.000000 0.000000 0 120 0 0 1 0 0 sim/cockpit2/engine/actuators/throttle_ratio_all Reverse Throttle BOTH
 ANIM_begin
 ANIM_trans 0.000000 0.235700 2.312600 0.000000 0.235700 2.312600 0.000000 0.000000 none
 ANIM_rotate 1.000000 0.000000 0.000000 0.000000 120.000000 0.000000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio_all
 ANIM_trans -0.000000 -0.235700 -2.312600 -0.000000 -0.235700 -2.312600 0.000000 0.000000 none
-ATTR_manip_drag_axis hand 0.000000 0.050000 -0.150000 0.000000 1.000000 sim/cockpit2/engine/actuators/throttle_ratio_all Reverse Throttle BOTH
 TRIS 15627 48
 ANIM_end
 ANIM_end
@@ -18373,10 +18373,10 @@ ANIM_trans 0.000000 0.000000 0.000000 0.000000 -0.001239 -0.004635 0.000000 1.00
 ATTR_manip_command button laminar/B738/push_button/fo_six_pack First officer six pack
 TRIS 20079 30
 ANIM_end
-ATTR_manip_drag_rotate hand -0.807630 0.164700 2.078440 -0.901404 0.000000 0.432978 78 -78 0 78 -78 0 0 sim/flightmodel2/gear/tire_steer_command_deg[0]	Nosewheel steer
+ATTR_manip_drag_rotate hand -0.807630 0.164700 2.078440 0.901404 0.000000 0.432978 89 -89 0 -78 78 0 0 sim/flightmodel2/gear/tire_steer_command_deg[0]	Nosewheel steer
 ANIM_begin
 ANIM_trans -0.807630 0.164700 2.078440 -0.807630 0.164700 2.078440 0.000000 0.000000 none
-ANIM_rotate 0.901404 0.000000 0.432978 48.180000 -48.180000 -39.000000 39.000000 sim/flightmodel2/gear/tire_steer_command_deg[0]
+ANIM_rotate 0.901404 0.000000 0.432978 89.0000 -89.0000 -78.000000 78.000000 sim/flightmodel2/gear/tire_steer_command_deg[0]
 ANIM_trans 0.807630 -0.164700 -2.078440 0.807630 -0.164700 -2.078440 0.000000 0.000000 none
 TRIS 20109 120
 ANIM_end

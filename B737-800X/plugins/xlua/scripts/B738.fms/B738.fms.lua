@@ -10453,6 +10453,9 @@ function B738_calc_rte()
 			if calc_rte_enable2 ~= 0 then
 				calc_rte_enable2 = 0
 			end
+		if legs_num == 0 then
+			calc_rte_enable = 0
+		end
 	elseif calc_rte_enable == 2 then
 		calc_rte_act = calc_rte_act + 1
 		ii = legs_num + 1
@@ -10593,15 +10596,13 @@ function B738_calc_rte2()
 	
 	if calc_enable == 1 then
 		if calc_rte_enable2 == 1 then
-				calc_rte_enable2 = 2
-				calc_rte_act2 = 0
-				rte_calc_lat2 = 0
-				rte_calc_lon2 = 0
-				--B738DR_fms_test3 = B738DR_fms_test3 + 1
-				--if calc_rte_enable == 2 then
-				-- if calc_rte_enable ~= 0 then
-					-- calc_rte_enable = 0
-				-- end
+			calc_rte_enable2 = 2
+			calc_rte_act2 = 0
+			rte_calc_lat2 = 0
+			rte_calc_lon2 = 0
+			if legs_num2 == 0 then
+				calc_rte_enable2 = 0
+			end
 		elseif calc_rte_enable2 == 2 then
 			calc_rte_act2 = calc_rte_act2 + 1
 			ii = legs_num2 + 1
@@ -19978,7 +19979,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					end
 				end
 			end
-			elseif page_descent == 1 then	--and B738DR_flight_phase < 5 then
+		elseif page_descent == 1 then	--and B738DR_flight_phase < 5 then
 			-- DES speed kts/mach
 			local strlen = string.len(entry)
 			local n = 0
@@ -20108,7 +20109,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					end
 				end
 			end
-			elseif page_climb == 1 then
+		elseif page_climb == 1 then
 			-- CLB speed kts/mach
 			local strlen = string.len(entry)
 			local n = 0
@@ -29226,143 +29227,6 @@ end
 -------------------
 -- LSK/RSK buttons
 -------------------
--- function B738_fmc2_1L_CMDhandler(phase, duration)
--- end
--- function B738_fmc2_2L_CMDhandler(phase, duration)
--- end
--- function B738_fmc2_3L_CMDhandler(phase, duration)
--- end
--- function B738_fmc2_4L_CMDhandler(phase, duration)
--- end
--- function B738_fmc2_5L_CMDhandler(phase, duration)
--- end
--- function B738_fmc2_6L_CMDhandler(phase, duration)
--- end
-
--- function B738_fmc2_1R_CMDhandler(phase, duration)
--- end
--- function B738_fmc2_2R_CMDhandler(phase, duration)
--- end
--- function B738_fmc2_3R_CMDhandler(phase, duration)
--- end
--- function B738_fmc2_4R_CMDhandler(phase, duration)
--- end
--- function B738_fmc2_5R_CMDhandler(phase, duration)
--- end
--- function B738_fmc2_6R_CMDhandler(phase, duration)
-	
-	-- if phase == 0 then
-		-- B738DR_fms_key = 1
-		
-		-- if page_legs2 == 1 then
-			-- local strlen = string.len(entry2)
-			-- local n = tonumber(entry2)
-			
-			-- if B738DR_fmc_exec_lights == 1 then --and legs_intdir == 1 then
-				-- if legs_intdir == 1 then
-				-- -----
-				-- else
-					-- if B738DR_fo_map_mode == 3 then
-						-- legs_step2 = legs_step2 + 1
-						-- if legs_step2 > legs_num2 or legs_step2 < offset then
-							-- legs_step2 = offset
-						-- end
-						-- if legs_step2 > legs_num2 then
-							-- legs_step2 = legs_num2
-						-- end
-						-- page_legs_step2 = math.floor((legs_step2 - offset) / 5) + 1
-						-- act_page2 = page_legs_step2
-					-- end
-				-- end
-			-- else
-				-- if exec_load_fpln == 1 then
-					-- exec_load_fpln = 2
-					-- -- ACTIVATE Flight plan
-					-- rte_exec = 1
-				-- elseif legs_num > 1 then
-					-- if B738DR_fo_map_mode == 3 then
-						-- legs_step2 = legs_step2 + 1
-						-- if legs_step2 > legs_num2 or legs_step2 < offset then
-							-- legs_step2 = offset
-						-- end
-						-- if legs_step2 > legs_num2 then
-							-- legs_step2 = legs_num2
-						-- end
-						-- page_legs_step2 = math.floor((legs_step2 - offset) / 5) + 1
-						-- act_page2 = page_legs_step2
-					-- end
-				-- else
-					-- if legs_num == 1 and legs_num2 > 1 then
-						-- -- ACTIVATE Flight plan
-						-- rte_exec = 1
-					-- else
-						-- if B738DR_fo_map_mode == 3 then
-							-- legs_step2 = legs_step2 + 1
-							-- if legs_step2 > legs_num2 or legs_step2 < offset then
-								-- legs_step2 = offset
-							-- end
-							-- if legs_step2 > legs_num2 then
-								-- legs_step2 = legs_num2
-							-- end
-							-- page_legs_step2 = math.floor((legs_step2 - offset) / 5) + 1
-							-- act_page2 = page_legs_step2
-							
-						-- else
-							-- -- RTA DATA
-						-- end
-					-- end
-				-- end
-			-- end
-		-- end
-		
-		
-		
-		-- -- if legs_num2 > 1 then
-			-- -- if B738DR_fo_map_mode == 3 then
-				-- -- -- STEP
-				-- -- legs_step2 = legs_step2 + 1
-				-- -- if legs_step2 > legs_num2 or legs_step2 < offset then
-					-- -- legs_step2 = offset
-				-- -- end
-				-- -- if legs_step2 > legs_num2 then
-					-- -- legs_step2 = legs_num2
-				-- -- end
-				-- -- page_legs_step2 = math.floor((legs_step2 - offset) / 5) + 1
-				-- -- act_page2 = page_legs_step2
-			-- -- end
-		-- -- else
-			-- -- if legs_num2 > 0 and legs_num2 > 1 then
-				-- -- -- ACTIVATE Flight plan
-				-- -- -- rte_exec = 1
-			-- -- else
-				-- -- if B738DR_fo_map_mode == 3 then
-					-- -- legs_step2 = legs_step2 + 1
-					-- -- if legs_step2 > legs_num2 or legs_step2 < offset then
-						-- -- legs_step2 = offset
-					-- -- end
-					-- -- if legs_step2 > legs_num2 then
-						-- -- legs_step2 = legs_num2
-					-- -- end
-					-- -- page_legs_step2 = math.floor((legs_step2 - offset) / 5) + 1
-					-- -- act_page2 = page_legs_step2
-				-- -- else
-					-- -- -- RTA DATA
-				-- -- end
-			-- -- end
-		-- -- end
-	
-	-- elseif phase == 2 then
-		-- B738DR_fms_key = 0
-	-- end
--- end
-
-
--------------------------------------------
-
-
-
-
-
 
 -- 1LSK
 function B738_fmc2_1L_CMDhandler(phase, duration)
@@ -60318,140 +60182,6 @@ function B738_displ_apt()
 	
 	nd_clr_apt(obj, obj2)
 	
-	-- if obj >= 0 then
-		-- for n = obj, 0, -1 do
-			-- B738DR_apt_obj[n] = 0	-- off
-			-- if n == 0 then
-				-- B738DR_apt_id00 = ""
-			-- elseif n == 1 then
-				-- B738DR_apt_id01 = ""
-			-- elseif n == 2 then
-				-- B738DR_apt_id02 = ""
-			-- elseif n == 3 then
-				-- B738DR_apt_id03 = ""
-			-- elseif n == 4 then
-				-- B738DR_apt_id04 = ""
-			-- elseif n == 5 then
-				-- B738DR_apt_id05 = ""
-			-- elseif n == 6 then
-				-- B738DR_apt_id06 = ""
-			-- elseif n == 7 then
-				-- B738DR_apt_id07 = ""
-			-- elseif n == 8 then
-				-- B738DR_apt_id08 = ""
-			-- elseif n == 9 then
-				-- B738DR_apt_id09 = ""
-			-- elseif n == 10 then
-				-- B738DR_apt_id10 = ""
-			-- elseif n == 11 then
-				-- B738DR_apt_id11 = ""
-			-- elseif n == 12 then
-				-- B738DR_apt_id12 = ""
-			-- elseif n == 13 then
-				-- B738DR_apt_id13 = ""
-			-- elseif n == 14 then
-				-- B738DR_apt_id14 = ""
-			-- elseif n == 15 then
-				-- B738DR_apt_id15 = ""
-			-- elseif n == 16 then
-				-- B738DR_apt_id16 = ""
-			-- elseif n == 17 then
-				-- B738DR_apt_id17 = ""
-			-- elseif n == 18 then
-				-- B738DR_apt_id18 = ""
-			-- elseif n == 19 then
-				-- B738DR_apt_id19 = ""
-			-- elseif n == 20 then
-				-- B738DR_apt_id20 = ""
-			-- elseif n == 21 then
-				-- B738DR_apt_id21 = ""
-			-- elseif n == 22 then
-				-- B738DR_apt_id22 = ""
-			-- elseif n == 23 then
-				-- B738DR_apt_id23 = ""
-			-- elseif n == 24 then
-				-- B738DR_apt_id24 = ""
-			-- elseif n == 25 then
-				-- B738DR_apt_id25 = ""
-			-- elseif n == 26 then
-				-- B738DR_apt_id26 = ""
-			-- elseif n == 27 then
-				-- B738DR_apt_id27 = ""
-			-- elseif n == 28 then
-				-- B738DR_apt_id28 = ""
-			-- elseif n == 29 then
-				-- B738DR_apt_id29 = ""
-			-- end
-		-- end
-	-- end
-	
-	-- if obj2 >= 0 then
-		-- for n = obj2, 0, -1 do
-			-- B738DR_apt_fo_obj[n] = 0	-- off
-			-- if n == 0 then
-				-- B738DR_apt_fo_id00 = ""
-			-- elseif n == 1 then
-				-- B738DR_apt_fo_id01 = ""
-			-- elseif n == 2 then
-				-- B738DR_apt_fo_id02 = ""
-			-- elseif n == 3 then
-				-- B738DR_apt_fo_id03 = ""
-			-- elseif n == 4 then
-				-- B738DR_apt_fo_id04 = ""
-			-- elseif n == 5 then
-				-- B738DR_apt_fo_id05 = ""
-			-- elseif n == 6 then
-				-- B738DR_apt_fo_id06 = ""
-			-- elseif n == 7 then
-				-- B738DR_apt_fo_id07 = ""
-			-- elseif n == 8 then
-				-- B738DR_apt_fo_id08 = ""
-			-- elseif n == 9 then
-				-- B738DR_apt_fo_id09 = ""
-			-- elseif n == 10 then
-				-- B738DR_apt_fo_id10 = ""
-			-- elseif n == 11 then
-				-- B738DR_apt_fo_id11 = ""
-			-- elseif n == 12 then
-				-- B738DR_apt_fo_id12 = ""
-			-- elseif n == 13 then
-				-- B738DR_apt_fo_id13 = ""
-			-- elseif n == 14 then
-				-- B738DR_apt_fo_id14 = ""
-			-- elseif n == 15 then
-				-- B738DR_apt_fo_id15 = ""
-			-- elseif n == 16 then
-				-- B738DR_apt_fo_id16 = ""
-			-- elseif n == 17 then
-				-- B738DR_apt_fo_id17 = ""
-			-- elseif n == 18 then
-				-- B738DR_apt_fo_id18 = ""
-			-- elseif n == 19 then
-				-- B738DR_apt_fo_id19 = ""
-			-- elseif n == 20 then
-				-- B738DR_apt_fo_id20 = ""
-			-- elseif n == 21 then
-				-- B738DR_apt_fo_id21 = ""
-			-- elseif n == 22 then
-				-- B738DR_apt_fo_id22 = ""
-			-- elseif n == 23 then
-				-- B738DR_apt_fo_id23 = ""
-			-- elseif n == 24 then
-				-- B738DR_apt_fo_id24 = ""
-			-- elseif n == 25 then
-				-- B738DR_apt_fo_id25 = ""
-			-- elseif n == 26 then
-				-- B738DR_apt_fo_id26 = ""
-			-- elseif n == 27 then
-				-- B738DR_apt_fo_id27 = ""
-			-- elseif n == 28 then
-				-- B738DR_apt_fo_id28 = ""
-			-- elseif n == 29 then
-				-- B738DR_apt_fo_id29 = ""
-			-- end
-		-- end
-	-- end
-
 end
 
 function nd_clr_apt(rst_obj, rst_obj2)
@@ -60731,7 +60461,7 @@ function B738_calc_navaid()
 	
 	local nav_disable = 0
 	local nav_disable2 = 0
-	local nav_disable3 = 0
+	-- local nav_disable3 = 0
 	
 	if xnd_page == 0 then
 		page_max = xnd_page2_num
@@ -60753,12 +60483,12 @@ function B738_calc_navaid()
 		nav_disable2 = 1
 	end
 	
-	nav_disable3 = 1
-	if nav_disable == 0 or nav_disable2 == 0 then
-		nav_disable3 = 0
-	end
+	-- nav_disable3 = 1
+	-- if nav_disable == 0 or nav_disable2 == 0 then
+		-- nav_disable3 = 0
+	-- end
 	
-	if page_max > 0 and nav_disable3 == 0 then
+	if page_max > 0 then --and nav_disable3 == 0 then
 	
 		
 		if xfirst_time2 == 1 then
@@ -67448,7 +67178,7 @@ temp_ils4 = ""
 	receive_msg = 0
 	
 	--entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.261"
+	version = "v3.256"
 
 end
 

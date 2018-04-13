@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.256:
+------
+- fixed bugs (FMC freeze)
+- changed manipulators for VR
+
 3.255:
 ------
 - add ACARS - ATIS REQ for airport

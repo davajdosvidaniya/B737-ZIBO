@@ -16934,14 +16934,10 @@ function B738_nd()
 	end
 	
 	-- PFD TRACK LINE
-	relative_brg = (simDR_ahars_mag_hdg - simDR_mag_hdg + 360) % 360
-	if relative_brg > 180 then
-		relative_brg = relative_brg - 360
-	end
 	if simDR_ground_spd < 45 then
-		B738DR_track_pfd = 0
+		B738DR_track_pfd = simDR_ahars_mag_hdg
 	else
-		B738DR_track_pfd = relative_brg
+		B738DR_track_pfd = simDR_mag_hdg
 	end
 	
 	-- HDG LINE

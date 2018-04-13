@@ -298,6 +298,22 @@ function B738_taxi_light_brightness_switch_dn_CMDhandler(phase, duration)
 	end			
 end	
 
+function B738_taxi_light_bright_switch_toggle_CMDhandler(phase, duration)
+	if phase == 0 then
+        if B738DR_taxi_light_brightness_switch_pos == 0 then
+            B738DR_taxi_light_brightness_switch_pos = 2
+            simDR_taxi_light_brightness_switch = 1
+        elseif B738DR_taxi_light_brightness_switch_pos == 1 then
+            B738DR_taxi_light_brightness_switch_pos = 2
+            simDR_taxi_light_brightness_switch = 1
+        elseif B738DR_taxi_light_brightness_switch_pos == 2 then
+            B738DR_taxi_light_brightness_switch_pos = 0
+            simDR_taxi_light_brightness_switch = 0
+        end		
+	end			
+end	
+
+
 
 -- LANDING LIGHT ALL
 function B738_landing_lights_all_on_CMDhandler(phase, duration)
@@ -543,6 +559,8 @@ B738CMD_cockpit_dome_switch_dn	= create_command("laminar/B738/toggle_switch/cock
 -- TAXI LIGHT SWITCH
 B738CMD_taxi_light_brightness_switch_up	= create_command("laminar/B738/toggle_switch/taxi_light_brightness_pos_up", "Taxi Light Brightness Up", B738_taxi_light_brightness_switch_up_CMDhandler)
 B738CMD_taxi_light_brightness_switch_dn	= create_command("laminar/B738/toggle_switch/taxi_light_brightness_pos_dn", "Taxi Light Brightness Down", B738_taxi_light_brightness_switch_dn_CMDhandler)
+B738CMD_taxi_light_bright_switch_toggle	= create_command("laminar/B738/toggle_switch/taxi_light_brigh_toggle", "Taxi Light Brightness Toggle", B738_taxi_light_bright_switch_toggle_CMDhandler)
+
 
 -- LANDING LIGHT ALL
 B738CMD_landing_lights_all_on = create_command("laminar/B738/spring_switch/landing_lights_all", "All Landing Lights On", B738_landing_lights_all_on_CMDhandler)
