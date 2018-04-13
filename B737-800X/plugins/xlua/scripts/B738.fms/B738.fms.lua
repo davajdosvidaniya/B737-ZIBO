@@ -50676,7 +50676,8 @@ function B738_displ_acf()
 					nd_zoom = 0.015625
 				end
 				
-				nd_zoom = nd_zoom / 2
+				--nd_zoom = nd_zoom / 2
+				nd_zoom = nd_zoom * 0.57
 				
 				nd_x = nd_x * nd_zoom		-- zoom
 				nd_y = nd_y * nd_zoom		-- zoom
@@ -50785,7 +50786,8 @@ function B738_displ_acf()
 					nd_zoom = 0.015625
 				end
 				
-				nd_zoom = nd_zoom / 2
+				--nd_zoom = nd_zoom / 2
+				nd_zoom = nd_zoom * 0.57
 				
 				nd_x = nd_x * nd_zoom		-- zoom
 				nd_y = nd_y * nd_zoom		-- zoom
@@ -51033,7 +51035,8 @@ function B738_displ_wpt()
 					end
 					
 					if rte_plan_mode == 1 then
-						nd_zoom = nd_zoom / 2
+						--nd_zoom = nd_zoom / 2
+						nd_zoom = nd_zoom * 0.57
 					end
 					
 					nd_x = nd_x * nd_zoom		-- zoom
@@ -51229,13 +51232,141 @@ function B738_displ_wpt()
 							end
 							
 							-- WAYPOINTS
+							-- if n == offset then
+								-- txt_white_id = ""
+								-- txt_white_alt = ""
+								-- txt_white_eta = ""
+								-- txt_cyan_id = legs_data[n][1]
+								-- if legs_data[n][13] <= 0 then
+									-- tmp_wpt_eta = "----Z"	--"--.--Z"
+								-- else
+									-- tmp_wpt_eta2 = math.floor(legs_data[n][13])
+									-- tmp_wpt_eta3 = (legs_data[n][13] - tmp_wpt_eta2) * 60
+									-- tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) --.. "."
+									-- tmp_wpt_eta = tmp_wpt_eta .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
+									-- tmp_wpt_eta = tmp_wpt_eta .. "Z"
+								-- end
+								
+								-- if B738DR_efis_data_capt_status == 1 then
+									-- wpt_data = 0
+									-- if legs_data[n][5] > 0 then
+										-- tmp_wpt_alt = legs_data[n][5]
+										-- tmp_wpt_type = legs_data[n][6]
+										-- wpt_data = 1
+									-- -- elseif legs_data[n][11] > 0 then
+										-- -- tmp_wpt_alt = legs_data[n][11]
+										-- -- tmp_wpt_type = 32
+										-- -- wpt_data = 1
+									-- end
+									-- if wpt_data == 1 then
+										-- if B738DR_flight_phase < 5 then
+											-- if tmp_wpt_alt > B738DR_trans_alt then
+												-- txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+											-- else
+												-- txt_cyan_alt = string.format("%5d", tmp_wpt_alt)
+											-- end
+										-- else
+											-- if tmp_wpt_alt > B738DR_trans_lvl then
+												-- txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+											-- else
+												-- txt_cyan_alt = string.format("%5d", tmp_wpt_alt)
+											-- end
+										-- end
+										-- if tmp_wpt_type == 43 then	-- Above
+											-- txt_cyan_alt = txt_cyan_alt .. "A"
+										-- elseif tmp_wpt_type == 45 then	-- Below
+											-- txt_cyan_alt = txt_cyan_alt .. "B"
+										-- end
+										-- txt_cyan_eta = tmp_wpt_eta
+									-- else
+										-- -- txt_cyan_alt = ""
+										-- -- txt_cyan_eta = ""
+										-- txt_cyan_alt = tmp_wpt_eta
+										-- txt_cyan_eta = ""
+									-- end
+								-- else
+									-- txt_cyan_alt = ""
+									-- txt_cyan_eta = ""
+								-- end
+								-- if legs_data[n][32] == 0 then
+									-- wpt_type = 2
+								-- else
+									-- wpt_type = 4
+								-- end
+								-- --wpt_type = 2
+							-- else
+								-- txt_cyan_id = ""
+								-- txt_cyan_alt = ""
+								-- txt_cyan_eta = ""
+								-- txt_white_id = legs_data[n][1]
+								-- if legs_data[n][13] <= 0 then
+									-- tmp_wpt_eta = "----Z"	--"--.--Z"
+								-- else
+									-- tmp_wpt_eta2 = math.floor(legs_data[n][13])
+									-- tmp_wpt_eta3 = (legs_data[n][13] - tmp_wpt_eta2) * 60
+									-- tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) --.. "."
+									-- tmp_wpt_eta = tmp_wpt_eta .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
+									-- tmp_wpt_eta = tmp_wpt_eta .. "Z"
+								-- end
+								-- if B738DR_efis_data_capt_status == 1 then
+									-- wpt_data = 0
+									-- if legs_data[n][5] > 0 then
+										-- tmp_wpt_alt = legs_data[n][5]
+										-- tmp_wpt_type = legs_data[n][6]
+										-- wpt_data = 1
+									-- -- elseif legs_data[n][11] > 0 then
+										-- -- tmp_wpt_alt = legs_data[n][11]
+										-- -- tmp_wpt_type = 32
+										-- -- wpt_data = 1
+									-- end
+									
+									-- if wpt_data == 1 then
+										-- if B738DR_flight_phase < 5 then
+											-- if tmp_wpt_alt > B738DR_trans_alt then
+												-- txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+											-- else
+												-- txt_white_alt = string.format("%5d", tmp_wpt_alt)
+											-- end
+										-- else
+											-- if tmp_wpt_alt > B738DR_trans_lvl then
+												-- txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+											-- else
+												-- txt_white_alt = string.format("%5d", tmp_wpt_alt)
+											-- end
+										-- end
+										-- if tmp_wpt_type == 43 then	-- Above
+											-- txt_white_alt = txt_white_alt .. "A"
+										-- elseif tmp_wpt_type == 45 then	-- Below
+											-- txt_white_alt = txt_white_alt .. "B"
+										-- end
+										-- txt_white_eta = tmp_wpt_eta		--"--.--Z"
+									-- else
+										-- -- txt_white_alt = ""
+										-- -- txt_white_eta = ""
+										-- txt_white_alt = tmp_wpt_eta
+										-- tmp_wpt_eta = ""
+									-- end
+								-- else
+									-- txt_white_alt = ""
+									-- txt_white_eta = ""
+								-- end
+								-- if legs_data[n][32] == 0 then
+									-- wpt_type = 1
+								-- else
+									-- wpt_type = 3
+								-- end
+								-- --wpt_type = 1
+							-- end
+							
 							if n == offset then
 								txt_white_id = ""
 								txt_white_alt = ""
 								txt_white_eta = ""
 								txt_cyan_id = legs_data[n][1]
+								txt_cyan_alt = ""
+								txt_cyan_eta = ""
 								if legs_data[n][13] <= 0 then
-									tmp_wpt_eta = "----Z"	--"--.--Z"
+									tmp_wpt_eta = "----Z"
 								else
 									tmp_wpt_eta2 = math.floor(legs_data[n][13])
 									tmp_wpt_eta3 = (legs_data[n][13] - tmp_wpt_eta2) * 60
@@ -51244,47 +51375,40 @@ function B738_displ_wpt()
 									tmp_wpt_eta = tmp_wpt_eta .. "Z"
 								end
 								
-								if B738DR_efis_data_capt_status == 1 then
-									wpt_data = 0
-									if legs_data[n][5] > 0 then
-										tmp_wpt_alt = legs_data[n][5]
-										tmp_wpt_type = legs_data[n][6]
-										wpt_data = 1
-									-- elseif legs_data[n][11] > 0 then
-										-- tmp_wpt_alt = legs_data[n][11]
-										-- tmp_wpt_type = 32
-										-- wpt_data = 1
-									end
-									if wpt_data == 1 then
-										if B738DR_flight_phase < 5 then
-											if tmp_wpt_alt > B738DR_trans_alt then
-												txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
-											else
-												txt_cyan_alt = string.format("%5d", tmp_wpt_alt)
-											end
+								wpt_data = 0
+								if legs_data[n][5] > 0 then
+									tmp_wpt_alt = legs_data[n][5]
+									tmp_wpt_type = legs_data[n][6]
+									wpt_data = 1
+								end
+								if wpt_data == 1 then
+									if B738DR_flight_phase < 5 then
+										if tmp_wpt_alt > B738DR_trans_alt then
+											txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 										else
-											if tmp_wpt_alt > B738DR_trans_lvl then
-												txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
-											else
-												txt_cyan_alt = string.format("%5d", tmp_wpt_alt)
-											end
+											txt_cyan_alt = tostring(tmp_wpt_alt) -- string.format("%5d", tmp_wpt_alt)
 										end
-										if tmp_wpt_type == 43 then	-- Above
-											txt_cyan_alt = txt_cyan_alt .. "A"
-										elseif tmp_wpt_type == 45 then	-- Below
-											txt_cyan_alt = txt_cyan_alt .. "B"
-										end
-										txt_cyan_eta = tmp_wpt_eta
 									else
-										-- txt_cyan_alt = ""
-										-- txt_cyan_eta = ""
-										txt_cyan_alt = tmp_wpt_eta
-										txt_cyan_eta = ""
+										if tmp_wpt_alt > B738DR_trans_lvl then
+											txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+										else
+											txt_cyan_alt = tostring(tmp_wpt_alt) -- string.format("%5d", tmp_wpt_alt)
+										end
+									end
+									if tmp_wpt_type == 43 then	-- Above
+										txt_cyan_alt = txt_cyan_alt .. "A"
+									elseif tmp_wpt_type == 45 then	-- Below
+										txt_cyan_alt = txt_cyan_alt .. "B"
+									end
+									if B738DR_efis_data_capt_status == 1 then
+										txt_cyan_eta = tmp_wpt_eta
 									end
 								else
-									txt_cyan_alt = ""
-									txt_cyan_eta = ""
+									if B738DR_efis_data_capt_status == 1 then
+										txt_cyan_alt = tmp_wpt_eta
+									end
 								end
+								
 								if legs_data[n][32] == 0 then
 									wpt_type = 2
 								else
@@ -51296,6 +51420,8 @@ function B738_displ_wpt()
 								txt_cyan_alt = ""
 								txt_cyan_eta = ""
 								txt_white_id = legs_data[n][1]
+								txt_white_alt = ""
+								txt_white_eta = ""
 								if legs_data[n][13] <= 0 then
 									tmp_wpt_eta = "----Z"	--"--.--Z"
 								else
@@ -51305,48 +51431,42 @@ function B738_displ_wpt()
 									tmp_wpt_eta = tmp_wpt_eta .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
 									tmp_wpt_eta = tmp_wpt_eta .. "Z"
 								end
-								if B738DR_efis_data_capt_status == 1 then
-									wpt_data = 0
-									if legs_data[n][5] > 0 then
-										tmp_wpt_alt = legs_data[n][5]
-										tmp_wpt_type = legs_data[n][6]
-										wpt_data = 1
-									-- elseif legs_data[n][11] > 0 then
-										-- tmp_wpt_alt = legs_data[n][11]
-										-- tmp_wpt_type = 32
-										-- wpt_data = 1
-									end
-									
-									if wpt_data == 1 then
-										if B738DR_flight_phase < 5 then
-											if tmp_wpt_alt > B738DR_trans_alt then
-												txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
-											else
-												txt_white_alt = string.format("%5d", tmp_wpt_alt)
-											end
+								
+								wpt_data = 0
+								if legs_data[n][5] > 0 then
+									tmp_wpt_alt = legs_data[n][5]
+									tmp_wpt_type = legs_data[n][6]
+									wpt_data = 1
+								end
+								
+								if wpt_data == 1 then
+									if B738DR_flight_phase < 5 then
+										if tmp_wpt_alt > B738DR_trans_alt then
+											txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 										else
-											if tmp_wpt_alt > B738DR_trans_lvl then
-												txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
-											else
-												txt_white_alt = string.format("%5d", tmp_wpt_alt)
-											end
+											txt_white_alt = tostring(tmp_wpt_alt) --string.format("%5d", tmp_wpt_alt)
 										end
-										if tmp_wpt_type == 43 then	-- Above
-											txt_white_alt = txt_white_alt .. "A"
-										elseif tmp_wpt_type == 45 then	-- Below
-											txt_white_alt = txt_white_alt .. "B"
-										end
-										txt_white_eta = tmp_wpt_eta		--"--.--Z"
 									else
-										-- txt_white_alt = ""
-										-- txt_white_eta = ""
-										txt_white_alt = tmp_wpt_eta
-										tmp_wpt_eta = ""
+										if tmp_wpt_alt > B738DR_trans_lvl then
+											txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+										else
+											txt_white_alt = tostring(tmp_wpt_alt) -- string.format("%5d", tmp_wpt_alt)
+										end
+									end
+									if tmp_wpt_type == 43 then	-- Above
+										txt_white_alt = txt_white_alt .. "A"
+									elseif tmp_wpt_type == 45 then	-- Below
+										txt_white_alt = txt_white_alt .. "B"
+									end
+									if B738DR_efis_data_capt_status == 1 then
+										txt_white_eta = tmp_wpt_eta
 									end
 								else
-									txt_white_alt = ""
-									txt_white_eta = ""
+									if B738DR_efis_data_capt_status == 1 then
+										txt_white_alt = tmp_wpt_eta
+									end
 								end
+								
 								if legs_data[n][32] == 0 then
 									wpt_type = 1
 								else
@@ -51605,8 +51725,10 @@ function B738_displ_wpt()
 								nd_x = -nd_dis * math.cos(delta_hdg)
 							end
 							
-							if B738DR_capt_exp_map_mode == 0 then
-								nd_zoom = nd_zoom / 2
+							--if B738DR_capt_exp_map_mode == 0 then
+							if B738DR_capt_map_mode == 3 then
+								--nd_zoom = nd_zoom / 2
+								nd_zoom = nd_zoom * 0.57
 							end
 							
 							nd_x = nd_x * nd_zoom		-- zoom
@@ -51784,7 +51906,8 @@ function B738_displ_wpt()
 					end
 					
 					if rte_plan_mode == 1 then
-						nd_zoom = nd_zoom / 2
+						--nd_zoom = nd_zoom / 2
+						nd_zoom = nd_zoom * 0.57
 					end
 					
 					nd_x = nd_x * nd_zoom		-- zoom
@@ -52590,7 +52713,8 @@ function B738_displ_wpt()
 					end
 					
 					if rte_plan_mode == 1 then
-						nd_zoom = nd_zoom / 2
+						--nd_zoom = nd_zoom / 2
+						nd_zoom = nd_zoom * 0.57
 					end
 					
 					nd_x = nd_x * nd_zoom		-- zoom
@@ -52909,8 +53033,10 @@ function B738_displ_wpt()
 								txt_white_alt = ""
 								txt_white_eta = ""
 								txt_cyan_id = legs_data[n][1]
+								txt_cyan_alt = ""
+								txt_cyan_eta = ""
 								if legs_data[n][13] <= 0 then
-									tmp_wpt_eta = "----Z"	--"--.--Z"
+									tmp_wpt_eta = "----Z"
 								else
 									tmp_wpt_eta2 = math.floor(legs_data[n][13])
 									tmp_wpt_eta3 = (legs_data[n][13] - tmp_wpt_eta2) * 60
@@ -52919,47 +53045,40 @@ function B738_displ_wpt()
 									tmp_wpt_eta = tmp_wpt_eta .. "Z"
 								end
 								
-								if B738DR_efis_data_fo_status == 1 then
-									wpt_data = 0
-									if legs_data[n][5] > 0 then
-										tmp_wpt_alt = legs_data[n][5]
-										tmp_wpt_type = legs_data[n][6]
-										wpt_data = 1
-									-- elseif legs_data[n][11] > 0 then
-										-- tmp_wpt_alt = legs_data[n][11]
-										-- tmp_wpt_type = 32
-										-- wpt_data = 1
-									end
-									if wpt_data == 1 then
-										if B738DR_flight_phase < 5 then
-											if tmp_wpt_alt > B738DR_trans_alt then
-												txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
-											else
-												txt_cyan_alt = string.format("%5d", tmp_wpt_alt)
-											end
+								wpt_data = 0
+								if legs_data[n][5] > 0 then
+									tmp_wpt_alt = legs_data[n][5]
+									tmp_wpt_type = legs_data[n][6]
+									wpt_data = 1
+								end
+								if wpt_data == 1 then
+									if B738DR_flight_phase < 5 then
+										if tmp_wpt_alt > B738DR_trans_alt then
+											txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 										else
-											if tmp_wpt_alt > B738DR_trans_lvl then
-												txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
-											else
-												txt_cyan_alt = string.format("%5d", tmp_wpt_alt)
-											end
+											txt_cyan_alt = tostring(tmp_wpt_alt) --  string.format("%5d", tmp_wpt_alt)
 										end
-										if tmp_wpt_type == 43 then	-- Above
-											txt_cyan_alt = txt_cyan_alt .. "A"
-										elseif tmp_wpt_type == 45 then	-- Below
-											txt_cyan_alt = txt_cyan_alt .. "B"
-										end
-										txt_cyan_eta = tmp_wpt_eta		--"--.--Z"
 									else
-										-- txt_cyan_alt = ""
-										-- txt_cyan_eta = ""
-										txt_cyan_alt = tmp_wpt_eta
-										txt_cyan_eta = ""
+										if tmp_wpt_alt > B738DR_trans_lvl then
+											txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+										else
+											txt_cyan_alt = tostring(tmp_wpt_alt) --  string.format("%5d", tmp_wpt_alt)
+										end
+									end
+									if tmp_wpt_type == 43 then	-- Above
+										txt_cyan_alt = txt_cyan_alt .. "A"
+									elseif tmp_wpt_type == 45 then	-- Below
+										txt_cyan_alt = txt_cyan_alt .. "B"
+									end
+									if B738DR_efis_data_fo_status == 1 then
+										txt_cyan_eta = tmp_wpt_eta
 									end
 								else
-									txt_cyan_alt = ""
-									txt_cyan_eta = ""
+									if B738DR_efis_data_fo_status == 1 then
+										txt_cyan_alt = tmp_wpt_eta
+									end
 								end
+								
 								if legs_data[n][32] == 0 then
 									wpt_type = 2
 								else
@@ -52971,8 +53090,10 @@ function B738_displ_wpt()
 								txt_cyan_alt = ""
 								txt_cyan_eta = ""
 								txt_white_id = legs_data[n][1]
+								txt_white_alt = ""
+								txt_white_eta = ""
 								if legs_data[n][13] <= 0 then
-									tmp_wpt_eta = "----Z"	--"--.--Z"
+									tmp_wpt_eta = "----Z"
 								else
 									tmp_wpt_eta2 = math.floor(legs_data[n][13])
 									tmp_wpt_eta3 = (legs_data[n][13] - tmp_wpt_eta2) * 60
@@ -52980,48 +53101,42 @@ function B738_displ_wpt()
 									tmp_wpt_eta = tmp_wpt_eta .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
 									tmp_wpt_eta = tmp_wpt_eta .. "Z"
 								end
-								if B738DR_efis_data_fo_status == 1 then
-									wpt_data = 0
-									if legs_data[n][5] > 0 then
-										tmp_wpt_alt = legs_data[n][5]
-										tmp_wpt_type = legs_data[n][6]
-										wpt_data = 1
-									-- elseif legs_data[n][11] > 0 then
-										-- tmp_wpt_alt = legs_data[n][11]
-										-- tmp_wpt_type = 32
-										-- wpt_data = 1
-									end
-									
-									if wpt_data == 1 then
-										if B738DR_flight_phase < 5 then
-											if tmp_wpt_alt > B738DR_trans_alt then
-												txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
-											else
-												txt_white_alt = string.format("%5d", tmp_wpt_alt)
-											end
+								
+								wpt_data = 0
+								if legs_data[n][5] > 0 then
+									tmp_wpt_alt = legs_data[n][5]
+									tmp_wpt_type = legs_data[n][6]
+									wpt_data = 1
+								end
+								
+								if wpt_data == 1 then
+									if B738DR_flight_phase < 5 then
+										if tmp_wpt_alt > B738DR_trans_alt then
+											txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 										else
-											if tmp_wpt_alt > B738DR_trans_lvl then
-												txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
-											else
-												txt_white_alt = string.format("%5d", tmp_wpt_alt)
-											end
+											txt_white_alt = tostring(tmp_wpt_alt) --  string.format("%5d", tmp_wpt_alt)
 										end
-										if tmp_wpt_type == 43 then	-- Above
-											txt_white_alt = txt_white_alt .. "A"
-										elseif tmp_wpt_type == 45 then	-- Below
-											txt_white_alt = txt_white_alt .. "B"
-										end
-										txt_white_eta = tmp_wpt_eta		--"--.--Z"
 									else
-										-- txt_white_alt = ""
-										-- txt_white_eta = ""
-										txt_white_alt = tmp_wpt_eta
-										txt_white_eta = ""
+										if tmp_wpt_alt > B738DR_trans_lvl then
+											txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+										else
+											txt_white_alt = tostring(tmp_wpt_alt) --  string.format("%5d", tmp_wpt_alt)
+										end
+									end
+									if tmp_wpt_type == 43 then	-- Above
+										txt_white_alt = txt_white_alt .. "A"
+									elseif tmp_wpt_type == 45 then	-- Below
+										txt_white_alt = txt_white_alt .. "B"
+									end
+									if B738DR_efis_data_fo_status == 1 then
+										txt_white_eta = tmp_wpt_eta
 									end
 								else
-									txt_white_alt = ""
-									txt_white_eta = ""
+									if B738DR_efis_data_fo_status == 1 then
+										txt_white_alt = tmp_wpt_eta
+									end
 								end
+								
 								if legs_data[n][32] == 0 then
 									wpt_type = 1
 								else
@@ -53272,8 +53387,10 @@ function B738_displ_wpt()
 								nd_x = -nd_dis * math.cos(delta_hdg)
 							end
 							
-							if B738DR_fo_exp_map_mode == 0 then
-								nd_zoom = nd_zoom / 2
+							--if B738DR_fo_exp_map_mode == 0 then
+							if B738DR_fo_map_mode == 3 then
+								--nd_zoom = nd_zoom / 2
+								nd_zoom = nd_zoom * 0.57
 							end
 							
 							nd_x = nd_x * nd_zoom		-- zoom
@@ -53458,7 +53575,8 @@ function B738_displ_wpt()
 					end
 					
 					if rte_plan_mode == 1 then
-						nd_zoom = nd_zoom / 2
+						--nd_zoom = nd_zoom / 2
+						nd_zoom = nd_zoom * 0.57
 					end
 					
 					nd_x = nd_x * nd_zoom		-- zoom
@@ -57653,7 +57771,8 @@ function B738_displ_tc()
 			end
 			
 			if rte_plan_mode == 1 then
-				ils_zoom = ils_zoom / 2
+				--ils_zoom = ils_zoom / 2
+				ils_zoom = ils_zoom * 0.57
 			end
 
 			ils_x = ils_x * ils_zoom		-- zoom
@@ -57822,7 +57941,8 @@ function B738_displ_tc()
 			end
 			
 			if rte_plan_mode == 1 then
-				ils_zoom = ils_zoom / 2
+				--ils_zoom = ils_zoom / 2
+				ils_zoom = ils_zoom * 0.57
 			end
 			
 			ils_x = ils_x * ils_zoom		-- zoom
@@ -58013,7 +58133,8 @@ function B738_displ_decel()
 			end
 			
 			if rte_plan_mode == 1 then
-				ils_zoom = ils_zoom / 2
+				--ils_zoom = ils_zoom / 2
+				ils_zoom = ils_zoom * 0.57
 			end
 			
 			ils_x = ils_x * ils_zoom		-- zoom
@@ -58171,7 +58292,8 @@ function B738_displ_decel()
 			end
 			
 			if rte_plan_mode == 1 then
-				ils_zoom = ils_zoom / 2
+				--ils_zoom = ils_zoom / 2
+				ils_zoom = ils_zoom * 0.57
 			end
 			
 			ils_x = ils_x * ils_zoom		-- zoom
@@ -58364,7 +58486,8 @@ function B738_displ_td()
 			end
 			
 			if rte_plan_mode == 1 then
-				ils_zoom = ils_zoom / 2
+				--ils_zoom = ils_zoom / 2
+				ils_zoom = ils_zoom * 0.57
 			end
 			
 			ils_x = ils_x * ils_zoom		-- zoom
@@ -58526,7 +58649,8 @@ function B738_displ_td()
 			end
 			
 			if rte_plan_mode == 1 then
-				ils_zoom = ils_zoom / 2
+				--ils_zoom = ils_zoom / 2
+				ils_zoom = ils_zoom * 0.57
 			end
 			
 			ils_x = ils_x * ils_zoom		-- zoom
@@ -58718,7 +58842,8 @@ function B738_displ_rnw()
 			end
 			
 			if rte_plan_mode == 1 then
-				ils_zoom = ils_zoom / 2
+				--ils_zoom = ils_zoom / 2
+				ils_zoom = ils_zoom * 0.57
 			end
 			
 			ils_x = ils_x * ils_zoom		-- zoom
@@ -58884,7 +59009,8 @@ function B738_displ_rnw()
 			end
 			
 			if rte_plan_mode == 1 then
-				ils_zoom = ils_zoom / 2
+				--ils_zoom = ils_zoom / 2
+				ils_zoom = ils_zoom * 0.57
 			end
 			
 			ils_x = ils_x * ils_zoom		-- zoom
@@ -59066,7 +59192,8 @@ function B738_displ_rnw()
 			end
 			
 			if rte_plan_mode == 1 then
-				ils_zoom = ils_zoom / 2
+				--ils_zoom = ils_zoom / 2
+				ils_zoom = ils_zoom * 0.57
 			end
 			
 			ils_x = ils_x * ils_zoom		-- zoom
@@ -59242,7 +59369,8 @@ function B738_displ_rnw()
 			end
 			
 			if rte_plan_mode == 1 then
-				ils_zoom = ils_zoom / 2
+				--ils_zoom = ils_zoom / 2
+				ils_zoom = ils_zoom * 0.57
 			end
 			
 			ils_x = ils_x * ils_zoom		-- zoom
@@ -59340,6 +59468,19 @@ function B738_displ_fix()
 					mag_hdg = ndx_mag_hdg - simDR_mag_variation
 				end
 			end
+		elseif B738DR_capt_map_mode == 3 then
+			if legs_num2 > 0 then
+				if legs_step == 0 then
+					ils_lat = legs_data2[1][7]
+					ils_lon = legs_data2[1][8]
+				else
+					ils_lat = legs_data2[legs_step][7]
+					ils_lon = legs_data2[legs_step][8]
+				end
+				mag_hdg = -simDR_mag_variation
+			else
+				ils_disable = 1
+			end
 		else
 			ils_disable = 1
 		end
@@ -59417,9 +59558,10 @@ function B738_displ_fix()
 					ils_on_off = 0
 				end
 				
-				-- if B738DR_capt_exp_map_mode == 0 then
-					-- ils_zoom = ils_zoom / 2
-				-- end
+				if B738DR_capt_map_mode == 3 then
+					--ils_zoom = ils_zoom / 2
+					ils_zoom = ils_zoom * 0.57
+				end
 				
 				ils_x = ils_x * ils_zoom		-- zoom
 				ils_y = ils_y * ils_zoom		-- zoom
@@ -59632,6 +59774,8 @@ function B738_displ_fix()
 		
 		
 		-- FIRST OFFICER
+		ils_lat = ndx_lat
+		ils_lon = ndx_lon
 		ils_disable = 0
 		if B738DR_fo_map_mode == 2 then
 			if B738DR_track_up == 0 then
@@ -59642,6 +59786,19 @@ function B738_displ_fix()
 				else
 					mag_hdg = ndx_mag_hdg - simDR_mag_variation
 				end
+			end
+		elseif B738DR_fo_map_mode == 3 then
+			if legs_num2 > 0 then
+				if legs_step2 == 0 then
+					ils_lat = legs_data2[1][7]
+					ils_lon = legs_data2[1][8]
+				else
+					ils_lat = legs_data2[legs_step2][7]
+					ils_lon = legs_data2[legs_step2][8]
+				end
+				mag_hdg = -simDR_mag_variation
+			else
+				ils_disable = 1
 			end
 		else
 			ils_disable = 1
@@ -59720,9 +59877,10 @@ function B738_displ_fix()
 					ils_on_off = 0
 				end
 				
-				-- if B738DR_fo_exp_map_mode == 0 then
-					-- ils_zoom = ils_zoom / 2
-				-- end
+				if B738DR_fo_map_mode == 3 then
+					--ils_zoom = ils_zoom / 2
+					ils_zoom = ils_zoom * 0.57
+				end
 				
 				ils_x = ils_x * ils_zoom		-- zoom
 				ils_y = ils_y * ils_zoom		-- zoom
@@ -59739,12 +59897,12 @@ function B738_displ_fix()
 				-- if ils_x < -10.0 or ils_x > 10.0 then
 					-- ils_on_off = 0
 				-- end
-				if ils_y > 28 or ils_y < -28 then
-					ils_on_off = 0
-				end
-				if ils_x < -28 or ils_x > 28 then
-					ils_on_off = 0
-				end
+				-- if ils_y > 28 or ils_y < -28 then
+					-- ils_on_off = 0
+				-- end
+				-- if ils_x < -28 or ils_x > 28 then
+					-- ils_on_off = 0
+				-- end
 					
 				if ils_on_off == 1 then
 					
@@ -60221,7 +60379,8 @@ function B738_displ_apt()
 					end
 					
 					if B738DR_capt_map_mode == 3 then
-						nd_zoom = nd_zoom / 2
+						--nd_zoom = nd_zoom / 2
+						nd_zoom = nd_zoom * 0.57
 					end
 					
 					nd_x = nd_x2 * nd_zoom		-- zoom
@@ -60400,7 +60559,8 @@ function B738_displ_apt()
 					end
 					
 					if B738DR_fo_map_mode == 3 then
-						nd_zoom = nd_zoom / 2
+						--nd_zoom = nd_zoom / 2
+						nd_zoom = nd_zoom * 0.57
 					end
 					
 					nd_x = nd_x2 * nd_zoom		-- zoom
@@ -61159,7 +61319,8 @@ function B738_displ_navaid()
 				end
 				
 				if B738DR_capt_map_mode == 3 then
-					nd_zoom = nd_zoom / 2
+					--nd_zoom = nd_zoom / 2
+					nd_zoom = nd_zoom * 0.57
 				end
 					
 				nd_x = nd_x2 * nd_zoom		-- zoom
@@ -61445,7 +61606,8 @@ function B738_displ_navaid()
 				end
 				
 				if B738DR_fo_map_mode == 3 then
-					nd_zoom = nd_zoom / 2
+					--nd_zoom = nd_zoom / 2
+					nd_zoom = nd_zoom * 0.57
 				end
 					
 				nd_x = nd_x2 * nd_zoom		-- zoom
@@ -67497,7 +67659,7 @@ temp_ils4 = ""
 	receive_msg = 0
 	
 	--entry2 = ">... STILL IN PROGRESS .."
-	version = "v3.257"
+	version = "v3.258"
 
 end
 

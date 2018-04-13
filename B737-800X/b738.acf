@@ -60803,7 +60803,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt19w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -60818,7 +60818,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta19w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -60847,7 +60847,7 @@ GROUP MFD CAPT FO
               POS 818.000000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt19m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -60862,7 +60862,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta19m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -60987,7 +60987,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt18w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61002,7 +61002,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta18w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61031,7 +61031,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt18m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61046,7 +61046,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta18m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61171,7 +61171,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt17w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61186,7 +61186,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta17w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61215,7 +61215,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt17m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61230,7 +61230,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta17m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61355,7 +61355,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt16w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61370,7 +61370,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta16w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61399,7 +61399,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt16m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61414,7 +61414,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta16m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61539,7 +61539,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt15w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61554,7 +61554,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta15w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61583,7 +61583,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt15m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61598,7 +61598,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta15m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61723,7 +61723,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt14w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61738,7 +61738,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta14w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61767,7 +61767,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt14m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61782,7 +61782,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta14m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61907,7 +61907,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt13w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61922,7 +61922,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta13w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61951,7 +61951,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt13m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -61966,7 +61966,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta13m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62091,7 +62091,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt12w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62106,7 +62106,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta12w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62135,7 +62135,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt12m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62150,7 +62150,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta12m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62275,7 +62275,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt11w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62290,7 +62290,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta11w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62319,7 +62319,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt11m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62334,7 +62334,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta11m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62459,7 +62459,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt10w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62474,7 +62474,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta10w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62503,7 +62503,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt10m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62518,7 +62518,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta10m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62642,7 +62642,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt09w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62657,7 +62657,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta09w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62686,7 +62686,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt09m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62701,7 +62701,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta09m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62825,7 +62825,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt08w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62840,7 +62840,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta08w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62869,7 +62869,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt08m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -62884,7 +62884,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta08m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63008,7 +63008,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt07w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63023,7 +63023,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta07w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63052,7 +63052,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt07m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63067,7 +63067,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta07m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63191,7 +63191,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt06w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63206,7 +63206,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta06w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63235,7 +63235,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt06m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63250,7 +63250,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta06m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63374,7 +63374,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt05w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63389,7 +63389,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta05w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63418,7 +63418,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt05m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63433,7 +63433,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta05m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63557,7 +63557,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt04w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63572,7 +63572,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta04w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63601,7 +63601,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt04m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63616,7 +63616,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta04m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63740,7 +63740,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt03w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63755,7 +63755,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta03w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63784,7 +63784,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt03m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63799,7 +63799,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta03m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63923,7 +63923,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt02w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63938,7 +63938,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta02w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63967,7 +63967,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt02m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -63982,7 +63982,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta02m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -64107,7 +64107,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt01w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -64122,7 +64122,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta01w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -64151,7 +64151,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt01m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -64166,7 +64166,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta01m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -64291,7 +64291,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_alt00w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -64306,7 +64306,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_fo_eta00w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -64335,7 +64335,7 @@ GROUP MFD CAPT FO
               POS 818.500000 338.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_alt00m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -64350,7 +64350,7 @@ GROUP MFD CAPT FO
               POS 818.500000 324.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_fo_eta00m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -87598,7 +87598,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt19w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -87613,7 +87613,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta19w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -87642,7 +87642,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt19m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -87657,7 +87657,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta19m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -87782,7 +87782,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt18w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -87797,7 +87797,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta18w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -87826,7 +87826,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt18m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -87841,7 +87841,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta18m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -87966,7 +87966,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt17w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -87981,7 +87981,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta17w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88010,7 +88010,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt17m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88025,7 +88025,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta17m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88150,7 +88150,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt16w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88165,7 +88165,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta16w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88194,7 +88194,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt16m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88209,7 +88209,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta16m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88334,7 +88334,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt15w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88349,7 +88349,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta15w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88378,7 +88378,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt15m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88393,7 +88393,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta15m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88518,7 +88518,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt14w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88533,7 +88533,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta14w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88562,7 +88562,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt14m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88577,7 +88577,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta14m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88702,7 +88702,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt13w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88717,7 +88717,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta13w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88746,7 +88746,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt13m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88761,7 +88761,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta13m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88886,7 +88886,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt12w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88901,7 +88901,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta12w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88930,7 +88930,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt12m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -88945,7 +88945,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta12m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89070,7 +89070,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt11w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89085,7 +89085,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta11w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89114,7 +89114,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt11m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89129,7 +89129,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta11m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89254,7 +89254,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt10w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89269,7 +89269,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta10w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89298,7 +89298,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt10m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89313,7 +89313,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta10m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89437,7 +89437,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt09w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89452,7 +89452,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta09w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89481,7 +89481,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt09m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89496,7 +89496,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta09m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89620,7 +89620,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt08w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89635,7 +89635,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta08w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89664,7 +89664,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt08m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89679,7 +89679,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta08m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89803,7 +89803,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt07w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89818,7 +89818,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta07w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89847,7 +89847,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt07m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89862,7 +89862,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta07m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -89986,7 +89986,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt06w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90001,7 +90001,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta06w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90030,7 +90030,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt06m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90045,7 +90045,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta06m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90169,7 +90169,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt05w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90184,7 +90184,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta05w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90213,7 +90213,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt05m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90228,7 +90228,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta05m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90352,7 +90352,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt04w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90367,7 +90367,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta04w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90396,7 +90396,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt04m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90411,7 +90411,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta04m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90535,7 +90535,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt03w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90550,7 +90550,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta03w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90579,7 +90579,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt03m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90594,7 +90594,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta03m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90718,7 +90718,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt02w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90733,7 +90733,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta02w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90762,7 +90762,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt02m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90777,7 +90777,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta02m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90902,7 +90902,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt01w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90917,7 +90917,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta01w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90946,7 +90946,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt01m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -90961,7 +90961,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta01m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -91086,7 +91086,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_alt00w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -91101,7 +91101,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_white_s
               DATAREF laminar/B738/nd/wpt_eta00w
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -91130,7 +91130,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -174.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_alt00m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO
@@ -91145,7 +91145,7 @@ GROUP MFD CAPT FO
               POS 818.500000 -188.000000
               IMAGE MFD/type_magenta_s
               DATAREF laminar/B738/nd/wpt_eta00m
-              SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
+              #SHOW_EQUAL 1.000000 laminar/B738/EFIS/capt/data_status
               LOCKED
               HIDE
               LIGHT_MODE GLASS_AUTO

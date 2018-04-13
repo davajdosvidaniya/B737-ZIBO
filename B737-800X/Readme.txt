@@ -77,8 +77,13 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
-3.257
------
+3.258:
+------
+- graphics corrections on ND
+- fixed brakes, landing gear toggle,...
+
+3.257:
+------
 - graphics correction on ND
 - fixed small bugs
 

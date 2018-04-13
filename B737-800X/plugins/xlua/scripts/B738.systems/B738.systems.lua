@@ -348,6 +348,7 @@ target_cabin_alt = 0
 tgt_outflow_valve = 0
 press_set_vvi = 800
 dump_all = 0
+depress_on = 0
 
 lost_inertial = 0
 
@@ -382,6 +383,8 @@ change_adf_nav2 = 0
 first_time_num = 0
 
 brake_smoothly_status = 0
+brake_smoothly_left = 0
+brake_smoothly_right = 0
 
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
@@ -699,6 +702,7 @@ simDR_dump_all			= find_dataref("sim/cockpit/pressure/dump_all")
 simDR_dump_to_alt		= find_dataref("sim/cockpit/pressure/dump_to_alt")
 simDR_cabin_vvi 		= find_dataref("sim/cockpit/pressure/cabin_vvi_actual_m_msec")
 simDR_cabin_alt_tgt 	= find_dataref("sim/cockpit2/pressurization/actuators/cabin_altitude_ft")
+simDR_depress			= find_dataref("sim/operation/failures/rel_depres_slow")
 
 simDR_TAT				= find_dataref("sim/cockpit2/temperature/outside_air_LE_temp_degc")
 
@@ -1380,20 +1384,44 @@ function B738DR_fuel_pos_ctr2_DRhandler()end
 function B738DR_fuel_pos_rgt1_DRhandler()end
 function B738DR_fuel_pos_rgt2_DRhandler()end
 
-function B738DR_gear_handle_pos_DRhandler()
-
-	local min_tgt_gear = 0
+function gear_lock_sys()
+	
+	local result = 0
 	
 	if B738DR_gear_lock_override_pos == 1 then
 		gear_lock = 0
-		min_tgt_gear = 0
+		result = 0
 	elseif simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
-		gear_lock = 1
-		min_tgt_gear = 0.5
+		if B738DR_gear_handle_pos < 0.5 and gear_lock == 0 then
+			-- gear_lock = 0
+			result = 0
+		else
+			gear_lock = 1
+			result = 0.5
+		end
 	else
 		gear_lock = 0
-		min_tgt_gear = 0
+		result = 0
 	end
+	
+	return result
+
+end
+
+function B738DR_gear_handle_pos_DRhandler()
+
+	local min_tgt_gear = gear_lock_sys()
+	
+	-- if B738DR_gear_lock_override_pos == 1 then
+		-- gear_lock = 0
+		-- min_tgt_gear = 0
+	-- elseif simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+		-- gear_lock = 1
+		-- min_tgt_gear = 0.5
+	-- else
+		-- gear_lock = 0
+		-- min_tgt_gear = 0
+	-- end
 	
 	if B738DR_gear_handle_pos < min_tgt_gear then
 		B738DR_gear_handle_pos = min_tgt_gear
@@ -2288,15 +2316,37 @@ function B738_eng2_start_flt_CMDhandler(phase, duration)
 end
 -------------------------
 
+-- function B738_gear_toggle_CMDhandler(phase, duration)
+	-- if phase == 0 then
+		-- if B738DR_gear_handle_pos == 0 then			-- UP -> OFF
+			-- B738DR_gear_handle_pos = 0.5
+			-- B738_landing_gear = 1	--off
+		-- elseif B738DR_gear_handle_pos == 0.5 then	-- OFF -> DOWN
+			-- B738DR_gear_handle_pos = 1
+			-- B738_landing_gear = 2	--down
+			-- landing_gear_target = 1
+		-- elseif B738DR_gear_handle_pos == 1 then		-- DOWN -> UP
+			-- if gear_lock == 0 then		-- DOWN -> UP
+				-- B738DR_gear_handle_pos = 0
+				-- B738_landing_gear = 0	--up
+				-- if B738DR_landgear_pos < 0.9 and B738DR_landgear_cover_pos < 0.9 then
+					-- landing_gear_target = 0
+				-- end
+			-- else
+				-- B738DR_gear_handle_pos = 0.5
+				-- B738_landing_gear = 1	--off
+			-- end
+		-- end
+	-- end
+-- end
+
 function B738_gear_toggle_CMDhandler(phase, duration)
 	if phase == 0 then
+		local min_tgt_gear = gear_lock_sys()
+		
 		if B738DR_gear_handle_pos == 0 then			-- UP -> OFF
 			B738DR_gear_handle_pos = 0.5
 			B738_landing_gear = 1	--off
-		elseif B738DR_gear_handle_pos == 0.5 then	-- OFF -> DOWN
-			B738DR_gear_handle_pos = 1
-			B738_landing_gear = 2	--down
-			landing_gear_target = 1
 		elseif B738DR_gear_handle_pos == 1 then		-- DOWN -> UP
 			if gear_lock == 0 then		-- DOWN -> UP
 				B738DR_gear_handle_pos = 0
@@ -2308,16 +2358,33 @@ function B738_gear_toggle_CMDhandler(phase, duration)
 				B738DR_gear_handle_pos = 0.5
 				B738_landing_gear = 1	--off
 			end
+		else	-- OFF -> DOWN
+			B738DR_gear_handle_pos = 1
+			B738_landing_gear = 2	--down
+			landing_gear_target = 1
 		end
 	end
 end
+
+-- function B738_def_gear_down_CMDhandler(phase, duration)
+	-- if phase == 0 then
+		-- if B738DR_gear_handle_pos == 0 then			-- UP -> OFF
+			-- B738DR_gear_handle_pos = 0.5
+			-- B738_landing_gear = 1	--off
+		-- elseif B738DR_gear_handle_pos == 0.5 then	-- OFF -> DOWN
+			-- B738DR_gear_handle_pos = 1
+			-- B738_landing_gear = 2	--down
+			-- landing_gear_target = 1
+		-- end
+	-- end
+-- end
 
 function B738_def_gear_down_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_gear_handle_pos == 0 then			-- UP -> OFF
 			B738DR_gear_handle_pos = 0.5
 			B738_landing_gear = 1	--off
-		elseif B738DR_gear_handle_pos == 0.5 then	-- OFF -> DOWN
+		else	-- OFF -> DOWN
 			B738DR_gear_handle_pos = 1
 			B738_landing_gear = 2	--down
 			landing_gear_target = 1
@@ -2327,6 +2394,7 @@ end
 
 function B738_def_gear_up_CMDhandler(phase, duration)
 	if phase == 0 then
+		local min_tgt_gear = gear_lock_sys()
 		if B738DR_gear_handle_pos == 1 then		-- DOWN -> UP
 			if gear_lock == 0 then		-- DOWN -> UP
 				B738DR_gear_handle_pos = 0
@@ -2620,9 +2688,23 @@ function B738CMD_gear_down_CMDhandler(phase, duration)
 	end
 end
 
+-- function B738CMD_gear_up_CMDhandler(phase, duration)
+	-- if phase == 0 then
+		-- if gear_lock == 0 then
+			-- B738DR_gear_handle_pos = 0
+			-- B738_landing_gear = 0	--up
+			-- if B738DR_landgear_pos < 0.9 and B738DR_landgear_cover_pos < 0.9 then
+				-- landing_gear_target = 0
+			-- end
+		-- end
+	-- end
+-- end
+
 function B738CMD_gear_up_CMDhandler(phase, duration)
 	if phase == 0 then
-		if gear_lock == 0 then
+		local min_tgt_gear = gear_lock_sys()
+		
+		if gear_lock == 0 or B738DR_gear_handle_pos < 0.5 then
 			B738DR_gear_handle_pos = 0
 			B738_landing_gear = 0	--up
 			if B738DR_landgear_pos < 0.9 and B738DR_landgear_cover_pos < 0.9 then
@@ -2639,12 +2721,25 @@ function B738CMD_gear_off_CMDhandler(phase, duration)
 	end
 end
 
+-- function B738CMD_gear_down_one_CMDhandler(phase, duration)
+	-- if phase == 0 then
+		-- if B738DR_gear_handle_pos == 0 then
+			-- B738DR_gear_handle_pos = 0.5
+			-- B738_landing_gear = 1	--off
+		-- elseif B738DR_gear_handle_pos == 0.5 then
+			-- B738DR_gear_handle_pos = 1
+			-- B738_landing_gear = 2	--down
+			-- landing_gear_target = 1
+		-- end
+	-- end
+-- end
+
 function B738CMD_gear_down_one_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_gear_handle_pos == 0 then
 			B738DR_gear_handle_pos = 0.5
 			B738_landing_gear = 1	--off
-		elseif B738DR_gear_handle_pos == 0.5 then
+		else
 			B738DR_gear_handle_pos = 1
 			B738_landing_gear = 2	--down
 			landing_gear_target = 1
@@ -2652,10 +2747,28 @@ function B738CMD_gear_down_one_CMDhandler(phase, duration)
 	end
 end
 
+-- function B738CMD_gear_up_one_CMDhandler(phase, duration)
+	-- if phase == 0 then
+		-- if B738DR_gear_handle_pos == 1 then
+			-- if gear_lock == 0 then
+				-- B738DR_gear_handle_pos = 0
+				-- B738_landing_gear = 0	--up
+				-- if B738DR_landgear_pos < 0.9 and B738DR_landgear_cover_pos < 0.9 then
+					-- landing_gear_target = 0
+				-- end
+			-- else
+				-- B738DR_gear_handle_pos = 0.5
+				-- B738_landing_gear = 1	--off
+			-- end
+		-- end
+	-- end
+-- end
+
 function B738CMD_gear_up_one_CMDhandler(phase, duration)
 	if phase == 0 then
-		if B738DR_gear_handle_pos == 1 then
-			if gear_lock == 0 then
+		local min_tgt_gear = gear_lock_sys()
+		if B738DR_gear_handle_pos ~= 0 then
+			if gear_lock == 0 or B738DR_gear_handle_pos < 0.5 then	-- above OFF position
 				B738DR_gear_handle_pos = 0
 				B738_landing_gear = 0	--up
 				if B738DR_landgear_pos < 0.9 and B738DR_landgear_cover_pos < 0.9 then
@@ -5714,7 +5827,7 @@ function B738_autobrake()
 	if B738DR_toe_brakes_ovr == 0 then
 		brake_force = math.max(simDR_left_brake, simDR_right_brake)
 	else
-		brake_force = math.max(left_brake, right_brake)
+		brake_force = math.max(left_brake, right_brake, brake_smoothly_left, brake_smoothly_right)
 	end
 	--if B738DR_parking_brake_pos > 0.1
 	--or parkbrake_force > 0.1
@@ -6256,7 +6369,8 @@ function B738_init_engineMGMT_fltStart()
 		else
 			B738DR_gear_handle_pos = 1
 		end
-		gear_lock = 0
+		--gear_lock = 0
+		gear_lock = 1
 		B738DR_l_recirc_fan_pos = 1
 		B738DR_r_recirc_fan_pos = 1
 		B738DR_trim_air_pos = 0
@@ -6338,6 +6452,8 @@ function B738_init_engineMGMT_fltStart()
 		else
 			B738DR_gear_handle_pos = 1
 		end
+		--gear_lock = 0
+		gear_lock = 1
 		B738_tank_l_status = 1
 		B738_tank_c_status = 1
 		B738_tank_r_status = 1
@@ -7861,8 +7977,10 @@ function B738_nose_steer()
 	local steer_spd = 0
 	local brake_max2 = 0
 	local gear_rot_brake = 0
-	local brake_smoothly_left = 0
-	local brake_smoothly_right = 0
+	-- local brake_smoothly_left = 0
+	-- local brake_smoothly_right = 0
+	local brake_sm_left_tgt = 0
+	local brake_sm_right_tgt = 0
 	
 	local throttle_used = math.max(simDR_throttle_used_ratio[0], simDR_throttle_used_ratio[1])
 	throttle_used = math.min(throttle_used, 0.5)
@@ -7872,6 +7990,9 @@ function B738_nose_steer()
 		B738DR_parking_brake_pos = 0
 	end
 	if left_brake >= TOE_BRAKE_FORCE and right_brake >= TOE_BRAKE_FORCE then
+		B738DR_parking_brake_pos = 0
+	end
+	if brake_smoothly_left >= 0.07 and brake_smoothly_right >= 0.07 then
 		B738DR_parking_brake_pos = 0
 	end
 	
@@ -7898,15 +8019,29 @@ function B738_nose_steer()
 			simDR_steer_ovr = 0
 			simDR_toe_brakes_ovr = 0
 		else
+			-- if brake_smoothly_status == 0 then
+				-- left_brake = 0
+				-- right_brake = 0
+			-- else
+				-- brake_smoothly_left = left_brake * 100
+				-- brake_smoothly_right = right_brake * 100
+				-- left_brake = B738_set_animation_rate(brake_smoothly_left, TOE_BRAKE_FORCE * 100, 0, 100, 0.15) / 100
+				-- right_brake = B738_set_animation_rate(brake_smoothly_right, TOE_BRAKE_FORCE * 100, 0, 100, 0.15) / 100
+			-- end
 			if brake_smoothly_status == 0 then
-				left_brake = 0
-				right_brake = 0
+				brake_sm_left_tgt = 0
+				brake_sm_right_tgt = 0
 			else
-				brake_smoothly_left = left_brake * 100
-				brake_smoothly_right = right_brake * 100
-				left_brake = B738_set_animation_rate(brake_smoothly_left, TOE_BRAKE_FORCE * 100, 0, 100, 0.15) / 100
-				right_brake = B738_set_animation_rate(brake_smoothly_right, TOE_BRAKE_FORCE * 100, 0, 100, 0.15) / 100
+				brake_sm_left_tgt = TOE_BRAKE_FORCE * 100
+				brake_sm_right_tgt =TOE_BRAKE_FORCE * 100
 			end
+			brake_smoothly_left = brake_smoothly_left * 100
+			brake_smoothly_right = brake_smoothly_right * 100
+			brake_smoothly_left = B738_set_animation_rate(brake_smoothly_left, brake_sm_left_tgt, 0, 100, 0.15) / 100
+			brake_smoothly_right = B738_set_animation_rate(brake_smoothly_right, brake_sm_right_tgt, 0, 100, 0.15) / 100
+			
+			-- left_brake = math.max(left_brake, brake_smoothly_left)
+			-- right_brake = math.max(right_brake, brake_smoothly_right)
 			
 			if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1
 			or simDR_on_ground_2 == 1 then
@@ -7973,14 +8108,14 @@ function B738_nose_steer()
 						steer_right_brake = B738_rescale(0, 0, 64, steer_right_brake, simDR_ground_speed * simDR_ground_speed)
 					end
 				end
-				simDR_left_brake = math.max(left_brake, steer_left_brake)	--, autobrake_ratio)
-				simDR_right_brake = math.max(right_brake, steer_right_brake)	--, autobrake_ratio)
+				simDR_left_brake = math.max(left_brake, steer_left_brake, brake_smoothly_left)	--, autobrake_ratio)
+				simDR_right_brake = math.max(right_brake, steer_right_brake, brake_smoothly_right)	--, autobrake_ratio)
 			else
 				simDR_steer_ovr = 0
-				if left_brake > 0 or right_brake > 0 then
+				if left_brake > 0 or right_brake > 0 or brake_smoothly_left > 0 or brake_smoothly_right > 0 then
 					simDR_toe_brakes_ovr = 1
-					simDR_left_brake = left_brake
-					simDR_right_brake = right_brake
+					simDR_left_brake = math.max(left_brake, brake_smoothly_left)
+					simDR_right_brake = math.max(right_brake, brake_smoothly_right)
 				else
 					simDR_toe_brakes_ovr = 0
 				end
@@ -9961,6 +10096,85 @@ function B738_pressurization()
 	
 end
 
+function B738_pressurization2()
+	
+	-- MODE: 0 - off, 1 - normal, 2 - alternate, 3 - manual
+	local press_mode = 0
+	local target_cabin_vvi = 0
+	--local depress_on = 0
+	local dump_all_on = 0
+	local cabin_alt = 0
+	
+	-- AUTO
+	if B738DR_air_valve_ctrl == 0 then
+		if B738DR_ac_tnsbus1_status == 1 then
+			press_mode = 1
+		elseif B738DR_ac_tnsbus2_status == 1 then
+			press_mode = 2
+		else
+			press_mode = 0
+		end
+	-- ALTN
+	elseif B738DR_air_valve_ctrl == 1 then
+		if B738DR_ac_tnsbus2_status == 0 then
+			press_mode = 0
+		else
+			press_mode = 2
+		end
+	-- MANUAL
+	elseif B738DR_air_valve_ctrl == 2 then
+		if B738DR_batbus_status == 0 then
+			press_mode = 0
+		else
+			press_mode = 3
+		end
+	end
+	
+	if press_mode == 0 then
+		depress_on = 6
+	elseif press_mode < 3 then
+		tgt_outflow_valve = 0
+		cabin_alt = math.max(10000, simDR_press_max_alt)
+		if simDR_altitude_pilot > (cabin_alt + 600) then
+			depress_on = 6
+		elseif simDR_altitude_pilot <= (cabin_alt + 200) then
+			depress_on = 0
+		end
+		if simDR_altitude_pilot < alt_pressurize_land then
+			dump_all_on = 1
+			tgt_outflow_valve = 1
+		elseif simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+			dump_all_on = 1
+			tgt_outflow_valve = 1
+		end
+	else
+		if B738DR_air_valve_manual == -1 then
+			tgt_outflow_valve = 0
+			--depress_on = 0
+		elseif B738DR_air_valve_manual == 1 then
+			tgt_outflow_valve = 1
+			--depress_on = 6
+		end
+		if tgt_outflow_valve == 0 then
+			depress_on = 0
+		else
+			depress_on = 6
+		end
+	end
+	
+	B738DR_cabin_vvi = B738_set_anim_value(B738DR_cabin_vvi, target_cabin_vvi, -4500, 4500, 0.8)
+	
+	B738DR_outflow_valve = B738_set_anim_value(B738DR_outflow_valve, tgt_outflow_valve, 0, 1, 0.8)
+	
+	simDR_depress = depress_on
+	B738DR_pressurization_mode = press_mode
+	simDR_dump_all = dump_all_on
+	
+	target_cabin_vvi = simDR_cabin_vvi
+	B738DR_cabin_alt = simDR_cabin_alt
+	simDR_press_set_vvi = 800
+	
+end
 
 function B738_air_cond()
 
@@ -10790,6 +11004,7 @@ B738_init_engineMGMT_fltStart()
 	alt_pressurize_land = 0
 	B738DR_outflow_valve = 0
 	dump_all = 0
+	depress_on = 0
 	
 	init_sys()
 
@@ -10833,6 +11048,8 @@ B738_init_engineMGMT_fltStart()
 	first_time_num = 0
 	steer_speed = 0.110	--0.028
 	brake_smoothly_status = 0
+	brake_smoothly_left = 0
+	brake_smoothly_right = 0
 	
 end
 
@@ -10884,7 +11101,8 @@ function after_physics()
 		B738_hydraulic_sys()
 		B738_wipers()
 		B738_brakes_press_system()
-		B738_pressurization()
+		--B738_pressurization()
+		B738_pressurization2()
 		B738_air_cond()
 		turn_around_state()
 		B738_ff_used_displ()

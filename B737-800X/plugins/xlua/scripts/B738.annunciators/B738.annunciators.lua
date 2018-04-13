@@ -4308,29 +4308,24 @@ local takeoff_config_warn = 0
 	
 	-- AUTO FAIL
 	local autofail = 0
-	--if simDR_radio_height_pilot_ft > 50 and B738DR_air_valve_ctrl < 2 then
-		if B738DR_air_valve_ctrl == 0 then
-			if B738DR_pressurization_mode ~= 1 then
-				autofail = 1
-			end
-		elseif B738DR_air_valve_ctrl == 1 then
-			if B738DR_pressurization_mode ~= 2 then
-				autofail = 1
-			end
-		end
-		if B738DR_pressurization_mode == 0 then
+	if B738DR_air_valve_ctrl == 0 then
+		if B738DR_pressurization_mode ~= 1 then
 			autofail = 1
 		end
-		if simDR_diff_press > 8.75 and simDR_altitude_pilot > 15800 then
+	elseif B738DR_air_valve_ctrl == 1 then
+		if B738DR_pressurization_mode ~= 2 then
 			autofail = 1
 		end
-		-- if simDR_vvi_press_act < -2000 or simDR_vvi_press_act > 2000 then
-			-- autofail = 1
-		-- end
-		if B738DR_cabin_vvi < -2000 or B738DR_cabin_vvi > 2000 then
-			autofail = 1
-		end
-	--end
+	end
+	if B738DR_pressurization_mode == 0 then
+		autofail = 1
+	end
+	if simDR_diff_press > 8.75 and simDR_altitude_pilot > 15800 then
+		autofail = 1
+	end
+	-- if B738DR_cabin_vvi < -2000 or B738DR_cabin_vvi > 2000 then
+		-- autofail = 1
+	-- end
 	B738DR_autofail = autofail * brightness_level
 
 	-- STAB OUT OF TRIM

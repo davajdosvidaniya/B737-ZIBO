@@ -14148,11 +14148,17 @@ function control_SPD4()
 	SPD_corr = SPD_corr - spd_ratio
 	SPD_corr = SPD_corr * SIM_PERIOD * 16
 	
-	local limit = 10	--20
-	if ghust_detect2 == 1 then
-		limit = 5
-	end
+	local limit = 15	--10	--20
+	-- if ghust_detect2 == 1 then
+		-- limit = 5
+	-- end
+	-- if ghust_detect == 1 then
+		-- limit = 1
+	-- end
+	
 	if ghust_detect == 1 then
+		limit = 5
+	elseif ghust_detect2 == 1 then
 		limit = 1
 	end
 	
