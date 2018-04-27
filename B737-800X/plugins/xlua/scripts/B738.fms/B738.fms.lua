@@ -6503,7 +6503,37 @@ function find_rnw_data()
 	
 end
 
-
+function find_des_runway(entry_in)
+	
+	local ii = 0
+	local nd_x = 0
+	local idx_rec = 0
+	local result_lat = 0
+	local result_lon = 0
+	local fix_rnw = ""
+	
+	if string.len(entry_in) > 3 then
+		fix_rnw = string.sub(entry_in, 3, -1)
+	end
+	
+	if rnw_data_num > 0 then
+		nd_x = string.byte(string.sub(des_icao, 1, 1))
+		if (nd_x >= 48 and nd_x <= 57) or (nd_x >= 65 and nd_x <= 90) then
+			if idx_rnw[nd_x][99999] > 0 then
+				for ii = 1, idx_rnw[nd_x][99999] do
+					idx_rec = idx_rnw[nd_x][ii]
+					if des_icao == rnw_data[idx_rec][1] and fix_rnw == rnw_data[idx_rec][2] then
+						result_lat = rnw_data[idx_rec][3]
+						result_lon = rnw_data[idx_rec][4]
+						break
+					end
+				end
+			end
+		end
+	end
+	
+	return result_lat, result_lon
+end
 
 
 function dump_rnw(rrr_icao)
@@ -18325,6 +18355,8 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 			local ii = 0
 			local jj = 0
 			local fix_idx = 0
+			local fix_x_lat = 0
+			local fix_x_lon = 0
 			if entry == ">DELETE" then
 				if fix_data_num == act_page then
 					fix_data_num = fix_data_num - 1
@@ -18338,15 +18370,13 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					fix_data_num = fix_data_num - 1
 					entry = ""
 				end
-			else	--if act_page > fix_data_num then
+			else
 				fix_idx = act_page
-				if fix_idx > fix_data_num then
-					fix_data_num = fix_data_num + 1
-					fix_idx = fix_data_num
-				end
 				if item_sel > 0 and item_sel <= legs_num2 then
-					-- add new fix from legs
-					--fix_data_num = fix_data_num + 1
+					if fix_idx > fix_data_num then
+						fix_data_num = fix_data_num + 1
+						fix_idx = fix_data_num
+					end
 					fix_data[fix_idx] = {}
 					fix_data[fix_idx][1] = legs_data2[item_sel][1]
 					fix_data[fix_idx][2] = legs_data2[item_sel][36] -- navaid type: 1-VOR, 2-VOR TAG, 3-NDB, 4-WPT, 5-DME, 9-APT (legs_data2[item_sel2][1])
@@ -18392,161 +18422,121 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					item_sel = 0
 					item_sel_act = 0
 					entry = ""
-				else
-					-- add new fix from sel desires
-					find_navaid(entry, "", 0, "")
-					if navaid_list_n == 0 then
-						entry = ""
-						add_fmc_msg(NOT_IN_DATABASE, 1)
+				elseif string.len(entry) > 1 then
+					if string.sub(entry, 1, 2) == "RW" and des_icao ~= "****" then
+						-- find destination runway
+						fix_x_lat, fix_x_lon = find_des_runway(entry)
+						if fix_x_lat == 0 and fix_x_lon == 0 then
+							add_fmc_msg(NOT_IN_DATABASE, 1)
+						else
+							if fix_idx > fix_data_num then
+								fix_data_num = fix_data_num + 1
+								fix_idx = fix_data_num
+							end
+							fix_data[fix_idx] = {}
+							fix_data[fix_idx][1] = entry
+							fix_data[fix_idx][2] = 4	-- type
+							fix_data[fix_idx][3] = fix_x_lat	-- lat
+							fix_data[fix_idx][4] = fix_x_lon	-- lon
+							fix_data[fix_idx][5] = ""	-- reg code
+							fix_data[fix_idx][6] = -1	-- rad1
+							fix_data[fix_idx][7] = -1	-- dist1
+							fix_data[fix_idx][8] = -1	-- rad2
+							fix_data[fix_idx][9] = -1	-- dist2
+							fix_data[fix_idx][10] = -1	-- rad3
+							fix_data[fix_idx][11] = -1	-- dist3
+							-- 1. radial
+							fix_data[fix_idx][12] = 0	-- wpt before
+							fix_data[fix_idx][13] = 0	-- dist before
+							fix_data[fix_idx][14] = 0	-- lat
+							fix_data[fix_idx][15] = 0	-- lon
+							fix_data[fix_idx][16] = 0	-- dist calc
+							fix_data[fix_idx][17] = 0	-- rad calc
+							fix_data[fix_idx][18] = 0	-- eta calc
+							fix_data[fix_idx][19] = 0	-- dtg calc
+							fix_data[fix_idx][20] = 0	-- alt calc
+							-- 2. radial
+							fix_data[fix_idx][21] = 0	-- wpt before
+							fix_data[fix_idx][22] = 0	-- dist before
+							fix_data[fix_idx][23] = 0	-- lat
+							fix_data[fix_idx][24] = 0	-- lon
+							fix_data[fix_idx][25] = 0	-- dist calc
+							fix_data[fix_idx][26] = 0	-- rad calc
+							fix_data[fix_idx][27] = 0	-- eta calc
+							fix_data[fix_idx][28] = 0	-- dtg calc
+							fix_data[fix_idx][29] = 0	-- alt calc
+							-- 3. radial
+							fix_data[fix_idx][30] = 0	-- wpt before
+							fix_data[fix_idx][31] = 0	-- dist before
+							fix_data[fix_idx][32] = 0	-- lat
+							fix_data[fix_idx][33] = 0	-- lon
+							fix_data[fix_idx][34] = 0	-- dist calc
+							fix_data[fix_idx][35] = 0	-- rad calc
+							fix_data[fix_idx][36] = 0	-- eta calc
+							fix_data[fix_idx][37] = 0	-- dtg calc
+							fix_data[fix_idx][38] = 0	-- alt calc
+							entry = ""
+						end
 					else
-						--fix_data_num = fix_data_num + 1
-						fix_data[fix_idx] = {}
-						fix_data[fix_idx][1] = entry
-						fix_data[fix_idx][2] = navaid_list[1][1]	-- type
-						fix_data[fix_idx][3] = navaid_list[1][2]	-- lat
-						fix_data[fix_idx][4] = navaid_list[1][3]	-- lon
-						fix_data[fix_idx][5] = navaid_list[1][8]	-- reg code
-						fix_data[fix_idx][6] = -1	-- rad1
-						fix_data[fix_idx][7] = -1	-- dist1
-						fix_data[fix_idx][8] = -1	-- rad2
-						fix_data[fix_idx][9] = -1	-- dist2
-						fix_data[fix_idx][10] = -1	-- rad3
-						fix_data[fix_idx][11] = -1	-- dist3
-						-- 1. radial
-						fix_data[fix_idx][12] = 0	-- wpt before
-						fix_data[fix_idx][13] = 0	-- dist before
-						fix_data[fix_idx][14] = 0	-- lat
-						fix_data[fix_idx][15] = 0	-- lon
-						fix_data[fix_idx][16] = 0	-- dist calc
-						fix_data[fix_idx][17] = 0	-- rad calc
-						fix_data[fix_idx][18] = 0	-- eta calc
-						fix_data[fix_idx][19] = 0	-- dtg calc
-						fix_data[fix_idx][20] = 0	-- alt calc
-						-- 2. radial
-						fix_data[fix_idx][21] = 0	-- wpt before
-						fix_data[fix_idx][22] = 0	-- dist before
-						fix_data[fix_idx][23] = 0	-- lat
-						fix_data[fix_idx][24] = 0	-- lon
-						fix_data[fix_idx][25] = 0	-- dist calc
-						fix_data[fix_idx][26] = 0	-- rad calc
-						fix_data[fix_idx][27] = 0	-- eta calc
-						fix_data[fix_idx][28] = 0	-- dtg calc
-						fix_data[fix_idx][29] = 0	-- alt calc
-						-- 3. radial
-						fix_data[fix_idx][30] = 0	-- wpt before
-						fix_data[fix_idx][31] = 0	-- dist before
-						fix_data[fix_idx][32] = 0	-- lat
-						fix_data[fix_idx][33] = 0	-- lon
-						fix_data[fix_idx][34] = 0	-- dist calc
-						fix_data[fix_idx][35] = 0	-- rad calc
-						fix_data[fix_idx][36] = 0	-- eta calc
-						fix_data[fix_idx][37] = 0	-- dtg calc
-						fix_data[fix_idx][38] = 0	-- alt calc
-						entry = ""
+						find_navaid(entry, "", 0, "")
+						if navaid_list_n == 0 then
+							--entry = ""
+							add_fmc_msg(NOT_IN_DATABASE, 1)
+						else
+							-- add new fix from sel desires
+							if fix_idx > fix_data_num then
+								fix_data_num = fix_data_num + 1
+								fix_idx = fix_data_num
+							end
+							fix_data[fix_idx] = {}
+							fix_data[fix_idx][1] = entry
+							fix_data[fix_idx][2] = navaid_list[1][1]	-- type
+							fix_data[fix_idx][3] = navaid_list[1][2]	-- lat
+							fix_data[fix_idx][4] = navaid_list[1][3]	-- lon
+							fix_data[fix_idx][5] = navaid_list[1][8]	-- reg code
+							fix_data[fix_idx][6] = -1	-- rad1
+							fix_data[fix_idx][7] = -1	-- dist1
+							fix_data[fix_idx][8] = -1	-- rad2
+							fix_data[fix_idx][9] = -1	-- dist2
+							fix_data[fix_idx][10] = -1	-- rad3
+							fix_data[fix_idx][11] = -1	-- dist3
+							-- 1. radial
+							fix_data[fix_idx][12] = 0	-- wpt before
+							fix_data[fix_idx][13] = 0	-- dist before
+							fix_data[fix_idx][14] = 0	-- lat
+							fix_data[fix_idx][15] = 0	-- lon
+							fix_data[fix_idx][16] = 0	-- dist calc
+							fix_data[fix_idx][17] = 0	-- rad calc
+							fix_data[fix_idx][18] = 0	-- eta calc
+							fix_data[fix_idx][19] = 0	-- dtg calc
+							fix_data[fix_idx][20] = 0	-- alt calc
+							-- 2. radial
+							fix_data[fix_idx][21] = 0	-- wpt before
+							fix_data[fix_idx][22] = 0	-- dist before
+							fix_data[fix_idx][23] = 0	-- lat
+							fix_data[fix_idx][24] = 0	-- lon
+							fix_data[fix_idx][25] = 0	-- dist calc
+							fix_data[fix_idx][26] = 0	-- rad calc
+							fix_data[fix_idx][27] = 0	-- eta calc
+							fix_data[fix_idx][28] = 0	-- dtg calc
+							fix_data[fix_idx][29] = 0	-- alt calc
+							-- 3. radial
+							fix_data[fix_idx][30] = 0	-- wpt before
+							fix_data[fix_idx][31] = 0	-- dist before
+							fix_data[fix_idx][32] = 0	-- lat
+							fix_data[fix_idx][33] = 0	-- lon
+							fix_data[fix_idx][34] = 0	-- dist calc
+							fix_data[fix_idx][35] = 0	-- rad calc
+							fix_data[fix_idx][36] = 0	-- eta calc
+							fix_data[fix_idx][37] = 0	-- dtg calc
+							fix_data[fix_idx][38] = 0	-- alt calc
+							entry = ""
+						end
 					end
+				else
+					add_fmc_msg(NOT_IN_DATABASE, 1)
 				end
 				
-				-- if item_sel > 0 and item_sel<= legs_num2 then
-					-- -- add new fix from legs
-					-- fix_data_num = fix_data_num + 1
-					-- fix_data[fix_data_num] = {}
-					-- fix_data[fix_data_num][1] = legs_data2[item_sel][1]
-					-- fix_data[fix_data_num][2] = legs_data2[item_sel][36] -- navaid type: 1-VOR, 2-VOR TAG, 3-NDB, 4-WPT, 5-DME, 9-APT (legs_data2[item_sel][1])
-					-- fix_data[fix_data_num][3] = legs_data2[item_sel][7]
-					-- fix_data[fix_data_num][4] = legs_data2[item_sel][8]
-					-- fix_data[fix_data_num][5] = legs_data2[item_sel][16]	-- reg code
-					-- fix_data[fix_data_num][6] = -1
-					-- fix_data[fix_data_num][7] = -1
-					-- fix_data[fix_data_num][8] = -1
-					-- fix_data[fix_data_num][9] = -1
-					-- fix_data[fix_data_num][10] = -1
-					-- fix_data[fix_data_num][11] = -1
-					-- -- 1. radial
-					-- fix_data[fix_data_num][12] = 0	-- wpt before
-					-- fix_data[fix_data_num][13] = 0	-- dist before
-					-- fix_data[fix_data_num][14] = 0	-- lat
-					-- fix_data[fix_data_num][15] = 0	-- lon
-					-- fix_data[fix_data_num][16] = 0	-- dist calc
-					-- fix_data[fix_data_num][17] = 0	-- rad calc
-					-- fix_data[fix_data_num][18] = 0	-- eta calc
-					-- fix_data[fix_data_num][19] = 0	-- dtg calc
-					-- fix_data[fix_data_num][20] = 0	-- alt calc
-					-- -- 2. radial
-					-- fix_data[fix_data_num][21] = 0	-- wpt before
-					-- fix_data[fix_data_num][22] = 0	-- dist before
-					-- fix_data[fix_data_num][23] = 0	-- lat
-					-- fix_data[fix_data_num][24] = 0	-- lon
-					-- fix_data[fix_data_num][25] = 0	-- dist calc
-					-- fix_data[fix_data_num][26] = 0	-- rad calc
-					-- fix_data[fix_data_num][27] = 0	-- eta calc
-					-- fix_data[fix_data_num][28] = 0	-- dtg calc
-					-- fix_data[fix_data_num][29] = 0	-- alt calc
-					-- -- 3. radial
-					-- fix_data[fix_data_num][30] = 0	-- wpt before
-					-- fix_data[fix_data_num][31] = 0	-- dist before
-					-- fix_data[fix_data_num][32] = 0	-- lat
-					-- fix_data[fix_data_num][33] = 0	-- lon
-					-- fix_data[fix_data_num][34] = 0	-- dist calc
-					-- fix_data[fix_data_num][35] = 0	-- rad calc
-					-- fix_data[fix_data_num][36] = 0	-- eta calc
-					-- fix_data[fix_data_num][37] = 0	-- dtg calc
-					-- fix_data[fix_data_num][38] = 0	-- alt calc
-					-- item_sel = 0
-					-- item_sel_act = 0
-					-- entry = ""
-				-- else
-					-- -- add new fix from sel desires
-					-- find_navaid(entry, "", 0, "")
-					-- if navaid_list_n == 0 then
-						-- entry = ""
-						-- add_fmc_msg(NOT_IN_DATABASE, 1)
-					-- else
-						-- fix_data_num = fix_data_num + 1
-						-- fix_data[fix_data_num] = {}
-						-- fix_data[fix_data_num][1] = entry
-						-- fix_data[fix_data_num][2] = navaid_list[1][1]	-- type
-						-- fix_data[fix_data_num][3] = navaid_list[1][2]	-- lat
-						-- fix_data[fix_data_num][4] = navaid_list[1][3]	-- lon
-						-- fix_data[fix_data_num][5] = navaid_list[1][8]	-- reg code
-						-- fix_data[fix_data_num][6] = -1	-- rad1
-						-- fix_data[fix_data_num][7] = -1	-- dist1
-						-- fix_data[fix_data_num][8] = -1	-- rad2
-						-- fix_data[fix_data_num][9] = -1	-- dist2
-						-- fix_data[fix_data_num][10] = -1	-- rad3
-						-- fix_data[fix_data_num][11] = -1	-- dist3
-						-- -- 1. radial
-						-- fix_data[fix_data_num][12] = 0	-- wpt before
-						-- fix_data[fix_data_num][13] = 0	-- dist before
-						-- fix_data[fix_data_num][14] = 0	-- lat
-						-- fix_data[fix_data_num][15] = 0	-- lon
-						-- fix_data[fix_data_num][16] = 0	-- dist calc
-						-- fix_data[fix_data_num][17] = 0	-- rad calc
-						-- fix_data[fix_data_num][18] = 0	-- eta calc
-						-- fix_data[fix_data_num][19] = 0	-- dtg calc
-						-- fix_data[fix_data_num][20] = 0	-- alt calc
-						-- -- 2. radial
-						-- fix_data[fix_data_num][21] = 0	-- wpt before
-						-- fix_data[fix_data_num][22] = 0	-- dist before
-						-- fix_data[fix_data_num][23] = 0	-- lat
-						-- fix_data[fix_data_num][24] = 0	-- lon
-						-- fix_data[fix_data_num][25] = 0	-- dist calc
-						-- fix_data[fix_data_num][26] = 0	-- rad calc
-						-- fix_data[fix_data_num][27] = 0	-- eta calc
-						-- fix_data[fix_data_num][28] = 0	-- dtg calc
-						-- fix_data[fix_data_num][29] = 0	-- alt calc
-						-- -- 3. radial
-						-- fix_data[fix_data_num][30] = 0	-- wpt before
-						-- fix_data[fix_data_num][31] = 0	-- dist before
-						-- fix_data[fix_data_num][32] = 0	-- lat
-						-- fix_data[fix_data_num][33] = 0	-- lon
-						-- fix_data[fix_data_num][34] = 0	-- dist calc
-						-- fix_data[fix_data_num][35] = 0	-- rad calc
-						-- fix_data[fix_data_num][36] = 0	-- eta calc
-						-- fix_data[fix_data_num][37] = 0	-- dtg calc
-						-- fix_data[fix_data_num][38] = 0	-- alt calc
-						-- entry = ""
-					-- end
-				-- end
 			end
 		elseif page_legs == 1 then
 			
@@ -30299,7 +30289,7 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 					fix_data_num = fix_data_num - 1
 					entry2 = ""
 				elseif act_page2 < fix_data_num then
-					for ii = act_page, (fix_data_num - 1) do
+					for ii = act_page2, (fix_data_num - 1) do
 						for jj = 1, 38 do
 							fix_data[ii][jj] = fix_data[ii+1][jj]
 						end
@@ -30307,15 +30297,13 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 					fix_data_num = fix_data_num - 1
 					entry2 = ""
 				end
-			else	--if act_page2 > fix_data_num then
+			else
 				fix_idx = act_page2
-				if fix_idx > fix_data_num then
-					fix_data_num = fix_data_num + 1
-					fix_idx = fix_data_num
-				end
 				if item_sel2 > 0 and item_sel2 <= legs_num2 then
-					-- add new fix from legs
-					--fix_data_num = fix_data_num + 1
+					if fix_idx > fix_data_num then
+						fix_data_num = fix_data_num + 1
+						fix_idx = fix_data_num
+					end
 					fix_data[fix_idx] = {}
 					fix_data[fix_idx][1] = legs_data2[item_sel2][1]
 					fix_data[fix_idx][2] = legs_data2[item_sel2][36] -- navaid type: 1-VOR, 2-VOR TAG, 3-NDB, 4-WPT, 5-DME, 9-APT (legs_data2[item_sel2][1])
@@ -30361,161 +30349,120 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 					item_sel2 = 0
 					item_sel_act2 = 0
 					entry2 = ""
-				else
-					-- add new fix from sel desires
-					find_navaid(entry2, "", 0, "")
-					if navaid_list_n == 0 then
-						entry2 = ""
-						add_fmc_msg(NOT_IN_DATABASE, 1)
+				elseif string.len(entry2) > 1 then
+					if string.sub(entry2, 1, 2) == "RW" and des_icao ~= "****" then
+						-- find destination runway
+						fix_x_lat, fix_x_lon = find_des_runway(entry2)
+						if fix_x_lat == 0 and fix_x_lon == 0 then
+							add_fmc_msg(NOT_IN_DATABASE, 1)
+						else
+							if fix_idx > fix_data_num then
+								fix_data_num = fix_data_num + 1
+								fix_idx = fix_data_num
+							end
+							fix_data[fix_idx] = {}
+							fix_data[fix_idx][1] = entry2
+							fix_data[fix_idx][2] = 4	-- type
+							fix_data[fix_idx][3] = fix_x_lat	-- lat
+							fix_data[fix_idx][4] = fix_x_lon	-- lon
+							fix_data[fix_idx][5] = ""	-- reg code
+							fix_data[fix_idx][6] = -1	-- rad1
+							fix_data[fix_idx][7] = -1	-- dist1
+							fix_data[fix_idx][8] = -1	-- rad2
+							fix_data[fix_idx][9] = -1	-- dist2
+							fix_data[fix_idx][10] = -1	-- rad3
+							fix_data[fix_idx][11] = -1	-- dist3
+							-- 1. radial
+							fix_data[fix_idx][12] = 0	-- wpt before
+							fix_data[fix_idx][13] = 0	-- dist before
+							fix_data[fix_idx][14] = 0	-- lat
+							fix_data[fix_idx][15] = 0	-- lon
+							fix_data[fix_idx][16] = 0	-- dist calc
+							fix_data[fix_idx][17] = 0	-- rad calc
+							fix_data[fix_idx][18] = 0	-- eta calc
+							fix_data[fix_idx][19] = 0	-- dtg calc
+							fix_data[fix_idx][20] = 0	-- alt calc
+							-- 2. radial
+							fix_data[fix_idx][21] = 0	-- wpt before
+							fix_data[fix_idx][22] = 0	-- dist before
+							fix_data[fix_idx][23] = 0	-- lat
+							fix_data[fix_idx][24] = 0	-- lon
+							fix_data[fix_idx][25] = 0	-- dist calc
+							fix_data[fix_idx][26] = 0	-- rad calc
+							fix_data[fix_idx][27] = 0	-- eta calc
+							fix_data[fix_idx][28] = 0	-- dtg calc
+							fix_data[fix_idx][29] = 0	-- alt calc
+							-- 3. radial
+							fix_data[fix_idx][30] = 0	-- wpt before
+							fix_data[fix_idx][31] = 0	-- dist before
+							fix_data[fix_idx][32] = 0	-- lat
+							fix_data[fix_idx][33] = 0	-- lon
+							fix_data[fix_idx][34] = 0	-- dist calc
+							fix_data[fix_idx][35] = 0	-- rad calc
+							fix_data[fix_idx][36] = 0	-- eta calc
+							fix_data[fix_idx][37] = 0	-- dtg calc
+							fix_data[fix_idx][38] = 0	-- alt calc
+							entry2 = ""
+						end
 					else
-						--fix_data_num = fix_data_num + 1
-						fix_data[fix_idx] = {}
-						fix_data[fix_idx][1] = entry2
-						fix_data[fix_idx][2] = navaid_list[1][1]	-- type
-						fix_data[fix_idx][3] = navaid_list[1][2]	-- lat
-						fix_data[fix_idx][4] = navaid_list[1][3]	-- lon
-						fix_data[fix_idx][5] = navaid_list[1][8]	-- reg code
-						fix_data[fix_idx][6] = -1	-- rad1
-						fix_data[fix_idx][7] = -1	-- dist1
-						fix_data[fix_idx][8] = -1	-- rad2
-						fix_data[fix_idx][9] = -1	-- dist2
-						fix_data[fix_idx][10] = -1	-- rad3
-						fix_data[fix_idx][11] = -1	-- dist3
-						-- 1. radial
-						fix_data[fix_idx][12] = 0	-- wpt before
-						fix_data[fix_idx][13] = 0	-- dist before
-						fix_data[fix_idx][14] = 0	-- lat
-						fix_data[fix_idx][15] = 0	-- lon
-						fix_data[fix_idx][16] = 0	-- dist calc
-						fix_data[fix_idx][17] = 0	-- rad calc
-						fix_data[fix_idx][18] = 0	-- eta calc
-						fix_data[fix_idx][19] = 0	-- dtg calc
-						fix_data[fix_idx][20] = 0	-- alt calc
-						-- 2. radial
-						fix_data[fix_idx][21] = 0	-- wpt before
-						fix_data[fix_idx][22] = 0	-- dist before
-						fix_data[fix_idx][23] = 0	-- lat
-						fix_data[fix_idx][24] = 0	-- lon
-						fix_data[fix_idx][25] = 0	-- dist calc
-						fix_data[fix_idx][26] = 0	-- rad calc
-						fix_data[fix_idx][27] = 0	-- eta calc
-						fix_data[fix_idx][28] = 0	-- dtg calc
-						fix_data[fix_idx][29] = 0	-- alt calc
-						-- 3. radial
-						fix_data[fix_idx][30] = 0	-- wpt before
-						fix_data[fix_idx][31] = 0	-- dist before
-						fix_data[fix_idx][32] = 0	-- lat
-						fix_data[fix_idx][33] = 0	-- lon
-						fix_data[fix_idx][34] = 0	-- dist calc
-						fix_data[fix_idx][35] = 0	-- rad calc
-						fix_data[fix_idx][36] = 0	-- eta calc
-						fix_data[fix_idx][37] = 0	-- dtg calc
-						fix_data[fix_idx][38] = 0	-- alt calc
-						entry2 = ""
+						find_navaid(entry2, "", 0, "")
+						if navaid_list_n == 0 then
+							--entry2 = ""
+							add_fmc_msg(NOT_IN_DATABASE, 1)
+						else
+							-- add new fix from sel desires
+							if fix_idx > fix_data_num then
+								fix_data_num = fix_data_num + 1
+								fix_idx = fix_data_num
+							end
+							fix_data[fix_idx] = {}
+							fix_data[fix_idx][1] = entry2
+							fix_data[fix_idx][2] = navaid_list[1][1]	-- type
+							fix_data[fix_idx][3] = navaid_list[1][2]	-- lat
+							fix_data[fix_idx][4] = navaid_list[1][3]	-- lon
+							fix_data[fix_idx][5] = navaid_list[1][8]	-- reg code
+							fix_data[fix_idx][6] = -1	-- rad1
+							fix_data[fix_idx][7] = -1	-- dist1
+							fix_data[fix_idx][8] = -1	-- rad2
+							fix_data[fix_idx][9] = -1	-- dist2
+							fix_data[fix_idx][10] = -1	-- rad3
+							fix_data[fix_idx][11] = -1	-- dist3
+							-- 1. radial
+							fix_data[fix_idx][12] = 0	-- wpt before
+							fix_data[fix_idx][13] = 0	-- dist before
+							fix_data[fix_idx][14] = 0	-- lat
+							fix_data[fix_idx][15] = 0	-- lon
+							fix_data[fix_idx][16] = 0	-- dist calc
+							fix_data[fix_idx][17] = 0	-- rad calc
+							fix_data[fix_idx][18] = 0	-- eta calc
+							fix_data[fix_idx][19] = 0	-- dtg calc
+							fix_data[fix_idx][20] = 0	-- alt calc
+							-- 2. radial
+							fix_data[fix_idx][21] = 0	-- wpt before
+							fix_data[fix_idx][22] = 0	-- dist before
+							fix_data[fix_idx][23] = 0	-- lat
+							fix_data[fix_idx][24] = 0	-- lon
+							fix_data[fix_idx][25] = 0	-- dist calc
+							fix_data[fix_idx][26] = 0	-- rad calc
+							fix_data[fix_idx][27] = 0	-- eta calc
+							fix_data[fix_idx][28] = 0	-- dtg calc
+							fix_data[fix_idx][29] = 0	-- alt calc
+							-- 3. radial
+							fix_data[fix_idx][30] = 0	-- wpt before
+							fix_data[fix_idx][31] = 0	-- dist before
+							fix_data[fix_idx][32] = 0	-- lat
+							fix_data[fix_idx][33] = 0	-- lon
+							fix_data[fix_idx][34] = 0	-- dist calc
+							fix_data[fix_idx][35] = 0	-- rad calc
+							fix_data[fix_idx][36] = 0	-- eta calc
+							fix_data[fix_idx][37] = 0	-- dtg calc
+							fix_data[fix_idx][38] = 0	-- alt calc
+							entry2 = ""
+						end
 					end
+				else
+					add_fmc_msg(NOT_IN_DATABASE, 1)
 				end
-				
-				-- if item_sel2 > 0 and item_sel2<= legs_num2 then
-					-- -- add new fix from legs
-					-- fix_data_num = fix_data_num + 1
-					-- fix_data[fix_data_num] = {}
-					-- fix_data[fix_data_num][1] = legs_data2[item_sel2][1]
-					-- fix_data[fix_data_num][2] = legs_data2[item_sel2][36] -- navaid type: 1-VOR, 2-VOR TAG, 3-NDB, 4-WPT, 5-DME, 9-APT (legs_data2[item_sel2][1])
-					-- fix_data[fix_data_num][3] = legs_data2[item_sel2][7]
-					-- fix_data[fix_data_num][4] = legs_data2[item_sel2][8]
-					-- fix_data[fix_data_num][5] = legs_data2[item_sel2][16]	-- reg code
-					-- fix_data[fix_data_num][6] = -1
-					-- fix_data[fix_data_num][7] = -1
-					-- fix_data[fix_data_num][8] = -1
-					-- fix_data[fix_data_num][9] = -1
-					-- fix_data[fix_data_num][10] = -1
-					-- fix_data[fix_data_num][11] = -1
-					-- -- 1. radial
-					-- fix_data[fix_data_num][12] = 0	-- wpt before
-					-- fix_data[fix_data_num][13] = 0	-- dist before
-					-- fix_data[fix_data_num][14] = 0	-- lat
-					-- fix_data[fix_data_num][15] = 0	-- lon
-					-- fix_data[fix_data_num][16] = 0	-- dist calc
-					-- fix_data[fix_data_num][17] = 0	-- rad calc
-					-- fix_data[fix_data_num][18] = 0	-- eta calc
-					-- fix_data[fix_data_num][19] = 0	-- dtg calc
-					-- fix_data[fix_data_num][20] = 0	-- alt calc
-					-- -- 2. radial
-					-- fix_data[fix_data_num][21] = 0	-- wpt before
-					-- fix_data[fix_data_num][22] = 0	-- dist before
-					-- fix_data[fix_data_num][23] = 0	-- lat
-					-- fix_data[fix_data_num][24] = 0	-- lon
-					-- fix_data[fix_data_num][25] = 0	-- dist calc
-					-- fix_data[fix_data_num][26] = 0	-- rad calc
-					-- fix_data[fix_data_num][27] = 0	-- eta calc
-					-- fix_data[fix_data_num][28] = 0	-- dtg calc
-					-- fix_data[fix_data_num][29] = 0	-- alt calc
-					-- -- 3. radial
-					-- fix_data[fix_data_num][30] = 0	-- wpt before
-					-- fix_data[fix_data_num][31] = 0	-- dist before
-					-- fix_data[fix_data_num][32] = 0	-- lat
-					-- fix_data[fix_data_num][33] = 0	-- lon
-					-- fix_data[fix_data_num][34] = 0	-- dist calc
-					-- fix_data[fix_data_num][35] = 0	-- rad calc
-					-- fix_data[fix_data_num][36] = 0	-- eta calc
-					-- fix_data[fix_data_num][37] = 0	-- dtg calc
-					-- fix_data[fix_data_num][38] = 0	-- alt calc
-					-- item_sel2 = 0
-					-- item_sel_act2 = 0
-					-- entry2 = ""
-				-- else
-					-- -- add new fix from sel desires
-					-- find_navaid(entry2, "", 0, "")
-					-- if navaid_list_n == 0 then
-						-- entry2 = ""
-						-- add_fmc_msg(NOT_IN_DATABASE, 1)
-					-- else
-						-- fix_data_num = fix_data_num + 1
-						-- fix_data[fix_data_num] = {}
-						-- fix_data[fix_data_num][1] = entry2
-						-- fix_data[fix_data_num][2] = navaid_list[1][1]	-- type
-						-- fix_data[fix_data_num][3] = navaid_list[1][2]	-- lat
-						-- fix_data[fix_data_num][4] = navaid_list[1][3]	-- lon
-						-- fix_data[fix_data_num][5] = navaid_list[1][8]	-- reg code
-						-- fix_data[fix_data_num][6] = -1	-- rad1
-						-- fix_data[fix_data_num][7] = -1	-- dist1
-						-- fix_data[fix_data_num][8] = -1	-- rad2
-						-- fix_data[fix_data_num][9] = -1	-- dist2
-						-- fix_data[fix_data_num][10] = -1	-- rad3
-						-- fix_data[fix_data_num][11] = -1	-- dist3
-						-- -- 1. radial
-						-- fix_data[fix_data_num][12] = 0	-- wpt before
-						-- fix_data[fix_data_num][13] = 0	-- dist before
-						-- fix_data[fix_data_num][14] = 0	-- lat
-						-- fix_data[fix_data_num][15] = 0	-- lon
-						-- fix_data[fix_data_num][16] = 0	-- dist calc
-						-- fix_data[fix_data_num][17] = 0	-- rad calc
-						-- fix_data[fix_data_num][18] = 0	-- eta calc
-						-- fix_data[fix_data_num][19] = 0	-- dtg calc
-						-- fix_data[fix_data_num][20] = 0	-- alt calc
-						-- -- 2. radial
-						-- fix_data[fix_data_num][21] = 0	-- wpt before
-						-- fix_data[fix_data_num][22] = 0	-- dist before
-						-- fix_data[fix_data_num][23] = 0	-- lat
-						-- fix_data[fix_data_num][24] = 0	-- lon
-						-- fix_data[fix_data_num][25] = 0	-- dist calc
-						-- fix_data[fix_data_num][26] = 0	-- rad calc
-						-- fix_data[fix_data_num][27] = 0	-- eta calc
-						-- fix_data[fix_data_num][28] = 0	-- dtg calc
-						-- fix_data[fix_data_num][29] = 0	-- alt calc
-						-- -- 3. radial
-						-- fix_data[fix_data_num][30] = 0	-- wpt before
-						-- fix_data[fix_data_num][31] = 0	-- dist before
-						-- fix_data[fix_data_num][32] = 0	-- lat
-						-- fix_data[fix_data_num][33] = 0	-- lon
-						-- fix_data[fix_data_num][34] = 0	-- dist calc
-						-- fix_data[fix_data_num][35] = 0	-- rad calc
-						-- fix_data[fix_data_num][36] = 0	-- eta calc
-						-- fix_data[fix_data_num][37] = 0	-- dtg calc
-						-- fix_data[fix_data_num][38] = 0	-- alt calc
-						-- entry2 = ""
-					-- end
-				-- end
 			end
 		elseif page_legs2 == 1 then
 			
@@ -71226,7 +71173,7 @@ temp_ils4 = ""
 	receive_msg = 0
 	x_delay = 0
 	
-	version = "v3.26d"
+	version = "v3.26e"
 
 end
 

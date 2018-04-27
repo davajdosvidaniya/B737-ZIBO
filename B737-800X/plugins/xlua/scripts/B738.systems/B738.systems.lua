@@ -749,6 +749,10 @@ B738DR_tire_blow0			= find_dataref("sim/operation/failures/rel_tire1")
 B738DR_tire_blow1			= find_dataref("sim/operation/failures/rel_tire2")
 B738DR_tire_blow2			= find_dataref("sim/operation/failures/rel_tire3")
 
+simDR_fail_bus1				= find_dataref("sim/operation/failures/rel_esys")
+simDR_fail_bus2				= find_dataref("sim/operation/failures/rel_esys2")
+	
+
 --*************************************************************************************--
 --** 				               FIND X-PLANE COMMANDS                   	    	 **--
 --*************************************************************************************--
@@ -10476,14 +10480,14 @@ function B738_electric_bus()
 		gpu_off = 1
 		end
 	
-	local bus1_off = 1
-	local bus2_off = 1
-		if simDR_engine1_on == 1 and simDR_gen1_on == 1 then
-			bus1_off = 0
-		end
-		if simDR_engine2_on == 1 and simDR_gen2_on == 1 then
-			bus2_off = 0
-		end
+	-- local bus1_off = 1
+	-- local bus2_off = 1
+		-- if simDR_engine1_on == 1 and simDR_gen1_on == 1 then
+			-- bus1_off = 0
+		-- end
+		-- if simDR_engine2_on == 1 and simDR_gen2_on == 1 then
+			-- bus2_off = 0
+		-- end
 		
 	local gen1_off = 0
 		if simDR_generator1_on == 0 then
@@ -10554,6 +10558,20 @@ function B738_electric_bus()
 		B738DR_ac_stdbus_status = 0
 	end
 	
+	-----------------------------------
+	if simDR_fail_bus1 == 6 then
+		B738DR_ac_tnsbus1_status = 0
+		B738DR_batbus_status = 0
+		B738DR_dc_bus1_status = 0
+		B738DR_ac_stdbus_status = 0
+		B738DR_hot_batbus_status = 0
+	end
+	
+	if simDR_fail_bus2 == 6 then
+		B738DR_ac_tnsbus2_status = 0
+		B738DR_dc_bus2_status = 0
+	end
+	-----------------------------------
 	
 	if B738DR_mach_test_enable == 0 then
 		if B738DR_ac_tnsbus1_status == 1 or ac_tnsbus2_status == 1 then
@@ -10579,8 +10597,10 @@ function B738_electric_bus()
 	else
 		simDR_avionics_on = 1
 	end
+	
 
 end
+
 
 function mach_test()
 	B738DR_mach_test_enable = 1

@@ -77,6 +77,15 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26e:
+------
+- add RW wpts (runways) entry for FIX page
+- improved A/T code for turbulence/ghust conditions
+- fixed wiper lighting at nigth (with landing lights ON)
+- fixed FIX page (if you enter uknown wpt, fmc freeze)
+- fixed small bugs
+
+
 3.26d:
 ------
 - add support for xEnviro rain windshield effect

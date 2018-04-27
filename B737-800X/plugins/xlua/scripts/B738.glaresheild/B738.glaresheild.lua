@@ -11239,7 +11239,7 @@ function B738_ap_logic()
 	else
 		B738DR_alt_hold_mem = 0
 	end
-	altitude_mode_old = simDR_autopilot_altitude_mode
+	-- altitude_mode_old = simDR_autopilot_altitude_mode
 	
 	-- IRS allign
 	if B738DR_irs_left_mode > 1 or B738DR_irs_right_mode > 1 then
@@ -14298,7 +14298,7 @@ function control_SPD4()
 	
 	local limit = 15	--10	--20
 	
-	if simDR_vvi_fpm_pilot < -150 or simDR_vvi_fpm_pilot > 150 then
+	if simDR_autopilot_altitude_mode ~= altitude_mode_old and altitude_mode_old ~= 0 and block_ghust == 0 then
 		if simDR_autopilot_altitude_mode == 6 or ap_pitch_mode == 3 or ap_pitch_mode == 6 then
 			block_ghust = 1
 			if is_timer_scheduled(rst_block_ghust) == true then
@@ -17783,6 +17783,7 @@ function after_physics()
 		B738_spd_ratio()
 		B738_eng_out()
 		B738_ctrl_panel()
+		altitude_mode_old = simDR_autopilot_altitude_mode
 		
 		--B738DR_mcp_hdg_dial_nd = B738DR_test_test
 		--B738DR_data_test = 0
