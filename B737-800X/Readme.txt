@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26c:
+------
+- add ROLLOUT feature for autoland
+- fixed bugs (graphics, speed restricts, ...)
+
 3.26b:
 ------
 - improved and tuned autoland

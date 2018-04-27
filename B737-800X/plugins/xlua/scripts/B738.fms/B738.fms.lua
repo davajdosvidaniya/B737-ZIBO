@@ -130,6 +130,16 @@ FILE_NAME_CUST_DAT = "Custom Data/B738X_wptx.dat"
 FILE_NAME_FMOD_CFG = "b738x_fmod.cfg"
 FILE_NAME_FMOD = "fmod/b738.snd"
 
+-- B739U
+-- FILE_NAME_CFG = "b739u.cfg"
+-- FILE_NAME_STATUS = "b739u_status.dat"
+-- FILE_NAME_APT_DAT = "B739U_apt.dat"
+-- FILE_NAME_RNW_DAT = "B739U_rnw.dat"
+-- FILE_NAME_CUST_DAT = "Custom Data/B739U_wptx.dat"
+-- FILE_NAME_FMOD_CFG = "b739u_fmod.cfg"
+-- FILE_NAME_FMOD = "fmod/b739.snd"
+
+
 MAX_NUM_SCRATCH = 24
 MAX_LEGS_DATA = 41
 
@@ -835,7 +845,7 @@ mod_offset = 0
 rw_dist = 0
 
 head_wind = 0
-cross_wind = 0
+--cross_wind = 0
 
 set_chock = 0
 chock_timer = 0
@@ -3087,13 +3097,13 @@ B738DR_fms_light_fo			= create_dataref("laminar/B738/push_button/fms_light_fo", 
 
 -- LEGS as string
 B738DR_fms_legs					= create_dataref("laminar/B738/fms/legs", "string")
-B738DR_fms_legs_lat 			= create_dataref("laminar/B738/fms/legs_lat", "array[255]")
-B738DR_fms_legs_lon 			= create_dataref("laminar/B738/fms/legs_lon", "array[255]")
-B738DR_fms_legs_type 			= create_dataref("laminar/B738/fms/legs_type", "array[255]")
-B738DR_fms_legs_alt_rest1 		= create_dataref("laminar/B738/fms/legs_alt_rest1", "array[255]")
-B738DR_fms_legs_alt_rest2 		= create_dataref("laminar/B738/fms/legs_alt_rest2", "array[255]")
-B738DR_fms_legs_alt_rest_type 	= create_dataref("laminar/B738/fms/legs_alt_rest_type", "array[255]")
-B738DR_fms_legs_alt_calc		= create_dataref("laminar/B738/fms/legs_alt_calc", "array[255]")
+B738DR_fms_legs_lat 			= create_dataref("laminar/B738/fms/legs_lat", "array[128]")
+B738DR_fms_legs_lon 			= create_dataref("laminar/B738/fms/legs_lon", "array[128]")
+B738DR_fms_legs_type 			= create_dataref("laminar/B738/fms/legs_type", "array[128]")
+B738DR_fms_legs_alt_rest1 		= create_dataref("laminar/B738/fms/legs_alt_rest1", "array[128]")
+B738DR_fms_legs_alt_rest2 		= create_dataref("laminar/B738/fms/legs_alt_rest2", "array[128]")
+B738DR_fms_legs_alt_rest_type 	= create_dataref("laminar/B738/fms/legs_alt_rest_type", "array[128]")
+B738DR_fms_legs_alt_calc		= create_dataref("laminar/B738/fms/legs_alt_calc", "array[128]")
 
 -- B738DR_fms_legs2			= create_dataref("laminar/B738/fms/legs2", "string")
 B738DR_fms_legs_num2		= create_dataref("laminar/B738/fms/legs_num2", "number")
@@ -3116,6 +3126,8 @@ B738DR_last_pos_lon			= create_dataref("laminar/B738/irs/last_pos_lon", "number"
 
 vnav_alt_err_ratio			= create_dataref("laminar/B738/fms/vnav_alt_err_ratio", "number")
 gp_alt_err_ratio			= create_dataref("laminar/B738/fms/gp_alt_err_ratio", "number")
+
+cross_wind					= create_dataref("laminar/B738/fms/cross_wind", "number")
 
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
@@ -4440,7 +4452,11 @@ function read_apt_dat()
 								apt_data[apt_data_num][5] = mm * 100		-- trans lvl
 							end
 						else
-							apt_data[apt_data_num][5] = mm		-- trans lvl
+							if mm < 1000 then
+								apt_data[apt_data_num][5] = mm * 100		-- trans lvl
+							else
+								apt_data[apt_data_num][5] = mm		-- trans lvl
+							end
 						end
 						apt_data[apt_data_num][6] = tonumber(apt_word[6])		-- longest rnw
 					end
@@ -11576,7 +11592,7 @@ function copy_to_legsdata()
 			end
 			
 			
-			if ii < 255 then
+			if ii < 128 then
 				-- legs data + lat,lon
 				if ii == 1 then
 					fms_line = legs_data[1][1]
@@ -18907,6 +18923,16 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					zfw_kgs = zfw
 					zfw_lbs = string.format("%5.1f", (tonumber(zfw) * 2.204))
 				end
+				if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 or simDR_on_ground_2 == 1 then
+					if v1_set == "---" and vr_set == "---" and v2_set == "---" then
+						entry = ""
+					else
+						add_fmc_msg(VERIFY_TO_SPEEDS, 1)
+						entry = ""
+					end
+				end
+				B738DR_calc_vspd = 1
+				B738DR_calc_trim = 1
 			else
 				if entry == ">DELETE" then
 					gw = "***.*"
@@ -24769,23 +24795,28 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										-- if item + 1 <= legs_num2 + 1 then
+											-- for qqq = item + 1, legs_num2 + 1 do
+												-- if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
+													-- if qqq >= td_idx then
+														-- break
+													-- end
+												-- end
+												-- if item < tc_idx and tc_idx ~= 0 then
+													-- if qqq >= tc_idx then
+														-- break
+													-- end
+												-- end
+												-- if legs_data2[qqq][39] == "" then
+													-- legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												-- else
+													-- break
+												-- end
+											-- end
+										-- end
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
-													if qqq >= td_idx then
-														break
-													end
-												end
-												if item < tc_idx and tc_idx ~= 0 then
-													if qqq >= tc_idx then
-														break
-													end
-												end
-												if legs_data2[qqq][39] == "" then
-													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
-												else
-													break
-												end
+												legs_data2[qqq][39] = legs_data2[item][39]
 											end
 										end
 										entry = ""
@@ -25213,23 +25244,28 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										-- if item + 1 <= legs_num2 + 1 then
+											-- for qqq = item + 1, legs_num2 + 1 do
+												-- if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
+													-- if qqq >= td_idx then
+														-- break
+													-- end
+												-- end
+												-- if item < tc_idx and tc_idx ~= 0 then
+													-- if qqq >= tc_idx then
+														-- break
+													-- end
+												-- end
+												-- if legs_data2[qqq][39] == "" then
+													-- legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												-- else
+													-- break
+												-- end
+											-- end
+										-- end
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
-													if qqq >= td_idx then
-														break
-													end
-												end
-												if item < tc_idx and tc_idx ~= 0 then
-													if qqq >= tc_idx then
-														break
-													end
-												end
-												if legs_data2[qqq][39] == "" then
-													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
-												else
-													break
-												end
+												legs_data2[qqq][39] = legs_data2[item][39]
 											end
 										end
 										entry = ""
@@ -25814,23 +25850,28 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										-- if item + 1 <= legs_num2 + 1 then
+											-- for qqq = item + 1, legs_num2 + 1 do
+												-- if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
+													-- if qqq >= td_idx then
+														-- break
+													-- end
+												-- end
+												-- if item < tc_idx and tc_idx ~= 0 then
+													-- if qqq >= tc_idx then
+														-- break
+													-- end
+												-- end
+												-- if legs_data2[qqq][39] == "" then
+													-- legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												-- else
+													-- break
+												-- end
+											-- end
+										-- end
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
-													if qqq >= td_idx then
-														break
-													end
-												end
-												if item < tc_idx and tc_idx ~= 0 then
-													if qqq >= tc_idx then
-														break
-													end
-												end
-												if legs_data2[qqq][39] == "" then
-													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
-												else
-													break
-												end
+												legs_data2[qqq][39] = legs_data2[item][39]
 											end
 										end
 										entry = ""
@@ -26346,23 +26387,28 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										-- if item + 1 <= legs_num2 + 1 then
+											-- for qqq = item + 1, legs_num2 + 1 do
+												-- if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
+													-- if qqq >= td_idx then
+														-- break
+													-- end
+												-- end
+												-- if item < tc_idx and tc_idx ~= 0 then
+													-- if qqq >= tc_idx then
+														-- break
+													-- end
+												-- end
+												-- if legs_data2[qqq][39] == "" then
+													-- legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												-- else
+													-- break
+												-- end
+											-- end
+										-- end
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
-													if qqq >= td_idx then
-														break
-													end
-												end
-												if item < tc_idx and tc_idx ~= 0 then
-													if qqq >= tc_idx then
-														break
-													end
-												end
-												if legs_data2[qqq][39] == "" then
-													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
-												else
-													break
-												end
+												legs_data2[qqq][39] = legs_data2[item][39]
 											end
 										end
 										entry = ""
@@ -26727,23 +26773,28 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										-- if item + 1 <= legs_num2 + 1 then
+											-- for qqq = item + 1, legs_num2 + 1 do
+												-- if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
+													-- if qqq >= td_idx then
+														-- break
+													-- end
+												-- end
+												-- if item < tc_idx and tc_idx ~= 0 then
+													-- if qqq >= tc_idx then
+														-- break
+													-- end
+												-- end
+												-- if legs_data2[qqq][39] == "" then
+													-- legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												-- else
+													-- break
+												-- end
+											-- end
+										-- end
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
-													if qqq >= td_idx then
-														break
-													end
-												end
-												if item < tc_idx and tc_idx ~= 0 then
-													if qqq >= tc_idx then
-														break
-													end
-												end
-												if legs_data2[qqq][39] == "" then
-													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
-												else
-													break
-												end
+												legs_data2[qqq][39] = legs_data2[item][39]
 											end
 										end
 										entry = ""
@@ -36703,23 +36754,28 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										-- if item + 1 <= legs_num2 + 1 then
+											-- for qqq = item + 1, legs_num2 + 1 do
+												-- if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
+													-- if qqq >= td_idx then
+														-- break
+													-- end
+												-- end
+												-- if item < tc_idx and tc_idx ~= 0 then
+													-- if qqq >= tc_idx then
+														-- break
+													-- end
+												-- end
+												-- if legs_data2[qqq][39] == "" then
+													-- legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												-- else
+													-- break
+												-- end
+											-- end
+										-- end
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
-													if qqq >= td_idx then
-														break
-													end
-												end
-												if item < tc_idx and tc_idx ~= 0 then
-													if qqq >= tc_idx then
-														break
-													end
-												end
-												if legs_data2[qqq][39] == "" then
-													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
-												else
-													break
-												end
+												legs_data2[qqq][39] = legs_data2[item][39]
 											end
 										end
 										entry2 = ""
@@ -37147,23 +37203,28 @@ function B738_fmc2_2R_CMDhandler(phase, duration)
 										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										-- if item + 1 <= legs_num2 + 1 then
+											-- for qqq = item + 1, legs_num2 + 1 do
+												-- if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
+													-- if qqq >= td_idx then
+														-- break
+													-- end
+												-- end
+												-- if item < tc_idx and tc_idx ~= 0 then
+													-- if qqq >= tc_idx then
+														-- break
+													-- end
+												-- end
+												-- if legs_data2[qqq][39] == "" then
+													-- legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												-- else
+													-- break
+												-- end
+											-- end
+										-- end
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
-													if qqq >= td_idx then
-														break
-													end
-												end
-												if item < tc_idx and tc_idx ~= 0 then
-													if qqq >= tc_idx then
-														break
-													end
-												end
-												if legs_data2[qqq][39] == "" then
-													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
-												else
-													break
-												end
+												legs_data2[qqq][39] = legs_data2[item][39]
 											end
 										end
 										entry2 = ""
@@ -37748,23 +37809,28 @@ function B738_fmc2_3R_CMDhandler(phase, duration)
 										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										-- if item + 1 <= legs_num2 + 1 then
+											-- for qqq = item + 1, legs_num2 + 1 do
+												-- if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
+													-- if qqq >= td_idx then
+														-- break
+													-- end
+												-- end
+												-- if item < tc_idx and tc_idx ~= 0 then
+													-- if qqq >= tc_idx then
+														-- break
+													-- end
+												-- end
+												-- if legs_data2[qqq][39] == "" then
+													-- legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												-- else
+													-- break
+												-- end
+											-- end
+										-- end
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
-													if qqq >= td_idx then
-														break
-													end
-												end
-												if item < tc_idx and tc_idx ~= 0 then
-													if qqq >= tc_idx then
-														break
-													end
-												end
-												if legs_data2[qqq][39] == "" then
-													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
-												else
-													break
-												end
+												legs_data2[qqq][39] = legs_data2[item][39]
 											end
 										end
 										entry2 = ""
@@ -38280,23 +38346,28 @@ function B738_fmc2_4R_CMDhandler(phase, duration)
 										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										-- if item + 1 <= legs_num2 + 1 then
+											-- for qqq = item + 1, legs_num2 + 1 do
+												-- if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
+													-- if qqq >= td_idx then
+														-- break
+													-- end
+												-- end
+												-- if item < tc_idx and tc_idx ~= 0 then
+													-- if qqq >= tc_idx then
+														-- break
+													-- end
+												-- end
+												-- if legs_data2[qqq][39] == "" then
+													-- legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												-- else
+													-- break
+												-- end
+											-- end
+										-- end
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
-													if qqq >= td_idx then
-														break
-													end
-												end
-												if item < tc_idx and tc_idx ~= 0 then
-													if qqq >= tc_idx then
-														break
-													end
-												end
-												if legs_data2[qqq][39] == "" then
-													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
-												else
-													break
-												end
+												legs_data2[qqq][39] = legs_data2[item][39]
 											end
 										end
 										entry2 = ""
@@ -38661,23 +38732,28 @@ function B738_fmc2_5R_CMDhandler(phase, duration)
 										add_fmc_msg(INVALID_INPUT, 1)
 									else
 										legs_data2[item][39] = wind_dir .. "`/" .. string.format("%3d", n)
+										-- if item + 1 <= legs_num2 + 1 then
+											-- for qqq = item + 1, legs_num2 + 1 do
+												-- if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
+													-- if qqq >= td_idx then
+														-- break
+													-- end
+												-- end
+												-- if item < tc_idx and tc_idx ~= 0 then
+													-- if qqq >= tc_idx then
+														-- break
+													-- end
+												-- end
+												-- if legs_data2[qqq][39] == "" then
+													-- legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
+												-- else
+													-- break
+												-- end
+											-- end
+										-- end
 										if item + 1 <= legs_num2 + 1 then
 											for qqq = item + 1, legs_num2 + 1 do
-												if item >= tc_idx and item < td_idx and tc_idx ~= 0 and td_idx ~= 0 then
-													if qqq >= td_idx then
-														break
-													end
-												end
-												if item < tc_idx and tc_idx ~= 0 then
-													if qqq >= tc_idx then
-														break
-													end
-												end
-												if legs_data2[qqq][39] == "" then
-													legs_data2[qqq][39] = wind_dir .. "`/" .. string.format("%3d", n)
-												else
-													break
-												end
+												legs_data2[qqq][39] = legs_data2[item][39]
 											end
 										end
 										entry2 = ""
@@ -49473,6 +49549,14 @@ function B738_calc()
 		weight_min = 40
 		weight_max = 90
 	end
+	-- B739U
+	-- if units == 0 then
+		-- weight_min = 94
+		-- weight_max = 190
+	-- else
+		-- weight_min = 43
+		-- weight_max = 90
+	-- end
 	
 	-- ZULU TIME
 	if simDR_gps_fail == 0 or simDR_gps2_fail == 0 then
@@ -71141,7 +71225,7 @@ temp_ils4 = ""
 	receive_msg = 0
 	x_delay = 0
 	
-	version = "v3.26b"
+	version = "v3.26c"
 
 end
 

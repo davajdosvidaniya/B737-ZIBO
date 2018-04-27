@@ -10901,7 +10901,7 @@ end
 
 function B738DR_tire()
 	
-	if simDR_ground_speed > 25 then
+	if simDR_ground_speed > 35 then
 		if B738DR_tire_on_noisy[0] == 1 and B738DR_tire_blow0 == 0 then
 			B738DR_tire_blow0 = 6
 		end

@@ -264,7 +264,6 @@ v_speed_pilot_old = 0
 vdot_ratio_old = 0
 radio_height_old = 0
 radio_height_ratio = 0
-radio_height_sum = 0
 altitude_pilot_old = 0
 air_on_acf_old = 0
 eng1_N1 = 0
@@ -458,6 +457,7 @@ wind_acf_old = 0
 ghust_spd = 0
 ghust_detect = 0
 ghust_detect2 = 0
+block_ghust = 0
 --SPD_ratio2 = 0
 
 altitude_mode_old = 0
@@ -469,6 +469,10 @@ fo_vsd_map_mode = 0
 capt_exp_vor_app_mode = 0
 fo_exp_vor_app_mode = 0
 
+rudder_out = 0
+rudder_target = 0
+hdg_ratio_old = 0
+hdg_ratio = 0
 
 --*************************************************************************************--
 --** 				             FIND X-PLANE DATAREFS            			    	 **--
@@ -702,6 +706,11 @@ B738DR_pfd_min_speed		= find_dataref("laminar/B738/pfd/min_speed")
 
 B738DR_dspl_ctrl_pnl 		= find_dataref("laminar/B738/toggle_switch/dspl_ctrl_pnl")
 
+simDR_override_heading		= find_dataref("sim/operation/override/override_joystick_heading")
+simDR_rudder_trim			= find_dataref("sim/cockpit2/controls/rudder_trim")
+simDR_control_hdg_ratio		= find_dataref("sim/flightmodel2/controls/heading_ratio")
+simDR_nav1_hdef_pilot		= find_dataref("sim/cockpit2/radios/indicators/nav1_hdef_dots_pilot")
+
 --*************************************************************************************--
 --** 				               FIND X-PLANE COMMANDS                   	    	 **--
 --*************************************************************************************--
@@ -889,6 +898,8 @@ B738DR_enable_gpwstest_long		= find_dataref("laminar/b738/fmodpack/fmod_gpwstest
 B738DR_enable_gpwstest_short	= find_dataref("laminar/b738/fmodpack/fmod_gpwstest_short_on")
 B738DR_windshear				= find_dataref("laminar/b738/fmodpack/msg_windshear")
 
+cross_wind						= find_dataref("laminar/B738/fms/cross_wind")
+
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -1059,6 +1070,7 @@ B738DR_autopilot_master_fo_status		= create_dataref("laminar/B738/autopilot/mast
 B738DR_autopilot_vhf_source_pos			= create_dataref("laminar/B738/toggle_switch/vhf_nav_source", "number")
 
 B738DR_flare_status						= create_dataref("laminar/B738/autopilot/flare_status", "number")
+B738DR_rollout_status					= create_dataref("laminar/B738/autopilot/rollout_status", "number")
 B738DR_autoland_status					= create_dataref("laminar/B738/autopilot/autoland_status", "number")
 B738DR_retard_status					= create_dataref("laminar/B738/autopilot/retard_status", "number")
 B738DR_single_ch_status					= create_dataref("laminar/B738/autopilot/single_ch_status", "number")
@@ -4145,6 +4157,7 @@ function B738_autopilot_disconnect_toggle_CMDhandler(phase, duration)
 			autopilot_cmd_b_status = 0
 			autopilot_cmd_a_status = 0
 			B738DR_flare_status = 0
+			B738DR_rollout_status = 0
 			B738DR_autoland_status = 0
 			B738DR_retard_status = 0
 			B738DR_single_ch_status = 0
@@ -6944,7 +6957,8 @@ function autopilot_system_lights2()
 			B738DR_pfd_hdg_mode_arm = 0
 		end
 	end
-	if B738DR_flare_status == 1 then
+	--if B738DR_flare_status == 1 then
+	if B738DR_rollout_status == 1 then
 		B738DR_pfd_hdg_mode_arm = PFD_HDG_ROLLOUT_ARM
 	else
 		if B738DR_pfd_hdg_mode_arm == PFD_HDG_ROLLOUT_ARM then
@@ -7013,7 +7027,8 @@ function autopilot_system_lights2()
 		end
 	-- ROLLOUT
 	elseif ap_roll_mode == 9 and ap_roll_mode_eng == 9 then
-		if B738DR_flare_status == 2 then
+		--if B738DR_flare_status == 2 then
+		if B738DR_rollout_status == 2 then
 			B738DR_pfd_hdg_mode = PFD_HDG_ROLLOUT
 			if B738DR_pfd_hdg_mode_arm == PFD_HDG_ROLLOUT_ARM then
 				B738DR_pfd_hdg_mode_arm = 0
@@ -7243,6 +7258,7 @@ function autopilot_system_lights2()
 		autopilot_cmd_b_status = 0
 		B738DR_autoland_status = 0
 		B738DR_flare_status = 0
+		B738DR_rollout_status = 0
 		B738DR_retard_status = 0
 		simDR_ap_vvi_dial = 0
 		vorloc_only = 0
@@ -9279,10 +9295,19 @@ function B738_vnav6()
 								end
 							end
 							if flaps_speed == 340 then
+								-- if B738DR_pfd_flaps_up == 340 then
+									-- vnav_speed_trg = math.max(B738DR_rest_wpt_spd, 240)
+								-- else
+									-- vnav_speed_trg = math.max(B738DR_rest_wpt_spd, B738DR_pfd_flaps_up)
+								-- end
 								if B738DR_pfd_flaps_up == 340 then
-									vnav_speed_trg = math.max(B738DR_rest_wpt_spd, 240)
+									if vnav_speed_trg < 240 then
+										vnav_speed_trg = 240
+									end
 								else
-									vnav_speed_trg = math.max(B738DR_rest_wpt_spd, B738DR_pfd_flaps_up)
+									if vnav_speed_trg < B738DR_pfd_flaps_up then
+										vnav_speed_trg = B738DR_pfd_flaps_up
+									end
 								end
 							end
 							vnav_speed_trg = math.min(vnav_speed_trg, flaps_speed)
@@ -9550,10 +9575,19 @@ function B738_vnav6()
 									end
 								end
 								if flaps_speed == 340 then
+									-- if B738DR_pfd_flaps_up == 340 then
+										-- vnav_speed_trg = math.max(B738DR_rest_wpt_spd, 240)
+									-- else
+										-- vnav_speed_trg = math.max(B738DR_rest_wpt_spd, B738DR_pfd_flaps_up)
+									-- end
 									if B738DR_pfd_flaps_up == 340 then
-										vnav_speed_trg = math.max(B738DR_rest_wpt_spd, 240)
+										if vnav_speed_trg < 240 then
+											vnav_speed_trg = 240
+										end
 									else
-										vnav_speed_trg = math.max(B738DR_rest_wpt_spd, B738DR_pfd_flaps_up)
+										if vnav_speed_trg < B738DR_pfd_flaps_up then
+											vnav_speed_trg = B738DR_pfd_flaps_up
+										end
 									end
 								end
 								vnav_speed_trg = math.min(vnav_speed_trg, flaps_speed)
@@ -10633,6 +10667,7 @@ end
 function annun_flare()
 	B738DR_single_ch_status = 0		-- SINGLE CH off
 	B738DR_flare_status = 1			-- FLARE armed
+	B738DR_rollout_status = 1
 	ap_roll_mode = 9
 end
 
@@ -10660,7 +10695,7 @@ function B738_adjust_flare()
 	local flare_vvi = simDR_vvi_fpm_pilot
 	local flare_delta_vvi = flare_vvi - flare_vvi_old
 	
-	vvi_trend = flare_vvi + (4 * flare_delta_vvi)	--2 secs
+	vvi_trend = flare_vvi + (6.5 * flare_delta_vvi)	--2 secs
 	if flare_vvi > -580 and vvi_trend > -400 then
 		fd_target = 2.2
 	end
@@ -10742,6 +10777,8 @@ function B738_ap_autoland()
 		if simDR_radio_height_pilot_ft < ra_thrshld then -- 63, 43 -- at 50 ft FLARE
 			simDR_fdir_pitch_ovr = 1
 			B738DR_flare_status = 2			-- FLARE engaged
+			B738DR_rollout_status = 2		-- ROLLOUT engaged
+			rudder_out = simDR_control_hdg_ratio
 			fd_cur = simDR_fdir_pitch
 			--vvi = simDR_vvi_fpm_pilot
 			throttle = eng1_N1_thrust_cur
@@ -10820,36 +10857,120 @@ function B738_ap_autoland()
 		
 	end
 -----------------------------------------------------------------------
+	local hdg_target = 0
+	local relative_brg = 0
+	local relative_brg2 = 0
+	local hdg_err = 0
+	local hdg_spd = 0
 	
+	if B738DR_rollout_status == 2 then
+		if simDR_nav1_hdef_pilot ~= nil then
+			if simDR_nav1_hdef_pilot < -0.20 then
+				relative_brg2 = -0.20
+			elseif simDR_nav1_hdef_pilot > 0.20 then
+				relative_brg2 = 0.20
+			else
+				relative_brg2 = simDR_nav1_hdef_pilot
+			end
+			relative_brg2 = relative_brg2 * 19	--60
+			hdg_target = (simDR_nav1_course_pilot + relative_brg2 + 360) % 360
+			B738DR_test_test = hdg_ratio
+			-------
+			relative_brg = (hdg_target - simDR_ahars_mag_hdg + 360) % 360
+			if relative_brg > 180 then
+				relative_brg = relative_brg - 360
+			end
+			if relative_brg < -5 then
+				hdg_err = -5
+			elseif relative_brg > 5 then
+				hdg_err = 5
+			else
+				hdg_err = relative_brg
+			end
+			hdg_err = hdg_err * 0.5
+			rudder_target = hdg_err - hdg_ratio
+			rudder_target = rudder_target * SIM_PERIOD * 0.5
+			-------
+			rudder_target = rudder_out + rudder_target
+			if rudder_target < -1 then
+				rudder_target = -1
+			elseif rudder_target > 1 then
+				rudder_target = 1
+			end
+			hdg_spd = math.min(simDR_airspeed_pilot, 150)
+			hdg_spd = math.max(simDR_airspeed_pilot, 120)
+			hdg_spd = B738_rescale(120, 5.2, 150, 4.5, hdg_spd)
+			rudder_out = B738_set_anim_value(rudder_out * 100, rudder_target * 100, -100, 100, hdg_spd) / 100
+			simDR_control_hdg_ratio = rudder_out
+		else
+			B738DR_rollout_status = 0
+		end
+	end
+-----------------------------------------------------------------------
 	if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1 
 	or simDR_on_ground_2 == 1 then		-- if aircraft on ground
 		if B738DR_autoland_status == 1 then 	-- autoland active
-			if cmd_first == 0 then
-				autopilot_cmd_b_status = 0
-			else
-				autopilot_cmd_a_status = 0
+			if B738DR_rollout_status == 1 then
+				B738DR_rollout_status = 2
+				rudder_out = simDR_control_hdg_ratio
 			end
-			B738DR_autoland_status = 0
-			simDR_ap_vvi_dial = 0
-			ils_test_enable = 0
-			ils_test_on = 0
-			B738DR_flare_status = 0
-			B738DR_pfd_spd_mode = PFD_SPD_ARM
-			--at_mode = 0
-			--at_mode_eng = 0
-			vorloc_only = 0
-			--ap_roll_mode = 2
-			ap_roll_mode = 0
-			ap_pitch_mode = 0
-			if is_timer_scheduled(B738_adjust_flare) == true then
-				stop_timer(B738_adjust_flare)
-			end
-			if at_mode ~= 0 then
-				if B738DR_autopilot_autothr_arm_pos == 1 then
-					eng1_N1_thrust_trg = 0
-					eng2_N1_thrust_trg = 0
+			if B738DR_flare_status ~= 0 then
+				if cmd_first == 0 then
+					autopilot_cmd_b_status = 0
+				else
+					autopilot_cmd_a_status = 0
+				end
+				-- B738DR_autoland_status = 0
+				simDR_ap_vvi_dial = 0
+				ils_test_enable = 0
+				ils_test_on = 0
+				B738DR_flare_status = 0
+				B738DR_pfd_spd_mode = PFD_SPD_ARM
+				vorloc_only = 0
+				--ap_roll_mode = 0
+				ap_pitch_mode = 0
+				if is_timer_scheduled(B738_adjust_flare) == true then
+					stop_timer(B738_adjust_flare)
+				end
+				if at_mode ~= 0 then
+					if B738DR_autopilot_autothr_arm_pos == 1 then
+						eng1_N1_thrust_trg = 0
+						eng2_N1_thrust_trg = 0
+					end
 				end
 			end
+			if simDR_airspeed_pilot < 112 then
+				B738DR_rollout_status = 0
+				ap_roll_mode = 0
+				B738DR_autoland_status = 0
+			end
+			
+			-- if cmd_first == 0 then
+				-- autopilot_cmd_b_status = 0
+			-- else
+				-- autopilot_cmd_a_status = 0
+			-- end
+			-- B738DR_autoland_status = 0
+			-- simDR_ap_vvi_dial = 0
+			-- ils_test_enable = 0
+			-- ils_test_on = 0
+			-- B738DR_flare_status = 0
+			-- B738DR_pfd_spd_mode = PFD_SPD_ARM
+			-- --at_mode = 0
+			-- --at_mode_eng = 0
+			-- vorloc_only = 0
+			-- --ap_roll_mode = 2
+			-- ap_roll_mode = 0
+			-- ap_pitch_mode = 0
+			-- if is_timer_scheduled(B738_adjust_flare) == true then
+				-- stop_timer(B738_adjust_flare)
+			-- end
+			-- if at_mode ~= 0 then
+				-- if B738DR_autopilot_autothr_arm_pos == 1 then
+					-- eng1_N1_thrust_trg = 0
+					-- eng2_N1_thrust_trg = 0
+				-- end
+			-- end
 		end
 		if aircraft_was_on_air == 1 then
 			aircraft_was_on_air = 0
@@ -10890,6 +11011,7 @@ function B738_ap_system()
 			autopilot_cmd_b_status = 0
 			B738DR_autoland_status = 0
 			B738DR_flare_status = 0
+			B738DR_rollout_status = 0
 			B738DR_retard_status = 0
 			simDR_ap_vvi_dial = 0
 			at_mode = 0
@@ -10961,6 +11083,7 @@ function B738_ap_system()
 				end
 				B738DR_autopilot_app_status = 1		-- APP light on
 				B738DR_flare_status = 0				-- FLARE status off
+				B738DR_rollout_status = 0
 				B738DR_single_ch_status = 1			-- SINGLE CH on
 			end
 		else
@@ -12030,6 +12153,7 @@ function B738_at_logic()
 		simDR_fdir_pitch_ovr = 0
 		B738DR_autoland_status = 0
 		B738DR_flare_status = 0
+		B738DR_rollout_status = 0
 		B738DR_retard_status = 0
 		vorloc_only = 0
 		-- if B738DR_autopilot_side == 0 then
@@ -12128,6 +12252,7 @@ function B738_at_logic()
 		simDR_fdir_pitch_ovr = 0
 		B738DR_autoland_status = 0
 		B738DR_flare_status = 0
+		B738DR_rollout_status = 0
 		B738DR_retard_status = 0
 		vorloc_only = 0
 		B738DR_autopilot_n1_status = 0
@@ -14084,6 +14209,9 @@ function rst_ghust_detect()
 	ghust_detect2 = 0
 end
 
+function rst_block_ghust()
+	block_ghust = 0
+end
 
 function control_SPD4()
 	
@@ -14170,19 +14298,25 @@ function control_SPD4()
 	
 	local limit = 15	--10	--20
 	
-	if simDR_autopilot_altitude_mode == 6 and (simDR_vvi_fpm_pilot < -200 or simDR_vvi_fpm_pilot > 200) then
-		ghust_detect = 0
-		ghust_detect2 = 0
-		limit = 20
+	if simDR_vvi_fpm_pilot < -150 or simDR_vvi_fpm_pilot > 150 then
+		if simDR_autopilot_altitude_mode == 6 or ap_pitch_mode == 3 or ap_pitch_mode == 6 then
+			block_ghust = 1
+			if is_timer_scheduled(rst_block_ghust) == true then
+				stop_timer(rst_block_ghust)
+			end
+			run_after_time(rst_block_ghust, 5)
+		end
 	end
 	
-	if ghust_detect == 1 then
+	if block_ghust == 1 then
+		limit = 18
+	elseif ghust_detect == 1 then
 		limit = 1
 	elseif ghust_detect2 == 1 then
 		limit = 5
 	end
 	
-	B738DR_test_test = limit
+	--B738DR_test_test = limit
 	
 	ghust_spd = B738_set_anim_value(ghust_spd, limit, 0.0, 20, 0.5)		--20
 	
@@ -14263,7 +14397,7 @@ function B738_N1_thrust_manage4()
 				ghust_detect = 0
 				ghust_detect2 = 0
 				ghust_spd = 10
-				
+				block_ghust = 0
 				-- SPD_err_old = 0
 				-- SPD_p = 0
 				-- SPD_i = 0
@@ -16532,6 +16666,7 @@ function B738_hyd_sys()
 				autopilot_cmd_b_status = 0
 				B738DR_autoland_status = 0
 				B738DR_flare_status = 0
+				B738DR_rollout_status = 0
 				B738DR_retard_status = 0
 				simDR_ap_vvi_dial = 0
 				at_mode = 0
@@ -17149,18 +17284,17 @@ function B738_spd_ratio()
 		gnd_spd_ratio = ((simDR_ground_spd * 1.94384449244) - gnd_spd_ratio_old) / time_spd_ratio
 		gnd_spd_ratio_old = simDR_ground_spd * 1.94384449244
 		
-		-- B738DR_radio_height_ratio = radio_height_sum / spd_ratio_num
-		-- radio_height_old = simDR_radio_height_pilot_ft
-		-- radio_height_sum = 0
+		
+		hdg_ratio = (simDR_ahars_mag_hdg - hdg_ratio_old + 360) % 360
+		if hdg_ratio > 180 then
+			hdg_ratio = hdg_ratio - 360
+		end
+		hdg_ratio = hdg_ratio / time_spd_ratio
+		hdg_ratio_old = simDR_ahars_mag_hdg
 		
 		spd_ratio_num = 0
 		time_spd_ratio = 0	--time_spd_ratio - 1
 	else
-		-- spd_ratio_sum = spd_ratio_sum + ((simDR_airspeed_pilot - spd_ratio_old) / SIM_PERIOD)
-		-- spd_ratio_old = simDR_airspeed_pilot
-		
-		-- radio_height_sum = radio_height_sum + ((simDR_radio_height_pilot_ft - radio_height_old) / SIM_PERIOD)
-		-- radio_height_old = simDR_radio_height_pilot_ft
 		
 		spd_ratio_num = spd_ratio_num + 1
 	end
@@ -17297,6 +17431,7 @@ eng2_N1_thrust_cur = 0
 
 B738DR_autoland_status = 0
 B738DR_flare_status = 0
+B738DR_rollout_status = 0
 B738DR_retard_status = 0
 B738DR_single_ch_status = 0
 vorloc_only = 0
