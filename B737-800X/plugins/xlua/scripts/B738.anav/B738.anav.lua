@@ -30,8 +30,11 @@ precip_acf_ratio = 0
 simDR_rain_acf_ratio	= find_dataref("sim/weather/precipitation_on_aircraft_ratio")
 simDR_ground_speed		= find_dataref("sim/flightmodel/position/groundspeed")
 
-XE_DR_rain				= find_dataref("env/rain")
-XE_DR_snow				= find_dataref("env/snow")
+-- XE_DR_rain				= find_dataref("env/rain")
+-- XE_DR_snow				= find_dataref("env/snow")
+
+XE_DR_rain				= find_dataref("sim/weather/rain_percent")
+XE_DR_snow = 0
 
 simDR_theta 		= find_dataref("sim/flightmodel/position/theta")
 simDR_phi			= find_dataref("sim/flightmodel/position/phi")
@@ -86,6 +89,7 @@ B738DR_align_horizon3	= create_dataref("laminar/B738/hud/align_horizon3", "numbe
 --*************************************************************************************--
 
 function B738DR_kill_effect_DRhandler() end
+function B738DR_kill_windshield_DRhandler() end
 
 function B738DR_hide_glass_DRhandler() end
 
@@ -101,6 +105,7 @@ function B738DR_hide_windows_xt_DRhandler() end
 --simDR_rain_acf_ratio2	= create_dataref("laminar/B738/effect/rain2", "number", B738DR_rain2_DRhandler)
 
 B738DR_kill_effect	= create_dataref("laminar/B738/perf/kill_effect", "number", B738DR_kill_effect_DRhandler)
+B738DR_kill_windshield	= create_dataref("laminar/B738/perf/kill_windshield", "number", B738DR_kill_windshield_DRhandler)
 
 B738DR_hide_glass = create_dataref("laminar/B738/effect/hide_glass", "number", B738DR_hide_glass_DRhandler)
 
@@ -702,8 +707,8 @@ function after_physics()
 	local h = 0
 	
 	B738DR_horizon = (simDR_theta * B738DR_align_horizon) + B738DR_align_horizon2 + (simDR_phi * B738DR_align_horizon3)
-	if B738DR_kill_effect < 2 then
-		if B738DR_kill_effect == 0 then
+	if B738DR_kill_windshield < 2 then
+		if B738DR_kill_windshield == 0 then
 			precip_acf_ratio = simDR_rain_acf_ratio
 		else
 			precip_acf_ratio = math.max(XE_DR_rain, XE_DR_snow)

@@ -77,6 +77,10 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26d:
+------
+- add support for xEnviro rain windshield effect
+
 3.26c:
 ------
 - add ROLLOUT feature for autoland

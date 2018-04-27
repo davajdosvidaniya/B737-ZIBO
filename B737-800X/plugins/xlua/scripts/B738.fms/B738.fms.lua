@@ -1673,6 +1673,7 @@ B738DR_autopilot_cmd_b_status	= find_dataref("laminar/B738/autopilot/cmd_b_statu
 
 
 B738DR_kill_effect				= find_dataref("laminar/B738/perf/kill_effect")
+B738DR_kill_windshield			= find_dataref("laminar/B738/perf/kill_windshield")
 
 B738DR_mcp_speed_dial		= find_dataref("laminar/B738/autopilot/mcp_speed_dial_kts_mach")
 
@@ -15304,7 +15305,7 @@ function B738_default_others_config()
 	B738DR_track_up = 1
 	B738DR_baro_in_hpa = 0
 	B738DR_min_baro_radio = 0
-	B738DR_kill_effect = 0
+	B738DR_kill_windshield = 0
 	
 	simDR_pitch_nz = 0
 	simDR_roll_nz = 0
@@ -15891,11 +15892,11 @@ function B738_load_config()
 						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
 						if temp_fmod ~= nil then
 							if temp_fmod == 1 then
-								B738DR_kill_effect = 1
+								B738DR_kill_windshield = 1
 							elseif temp_fmod == 2 then
-								B738DR_kill_effect = 2
+								B738DR_kill_windshield = 2
 							else
-								B738DR_kill_effect = 0
+								B738DR_kill_windshield = 0
 							end
 						end
 					end
@@ -16529,7 +16530,7 @@ function B738_save_config()
 		file_navdata:write(fms_line)
 		fms_line = "MIN BARO RADIO = " .. string.format("%2d", B738DR_min_baro_radio) .. "\n"
 		file_navdata:write(fms_line)
-		fms_line = "WINDSH.EFFECTS = " .. string.format("%2d", B738DR_kill_effect) .. "\n"
+		fms_line = "WINDSH.EFFECTS = " .. string.format("%2d", B738DR_kill_windshield) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "PITCH 0 ZONE   = " .. string.format("%2d", simDR_pitch_nz * 100) .. "\n"
 		file_navdata:write(fms_line)
@@ -23158,12 +23159,12 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 				B738DR_nosewheel = 0
 			end
 		elseif page_xtras_others == 3 then
-			if B738DR_kill_effect == 0 then
-				B738DR_kill_effect = 1
-			elseif B738DR_kill_effect == 1 then
-				B738DR_kill_effect = 2
+			if B738DR_kill_windshield == 0 then
+				B738DR_kill_windshield = 1
+			elseif B738DR_kill_windshield == 1 then
+				B738DR_kill_windshield = 2
 			else
-				B738DR_kill_effect = 0
+				B738DR_kill_windshield = 0
 			end
 		elseif page_arr == 1 then
 			if des_star2 == "------" then
@@ -35117,12 +35118,12 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 				B738DR_nosewheel = 0
 			end
 		elseif page_xtras_others2 == 3 then
-			if B738DR_kill_effect == 0 then
-				B738DR_kill_effect = 1
-			elseif B738DR_kill_effect == 1 then
-				B738DR_kill_effect = 2
+			if B738DR_kill_windshield == 0 then
+				B738DR_kill_windshield = 1
+			elseif B738DR_kill_windshield == 1 then
+				B738DR_kill_windshield = 2
 			else
-				B738DR_kill_effect = 0
+				B738DR_kill_windshield = 0
 			end
 		elseif page_arr2 == 1 then
 			if des_star2 == "------" then
@@ -41726,11 +41727,11 @@ function B738_fmc_xtras_others()
 			line4_s = " RADIO                  "
 		end
 		line5_x = " WINDSHIELD EFFECTS     "
-		if B738DR_kill_effect == 0 then
+		if B738DR_kill_windshield == 0 then
 			line5_l = "<  /  /                 "
 			line5_g = " ON                     "
 			line5_s = "    XE OFF              "
-		elseif B738DR_kill_effect == 1 then
+		elseif B738DR_kill_windshield == 1 then
 			line5_l = "<  /  /                 "
 			line5_g = "    XE                  "
 			line5_s = " ON    OFF              "
@@ -71225,7 +71226,7 @@ temp_ils4 = ""
 	receive_msg = 0
 	x_delay = 0
 	
-	version = "v3.26c"
+	version = "v3.26d"
 
 end
 
@@ -71774,6 +71775,11 @@ function after_physics()
 		
 		B738_mod_change()
 		B738_read_atis()
+		if B738DR_kill_windshield < 2 then
+			B738DR_kill_effect = 0
+		else
+			B738DR_kill_effect = 1
+		end
 		
 		last_offset = offset
 		
@@ -71787,7 +71793,6 @@ function after_physics()
 		--calc_rte_enable2 = 0
 		--B738DR_fms_test3 = calc_vnav_pth_dist(0, B738DR_fms_test, "50")
 		--x_dist00 = 16
-		
 		
 	end
 	
