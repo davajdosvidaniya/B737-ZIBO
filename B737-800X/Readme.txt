@@ -77,9 +77,21 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26a:
+------
+- optimise code
+- graphics correction on ND
+- slightly improved autoland
+
+3.26:
+-----
+- rewrite code for drawing on NDs
+- fixed more bugs and typo bugs
+
 3.259:
 ------
 - fixed bugs
+- tested with xplane 11.20b5
 
 3.258:
 ------

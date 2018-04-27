@@ -1,4 +1,4 @@
--- LAST CHANGE: 03-03-2018 by AXP
+-- LAST CHANGE: 03-04-2018 by AXP
 
 -------------------------------------------- DEFINING VARIABLES  ---------------------------------------------------------------------------------------
 -------------------------- new flight phase and passenger control 1709A +
@@ -479,6 +479,8 @@ passengers_board = create_dataref("laminar/b738/fmodpack/pax_board", "number")
 -------------------------- new flight phase and passenger control 1709A +
 
 
+
+
 -- wheels on the ground
 simDR_on_ground_0				= find_dataref("sim/flightmodel2/gear/on_ground[0]")
 simDR_on_ground_1				= find_dataref("sim/flightmodel2/gear/on_ground[1]")
@@ -486,6 +488,8 @@ simDR_on_ground_2				= find_dataref("sim/flightmodel2/gear/on_ground[2]")
 simDR_radio_height_pilot_ft		= find_dataref("sim/cockpit2/gauges/indicators/radio_altimeter_height_ft_pilot")
 
 is_hotstart = create_dataref("laminar/b738/fmodpack/hotstart", "number") 
+
+
 
 -- TOO LOW , GEAR warning if attempting to land with landing gears up
 -- maybe rather take annunciators going green instead of actual landing gear deployment?
@@ -1311,28 +1315,7 @@ function pax_belts()
 end
 
 
-function bellhop()
 
-	if on_the_ground == 0 then
-		cabindoor_closed = 1
-	end
-
-	if on_the_ground == 1 then
-
-		if gate_departure_initialized == 1 and departure_time == 5 then
-			cabindoor_closed = 1
-		end
-
-		if gate_arrival_initialized == 1 and arrival_time == 5 then
-			cabindoor_closed = 0
-		end
-
-		if leg_ended == 1 and leg_started == 0 then
-			cabindoor_closed = 0
-		end 
-	end
-
-end
 
 
 
@@ -1363,6 +1346,33 @@ function detect_hotstart()
 
 end
 
+
+function bellhop()
+
+	if on_the_ground == 0 then
+		cabindoor_closed = 1
+	end
+
+	if on_the_ground == 1 then
+
+		if gate_departure_initialized == 1 and departure_time == 5 then
+			cabindoor_closed = 1
+		end
+
+		if gate_arrival_initialized == 1 and arrival_time == 5 then
+			cabindoor_closed = 0
+		end
+
+		if leg_ended == 1 and leg_started == 0 then
+			cabindoor_closed = 0
+		end 
+
+		if is_hotstart == 1  then
+			cabindoor_closed = 1
+		end 
+	end
+
+end
 
 
 -- --------------------------------------------------------- 
@@ -1643,7 +1653,7 @@ FA_departure_time = 0
 FA_leo_time = 0
 FA_max_time = 300
 
---fmod_test = 0
+
 -----------------------------------
 
 
@@ -1661,7 +1671,7 @@ end
 
 
 function after_physics()
-	--fmod_test = is_anticollision_on
+
 	 --gear_warn()
 	 detect_fuel_pumps()
 	 play_airport_ambience()
@@ -1728,9 +1738,10 @@ function after_physics()
 	detect_hotstart()
 	--detect_muffle_amount()
 	detect_load_level()
-	bellhop()
 	FA_logic_timers()
 	detect_trisha_door()
+	bellhop()
+
 
 
 	 

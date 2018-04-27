@@ -1396,6 +1396,7 @@ simDR_gear_retract			= find_dataref("sim/aircraft/parts/acf_gear_deploy[0]")
 
 simDR_airspeed_pilot		= find_dataref("sim/cockpit2/gauges/indicators/airspeed_kts_pilot")
 simDR_mach_no					= find_dataref("sim/flightmodel/misc/machno")
+simDR_max_mach_in_kias		= find_dataref("sim/cockpit2/gauges/indicators/max_mach_number_in_kias")
 
 simDR_on_ground_0				= find_dataref("sim/flightmodel2/gear/on_ground[0]")
 simDR_on_ground_1				= find_dataref("sim/flightmodel2/gear/on_ground[1]")
@@ -1837,6 +1838,7 @@ function B738_engine_rpm2()
 	local req1_idle = 0.0
 	local req2_idle = 0.0
 	local SFC_half_lo_JET = 0.00001645
+	local elev = simDR_elevation_m * 3.281	-- meters to ft
 	
 	if simDR_radio_height_pilot_ft > 400 
 	and aircraft_was_on_air2 == 0 then		-- aircraft above 400 ft RA
@@ -1887,19 +1889,18 @@ function B738_engine_rpm2()
 		end
 	end
 	if idle_mode == 0 then	-- ground mode
---		req_idle = 0.218
---		idle_thrust = 0.00
 		mixture1 = 0.50 * B738DR_mixture_ratio1
 		mixture2 = 0.50 * B738DR_mixture_ratio2
 		SFC_half_lo_JET = 0.0000092
 	elseif idle_mode == 1 then	-- flight mode
---		idle_thrust = 0.00
---		req_idle = 0.317
-		mixture1 = 0.80 * B738DR_mixture_ratio1
-		mixture2 = 0.80 * B738DR_mixture_ratio2
+		-- mixture1 = 0.80 * B738DR_mixture_ratio1
+		-- mixture2 = 0.80 * B738DR_mixture_ratio2
+		elev = math.min(35000, elev)
+		elev = math.max(10000, elev)
+		elev = B738_rescale(10000, 0.80, 25000, 1.00, elev)
+		mixture1 = elev * B738DR_mixture_ratio1
+		mixture2 = elev * B738DR_mixture_ratio2
 	elseif idle_mode == 2 then	-- approach mode
---		idle_thrust = 0.00
---		req_idle = 0.382
 		mixture1 = 1.00 * B738DR_mixture_ratio1
 		mixture2 = 1.00 * B738DR_mixture_ratio2
 	end
@@ -2617,10 +2618,11 @@ function B738_calc_min_max_spd()
 	local max_maneuver_speed_show = 0
 	local max_spd_kts = 0
 	local gw_to = B738DR_fmc_gw
-  
+	
 	spd_of_snd = 39 * math.sqrt(273.15 + simDR_OAT)	-- speed of sound in kts
-	max_spd_kts = (simDR_altitude_pilot / 1000 * 0.018) + 1
-	max_spd_kts = 0.82 * spd_of_snd / max_spd_kts
+	-- max_spd_kts = (simDR_altitude_pilot / 1000 * 0.018) + 1
+	-- max_spd_kts = 0.82 * spd_of_snd / max_spd_kts
+	max_spd_kts = simDR_max_mach_in_kias
 	
 	-- maximum red/black tape
 	if simDR_gear_retract > 0.1 then	-- gear down or transit

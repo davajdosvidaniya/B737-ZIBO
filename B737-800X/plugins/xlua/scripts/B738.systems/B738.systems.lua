@@ -967,6 +967,9 @@ simDR_adf2_brg					= find_dataref("sim/cockpit2/radios/indicators/adf2_relative_
 simDR_throttle_used_ratio		= find_dataref("sim/flightmodel2/engines/throttle_used_ratio")
 B738DR_speed_mode				= find_dataref("laminar/B738/autopilot/speed_mode")
 
+B738DR_capt_vsd_map_mode	= find_dataref("laminar/B738/EFIS_control/capt/vsd_map")
+B738DR_fo_vsd_map_mode		= find_dataref("laminar/B738/EFIS_control/fo/vsd_map")
+
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -1552,6 +1555,21 @@ function B738DR_off_on1_DRhandler() end
 function B738DR_adf_ant2_DRhandler() end
 function B738DR_off_on2_DRhandler() end
 
+function B738DR_cpt_pfd_shift_x_DRhandler() end
+function B738DR_cpt_pfd_shift_y_DRhandler() end
+function B738DR_cpt_nd_shift_x_DRhandler() end
+function B738DR_cpt_nd_shift_y_DRhandler() end
+
+function B738DR_fo_pfd_shift_x_DRhandler() end
+function B738DR_fo_pfd_shift_y_DRhandler() end
+function B738DR_fo_nd_shift_x_DRhandler() end
+function B738DR_fo_nd_shift_y_DRhandler() end
+
+function B738DR_lower_du_shift_x_DRhandler() end
+function B738DR_lower_du_shift_y_DRhandler() end
+function B738DR_eicas_shift_x_DRhandler() end
+function B738DR_eicas_shift_y_DRhandler() end
+
 
 ----- SPEEDBRAKE LEVER ------------------------------------------------------------------
 function B738_speedbrake_lever_DRhandler()
@@ -1617,6 +1635,23 @@ steer_speed						= create_dataref("laminar/B738/steer_speed", "number", B738DR_s
 B738DR_flap_lever_stop_pos		= create_dataref("laminar/B738/handles/flap_lever/stop_pos", "number", B738DR_flap_lever_stop_pos_DRhandler)
 B738DR_speedbrake_lever			= create_dataref("laminar/B738/flt_ctrls/speedbrake_lever", "number", B738_speedbrake_lever_DRhandler)
 B738DR_speedbrake_stop_pos		= create_dataref("laminar/B738/flt_ctrls/speedbrake_lever_stop", "number", B738_speedbrake_stop_pos_DRhandler)
+
+B738DR_cpt_pfd_shift_x			= create_dataref("laminar/B738/systems/cpt_pfd_shift_x", "number", B738DR_cpt_pfd_shift_x_DRhandler)
+B738DR_cpt_pfd_shift_y			= create_dataref("laminar/B738/systems/cpt_pfd_shift_y", "number", B738DR_cpt_pfd_shift_y_DRhandler)
+B738DR_cpt_nd_shift_x			= create_dataref("laminar/B738/systems/cpt_nd_shift_x", "number", B738DR_cpt_nd_shift_x_DRhandler)
+B738DR_cpt_nd_shift_y			= create_dataref("laminar/B738/systems/cpt_nd_shift_y", "number", B738DR_cpt_nd_shift_y_DRhandler)
+
+B738DR_fo_pfd_shift_x			= create_dataref("laminar/B738/systems/fo_pfd_shift_x", "number", B738DR_fo_pfd_shift_x_DRhandler)
+B738DR_fo_pfd_shift_y			= create_dataref("laminar/B738/systems/fo_pfd_shift_y", "number", B738DR_fo_pfd_shift_y_DRhandler)
+B738DR_fo_nd_shift_x			= create_dataref("laminar/B738/systems/fo_nd_shift_x", "number", B738DR_fo_nd_shift_x_DRhandler)
+B738DR_fo_nd_shift_y			= create_dataref("laminar/B738/systems/fo_nd_shift_y", "number", B738DR_fo_nd_shift_y_DRhandler)
+
+B738DR_lower_du_shift_x			= create_dataref("laminar/B738/systems/lower_du_shift_x", "number", B738DR_lower_du_shift_x_DRhandler)
+B738DR_lower_du_shift_y			= create_dataref("laminar/B738/systems/lower_du_shift_y", "number", B738DR_lower_du_shift_y_DRhandler)
+B738DR_eicas_shift_x			= create_dataref("laminar/B738/systems/eicas_shift_x", "number", B738DR_eicas_shift_x_DRhandler)
+B738DR_eicas_shift_y			= create_dataref("laminar/B738/systems/eicas_shift_y", "number", B738DR_eicas_shift_y_DRhandler)
+
+
 
 B738DR_adf_ant1				= create_dataref("laminar/B738/toggle_switch/adf_ant1", "number", B738DR_adf_ant1_DRhandler)
 B738DR_off_on1				= create_dataref("laminar/B738/toggle_switch/off_on1", "number", B738DR_off_on1_DRhandler)
@@ -3298,6 +3333,8 @@ function B738_park_brake_toggle_CMDhandler(phase, duration)
 			B738DR_parking_brake_pos = 1
 			--simDR_brake = 1
 			--parkbrake_force = 1
+			brake_smoothly_left = 0
+			brake_smoothly_right = 0
 			if B738DR_chock_status == 1 and B738DR_parkbrake_remove_chock == 1 then
 				B738DR_chock_status = 0
 			end
@@ -3328,6 +3365,8 @@ function B738_park_brake_CMDhandler(phase, duration)
 		B738DR_parking_brake_pos = 1
 		--simDR_brake = 1
 		--parkbrake_force = 1
+		brake_smoothly_left = 0
+		brake_smoothly_right = 0
 		if B738DR_chock_status == 1 and B738DR_parkbrake_remove_chock == 1 then
 			B738DR_chock_status = 0
 		end
@@ -6956,17 +6995,18 @@ function B738_tcas(ai_plane)
 			tcas_x = tcas_x * tcas_zoom		-- zoom
 			tcas_y = tcas_y * tcas_zoom		-- zoom
 			
-			if B738DR_capt_exp_map_mode == 0 then
+			if B738DR_capt_vsd_map_mode == 1 then
+				tcas_y = tcas_y + 5.1	-- adjust center
+			elseif B738DR_capt_exp_map_mode == 0 then
 				tcas_y = tcas_y + 4.1	-- adjust center
 			end
 			
-			if tcas_y > 7.5 or tcas_y < -7.5 then
-				tcas_on_off = 0
+			if tcas_y > 13 or tcas_y < -5 then
+				tcas_on_off2 = 0
 			end
-			if tcas_x < -6.0 or tcas_x > 6.0 then
-				tcas_on_off = 0
+			if tcas_x < -13 or tcas_x > 13 then
+				tcas_on_off2 = 0
 			end
-			
 			
 			B738DR_tcas_x[ai_idx] = tcas_x
 			B738DR_tcas_y[ai_idx] = tcas_y
@@ -7265,14 +7305,16 @@ function B738_tcas(ai_plane)
 			tcas_x = tcas_x * tcas_zoom		-- zoom
 			tcas_y = tcas_y * tcas_zoom		-- zoom
 			
-			if B738DR_fo_exp_map_mode == 0 then
+			if B738DR_fo_vsd_map_mode == 1 then
+				tcas_y = tcas_y + 5.1	-- adjust center
+			elseif B738DR_fo_exp_map_mode == 0 then
 				tcas_y = tcas_y + 4.1	-- adjust center
 			end
 			
-			if tcas_y > 7.5 or tcas_y < -7.5 then
+			if tcas_y > 13 or tcas_y < -5 then
 				tcas_on_off2 = 0
 			end
-			if tcas_x < -6.0 or tcas_x > 6.0 then
+			if tcas_x < -13 or tcas_x > 13 then
 				tcas_on_off2 = 0
 			end
 			
@@ -7546,7 +7588,12 @@ function tcas_test()
 	B738DR_tcas_alt_dn_up_show[3] = 1
 	B738_EFIS_TCAS_ai_show[3] = 1
 	
-	if B738DR_capt_exp_map_mode == 0 then
+	if B738DR_capt_vsd_map_mode == 1 then
+		B738DR_tcas_y[0] = B738DR_tcas_y[0] + 5.1	-- adjust center
+		B738DR_tcas_y[1] = B738DR_tcas_y[1] + 5.1	-- adjust center
+		B738DR_tcas_y[2] = B738DR_tcas_y[2] + 5.1	-- adjust center
+		B738DR_tcas_y[3] = B738DR_tcas_y[3] + 5.1	-- adjust center
+	elseif B738DR_capt_exp_map_mode == 0 then
 		B738DR_tcas_y[0] = B738DR_tcas_y[0] + 4.1	-- adjust center
 		B738DR_tcas_y[1] = B738DR_tcas_y[1] + 4.1	-- adjust center
 		B738DR_tcas_y[2] = B738DR_tcas_y[2] + 4.1	-- adjust center
@@ -7604,7 +7651,12 @@ function tcas_test()
 	B738DR_tcas_alt_dn_up_show_fo[3] = 1
 	B738_EFIS_TCAS_ai_show_fo[3] = 1
 	
-	if B738DR_fo_exp_map_mode == 0 then
+	if B738DR_fo_vsd_map_mode == 1 then
+		B738DR_tcas_y_fo[0] = B738DR_tcas_y_fo[0] + 5.1	-- adjust center
+		B738DR_tcas_y_fo[1] = B738DR_tcas_y_fo[1] + 5.1	-- adjust center
+		B738DR_tcas_y_fo[2] = B738DR_tcas_y_fo[2] + 5.1	-- adjust center
+		B738DR_tcas_y_fo[3] = B738DR_tcas_y_fo[3] + 5.1	-- adjust center
+	elseif B738DR_fo_exp_map_mode == 0 then
 		B738DR_tcas_y_fo[0] = B738DR_tcas_y_fo[0] + 4.1	-- adjust center
 		B738DR_tcas_y_fo[1] = B738DR_tcas_y_fo[1] + 4.1	-- adjust center
 		B738DR_tcas_y_fo[2] = B738DR_tcas_y_fo[2] + 4.1	-- adjust center
@@ -8564,7 +8616,7 @@ function B738_gpws()
 		if simDR_radio_height_pilot_ft < 30 or simDR_radio_height_pilot_ft > 2450 then
 			gpws_disable = 1
 		end
-		if simDR_radio_height_pilot_ft > 2450 then
+		if simDR_radio_height_pilot_ft > 2450 or B738DR_flight_phase == 2 then
 			gpws_takeoff = 2
 		end
 		if simDR_radio_height_pilot_ft < 30 then

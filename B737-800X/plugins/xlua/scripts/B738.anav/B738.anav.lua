@@ -562,7 +562,7 @@ function window_ratio()
 		tmp = math.min(animL_ratio[k], 0.3)
 		tmp = math.max(tmp, 0)
 		if animL_ratio_tgt[k] < animL_ratio[k] then
-			tmp2 = B738_rescale(0, 0, 0.21, 1, tmp)
+			tmp2 = B738_rescale(0, 0, 0.21, 1, tmp)		-- rain drop
 			if tmp2 > animL_ratio[k] then
 				B738DR_window_effect_animL02[k] = animL_ratio[k]
 			else

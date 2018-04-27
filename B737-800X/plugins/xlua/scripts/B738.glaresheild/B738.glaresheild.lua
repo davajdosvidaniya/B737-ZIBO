@@ -362,6 +362,8 @@ cpt_tcas_enable = 1
 fo_tcas_enable = 1
 cpt_terr_enable = 0
 fo_terr_enable = 0
+cpt_pos_enable = 0
+fo_pos_enable = 0
 
 autothr_arm_pos = 0
 autopilot_side = 0
@@ -1223,6 +1225,10 @@ B738DR_vor1_sel_crs	 		= create_dataref("laminar/B738/pfd/vor1_sel_crs", "string
 B738DR_vor1_sel_bcrs 		= create_dataref("laminar/B738/pfd/vor1_sel_bcrs", "string")
 B738DR_vor1_show	 		= create_dataref("laminar/B738/pfd/vor1_show", "number")
 B738DR_vor1_line_show		= create_dataref("laminar/B738/pfd/vor1_line_show", "number")
+B738DR_vor1_sel_pos_show 	= create_dataref("laminar/B738/pfd/vor1_sel_pos_show", "number")
+B738DR_vor1_sel_pos 		= create_dataref("laminar/B738/pfd/vor1_sel_pos", "number")
+B738DR_vor1_sel_pos_dist	= create_dataref("laminar/B738/pfd/vor1_sel_pos_dist", "number")
+B738DR_vor1_sel_pos_brg 	= create_dataref("laminar/B738/pfd/vor1_sel_pos_brg", "string")
 
 B738DR_vor2_sel_rotate	 	= create_dataref("laminar/B738/pfd/vor2_sel_rotate", "number")
 B738DR_vor2_sel_x	 		= create_dataref("laminar/B738/pfd/vor2_sel_x", "number")
@@ -1232,6 +1238,10 @@ B738DR_vor2_sel_crs	 		= create_dataref("laminar/B738/pfd/vor2_sel_crs", "string
 B738DR_vor2_sel_bcrs 		= create_dataref("laminar/B738/pfd/vor2_sel_bcrs", "string")
 B738DR_vor2_show	 		= create_dataref("laminar/B738/pfd/vor2_show", "number")
 B738DR_vor2_line_show		= create_dataref("laminar/B738/pfd/vor2_line_show", "number")
+B738DR_vor2_sel_pos_show 	= create_dataref("laminar/B738/pfd/vor2_sel_pos_show", "number")
+B738DR_vor2_sel_pos 		= create_dataref("laminar/B738/pfd/vor2_sel_pos", "number")
+B738DR_vor2_sel_pos_dist	= create_dataref("laminar/B738/pfd/vor2_sel_pos_dist", "number")
+B738DR_vor2_sel_pos_brg 	= create_dataref("laminar/B738/pfd/vor2_sel_pos_brg", "string")
 
 B738DR_vor1_sel_rotate_fo 	= create_dataref("laminar/B738/pfd/vor1_sel_rotate_fo", "number")
 B738DR_vor1_sel_x_fo 		= create_dataref("laminar/B738/pfd/vor1_sel_x_fo", "number")
@@ -1241,6 +1251,10 @@ B738DR_vor1_sel_crs_fo 		= create_dataref("laminar/B738/pfd/vor1_sel_crs_fo", "s
 B738DR_vor1_sel_bcrs_fo		= create_dataref("laminar/B738/pfd/vor1_sel_bcrs_fo", "string")
 B738DR_vor1_copilot_show	= create_dataref("laminar/B738/pfd/vor1_copilot_show", "number")
 B738DR_vor1_line_copilot_show	= create_dataref("laminar/B738/pfd/vor1_line_copilot_show", "number")
+B738DR_vor1_sel_pos_show_fo 	= create_dataref("laminar/B738/pfd/vor1_sel_pos_show_fo", "number")
+B738DR_vor1_sel_pos_fo 			= create_dataref("laminar/B738/pfd/vor1_sel_pos_fo", "number")
+B738DR_vor1_sel_pos_dist_fo		= create_dataref("laminar/B738/pfd/vor1_sel_pos_dist_fo", "number")
+B738DR_vor1_sel_pos_brg_fo	 	= create_dataref("laminar/B738/pfd/vor1_sel_pos_brg_fo", "string")
 
 B738DR_vor2_sel_rotate_fo		= create_dataref("laminar/B738/pfd/vor2_sel_rotate_fo", "number")
 B738DR_vor2_sel_x_fo	 		= create_dataref("laminar/B738/pfd/vor2_sel_x_fo", "number")
@@ -1250,6 +1264,10 @@ B738DR_vor2_sel_crs_fo	 		= create_dataref("laminar/B738/pfd/vor2_sel_crs_fo", "
 B738DR_vor2_sel_bcrs_fo 		= create_dataref("laminar/B738/pfd/vor2_sel_bcrs_fo", "string")
 B738DR_vor2_copilot_show		= create_dataref("laminar/B738/pfd/vor2_copilot_show", "number")
 B738DR_vor2_line_copilot_show 	= create_dataref("laminar/B738/pfd/vor2_line_copilot_show", "number")
+B738DR_vor2_sel_pos_show_fo 	= create_dataref("laminar/B738/pfd/vor2_sel_pos_show_fo", "number")
+B738DR_vor2_sel_pos_fo 			= create_dataref("laminar/B738/pfd/vor2_sel_pos_fo", "number")
+B738DR_vor2_sel_pos_dist_fo		= create_dataref("laminar/B738/pfd/vor2_sel_pos_dist_fo", "number")
+B738DR_vor2_sel_pos_brg_fo	 	= create_dataref("laminar/B738/pfd/vor2_sel_pos_brg_fo", "string")
 
 B738DR_vor1_arrow 				= create_dataref("laminar/B738/pfd/vor1_arrow", "number")
 B738DR_vor2_arrow 				= create_dataref("laminar/B738/pfd/vor2_arrow", "number")
@@ -1484,6 +1502,41 @@ function B738DR_kd_DRhandler() end
 function B738DR_kf_DRhandler() end
 function B738DR_bias_DRhandler() end
 
+
+
+function B738DR_reverse_both_DRhandler()
+	
+	if simDR_reverse1_act == 1 and simDR_reverse2_act == 1 then
+		if simDR_throttle_1 == 0 and simDR_throttle_2 == 0 then
+			if B738DR_reverse_both < 0.02 then
+				B738DR_reverse_both = 0
+			elseif B738DR_reverse_both > 0.04 and B738DR_reverse_both < 0.06 then
+				B738DR_reverse_both = 0.05
+				simDR_reverse1_act = 3
+				simDR_reverse2_act = 3
+			end
+		else
+			B738DR_reverse_both = 0
+		end
+	elseif simDR_reverse1_act == 3 and simDR_reverse2_act == 3 then
+		if B738DR_reverse_both < 0.02 then
+			B738DR_reverse_both = 0
+			simDR_reverse1_act = 1
+			simDR_reverse2_act = 1
+		elseif B738DR_reverse_both > 0.04 and B738DR_reverse_both < 0.06 then
+			B738DR_reverse_both = 0.05
+		end
+		if B738DR_reverse_both < 0.06 then
+			simDR_throttle_1 = 0
+			simDR_throttle_2 = 0
+		else
+			simDR_throttle_1 = B738_rescale(0.06, 0, 1.0, 1.0, B738DR_reverse_both)
+			simDR_throttle_2 = B738_rescale(0.06, 0, 1.0, 1.0, B738DR_reverse_both)
+		end
+	end
+	
+end
+
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
@@ -1499,7 +1552,7 @@ B738DR_pid_i				= create_dataref("laminar/pid/i", "number")
 B738DR_pid_d				= create_dataref("laminar/pid/d", "number")
 B738DR_pid_out				= create_dataref("laminar/pid/out", "number")
 
-
+B738DR_reverse_both			= create_dataref("laminar/B738/engine/reverse_both", "number", B738DR_reverse_both_DRhandler)
 
 B738DR_yoke_roll			= create_dataref("laminar/yoke/roll", "number", B738DR_yoke_roll_DRhandler)
 B738DR_yoke_pitch			= create_dataref("laminar/yoke/pitch", "number", B738DR_yoke_pitch_DRhandler)
@@ -2326,6 +2379,11 @@ end
 function B738_efis_pos_capt_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_efis_pos_capt = 1
+		if cpt_pos_enable == 0 then
+			cpt_pos_enable = 1
+		else
+			cpt_pos_enable = 0
+		end
 	elseif phase == 2 then
 		B738DR_efis_pos_capt = 0
 	end
@@ -2340,7 +2398,6 @@ function B738_efis_terr_capt_CMDhandler(phase, duration)
 		else
 			cpt_terr_enable = 0
 		end
-
 	elseif phase == 2 then
 		B738DR_efis_terr_capt = 0
 	end
@@ -3210,6 +3267,11 @@ end
 function B738_efis_pos_fo_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_efis_pos_fo = 1
+		if cpt_pos_enable == 0 then
+			cpt_pos_enable = 1
+		else
+			cpt_pos_enable = 0
+		end
 	elseif phase == 2 then
 		B738DR_efis_pos_fo = 0
 	end
@@ -5452,7 +5514,7 @@ function B738_autopilot_spd_interv_CMDhandler(phase, duration)
 			if B738DR_ap_spd_interv_status == 0 then
 				B738DR_ap_spd_interv_status = 1
 				if B738DR_flight_phase > 4 then
-					if B738DR_vnav_desc_spd_disable == 0 and vnav_desc_spd == 0 and B738DR_pfd_spd_mode == PFD_SPD_ARM then
+					if B738DR_vnav_desc_spd_disable == 0 and vnav_desc_spd == 0 then	--and B738DR_pfd_spd_mode == PFD_SPD_ARM then
 						vnav_desc_spd = 1
 						vnav_desc_protect_spd = 0
 					else
@@ -5463,6 +5525,8 @@ function B738_autopilot_spd_interv_CMDhandler(phase, duration)
 				simDR_airspeed_dial_kts = simDR_airspeed_pilot
 			else
 				B738DR_ap_spd_interv_status = 0
+				vnav_desc_spd = 0
+				vnav_desc_protect_spd = 0
 			end
 		end
 	elseif phase == 2 then
@@ -10593,17 +10657,21 @@ function B738_adjust_flare()
 
 	local flare_vvi = simDR_vvi_fpm_pilot
 	local flare_delta_vvi = 0
---	local vvi_trend = 0
 	
 	flare_delta_vvi = flare_vvi - flare_vvi_old
 	--flare_delta_vvi = -flare_delta_vvi
-	vvi_trend = flare_vvi + (20 * flare_delta_vvi)	--10
-	if vvi_trend > -30 then	--0 then
+	vvi_trend = flare_vvi + (20 * flare_delta_vvi)	--10 secs
+	local vvi_trend2 = flare_vvi + (30 * flare_delta_vvi)	--15 secs
+	local ra_trend2 = simDR_radio_height_pilot_ft - (flare_vvi / 60 * 30)	-- 15 secs
+	if vvi_trend > -30 or (vvi_trend2 > -80 and ra_trend2 > 10) then	--0 then
 		fd_target = fd_cur - 0.075		--0.15	--- EDIT by vvi_trend !!!!!
 	end
 	if flare_vvi > -500 and flare_delta_vvi < 90 and fd_target > 2.0 then		-- 80
 		fd_target = fd_cur - 0.35	-- 0.7
 		B738DR_flare_ratio = 1.0	-- 1.5
+	end
+	if fd_target < 2.2 then
+		fd_target = 2.2
 	end
 	flare_vvi_old = flare_vvi
 
@@ -10639,7 +10707,7 @@ function B738_ap_autoland()
 			end
 		end
 		
-		if simDR_radio_height_pilot_ft < 250 then	-- at 500 /100 ft stabilized
+		if simDR_radio_height_pilot_ft < 250 then	-- at 250/  500 /100 ft stabilized
 			
 			if vorloc_only == 0 then
 				simCMD_autopilot_lnav:once()	-- A/P mode VOR/LOC
@@ -10650,7 +10718,7 @@ function B738_ap_autoland()
 				vorloc_only = 1
 				simDR_fdir_pitch = fd_cur
 			end
-			if simDR_radio_height_pilot_ft > 120 then	--90 120 150
+			if simDR_radio_height_pilot_ft > 100 then	--120 90 120 150
 				simDR_fdir_pitch_ovr = 0
 				if simDR_autopilot_altitude_mode ~= 4 then
 					simDR_ap_vvi_dial = simDR_vvi_fpm_pilot
@@ -10672,12 +10740,21 @@ function B738_ap_autoland()
 				-- simDR_ap_vvi_dial = B738_set_anim_value(vvi_dial_act, vvi_dial_trg, -1000, -550, 0.5)
 				-- fd_cur = simDR_fdir_pitch
 			else
-				if simDR_autopilot_altitude_mode == 4 then
-					simCMD_autopilot_vs_sel:once()
-					simDR_ap_vvi_dial = 0
+				if simDR_autopilot_altitude_mode == 4 and (simDR_vvi_fpm_pilot < -900 or simDR_vvi_fpm_pilot > -700) then
+					-- simDR_fdir_pitch_ovr = 1
+					-- simDR_fdir_pitch = fd_cur
+					vvi_dial_trg = -800		--850, 800 780
+					vvi_dial_act = simDR_ap_vvi_dial
+					simDR_ap_vvi_dial = B738_set_anim_value(vvi_dial_act, vvi_dial_trg, -1000, -550, 0.5)
+					fd_cur = simDR_fdir_pitch
+				else
+					if simDR_autopilot_altitude_mode == 4 then
+						simCMD_autopilot_vs_sel:once()
+						simDR_ap_vvi_dial = 0
+					end
+					simDR_fdir_pitch_ovr = 1
+					simDR_fdir_pitch = fd_cur
 				end
-				simDR_fdir_pitch_ovr = 1
-				simDR_fdir_pitch = fd_cur
 			end
 		end
 		
@@ -10687,18 +10764,23 @@ function B738_ap_autoland()
 		-- rate of descent in fpm = tan(glideslope) * (speed in knots * 6076 / 60)
 		ra_fdpitch = math.min(2.5, simDR_fdir_pitch)
 		ra_fdpitch = math.max(0, simDR_fdir_pitch)
-		ra_thrshld = B738_rescale(0, 78, 2.5, 68, ra_fdpitch)
-		if B738DR_fms_approach_speed > 134 then
-			ra_thrshld = ra_thrshld - (1.5 * (B738DR_fms_approach_speed - 135))
-			if ra_thrshld < 50 then
-				ra_thrshld = 50
-			end
-			if ra_thrshld > 68 then
-				ra_thrshld = 68
-			end
+		--ra_thrshld = B738_rescale(0, 78, 2.5, 68, ra_fdpitch)
+		ra_thrshld = B738_rescale(0, 78, 2.5, 68, ra_fdpitch)	--72/62
+		-- if B738DR_fms_approach_speed > 130 then		--134
+			-- ra_thrshld = ra_thrshld - (2.8 * (B738DR_fms_approach_speed - 131))		--1.5 / 135
+		-- end
+		if simDR_airspeed_pilot > 134 then		--134
+			ra_thrshld = ra_thrshld - (1.5 * (simDR_airspeed_pilot - 134))		--1.5 / 135
+		end
+		if ra_thrshld < 50 then
+			ra_thrshld = 50
+		end
+		if ra_thrshld > 68 then
+			ra_thrshld = 68
 		end
 		--ra_thrshld = B738_rescale(0, 78, 2.5, 68, ra_fdpitch)
 		if simDR_radio_height_pilot_ft < ra_thrshld then -- 63, 43 -- at 50 ft FLARE
+			simDR_fdir_pitch_ovr = 1
 			B738DR_flare_status = 2			-- FLARE engaged
 			fd_cur = simDR_fdir_pitch
 			--vvi = simDR_vvi_fpm_pilot
@@ -10720,7 +10802,9 @@ function B738_ap_autoland()
 			delta_vvi = math.max(580, delta_vvi)
 			delta_vvi = math.min(1000, delta_vvi)
 			
-			fd_target = fd_cur + B738_rescale(580, 2.8, 1000, 6.5, delta_vvi)	-- 3.0 / 6.5
+			--fd_target = fd_cur + B738_rescale(580, 2.8, 1000, 6.5, delta_vvi)	-- 3.0 / 6.5
+			--fd_target = fd_cur + B738_rescale(580, 3.0, 1000, 6.5, delta_vvi)	-- 3.0 / 6.5
+			fd_target = fd_cur + B738_rescale(580, 3.2, 1000, 6.1, delta_vvi)	-- 3.0 / 6.5
 			
 			if fd_target < 2 then
 				fd_target = 2			-- minimum FLARE pitch
@@ -10736,7 +10820,8 @@ function B738_ap_autoland()
 				run_at_interval(B738_adjust_flare, 0.5)	--0.3)
 			end
 			--B738DR_flare_ratio = B738_rescale(580, 3.4, 1000, 5.9, delta_vvi)		-- 3.2 / 5.9
-			B738DR_flare_ratio = B738_rescale(0, 5.9, 2.5, 3.4, ra_fdpitch)
+			--B738DR_flare_ratio = B738_rescale(0, 5.9, 2.5, 3.4, ra_fdpitch)
+			B738DR_flare_ratio = B738_rescale(0, 6.1, 2.5, 4.2, ra_fdpitch)		--6.1 / 3.8
 		end
 -----------------------------------------------------------------------
 		
@@ -13754,8 +13839,8 @@ function control_SPD()
 			SPD_corr = B738_rescale(0, 0, 40, SPD_corr2, SPD_corr)	-- 3 / sec
 		end
 		
-		B738DR_test_test = spd_ratio2
-		B738DR_test_test2 = SPD_corr
+		--B738DR_test_test = spd_ratio2
+		--B738DR_test_test2 = SPD_corr
 		
 		SPD_corr = SPD_corr - spd_ratio2
 		SPD_corr = (SPD_corr * 0.02)	--4.2
@@ -14166,12 +14251,14 @@ function control_SPD4()
 	-- end
 	
 	if ghust_detect == 1 then
-		limit = 5
-	elseif ghust_detect2 == 1 then
 		limit = 1
+	elseif ghust_detect2 == 1 then
+		limit = 5
 	end
 	
-	ghust_spd = B738_set_anim_value(ghust_spd, limit, 0.0, 10, 0.5)		--20
+	B738DR_test_test = limit
+	
+	ghust_spd = B738_set_anim_value(ghust_spd, limit, 0.0, 20, 0.5)		--20
 	
 	limit = ghust_spd * SIM_PERIOD
 	
@@ -15374,7 +15461,7 @@ function B738_vor_sel()
 		simDR_hsi_crs2 = simDR_nav1_obs_copilot
 	-- end
 	
-	if xfirst_time2 == 0 then
+	--if xfirst_time2 == 0 then
 	
 	--if B738DR_capt_exp_map_mode == 1 and B738DR_capt_map_mode ~= 3 then
 	if B738DR_capt_map_mode == 2 then
@@ -15473,6 +15560,8 @@ function B738_vor_sel()
 				
 				if B738DR_capt_map_mode == 3 then
 					vor_y = vor_y + 4.1	-- adjust center
+				elseif B738DR_capt_vsd_map_mode == 1 then
+					vor_y = vor_y + 5.1	-- adjust center
 				elseif B738DR_capt_exp_map_mode == 0 then
 					vor_y = vor_y + 4.1	-- adjust center
 				end
@@ -15497,6 +15586,16 @@ function B738_vor_sel()
 						B738DR_vor1_line_show = 1
 					else
 						B738DR_vor1_line_show = 0
+					end
+					
+					-- position
+					if cpt_pos_enable == 0 then
+						B738DR_vor1_sel_pos_show = 0
+					else
+						B738DR_vor1_sel_pos_show = 1
+						B738DR_vor1_sel_pos = relative_brg
+						B738DR_vor1_sel_pos_dist = vor_distance * efis_zoom
+						B738DR_vor1_sel_pos_brg = string.format("%03d", vor_bearing)
 					end
 				else
 					B738DR_vor1_show = 0
@@ -15606,6 +15705,8 @@ function B738_vor_sel()
 				
 				if B738DR_capt_map_mode == 3 then
 					vor_y = vor_y + 4.1	-- adjust center
+				elseif B738DR_capt_vsd_map_mode == 1 then
+					vor_y = vor_y + 5.1	-- adjust center
 				elseif B738DR_capt_exp_map_mode == 0 then
 					vor_y = vor_y + 4.1	-- adjust center
 				end
@@ -15643,7 +15744,7 @@ function B738_vor_sel()
 		B738DR_vor2_show = 0
 	end
 	
-	end
+	--end
 	
 	if B738DR_capt_map_mode < 2 then
 		vor_hdg =  simDR_ahars_mag_hdg
@@ -15665,7 +15766,7 @@ function B738_vor_sel()
 	B738DR_adf2_arrow = simDR_adf2_bearing - vor_hdg
 	
 	
-	if xfirst_time2 == 0 then
+	--if xfirst_time2 == 0 then
 	
 	--if B738DR_fo_exp_map_mode == 1 and B738DR_fo_map_mode ~= 3 then
 	if B738DR_fo_map_mode == 2 then
@@ -15783,6 +15884,8 @@ function B738_vor_sel()
 				
 				if B738DR_fo_map_mode == 3 then
 					vor_y = vor_y + 4.1	-- adjust center
+				elseif B738DR_fo_vsd_map_mode == 1 then
+					vor_y = vor_y + 5.1	-- adjust center
 				elseif B738DR_fo_exp_map_mode == 0 then
 					vor_y = vor_y + 4.1	-- adjust center
 				end
@@ -15916,6 +16019,8 @@ function B738_vor_sel()
 				
 				if B738DR_fo_map_mode == 3 then
 					vor_y = vor_y + 4.1	-- adjust center
+				elseif B738DR_fo_vsd_map_mode == 1 then
+					vor_y = vor_y + 5.1	-- adjust center
 				elseif B738DR_fo_exp_map_mode == 0 then
 					vor_y = vor_y + 4.1	-- adjust center
 				end
@@ -15953,7 +16058,7 @@ function B738_vor_sel()
 		B738DR_vor2_copilot_show = 0
 	end
 	
-	end
+	--end
 	
 	if B738DR_fo_map_mode < 2 then
 		vor_hdg = simDR_ahars_mag_hdg
@@ -16947,17 +17052,17 @@ function B738_nd()
 						simCMD_efis_wxr:once()
 					end
 				else
-					if B738DR_efis_fo_terr_on == 0 then
+					-- if B738DR_efis_fo_terr_on == 0 then
 						-- turn on WW for First Officer
 						if simDR_efis_wxr_on == 0 then	--and B738DR_fo_exp_map_mode == 1 then
 							simCMD_efis_wxr:once()
 						end
 						simDR_efis_map_range = B738DR_efis_map_range_fo
-					else
-						if simDR_efis_wxr_on == 1 then
-							simCMD_efis_wxr:once()
-						end
-					end
+					-- else
+						-- if simDR_efis_wxr_on == 1 then
+							-- simCMD_efis_wxr:once()
+						-- end
+					-- end
 				end
 			else
 				-- turn off WX for PLN mode
@@ -16981,16 +17086,16 @@ function B738_nd()
 					end
 				else
 				-- turn on WX for Captain
-					if B738DR_efis_terr_on == 0 then
+					-- if B738DR_efis_terr_on == 0 then
 						if simDR_efis_wxr_on == 0 then	--and B738DR_capt_exp_map_mode == 1 then
 							simCMD_efis_wxr:once()
 						end
 						simDR_efis_map_range = B738DR_efis_map_range_capt
-					else
-						if simDR_efis_wxr_on == 1 then
-							simCMD_efis_wxr:once()
-						end
-					end
+					-- else
+						-- if simDR_efis_wxr_on == 1 then
+							-- simCMD_efis_wxr:once()
+						-- end
+					-- end
 				end
 			else
 				-- turn off WX for PLN mode
@@ -17346,6 +17451,8 @@ cpt_tcas_enable = 1
 fo_tcas_enable = 1
 cpt_terr_enable = 0
 fo_terr_enable = 0
+cpt_pos_enable = 0
+fo_pos_enable = 0
 
 B738DR_ap_spd_interv_status = 0
 lnav_app = 0

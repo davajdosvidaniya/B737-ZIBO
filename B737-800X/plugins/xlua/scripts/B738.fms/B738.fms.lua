@@ -1361,6 +1361,22 @@ ff_sample = 0
 	atis_send_time = "     "
 	receive_msg = 0
 	
+	wpt_2d_dist = {}
+	wpt_2d_x = {}
+	wpt_2d_y = {}
+	wpt_2d_idx = {}
+	wpt_2d_idx_on = {}
+	wpt_2d_num = 0
+	
+	wpt_2d_dist_m = {}
+	wpt_2d_x_m = {}
+	wpt_2d_y_m = {}
+	wpt_2d_idx_m = {}
+	wpt_2d_idx_on_m = {}
+	wpt_2d_num_m = 0
+	
+	x_delay = 0
+	
 --*************************************************************************************--
 --** 				             FIND X-PLANE DATAREFS            			    	 **--
 --*************************************************************************************--
@@ -1693,6 +1709,10 @@ B738DR_eng_out				= find_dataref("laminar/B738/FMS/eng_out")
 B738DR_pfd_flaps_up			= find_dataref("laminar/B738/pfd/flaps_up")
 
 B738DR_alt_hold_mem 		= find_dataref("laminar/autopilot/alt_hold_mem")
+
+B738DR_capt_vsd_map_mode	= find_dataref("laminar/B738/EFIS_control/capt/vsd_map")
+B738DR_fo_vsd_map_mode		= find_dataref("laminar/B738/EFIS_control/fo/vsd_map")
+
 
 -- FMOD by AudioBird XP
 B738DR_enable_pax_boarding	= find_dataref("laminar/b738/fmodpack/fmod_pax_boarding_on")
@@ -2362,6 +2382,9 @@ B738DR_fix_rot_2		= create_dataref("laminar/B738/nd/fix_rot_2", "array[5]")
 B738DR_fix_dist_0		= create_dataref("laminar/B738/nd/fix_dist_0", "array[5]")
 B738DR_fix_dist_1		= create_dataref("laminar/B738/nd/fix_dist_1", "array[5]")
 B738DR_fix_dist_2		= create_dataref("laminar/B738/nd/fix_dist_2", "array[5]")
+B738DR_fix_dist_0_nm	= create_dataref("laminar/B738/nd/fix_dist_0_nm", "array[5]")
+B738DR_fix_dist_1_nm	= create_dataref("laminar/B738/nd/fix_dist_1_nm", "array[5]")
+B738DR_fix_dist_2_nm	= create_dataref("laminar/B738/nd/fix_dist_2_nm", "array[5]")
 B738DR_fix_id00			= create_dataref("laminar/B738/nd/fix_id00", "string")
 B738DR_fix_id01			= create_dataref("laminar/B738/nd/fix_id01", "string")
 B738DR_fix_id02			= create_dataref("laminar/B738/nd/fix_id02", "string")
@@ -2397,6 +2420,9 @@ B738DR_fix_fo_rot_2			= create_dataref("laminar/B738/nd/fix_fo_rot_2", "array[5]
 B738DR_fix_fo_dist_0		= create_dataref("laminar/B738/nd/fix_fo_dist_0", "array[5]")
 B738DR_fix_fo_dist_1		= create_dataref("laminar/B738/nd/fix_fo_dist_1", "array[5]")
 B738DR_fix_fo_dist_2		= create_dataref("laminar/B738/nd/fix_fo_dist_2", "array[5]")
+B738DR_fix_fo_dist_0_nm		= create_dataref("laminar/B738/nd/fix_fo_dist_0_nm", "array[5]")
+B738DR_fix_fo_dist_1_nm		= create_dataref("laminar/B738/nd/fix_fo_dist_1_nm", "array[5]")
+B738DR_fix_fo_dist_2_nm		= create_dataref("laminar/B738/nd/fix_fo_dist_2_nm", "array[5]")
 B738DR_fix_fo_id00			= create_dataref("laminar/B738/nd/fix_fo_id00", "string")
 B738DR_fix_fo_id01			= create_dataref("laminar/B738/nd/fix_fo_id01", "string")
 B738DR_fix_fo_id02			= create_dataref("laminar/B738/nd/fix_fo_id02", "string")
@@ -8917,6 +8943,21 @@ function nd_calc_dist2(req_lat, req_lon, req_lat2, req_lon2)
 	local nd_a = math.sin(nd_dlat/2)*math.sin(nd_dlat/2)+math.cos(nd_lat)*math.cos(nd_lat2)*math.sin(nd_dlon/2)*math.sin(nd_dlon/2)
 	local nd_b = 2 * math.atan2(math.sqrt(nd_a), math.sqrt(1-nd_a))
 	local nd_dis = nd_b * 3440.064795	--nm
+	
+	return nd_dis
+end
+
+function nd_calc_dist9(req_lat, req_lon, req_lat2, req_lon2)
+	
+	-- local nd_lat = math.rad(req_lat)
+	-- local nd_lat2 = math.rad(req_lat2)
+	
+	local nd_dlat = math.abs(req_lat2 - req_lat) / 180
+	local nd_dlon = math.abs(req_lon2 - req_lon) / 360
+	
+	local nd_a = 12430 * nd_dlat
+	local nd_b = 24901 * nd_dlon * math.cos(math.rad((req_lat + req_lat2) / 2))
+	local nd_dis = math.sqrt(nd_a * nd_a + nd_b * nd_b)
 	
 	return nd_dis
 end
@@ -18266,6 +18307,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 		elseif page_fix == 1 then
 			local ii = 0
 			local jj = 0
+			local fix_idx = 0
 			if entry == ">DELETE" then
 				if fix_data_num == act_page then
 					fix_data_num = fix_data_num - 1
@@ -18279,52 +18321,57 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					fix_data_num = fix_data_num - 1
 					entry = ""
 				end
-			elseif act_page > fix_data_num then
-				if item_sel > 0 and item_sel<= legs_num2 then
-					-- add new fix from legs
+			else	--if act_page > fix_data_num then
+				fix_idx = act_page
+				if fix_idx > fix_data_num then
 					fix_data_num = fix_data_num + 1
-					fix_data[fix_data_num] = {}
-					fix_data[fix_data_num][1] = legs_data2[item_sel][1]
-					fix_data[fix_data_num][2] = legs_data2[item_sel][36] -- navaid type: 1-VOR, 2-VOR TAG, 3-NDB, 4-WPT, 5-DME, 9-APT (legs_data2[item_sel][1])
-					fix_data[fix_data_num][3] = legs_data2[item_sel][7]
-					fix_data[fix_data_num][4] = legs_data2[item_sel][8]
-					fix_data[fix_data_num][5] = legs_data2[item_sel][16]	-- reg code
-					fix_data[fix_data_num][6] = -1
-					fix_data[fix_data_num][7] = -1
-					fix_data[fix_data_num][8] = -1
-					fix_data[fix_data_num][9] = -1
-					fix_data[fix_data_num][10] = -1
-					fix_data[fix_data_num][11] = -1
+					fix_idx = fix_data_num
+				end
+				if item_sel > 0 and item_sel <= legs_num2 then
+					-- add new fix from legs
+					--fix_data_num = fix_data_num + 1
+					fix_data[fix_idx] = {}
+					fix_data[fix_idx][1] = legs_data2[item_sel][1]
+					fix_data[fix_idx][2] = legs_data2[item_sel][36] -- navaid type: 1-VOR, 2-VOR TAG, 3-NDB, 4-WPT, 5-DME, 9-APT (legs_data2[item_sel2][1])
+					fix_data[fix_idx][3] = legs_data2[item_sel][7]
+					fix_data[fix_idx][4] = legs_data2[item_sel][8]
+					fix_data[fix_idx][5] = legs_data2[item_sel][16]	-- reg code
+					fix_data[fix_idx][6] = -1
+					fix_data[fix_idx][7] = -1
+					fix_data[fix_idx][8] = -1
+					fix_data[fix_idx][9] = -1
+					fix_data[fix_idx][10] = -1
+					fix_data[fix_idx][11] = -1
 					-- 1. radial
-					fix_data[fix_data_num][12] = 0	-- wpt before
-					fix_data[fix_data_num][13] = 0	-- dist before
-					fix_data[fix_data_num][14] = 0	-- lat
-					fix_data[fix_data_num][15] = 0	-- lon
-					fix_data[fix_data_num][16] = 0	-- dist calc
-					fix_data[fix_data_num][17] = 0	-- rad calc
-					fix_data[fix_data_num][18] = 0	-- eta calc
-					fix_data[fix_data_num][19] = 0	-- dtg calc
-					fix_data[fix_data_num][20] = 0	-- alt calc
+					fix_data[fix_idx][12] = 0	-- wpt before
+					fix_data[fix_idx][13] = 0	-- dist before
+					fix_data[fix_idx][14] = 0	-- lat
+					fix_data[fix_idx][15] = 0	-- lon
+					fix_data[fix_idx][16] = 0	-- dist calc
+					fix_data[fix_idx][17] = 0	-- rad calc
+					fix_data[fix_idx][18] = 0	-- eta calc
+					fix_data[fix_idx][19] = 0	-- dtg calc
+					fix_data[fix_idx][20] = 0	-- alt calc
 					-- 2. radial
-					fix_data[fix_data_num][21] = 0	-- wpt before
-					fix_data[fix_data_num][22] = 0	-- dist before
-					fix_data[fix_data_num][23] = 0	-- lat
-					fix_data[fix_data_num][24] = 0	-- lon
-					fix_data[fix_data_num][25] = 0	-- dist calc
-					fix_data[fix_data_num][26] = 0	-- rad calc
-					fix_data[fix_data_num][27] = 0	-- eta calc
-					fix_data[fix_data_num][28] = 0	-- dtg calc
-					fix_data[fix_data_num][29] = 0	-- alt calc
+					fix_data[fix_idx][21] = 0	-- wpt before
+					fix_data[fix_idx][22] = 0	-- dist before
+					fix_data[fix_idx][23] = 0	-- lat
+					fix_data[fix_idx][24] = 0	-- lon
+					fix_data[fix_idx][25] = 0	-- dist calc
+					fix_data[fix_idx][26] = 0	-- rad calc
+					fix_data[fix_idx][27] = 0	-- eta calc
+					fix_data[fix_idx][28] = 0	-- dtg calc
+					fix_data[fix_idx][29] = 0	-- alt calc
 					-- 3. radial
-					fix_data[fix_data_num][30] = 0	-- wpt before
-					fix_data[fix_data_num][31] = 0	-- dist before
-					fix_data[fix_data_num][32] = 0	-- lat
-					fix_data[fix_data_num][33] = 0	-- lon
-					fix_data[fix_data_num][34] = 0	-- dist calc
-					fix_data[fix_data_num][35] = 0	-- rad calc
-					fix_data[fix_data_num][36] = 0	-- eta calc
-					fix_data[fix_data_num][37] = 0	-- dtg calc
-					fix_data[fix_data_num][38] = 0	-- alt calc
+					fix_data[fix_idx][30] = 0	-- wpt before
+					fix_data[fix_idx][31] = 0	-- dist before
+					fix_data[fix_idx][32] = 0	-- lat
+					fix_data[fix_idx][33] = 0	-- lon
+					fix_data[fix_idx][34] = 0	-- dist calc
+					fix_data[fix_idx][35] = 0	-- rad calc
+					fix_data[fix_idx][36] = 0	-- eta calc
+					fix_data[fix_idx][37] = 0	-- dtg calc
+					fix_data[fix_idx][38] = 0	-- alt calc
 					item_sel = 0
 					item_sel_act = 0
 					entry = ""
@@ -18335,52 +18382,154 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						entry = ""
 						add_fmc_msg(NOT_IN_DATABASE, 1)
 					else
-						fix_data_num = fix_data_num + 1
-						fix_data[fix_data_num] = {}
-						fix_data[fix_data_num][1] = entry
-						fix_data[fix_data_num][2] = navaid_list[1][1]	-- type
-						fix_data[fix_data_num][3] = navaid_list[1][2]	-- lat
-						fix_data[fix_data_num][4] = navaid_list[1][3]	-- lon
-						fix_data[fix_data_num][5] = navaid_list[1][8]	-- reg code
-						fix_data[fix_data_num][6] = -1	-- rad1
-						fix_data[fix_data_num][7] = -1	-- dist1
-						fix_data[fix_data_num][8] = -1	-- rad2
-						fix_data[fix_data_num][9] = -1	-- dist2
-						fix_data[fix_data_num][10] = -1	-- rad3
-						fix_data[fix_data_num][11] = -1	-- dist3
+						--fix_data_num = fix_data_num + 1
+						fix_data[fix_idx] = {}
+						fix_data[fix_idx][1] = entry
+						fix_data[fix_idx][2] = navaid_list[1][1]	-- type
+						fix_data[fix_idx][3] = navaid_list[1][2]	-- lat
+						fix_data[fix_idx][4] = navaid_list[1][3]	-- lon
+						fix_data[fix_idx][5] = navaid_list[1][8]	-- reg code
+						fix_data[fix_idx][6] = -1	-- rad1
+						fix_data[fix_idx][7] = -1	-- dist1
+						fix_data[fix_idx][8] = -1	-- rad2
+						fix_data[fix_idx][9] = -1	-- dist2
+						fix_data[fix_idx][10] = -1	-- rad3
+						fix_data[fix_idx][11] = -1	-- dist3
 						-- 1. radial
-						fix_data[fix_data_num][12] = 0	-- wpt before
-						fix_data[fix_data_num][13] = 0	-- dist before
-						fix_data[fix_data_num][14] = 0	-- lat
-						fix_data[fix_data_num][15] = 0	-- lon
-						fix_data[fix_data_num][16] = 0	-- dist calc
-						fix_data[fix_data_num][17] = 0	-- rad calc
-						fix_data[fix_data_num][18] = 0	-- eta calc
-						fix_data[fix_data_num][19] = 0	-- dtg calc
-						fix_data[fix_data_num][20] = 0	-- alt calc
+						fix_data[fix_idx][12] = 0	-- wpt before
+						fix_data[fix_idx][13] = 0	-- dist before
+						fix_data[fix_idx][14] = 0	-- lat
+						fix_data[fix_idx][15] = 0	-- lon
+						fix_data[fix_idx][16] = 0	-- dist calc
+						fix_data[fix_idx][17] = 0	-- rad calc
+						fix_data[fix_idx][18] = 0	-- eta calc
+						fix_data[fix_idx][19] = 0	-- dtg calc
+						fix_data[fix_idx][20] = 0	-- alt calc
 						-- 2. radial
-						fix_data[fix_data_num][21] = 0	-- wpt before
-						fix_data[fix_data_num][22] = 0	-- dist before
-						fix_data[fix_data_num][23] = 0	-- lat
-						fix_data[fix_data_num][24] = 0	-- lon
-						fix_data[fix_data_num][25] = 0	-- dist calc
-						fix_data[fix_data_num][26] = 0	-- rad calc
-						fix_data[fix_data_num][27] = 0	-- eta calc
-						fix_data[fix_data_num][28] = 0	-- dtg calc
-						fix_data[fix_data_num][29] = 0	-- alt calc
+						fix_data[fix_idx][21] = 0	-- wpt before
+						fix_data[fix_idx][22] = 0	-- dist before
+						fix_data[fix_idx][23] = 0	-- lat
+						fix_data[fix_idx][24] = 0	-- lon
+						fix_data[fix_idx][25] = 0	-- dist calc
+						fix_data[fix_idx][26] = 0	-- rad calc
+						fix_data[fix_idx][27] = 0	-- eta calc
+						fix_data[fix_idx][28] = 0	-- dtg calc
+						fix_data[fix_idx][29] = 0	-- alt calc
 						-- 3. radial
-						fix_data[fix_data_num][30] = 0	-- wpt before
-						fix_data[fix_data_num][31] = 0	-- dist before
-						fix_data[fix_data_num][32] = 0	-- lat
-						fix_data[fix_data_num][33] = 0	-- lon
-						fix_data[fix_data_num][34] = 0	-- dist calc
-						fix_data[fix_data_num][35] = 0	-- rad calc
-						fix_data[fix_data_num][36] = 0	-- eta calc
-						fix_data[fix_data_num][37] = 0	-- dtg calc
-						fix_data[fix_data_num][38] = 0	-- alt calc
+						fix_data[fix_idx][30] = 0	-- wpt before
+						fix_data[fix_idx][31] = 0	-- dist before
+						fix_data[fix_idx][32] = 0	-- lat
+						fix_data[fix_idx][33] = 0	-- lon
+						fix_data[fix_idx][34] = 0	-- dist calc
+						fix_data[fix_idx][35] = 0	-- rad calc
+						fix_data[fix_idx][36] = 0	-- eta calc
+						fix_data[fix_idx][37] = 0	-- dtg calc
+						fix_data[fix_idx][38] = 0	-- alt calc
 						entry = ""
 					end
 				end
+				
+				-- if item_sel > 0 and item_sel<= legs_num2 then
+					-- -- add new fix from legs
+					-- fix_data_num = fix_data_num + 1
+					-- fix_data[fix_data_num] = {}
+					-- fix_data[fix_data_num][1] = legs_data2[item_sel][1]
+					-- fix_data[fix_data_num][2] = legs_data2[item_sel][36] -- navaid type: 1-VOR, 2-VOR TAG, 3-NDB, 4-WPT, 5-DME, 9-APT (legs_data2[item_sel][1])
+					-- fix_data[fix_data_num][3] = legs_data2[item_sel][7]
+					-- fix_data[fix_data_num][4] = legs_data2[item_sel][8]
+					-- fix_data[fix_data_num][5] = legs_data2[item_sel][16]	-- reg code
+					-- fix_data[fix_data_num][6] = -1
+					-- fix_data[fix_data_num][7] = -1
+					-- fix_data[fix_data_num][8] = -1
+					-- fix_data[fix_data_num][9] = -1
+					-- fix_data[fix_data_num][10] = -1
+					-- fix_data[fix_data_num][11] = -1
+					-- -- 1. radial
+					-- fix_data[fix_data_num][12] = 0	-- wpt before
+					-- fix_data[fix_data_num][13] = 0	-- dist before
+					-- fix_data[fix_data_num][14] = 0	-- lat
+					-- fix_data[fix_data_num][15] = 0	-- lon
+					-- fix_data[fix_data_num][16] = 0	-- dist calc
+					-- fix_data[fix_data_num][17] = 0	-- rad calc
+					-- fix_data[fix_data_num][18] = 0	-- eta calc
+					-- fix_data[fix_data_num][19] = 0	-- dtg calc
+					-- fix_data[fix_data_num][20] = 0	-- alt calc
+					-- -- 2. radial
+					-- fix_data[fix_data_num][21] = 0	-- wpt before
+					-- fix_data[fix_data_num][22] = 0	-- dist before
+					-- fix_data[fix_data_num][23] = 0	-- lat
+					-- fix_data[fix_data_num][24] = 0	-- lon
+					-- fix_data[fix_data_num][25] = 0	-- dist calc
+					-- fix_data[fix_data_num][26] = 0	-- rad calc
+					-- fix_data[fix_data_num][27] = 0	-- eta calc
+					-- fix_data[fix_data_num][28] = 0	-- dtg calc
+					-- fix_data[fix_data_num][29] = 0	-- alt calc
+					-- -- 3. radial
+					-- fix_data[fix_data_num][30] = 0	-- wpt before
+					-- fix_data[fix_data_num][31] = 0	-- dist before
+					-- fix_data[fix_data_num][32] = 0	-- lat
+					-- fix_data[fix_data_num][33] = 0	-- lon
+					-- fix_data[fix_data_num][34] = 0	-- dist calc
+					-- fix_data[fix_data_num][35] = 0	-- rad calc
+					-- fix_data[fix_data_num][36] = 0	-- eta calc
+					-- fix_data[fix_data_num][37] = 0	-- dtg calc
+					-- fix_data[fix_data_num][38] = 0	-- alt calc
+					-- item_sel = 0
+					-- item_sel_act = 0
+					-- entry = ""
+				-- else
+					-- -- add new fix from sel desires
+					-- find_navaid(entry, "", 0, "")
+					-- if navaid_list_n == 0 then
+						-- entry = ""
+						-- add_fmc_msg(NOT_IN_DATABASE, 1)
+					-- else
+						-- fix_data_num = fix_data_num + 1
+						-- fix_data[fix_data_num] = {}
+						-- fix_data[fix_data_num][1] = entry
+						-- fix_data[fix_data_num][2] = navaid_list[1][1]	-- type
+						-- fix_data[fix_data_num][3] = navaid_list[1][2]	-- lat
+						-- fix_data[fix_data_num][4] = navaid_list[1][3]	-- lon
+						-- fix_data[fix_data_num][5] = navaid_list[1][8]	-- reg code
+						-- fix_data[fix_data_num][6] = -1	-- rad1
+						-- fix_data[fix_data_num][7] = -1	-- dist1
+						-- fix_data[fix_data_num][8] = -1	-- rad2
+						-- fix_data[fix_data_num][9] = -1	-- dist2
+						-- fix_data[fix_data_num][10] = -1	-- rad3
+						-- fix_data[fix_data_num][11] = -1	-- dist3
+						-- -- 1. radial
+						-- fix_data[fix_data_num][12] = 0	-- wpt before
+						-- fix_data[fix_data_num][13] = 0	-- dist before
+						-- fix_data[fix_data_num][14] = 0	-- lat
+						-- fix_data[fix_data_num][15] = 0	-- lon
+						-- fix_data[fix_data_num][16] = 0	-- dist calc
+						-- fix_data[fix_data_num][17] = 0	-- rad calc
+						-- fix_data[fix_data_num][18] = 0	-- eta calc
+						-- fix_data[fix_data_num][19] = 0	-- dtg calc
+						-- fix_data[fix_data_num][20] = 0	-- alt calc
+						-- -- 2. radial
+						-- fix_data[fix_data_num][21] = 0	-- wpt before
+						-- fix_data[fix_data_num][22] = 0	-- dist before
+						-- fix_data[fix_data_num][23] = 0	-- lat
+						-- fix_data[fix_data_num][24] = 0	-- lon
+						-- fix_data[fix_data_num][25] = 0	-- dist calc
+						-- fix_data[fix_data_num][26] = 0	-- rad calc
+						-- fix_data[fix_data_num][27] = 0	-- eta calc
+						-- fix_data[fix_data_num][28] = 0	-- dtg calc
+						-- fix_data[fix_data_num][29] = 0	-- alt calc
+						-- -- 3. radial
+						-- fix_data[fix_data_num][30] = 0	-- wpt before
+						-- fix_data[fix_data_num][31] = 0	-- dist before
+						-- fix_data[fix_data_num][32] = 0	-- lat
+						-- fix_data[fix_data_num][33] = 0	-- lon
+						-- fix_data[fix_data_num][34] = 0	-- dist calc
+						-- fix_data[fix_data_num][35] = 0	-- rad calc
+						-- fix_data[fix_data_num][36] = 0	-- eta calc
+						-- fix_data[fix_data_num][37] = 0	-- dtg calc
+						-- fix_data[fix_data_num][38] = 0	-- alt calc
+						-- entry = ""
+					-- end
+				-- end
 			end
 		elseif page_legs == 1 then
 			
@@ -29599,12 +29748,100 @@ end
 
 
 -- FMC BUTTON PREVIOUS and NEXT PAGE
+-- function B738_fmc2_prev_page_CMDhandler(phase, duration)
+	-- if phase == 0 then
+		-- B738DR_fms_key = 1
+		
+		-- if act_page2 > 1 then
+			-- act_page2 = act_page2 - 1
+			-- if page_init2 ~= 0 then
+				-- page_init2 = act_page2
+			-- elseif page_ident2 ~= 0 then
+				-- page_ident2 = act_page2
+			-- elseif page_takeoff2 ~= 0 then
+				-- page_takeoff2 = act_page2
+			-- elseif page_approach2 ~= 0 then
+				-- page_approach2 = act_page2
+			-- elseif page_perf2 ~= 0 then
+				-- page_perf2 = act_page2
+			-- elseif page_n1_limit2~= 0 then
+				-- page_n1_limit2 = act_page2
+			-- elseif page_pos_init2 ~= 0 then
+				-- page_pos_init2 = act_page2
+			-- elseif page_progress2 ~= 0 then
+				-- page_progress2 = act_page2
+			-- elseif page_xtras_fmod2 ~= 0 then
+				-- page_xtras_fmod2 = act_page2
+			-- elseif page_xtras_others2 ~= 0 then
+				-- page_xtras_others2 = act_page2
+			-- elseif page_xtras2 ~= 0 then
+				-- page_xtras2 = act_page2
+			-- elseif page_legs2 == 1 then
+				-- if B738DR_fo_map_mode == 3 then
+					-- legs_step2 = offset + (5 * (act_page2 - 1))
+				-- end
+			-- elseif page_offset2 ~= 0 then
+				-- page_offset2 = act_page2
+			-- end
+		-- end
+		
+	-- elseif phase == 2 then
+		-- B738DR_fms_key = 0
+	-- end
+-- end
+-- function B738_fmc2_next_page_CMDhandler(phase, duration)
+	-- if phase == 0 then
+		-- B738DR_fms_key = 1
+		
+		-- if act_page2 < max_page2 then
+			-- act_page2 = act_page2 + 1
+			-- if page_init2 ~= 0 then
+				-- page_init2 = act_page2
+			-- elseif page_ident2 ~= 0 then
+				-- page_ident2 = act_page2
+			-- elseif page_takeoff2 ~= 0 then
+				-- page_takeoff2 = act_page2
+			-- elseif page_approach2 ~= 0 then
+				-- page_approach2 = act_page2
+			-- elseif page_perf2 ~= 0 then
+				-- page_perf2 = act_page2
+			-- elseif page_n1_limit2 ~= 0 then
+				-- page_n1_limit2 = act_page2
+			-- elseif page_pos_init2 ~= 0 then
+				-- page_pos_init2 = act_page2
+			-- elseif page_xtras_fmod2 ~= 0 then
+				-- page_xtras_fmod2 = act_page2
+			-- elseif page_xtras2 ~= 0 then
+				-- page_xtras2 = act_page2
+			-- elseif page_xtras_others2 ~= 0 then
+				-- page_xtras_others2 = act_page2
+			-- elseif page_progress2 ~= 0 then
+				-- page_progress2 = act_page2
+			-- elseif page_legs2 == 1 then
+				-- if B738DR_fo_map_mode == 3 then
+					-- legs_step2 = offset + (5 * (act_page2 - 1))
+				-- end
+			-- elseif page_offset2 ~= 0 then
+				-- page_offset2 = act_page2
+			-- end
+			
+		-- end
+		
+	-- elseif phase == 2 then
+		-- B738DR_fms_key = 0
+	-- end
+-- end
+
 function B738_fmc2_prev_page_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_fms_key = 1
 		
-		if act_page2 > 1 then
+			local act_page_bck = act_page2
 			act_page2 = act_page2 - 1
+			if act_page2 < 1 then
+				act_page2 = max_page2
+			end
+			
 			if page_init2 ~= 0 then
 				page_init2 = act_page2
 			elseif page_ident2 ~= 0 then
@@ -29615,7 +29852,7 @@ function B738_fmc2_prev_page_CMDhandler(phase, duration)
 				page_approach2 = act_page2
 			elseif page_perf2 ~= 0 then
 				page_perf2 = act_page2
-			elseif page_n1_limit2~= 0 then
+			elseif page_n1_limit2 ~= 0 then
 				page_n1_limit2 = act_page2
 			elseif page_pos_init2 ~= 0 then
 				page_pos_init2 = act_page2
@@ -29623,6 +29860,16 @@ function B738_fmc2_prev_page_CMDhandler(phase, duration)
 				page_progress2 = act_page2
 			elseif page_xtras_fmod2 ~= 0 then
 				page_xtras_fmod2 = act_page2
+			elseif page_fmod_features2 ~= 0 then
+				page_fmod_features2 = act_page2
+			elseif page_fmod_volumes2 ~= 0 then
+				page_fmod_volumes2 = act_page2
+			elseif page_fmod_announ2 ~= 0 then
+				page_fmod_announ2 = act_page2
+			elseif page_fmod_eq2 ~= 0 then
+				page_fmod_eq2 = act_page2
+			elseif page_fmod_flight_ctrl2 ~= 0 then
+				page_fmod_flight_ctrl2 = act_page2
 			elseif page_xtras_others2 ~= 0 then
 				page_xtras_others2 = act_page2
 			elseif page_xtras2 ~= 0 then
@@ -29633,19 +29880,33 @@ function B738_fmc2_prev_page_CMDhandler(phase, duration)
 				end
 			elseif page_offset2 ~= 0 then
 				page_offset2 = act_page2
+			elseif page_hold2 ~= 0 then
+				if hold_exec ~= 0 then
+					act_page2 = act_page_bck
+				end
+			elseif page_ac2 ~= 0 then
+				page_ac2 = act_page2
+			elseif page_ac_atis2 ~= 0 then
+				page_ac_atis2 = act_page2
 			end
-		end
 		
 	elseif phase == 2 then
 		B738DR_fms_key = 0
 	end
 end
+
+
+
 function B738_fmc2_next_page_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_fms_key = 1
 		
-		if act_page2 < max_page2 then
+			local act_page_bck = act_page2
 			act_page2 = act_page2 + 1
+			if act_page2 > max_page2 then
+				act_page2 = 1
+			end
+			
 			if page_init2 ~= 0 then
 				page_init2 = act_page2
 			elseif page_ident2 ~= 0 then
@@ -29662,6 +29923,16 @@ function B738_fmc2_next_page_CMDhandler(phase, duration)
 				page_pos_init2 = act_page2
 			elseif page_xtras_fmod2 ~= 0 then
 				page_xtras_fmod2 = act_page2
+			elseif page_fmod_features2 ~= 0 then
+				page_fmod_features2 = act_page2
+			elseif page_fmod_volumes2 ~= 0 then
+				page_fmod_volumes2 = act_page2
+			elseif page_fmod_announ2 ~= 0 then
+				page_fmod_announ2 = act_page2
+			elseif page_fmod_eq2 ~= 0 then
+				page_fmod_eq2 = act_page2
+			elseif page_fmod_flight_ctrl2 ~= 0 then
+				page_fmod_flight_ctrl2 = act_page2
 			elseif page_xtras2 ~= 0 then
 				page_xtras2 = act_page2
 			elseif page_xtras_others2 ~= 0 then
@@ -29674,14 +29945,22 @@ function B738_fmc2_next_page_CMDhandler(phase, duration)
 				end
 			elseif page_offset2 ~= 0 then
 				page_offset2 = act_page2
+			elseif page_hold2 ~= 0 then
+				if hold_exec ~= 0 then
+					act_page2 = act_page_bck
+				end
+			elseif page_ac2 ~= 0 then
+				page_ac2 = act_page2
+			elseif page_ac_atis2 ~= 0 then
+				page_ac_atis2 = act_page2
 			end
 			
-		end
 		
 	elseif phase == 2 then
 		B738DR_fms_key = 0
 	end
 end
+
 
 -------------------
 -- LSK/RSK buttons
@@ -29962,6 +30241,7 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 		elseif page_fix2 == 1 then
 			local ii = 0
 			local jj = 0
+			local fix_idx = 0
 			if entry2 == ">DELETE" then
 				if fix_data_num == act_page2 then
 					fix_data_num = fix_data_num - 1
@@ -29975,52 +30255,57 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 					fix_data_num = fix_data_num - 1
 					entry2 = ""
 				end
-			elseif act_page2 > fix_data_num then
-				if item_sel2 > 0 and item_sel2<= legs_num2 then
-					-- add new fix from legs
+			else	--if act_page2 > fix_data_num then
+				fix_idx = act_page2
+				if fix_idx > fix_data_num then
 					fix_data_num = fix_data_num + 1
-					fix_data[fix_data_num] = {}
-					fix_data[fix_data_num][1] = legs_data2[item_sel2][1]
-					fix_data[fix_data_num][2] = legs_data2[item_sel2][36] -- navaid type: 1-VOR, 2-VOR TAG, 3-NDB, 4-WPT, 5-DME, 9-APT (legs_data2[item_sel2][1])
-					fix_data[fix_data_num][3] = legs_data2[item_sel2][7]
-					fix_data[fix_data_num][4] = legs_data2[item_sel2][8]
-					fix_data[fix_data_num][5] = legs_data2[item_sel2][16]	-- reg code
-					fix_data[fix_data_num][6] = -1
-					fix_data[fix_data_num][7] = -1
-					fix_data[fix_data_num][8] = -1
-					fix_data[fix_data_num][9] = -1
-					fix_data[fix_data_num][10] = -1
-					fix_data[fix_data_num][11] = -1
+					fix_idx = fix_data_num
+				end
+				if item_sel2 > 0 and item_sel2 <= legs_num2 then
+					-- add new fix from legs
+					--fix_data_num = fix_data_num + 1
+					fix_data[fix_idx] = {}
+					fix_data[fix_idx][1] = legs_data2[item_sel2][1]
+					fix_data[fix_idx][2] = legs_data2[item_sel2][36] -- navaid type: 1-VOR, 2-VOR TAG, 3-NDB, 4-WPT, 5-DME, 9-APT (legs_data2[item_sel2][1])
+					fix_data[fix_idx][3] = legs_data2[item_sel2][7]
+					fix_data[fix_idx][4] = legs_data2[item_sel2][8]
+					fix_data[fix_idx][5] = legs_data2[item_sel2][16]	-- reg code
+					fix_data[fix_idx][6] = -1
+					fix_data[fix_idx][7] = -1
+					fix_data[fix_idx][8] = -1
+					fix_data[fix_idx][9] = -1
+					fix_data[fix_idx][10] = -1
+					fix_data[fix_idx][11] = -1
 					-- 1. radial
-					fix_data[fix_data_num][12] = 0	-- wpt before
-					fix_data[fix_data_num][13] = 0	-- dist before
-					fix_data[fix_data_num][14] = 0	-- lat
-					fix_data[fix_data_num][15] = 0	-- lon
-					fix_data[fix_data_num][16] = 0	-- dist calc
-					fix_data[fix_data_num][17] = 0	-- rad calc
-					fix_data[fix_data_num][18] = 0	-- eta calc
-					fix_data[fix_data_num][19] = 0	-- dtg calc
-					fix_data[fix_data_num][20] = 0	-- alt calc
+					fix_data[fix_idx][12] = 0	-- wpt before
+					fix_data[fix_idx][13] = 0	-- dist before
+					fix_data[fix_idx][14] = 0	-- lat
+					fix_data[fix_idx][15] = 0	-- lon
+					fix_data[fix_idx][16] = 0	-- dist calc
+					fix_data[fix_idx][17] = 0	-- rad calc
+					fix_data[fix_idx][18] = 0	-- eta calc
+					fix_data[fix_idx][19] = 0	-- dtg calc
+					fix_data[fix_idx][20] = 0	-- alt calc
 					-- 2. radial
-					fix_data[fix_data_num][21] = 0	-- wpt before
-					fix_data[fix_data_num][22] = 0	-- dist before
-					fix_data[fix_data_num][23] = 0	-- lat
-					fix_data[fix_data_num][24] = 0	-- lon
-					fix_data[fix_data_num][25] = 0	-- dist calc
-					fix_data[fix_data_num][26] = 0	-- rad calc
-					fix_data[fix_data_num][27] = 0	-- eta calc
-					fix_data[fix_data_num][28] = 0	-- dtg calc
-					fix_data[fix_data_num][29] = 0	-- alt calc
+					fix_data[fix_idx][21] = 0	-- wpt before
+					fix_data[fix_idx][22] = 0	-- dist before
+					fix_data[fix_idx][23] = 0	-- lat
+					fix_data[fix_idx][24] = 0	-- lon
+					fix_data[fix_idx][25] = 0	-- dist calc
+					fix_data[fix_idx][26] = 0	-- rad calc
+					fix_data[fix_idx][27] = 0	-- eta calc
+					fix_data[fix_idx][28] = 0	-- dtg calc
+					fix_data[fix_idx][29] = 0	-- alt calc
 					-- 3. radial
-					fix_data[fix_data_num][30] = 0	-- wpt before
-					fix_data[fix_data_num][31] = 0	-- dist before
-					fix_data[fix_data_num][32] = 0	-- lat
-					fix_data[fix_data_num][33] = 0	-- lon
-					fix_data[fix_data_num][34] = 0	-- dist calc
-					fix_data[fix_data_num][35] = 0	-- rad calc
-					fix_data[fix_data_num][36] = 0	-- eta calc
-					fix_data[fix_data_num][37] = 0	-- dtg calc
-					fix_data[fix_data_num][38] = 0	-- alt calc
+					fix_data[fix_idx][30] = 0	-- wpt before
+					fix_data[fix_idx][31] = 0	-- dist before
+					fix_data[fix_idx][32] = 0	-- lat
+					fix_data[fix_idx][33] = 0	-- lon
+					fix_data[fix_idx][34] = 0	-- dist calc
+					fix_data[fix_idx][35] = 0	-- rad calc
+					fix_data[fix_idx][36] = 0	-- eta calc
+					fix_data[fix_idx][37] = 0	-- dtg calc
+					fix_data[fix_idx][38] = 0	-- alt calc
 					item_sel2 = 0
 					item_sel_act2 = 0
 					entry2 = ""
@@ -30031,52 +30316,154 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 						entry2 = ""
 						add_fmc_msg(NOT_IN_DATABASE, 1)
 					else
-						fix_data_num = fix_data_num + 1
-						fix_data[fix_data_num] = {}
-						fix_data[fix_data_num][1] = entry2
-						fix_data[fix_data_num][2] = navaid_list[1][1]	-- type
-						fix_data[fix_data_num][3] = navaid_list[1][2]	-- lat
-						fix_data[fix_data_num][4] = navaid_list[1][3]	-- lon
-						fix_data[fix_data_num][5] = navaid_list[1][8]	-- reg code
-						fix_data[fix_data_num][6] = -1	-- rad1
-						fix_data[fix_data_num][7] = -1	-- dist1
-						fix_data[fix_data_num][8] = -1	-- rad2
-						fix_data[fix_data_num][9] = -1	-- dist2
-						fix_data[fix_data_num][10] = -1	-- rad3
-						fix_data[fix_data_num][11] = -1	-- dist3
+						--fix_data_num = fix_data_num + 1
+						fix_data[fix_idx] = {}
+						fix_data[fix_idx][1] = entry2
+						fix_data[fix_idx][2] = navaid_list[1][1]	-- type
+						fix_data[fix_idx][3] = navaid_list[1][2]	-- lat
+						fix_data[fix_idx][4] = navaid_list[1][3]	-- lon
+						fix_data[fix_idx][5] = navaid_list[1][8]	-- reg code
+						fix_data[fix_idx][6] = -1	-- rad1
+						fix_data[fix_idx][7] = -1	-- dist1
+						fix_data[fix_idx][8] = -1	-- rad2
+						fix_data[fix_idx][9] = -1	-- dist2
+						fix_data[fix_idx][10] = -1	-- rad3
+						fix_data[fix_idx][11] = -1	-- dist3
 						-- 1. radial
-						fix_data[fix_data_num][12] = 0	-- wpt before
-						fix_data[fix_data_num][13] = 0	-- dist before
-						fix_data[fix_data_num][14] = 0	-- lat
-						fix_data[fix_data_num][15] = 0	-- lon
-						fix_data[fix_data_num][16] = 0	-- dist calc
-						fix_data[fix_data_num][17] = 0	-- rad calc
-						fix_data[fix_data_num][18] = 0	-- eta calc
-						fix_data[fix_data_num][19] = 0	-- dtg calc
-						fix_data[fix_data_num][20] = 0	-- alt calc
+						fix_data[fix_idx][12] = 0	-- wpt before
+						fix_data[fix_idx][13] = 0	-- dist before
+						fix_data[fix_idx][14] = 0	-- lat
+						fix_data[fix_idx][15] = 0	-- lon
+						fix_data[fix_idx][16] = 0	-- dist calc
+						fix_data[fix_idx][17] = 0	-- rad calc
+						fix_data[fix_idx][18] = 0	-- eta calc
+						fix_data[fix_idx][19] = 0	-- dtg calc
+						fix_data[fix_idx][20] = 0	-- alt calc
 						-- 2. radial
-						fix_data[fix_data_num][21] = 0	-- wpt before
-						fix_data[fix_data_num][22] = 0	-- dist before
-						fix_data[fix_data_num][23] = 0	-- lat
-						fix_data[fix_data_num][24] = 0	-- lon
-						fix_data[fix_data_num][25] = 0	-- dist calc
-						fix_data[fix_data_num][26] = 0	-- rad calc
-						fix_data[fix_data_num][27] = 0	-- eta calc
-						fix_data[fix_data_num][28] = 0	-- dtg calc
-						fix_data[fix_data_num][29] = 0	-- alt calc
+						fix_data[fix_idx][21] = 0	-- wpt before
+						fix_data[fix_idx][22] = 0	-- dist before
+						fix_data[fix_idx][23] = 0	-- lat
+						fix_data[fix_idx][24] = 0	-- lon
+						fix_data[fix_idx][25] = 0	-- dist calc
+						fix_data[fix_idx][26] = 0	-- rad calc
+						fix_data[fix_idx][27] = 0	-- eta calc
+						fix_data[fix_idx][28] = 0	-- dtg calc
+						fix_data[fix_idx][29] = 0	-- alt calc
 						-- 3. radial
-						fix_data[fix_data_num][30] = 0	-- wpt before
-						fix_data[fix_data_num][31] = 0	-- dist before
-						fix_data[fix_data_num][32] = 0	-- lat
-						fix_data[fix_data_num][33] = 0	-- lon
-						fix_data[fix_data_num][34] = 0	-- dist calc
-						fix_data[fix_data_num][35] = 0	-- rad calc
-						fix_data[fix_data_num][36] = 0	-- eta calc
-						fix_data[fix_data_num][37] = 0	-- dtg calc
-						fix_data[fix_data_num][38] = 0	-- alt calc
+						fix_data[fix_idx][30] = 0	-- wpt before
+						fix_data[fix_idx][31] = 0	-- dist before
+						fix_data[fix_idx][32] = 0	-- lat
+						fix_data[fix_idx][33] = 0	-- lon
+						fix_data[fix_idx][34] = 0	-- dist calc
+						fix_data[fix_idx][35] = 0	-- rad calc
+						fix_data[fix_idx][36] = 0	-- eta calc
+						fix_data[fix_idx][37] = 0	-- dtg calc
+						fix_data[fix_idx][38] = 0	-- alt calc
 						entry2 = ""
 					end
 				end
+				
+				-- if item_sel2 > 0 and item_sel2<= legs_num2 then
+					-- -- add new fix from legs
+					-- fix_data_num = fix_data_num + 1
+					-- fix_data[fix_data_num] = {}
+					-- fix_data[fix_data_num][1] = legs_data2[item_sel2][1]
+					-- fix_data[fix_data_num][2] = legs_data2[item_sel2][36] -- navaid type: 1-VOR, 2-VOR TAG, 3-NDB, 4-WPT, 5-DME, 9-APT (legs_data2[item_sel2][1])
+					-- fix_data[fix_data_num][3] = legs_data2[item_sel2][7]
+					-- fix_data[fix_data_num][4] = legs_data2[item_sel2][8]
+					-- fix_data[fix_data_num][5] = legs_data2[item_sel2][16]	-- reg code
+					-- fix_data[fix_data_num][6] = -1
+					-- fix_data[fix_data_num][7] = -1
+					-- fix_data[fix_data_num][8] = -1
+					-- fix_data[fix_data_num][9] = -1
+					-- fix_data[fix_data_num][10] = -1
+					-- fix_data[fix_data_num][11] = -1
+					-- -- 1. radial
+					-- fix_data[fix_data_num][12] = 0	-- wpt before
+					-- fix_data[fix_data_num][13] = 0	-- dist before
+					-- fix_data[fix_data_num][14] = 0	-- lat
+					-- fix_data[fix_data_num][15] = 0	-- lon
+					-- fix_data[fix_data_num][16] = 0	-- dist calc
+					-- fix_data[fix_data_num][17] = 0	-- rad calc
+					-- fix_data[fix_data_num][18] = 0	-- eta calc
+					-- fix_data[fix_data_num][19] = 0	-- dtg calc
+					-- fix_data[fix_data_num][20] = 0	-- alt calc
+					-- -- 2. radial
+					-- fix_data[fix_data_num][21] = 0	-- wpt before
+					-- fix_data[fix_data_num][22] = 0	-- dist before
+					-- fix_data[fix_data_num][23] = 0	-- lat
+					-- fix_data[fix_data_num][24] = 0	-- lon
+					-- fix_data[fix_data_num][25] = 0	-- dist calc
+					-- fix_data[fix_data_num][26] = 0	-- rad calc
+					-- fix_data[fix_data_num][27] = 0	-- eta calc
+					-- fix_data[fix_data_num][28] = 0	-- dtg calc
+					-- fix_data[fix_data_num][29] = 0	-- alt calc
+					-- -- 3. radial
+					-- fix_data[fix_data_num][30] = 0	-- wpt before
+					-- fix_data[fix_data_num][31] = 0	-- dist before
+					-- fix_data[fix_data_num][32] = 0	-- lat
+					-- fix_data[fix_data_num][33] = 0	-- lon
+					-- fix_data[fix_data_num][34] = 0	-- dist calc
+					-- fix_data[fix_data_num][35] = 0	-- rad calc
+					-- fix_data[fix_data_num][36] = 0	-- eta calc
+					-- fix_data[fix_data_num][37] = 0	-- dtg calc
+					-- fix_data[fix_data_num][38] = 0	-- alt calc
+					-- item_sel2 = 0
+					-- item_sel_act2 = 0
+					-- entry2 = ""
+				-- else
+					-- -- add new fix from sel desires
+					-- find_navaid(entry2, "", 0, "")
+					-- if navaid_list_n == 0 then
+						-- entry2 = ""
+						-- add_fmc_msg(NOT_IN_DATABASE, 1)
+					-- else
+						-- fix_data_num = fix_data_num + 1
+						-- fix_data[fix_data_num] = {}
+						-- fix_data[fix_data_num][1] = entry2
+						-- fix_data[fix_data_num][2] = navaid_list[1][1]	-- type
+						-- fix_data[fix_data_num][3] = navaid_list[1][2]	-- lat
+						-- fix_data[fix_data_num][4] = navaid_list[1][3]	-- lon
+						-- fix_data[fix_data_num][5] = navaid_list[1][8]	-- reg code
+						-- fix_data[fix_data_num][6] = -1	-- rad1
+						-- fix_data[fix_data_num][7] = -1	-- dist1
+						-- fix_data[fix_data_num][8] = -1	-- rad2
+						-- fix_data[fix_data_num][9] = -1	-- dist2
+						-- fix_data[fix_data_num][10] = -1	-- rad3
+						-- fix_data[fix_data_num][11] = -1	-- dist3
+						-- -- 1. radial
+						-- fix_data[fix_data_num][12] = 0	-- wpt before
+						-- fix_data[fix_data_num][13] = 0	-- dist before
+						-- fix_data[fix_data_num][14] = 0	-- lat
+						-- fix_data[fix_data_num][15] = 0	-- lon
+						-- fix_data[fix_data_num][16] = 0	-- dist calc
+						-- fix_data[fix_data_num][17] = 0	-- rad calc
+						-- fix_data[fix_data_num][18] = 0	-- eta calc
+						-- fix_data[fix_data_num][19] = 0	-- dtg calc
+						-- fix_data[fix_data_num][20] = 0	-- alt calc
+						-- -- 2. radial
+						-- fix_data[fix_data_num][21] = 0	-- wpt before
+						-- fix_data[fix_data_num][22] = 0	-- dist before
+						-- fix_data[fix_data_num][23] = 0	-- lat
+						-- fix_data[fix_data_num][24] = 0	-- lon
+						-- fix_data[fix_data_num][25] = 0	-- dist calc
+						-- fix_data[fix_data_num][26] = 0	-- rad calc
+						-- fix_data[fix_data_num][27] = 0	-- eta calc
+						-- fix_data[fix_data_num][28] = 0	-- dtg calc
+						-- fix_data[fix_data_num][29] = 0	-- alt calc
+						-- -- 3. radial
+						-- fix_data[fix_data_num][30] = 0	-- wpt before
+						-- fix_data[fix_data_num][31] = 0	-- dist before
+						-- fix_data[fix_data_num][32] = 0	-- lat
+						-- fix_data[fix_data_num][33] = 0	-- lon
+						-- fix_data[fix_data_num][34] = 0	-- dist calc
+						-- fix_data[fix_data_num][35] = 0	-- rad calc
+						-- fix_data[fix_data_num][36] = 0	-- eta calc
+						-- fix_data[fix_data_num][37] = 0	-- dtg calc
+						-- fix_data[fix_data_num][38] = 0	-- alt calc
+						-- entry2 = ""
+					-- end
+				-- end
 			end
 		elseif page_legs2 == 1 then
 			
@@ -50831,13 +51218,6 @@ function B738_displ_acf()
 		
 		-- CAPTAIN
 		if B738DR_capt_map_mode == 3 then
-			-- if legs_step == 0 then
-				-- nd_lat = math.rad(legs_data2[1][7])
-				-- nd_lon = math.rad(legs_data2[1][8])
-			-- else
-				-- nd_lat = math.rad(legs_data2[legs_step][7])
-				-- nd_lon = math.rad(legs_data2[legs_step][8])
-			-- end
 			if legs_step == 0 then
 				nd_lat = legs_data2[1][7]
 				nd_lon = legs_data2[1][8]
@@ -50846,24 +51226,9 @@ function B738_displ_acf()
 				nd_lon = legs_data2[legs_step][8]
 			end
 			mag_hdg = -simDR_mag_variation
-		
-			-- nd_lat2 = nd_lat_acf
-			-- nd_lon2 = nd_lon_acf
-			
-			-- nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
-			
-			-- if nd_dis < 645 then
-				
-				-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-				-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-				-- nd_hdg = math.atan2(nd_y, nd_x)
-				-- nd_hdg = math.deg(nd_hdg)
-				-- nd_hdg = (nd_hdg + 360) % 360
-				
-				-- delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
-				
 			
 			nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat_acf, nd_lon_acf)
+			--nd_dis = nd_calc_dist9(nd_lat, nd_lon, nd_lat_acf, nd_lon_acf)
 			
 			if nd_dis < 645 then
 				
@@ -50940,13 +51305,6 @@ function B738_displ_acf()
 		-- FIRST OFFICER
 		if B738DR_fo_map_mode == 3 then
 			
-			-- if legs_step2 == 0 then
-				-- nd_lat = math.rad(legs_data2[1][7])
-				-- nd_lon = math.rad(legs_data2[1][8])
-			-- else
-				-- nd_lat = math.rad(legs_data2[legs_step2][7])
-				-- nd_lon = math.rad(legs_data2[legs_step2][8])
-			-- end
 			if legs_step2 == 0 then
 				nd_lat = legs_data2[1][7]
 				nd_lon = legs_data2[1][8]
@@ -50956,24 +51314,9 @@ function B738_displ_acf()
 			end
 			
 			mag_hdg = -simDR_mag_variation
-		
-			-- nd_lat2 = nd_lat_acf
-			-- nd_lon2 = nd_lon_acf
-			
-			-- nd_dis = nd_calc_dist2(math.deg(nd_lat), math.deg(nd_lon), math.deg(nd_lat2), math.deg(nd_lon2))
-			
-			-- if nd_dis < 645 then
-				
-				-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-				-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-				-- nd_hdg = math.atan2(nd_y, nd_x)
-				-- nd_hdg = math.deg(nd_hdg)
-				-- nd_hdg = (nd_hdg + 360) % 360
-				
-				-- delta_hdg = ((((nd_hdg - mag_hdg) % 360) + 540) % 360) - 180
-				
 			
 			nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat_acf, nd_lon_acf)
+			--nd_dis = nd_calc_dist9(nd_lat, nd_lon, nd_lat_acf, nd_lon_acf)
 			
 			if nd_dis < 645 then
 				
@@ -51052,7 +51395,6 @@ function B738_displ_acf()
 	end
 	
 end
-
 
 function calc_rel_brg(x_brg1, x_brg2)
 	
@@ -51313,6 +51655,8 @@ function B738_displ_wpt()
 					
 					if B738DR_capt_map_mode == 3 then
 						nd_y = nd_y + 4.1	-- adjust center
+					elseif B738DR_capt_vsd_map_mode == 1 then
+						nd_y = nd_y + 5.1	-- adjust center
 					elseif B738DR_capt_exp_map_mode == 0 then
 						nd_y = nd_y + 4.1	-- adjust center
 					end
@@ -51974,6 +52318,8 @@ function B738_displ_wpt()
 							
 							if B738DR_capt_map_mode == 3 then
 								nd_y = nd_y + 4.1	-- adjust center
+							elseif B738DR_capt_vsd_map_mode == 1 then
+								nd_y = nd_y + 5.1	-- adjust center
 							elseif B738DR_capt_exp_map_mode == 0 then
 								nd_y = nd_y + 4.1	-- adjust center
 							end
@@ -52197,6 +52543,8 @@ function B738_displ_wpt()
 					
 					if B738DR_capt_map_mode == 3 then
 						nd_y = nd_y + 4.1	-- adjust center
+					elseif B738DR_capt_vsd_map_mode == 1 then
+						nd_y = nd_y + 5.1	-- adjust center
 					elseif B738DR_capt_exp_map_mode == 0 then
 						nd_y = nd_y + 4.1	-- adjust center
 					end
@@ -52986,6 +53334,8 @@ function B738_displ_wpt()
 					
 					if B738DR_fo_map_mode == 3 then
 						nd_y = nd_y + 4.1	-- adjust center
+					elseif B738DR_fo_vsd_map_mode == 1 then
+						nd_y = nd_y + 5.1	-- adjust center
 					elseif B738DR_fo_exp_map_mode == 0 then
 						nd_y = nd_y + 4.1	-- adjust center
 					end
@@ -53636,6 +53986,8 @@ function B738_displ_wpt()
 							
 							if B738DR_fo_map_mode == 3 then
 								nd_y = nd_y + 4.1	-- adjust center
+							elseif B738DR_fo_vsd_map_mode == 1 then
+								nd_y = nd_y + 5.1	-- adjust center
 							elseif B738DR_fo_exp_map_mode == 0 then
 								nd_y = nd_y + 4.1	-- adjust center
 							end
@@ -53855,6 +54207,8 @@ function B738_displ_wpt()
 					
 					if B738DR_fo_map_mode == 3 then
 						nd_y = nd_y + 4.1	-- adjust center
+					elseif B738DR_fo_vsd_map_mode == 1 then
+						nd_y = nd_y + 5.1	-- adjust center
 					elseif B738DR_fo_exp_map_mode == 0 then
 						nd_y = nd_y + 4.1	-- adjust center
 					end
@@ -54738,6 +55092,2935 @@ function B738_displ_wpt()
 
 end
 
+function calc_rotation(x0, y0, x1, y1)
+	
+	local deltax = x1 - x0
+	local deltay = y1 - y0
+	local rot = 0
+	
+	if deltax == 0 and deltay == 0 then
+		rot = 0
+	elseif deltax == 0 then
+		if deltay >= 0 then
+			rot = 0
+		else
+			rot = 180
+		end
+	elseif deltay == 0 then
+		if deltax >= 0 then
+			rot = 90
+		else
+			rot = 270
+		end
+	elseif deltax > 0 then
+		if deltay > 0 then
+			rot = math.deg(math.atan(deltax / deltay))
+		else
+			rot = 180 - math.deg(math.atan(deltax / -deltay))
+		end
+	else
+		if deltay > 0 then
+			rot = 360 - math.deg(math.atan(-deltax / deltay))
+		else
+			rot = 180 + math.deg(math.atan(-deltax / -deltay))
+		end
+	end
+	
+	return rot
+end
+
+function calc_wpt_xy(x0, y0, angle0, dist0)
+	
+	local angle_cor = 0
+	local result_x = 0
+	local result_y = 0
+	
+	if angle0 < 90 then
+		angle_cor = math.rad(angle0)
+		result_x = x0 + math.sin(angle_cor) * dist0
+		result_y = y0 + math.cos(angle_cor) * dist0
+	elseif angle0 < 180 then
+		angle_cor = angle0 - 90
+		angle_cor = math.rad(angle_cor)
+		result_x = x0 + math.cos(angle_cor) * dist0
+		result_y = y0 - math.sin(angle_cor) * dist0
+	elseif angle0 < 270 then
+		angle_cor = angle0 - 180
+		angle_cor = math.rad(angle_cor)
+		result_x = x0 - math.sin(angle_cor) * dist0
+		result_y = y0 - math.cos(angle_cor) * dist0
+	elseif angle0 < 360 then
+		angle_cor = angle0 - 270
+		angle_cor = math.rad(angle_cor)
+		result_x = x0 - math.cos(angle_cor) * dist0
+		result_y = y0 + math.sin(angle_cor) * dist0
+	end
+	
+	return result_x, result_y
+	
+end
+
+function disp_type(object, legs_idx, data_status, clr_obj)
+	
+	local wpt_type = 0
+	local txt_white_id = ""
+	local txt_white_alt = ""
+	local txt_white_eta = ""
+	local txt_cyan_id = ""
+	local txt_cyan_alt = ""
+	local txt_cyan_eta = ""
+
+	local tmp_wpt_alt = 0
+	local tmp_wpt_type = 0
+	local wpt_data = 0
+	local tmp_wpt_eta = ""
+	local tmp_wpt_eta2 = 0
+	local tmp_wpt_eta3 = 0
+	
+	if clr_obj == 0 then
+		if legs_idx == offset then
+			txt_white_id = ""
+			txt_white_alt = ""
+			txt_white_eta = ""
+			txt_cyan_id = legs_data[legs_idx][1]
+			txt_cyan_alt = ""
+			txt_cyan_eta = ""
+			if legs_data[legs_idx][13] <= 0 then
+				tmp_wpt_eta = "----Z"
+			else
+				tmp_wpt_eta2 = math.floor(legs_data[legs_idx][13])
+				tmp_wpt_eta3 = (legs_data[legs_idx][13] - tmp_wpt_eta2) * 60
+				tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) --.. "."
+				tmp_wpt_eta = tmp_wpt_eta .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
+				tmp_wpt_eta = tmp_wpt_eta .. "Z"
+			end
+			
+			if legs_data[legs_idx][5] > 0 then
+				tmp_wpt_alt = legs_data[legs_idx][5]
+				tmp_wpt_type = legs_data[legs_idx][6]
+				wpt_data = 1
+			end
+			if wpt_data == 1 then
+				if B738DR_flight_phase < 5 then
+					if tmp_wpt_alt > B738DR_trans_alt then
+						txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+					else
+						txt_cyan_alt = tostring(tmp_wpt_alt)
+					end
+				else
+					if tmp_wpt_alt > B738DR_trans_lvl then
+						txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+					else
+						txt_cyan_alt = tostring(tmp_wpt_alt)
+					end
+				end
+				if tmp_wpt_type == 43 then	-- Above
+					txt_cyan_alt = txt_cyan_alt .. "A"
+				elseif tmp_wpt_type == 45 then	-- Below
+					txt_cyan_alt = txt_cyan_alt .. "B"
+				end
+				if data_status == 1 then
+					txt_cyan_eta = tmp_wpt_eta
+				end
+			else
+				if data_status == 1 then
+					txt_cyan_alt = tmp_wpt_eta
+				end
+			end
+			
+			if legs_data[legs_idx][32] == 0 then
+				wpt_type = 2
+			else
+				wpt_type = 4
+			end
+		else
+			txt_cyan_id = ""
+			txt_cyan_alt = ""
+			txt_cyan_eta = ""
+			txt_white_id = legs_data[legs_idx][1]
+			txt_white_alt = ""
+			txt_white_eta = ""
+			if legs_data[legs_idx][13] <= 0 then
+				tmp_wpt_eta = "----Z"	--"--.--Z"
+			else
+				tmp_wpt_eta2 = math.floor(legs_data[legs_idx][13])
+				tmp_wpt_eta3 = (legs_data[legs_idx][13] - tmp_wpt_eta2) * 60
+				tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) --.. "."
+				tmp_wpt_eta = tmp_wpt_eta .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
+				tmp_wpt_eta = tmp_wpt_eta .. "Z"
+			end
+			
+			wpt_data = 0
+			if legs_data[legs_idx][5] > 0 then
+				tmp_wpt_alt = legs_data[legs_idx][5]
+				tmp_wpt_type = legs_data[legs_idx][6]
+				wpt_data = 1
+			end
+			
+			if wpt_data == 1 then
+				if B738DR_flight_phase < 5 then
+					if tmp_wpt_alt > B738DR_trans_alt then
+						txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+					else
+						txt_white_alt = tostring(tmp_wpt_alt)
+					end
+				else
+					if tmp_wpt_alt > B738DR_trans_lvl then
+						txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+					else
+						txt_white_alt = tostring(tmp_wpt_alt)
+					end
+				end
+				if tmp_wpt_type == 43 then	-- Above
+					txt_white_alt = txt_white_alt .. "A"
+				elseif tmp_wpt_type == 45 then	-- Below
+					txt_white_alt = txt_white_alt .. "B"
+				end
+				if data_status == 1 then
+					txt_white_eta = tmp_wpt_eta
+				end
+			else
+				if data_status == 1 then
+					txt_white_alt = tmp_wpt_eta
+				end
+			end
+			
+			if legs_data[legs_idx][32] == 0 then
+				wpt_type = 1
+			else
+				wpt_type = 3
+			end
+		end
+		
+		if legs_num == 1 then
+			wpt_type = 0
+			txt_white_id = ""
+			txt_white_alt = ""
+			txt_white_eta = ""
+			txt_cyan_id = ""
+			txt_cyan_alt = ""
+			txt_cyan_eta = ""
+		end
+		
+		if legs_data[legs_idx][1] == "VECTOR" then
+			wpt_type = 0
+			txt_white_id = ""
+			txt_white_alt = ""
+			txt_white_eta = ""
+			txt_cyan_id = ""
+			txt_cyan_alt = ""
+			txt_cyan_eta = ""
+		end
+		if legs_data[legs_idx][31] == "HA" or legs_data[legs_idx][31] == "HF" or legs_data[legs_idx][31] == "HM" then
+			if legs_idx ~= offset then
+				wpt_type = 0
+				txt_white_id = ""
+				txt_white_alt = ""
+				txt_white_eta = ""
+				txt_cyan_id = ""
+				txt_cyan_alt = ""
+				txt_cyan_eta = ""
+			end
+		end
+	end
+	
+	if object == 0 then
+		B738DR_wpt_id00w = txt_white_id
+		B738DR_wpt_alt00w = txt_white_alt
+		B738DR_wpt_eta00w = txt_white_eta
+		B738DR_wpt_id00m = txt_cyan_id
+		B738DR_wpt_alt00m = txt_cyan_alt
+		B738DR_wpt_eta00m = txt_cyan_eta
+		B738DR_wpt_type00 = wpt_type
+	elseif object == 1 then
+		B738DR_wpt_id01w = txt_white_id
+		B738DR_wpt_alt01w = txt_white_alt
+		B738DR_wpt_eta01w = txt_white_eta
+		B738DR_wpt_id01m = txt_cyan_id
+		B738DR_wpt_alt01m = txt_cyan_alt
+		B738DR_wpt_eta01m = txt_cyan_eta
+		B738DR_wpt_type01 = wpt_type
+	elseif object == 2 then
+		B738DR_wpt_id02w = txt_white_id
+		B738DR_wpt_alt02w = txt_white_alt
+		B738DR_wpt_eta02w = txt_white_eta
+		B738DR_wpt_id02m = txt_cyan_id
+		B738DR_wpt_alt02m = txt_cyan_alt
+		B738DR_wpt_eta02m = txt_cyan_eta
+		B738DR_wpt_type02 = wpt_type
+	elseif object == 3 then
+		B738DR_wpt_id03w = txt_white_id
+		B738DR_wpt_alt03w = txt_white_alt
+		B738DR_wpt_eta03w = txt_white_eta
+		B738DR_wpt_id03m = txt_cyan_id
+		B738DR_wpt_alt03m = txt_cyan_alt
+		B738DR_wpt_eta03m = txt_cyan_eta
+		B738DR_wpt_type03 = wpt_type
+	elseif object == 4 then
+		B738DR_wpt_id04w = txt_white_id
+		B738DR_wpt_alt04w = txt_white_alt
+		B738DR_wpt_eta04w = txt_white_eta
+		B738DR_wpt_id04m = txt_cyan_id
+		B738DR_wpt_alt04m = txt_cyan_alt
+		B738DR_wpt_eta04m = txt_cyan_eta
+		B738DR_wpt_type04 = wpt_type
+	elseif object == 5 then
+		B738DR_wpt_id05w = txt_white_id
+		B738DR_wpt_alt05w = txt_white_alt
+		B738DR_wpt_eta05w = txt_white_eta
+		B738DR_wpt_id05m = txt_cyan_id
+		B738DR_wpt_alt05m = txt_cyan_alt
+		B738DR_wpt_eta05m = txt_cyan_eta
+		B738DR_wpt_type05 = wpt_type
+	elseif object == 6 then
+		B738DR_wpt_id06w = txt_white_id
+		B738DR_wpt_alt06w = txt_white_alt
+		B738DR_wpt_eta06w = txt_white_eta
+		B738DR_wpt_id06m = txt_cyan_id
+		B738DR_wpt_alt06m = txt_cyan_alt
+		B738DR_wpt_eta06m = txt_cyan_eta
+		B738DR_wpt_type06 = wpt_type
+	elseif object == 7 then
+		B738DR_wpt_id07w = txt_white_id
+		B738DR_wpt_alt07w = txt_white_alt
+		B738DR_wpt_eta07w = txt_white_eta
+		B738DR_wpt_id07m = txt_cyan_id
+		B738DR_wpt_alt07m = txt_cyan_alt
+		B738DR_wpt_eta07m = txt_cyan_eta
+		B738DR_wpt_type07 = wpt_type
+	elseif object == 8 then
+		B738DR_wpt_id08w = txt_white_id
+		B738DR_wpt_alt08w = txt_white_alt
+		B738DR_wpt_eta08w = txt_white_eta
+		B738DR_wpt_id08m = txt_cyan_id
+		B738DR_wpt_alt08m = txt_cyan_alt
+		B738DR_wpt_eta08m = txt_cyan_eta
+		B738DR_wpt_type08 = wpt_type
+	elseif object == 9 then
+		B738DR_wpt_id09w = txt_white_id
+		B738DR_wpt_alt09w = txt_white_alt
+		B738DR_wpt_eta09w = txt_white_eta
+		B738DR_wpt_id09m = txt_cyan_id
+		B738DR_wpt_alt09m = txt_cyan_alt
+		B738DR_wpt_eta09m = txt_cyan_eta
+		B738DR_wpt_type09 = wpt_type
+	elseif object == 10 then
+		B738DR_wpt_id10w = txt_white_id
+		B738DR_wpt_alt10w = txt_white_alt
+		B738DR_wpt_eta10w = txt_white_eta
+		B738DR_wpt_id10m = txt_cyan_id
+		B738DR_wpt_alt10m = txt_cyan_alt
+		B738DR_wpt_eta10m = txt_cyan_eta
+		B738DR_wpt_type10 = wpt_type
+	elseif object == 11 then
+		B738DR_wpt_id11w = txt_white_id
+		B738DR_wpt_alt11w = txt_white_alt
+		B738DR_wpt_eta11w = txt_white_eta
+		B738DR_wpt_id11m = txt_cyan_id
+		B738DR_wpt_alt11m = txt_cyan_alt
+		B738DR_wpt_eta11m = txt_cyan_eta
+		B738DR_wpt_type11 = wpt_type
+	elseif object == 12 then
+		B738DR_wpt_id12w = txt_white_id
+		B738DR_wpt_alt12w = txt_white_alt
+		B738DR_wpt_eta12w = txt_white_eta
+		B738DR_wpt_id12m = txt_cyan_id
+		B738DR_wpt_alt12m = txt_cyan_alt
+		B738DR_wpt_eta12m = txt_cyan_eta
+		B738DR_wpt_type12 = wpt_type
+	elseif object == 13 then
+		B738DR_wpt_id13w = txt_white_id
+		B738DR_wpt_alt13w = txt_white_alt
+		B738DR_wpt_eta13w = txt_white_eta
+		B738DR_wpt_id13m = txt_cyan_id
+		B738DR_wpt_alt13m = txt_cyan_alt
+		B738DR_wpt_eta13m = txt_cyan_eta
+		B738DR_wpt_type13 = wpt_type
+	elseif object == 14 then
+		B738DR_wpt_id14w = txt_white_id
+		B738DR_wpt_alt14w = txt_white_alt
+		B738DR_wpt_eta14w = txt_white_eta
+		B738DR_wpt_id14m = txt_cyan_id
+		B738DR_wpt_alt14m = txt_cyan_alt
+		B738DR_wpt_eta14m = txt_cyan_eta
+		B738DR_wpt_type14 = wpt_type
+	elseif object == 15 then
+		B738DR_wpt_id15w = txt_white_id
+		B738DR_wpt_alt15w = txt_white_alt
+		B738DR_wpt_eta15w = txt_white_eta
+		B738DR_wpt_id15m = txt_cyan_id
+		B738DR_wpt_alt15m = txt_cyan_alt
+		B738DR_wpt_eta15m = txt_cyan_eta
+		B738DR_wpt_type15 = wpt_type
+	elseif object == 16 then
+		B738DR_wpt_id16w = txt_white_id
+		B738DR_wpt_alt16w = txt_white_alt
+		B738DR_wpt_eta16w = txt_white_eta
+		B738DR_wpt_id16m = txt_cyan_id
+		B738DR_wpt_alt16m = txt_cyan_alt
+		B738DR_wpt_eta16m = txt_cyan_eta
+		B738DR_wpt_type16 = wpt_type
+	elseif object == 17 then
+		B738DR_wpt_id17w = txt_white_id
+		B738DR_wpt_alt17w = txt_white_alt
+		B738DR_wpt_eta17w = txt_white_eta
+		B738DR_wpt_id17m = txt_cyan_id
+		B738DR_wpt_alt17m = txt_cyan_alt
+		B738DR_wpt_eta17m = txt_cyan_eta
+		B738DR_wpt_type17 = wpt_type
+	elseif object == 18 then
+		B738DR_wpt_id18w = txt_white_id
+		B738DR_wpt_alt18w = txt_white_alt
+		B738DR_wpt_eta18w = txt_white_eta
+		B738DR_wpt_id18m = txt_cyan_id
+		B738DR_wpt_alt18m = txt_cyan_alt
+		B738DR_wpt_eta18m = txt_cyan_eta
+		B738DR_wpt_type18 = wpt_type
+	elseif object == 19 then
+		B738DR_wpt_id19w = txt_white_id
+		B738DR_wpt_alt19w = txt_white_alt
+		B738DR_wpt_eta19w = txt_white_eta
+		B738DR_wpt_id19m = txt_cyan_id
+		B738DR_wpt_alt19m = txt_cyan_alt
+		B738DR_wpt_eta19m = txt_cyan_eta
+		B738DR_wpt_type19 = wpt_type
+	end
+end
+
+function disp_type_m(object, legs_idx, clr_obj)
+	
+	local wpt_type = 0
+	local txt_white_id = ""
+	local txt_white_alt = ""
+	local txt_white_eta = ""
+	local txt_cyan_id = ""
+	local txt_cyan_alt = ""
+	local txt_cyan_eta = ""
+
+	if clr_obj == 0 then
+		if legs_data2[legs_idx][17] < 200 then
+			if legs_num == 1 then
+				txt_white_id = legs_data2[legs_idx][1]
+				wpt_type = 1
+			else
+				txt_white_id = ""
+				wpt_type = 0
+			end
+		else
+			txt_white_id = legs_data2[legs_idx][1]
+			wpt_type = 1
+		end
+		
+		if legs_data2[legs_idx][1] == "VECTOR" then
+			wpt_type = 0
+			txt_white_id = ""
+			txt_white_alt = ""
+			txt_white_eta = ""
+			txt_cyan_id = ""
+			txt_cyan_alt = ""
+			txt_cyan_eta = ""
+		end
+		
+		if legs_data2[legs_idx][31] == "HA" or legs_data2[legs_idx][31] == "HF" or legs_data2[legs_idx][31] == "HM" then
+			if legs_idx ~= offset then
+				wpt_type = 0
+				txt_white_id = ""
+				txt_white_alt = ""
+				txt_white_eta = ""
+				txt_cyan_id = ""
+				txt_cyan_alt = ""
+				txt_cyan_eta = ""
+			end
+		end
+	end
+	
+	if object == 0 then
+		B738DR_wpt_id00w = txt_white_id
+		B738DR_wpt_alt00w = txt_white_alt
+		B738DR_wpt_eta00w = txt_white_eta
+		B738DR_wpt_id00m = txt_cyan_id
+		B738DR_wpt_alt00m = txt_cyan_alt
+		B738DR_wpt_eta00m = txt_cyan_eta
+		B738DR_wpt_type00 = wpt_type
+	elseif object == 1 then
+		B738DR_wpt_id01w = txt_white_id
+		B738DR_wpt_alt01w = txt_white_alt
+		B738DR_wpt_eta01w = txt_white_eta
+		B738DR_wpt_id01m = txt_cyan_id
+		B738DR_wpt_alt01m = txt_cyan_alt
+		B738DR_wpt_eta01m = txt_cyan_eta
+		B738DR_wpt_type01 = wpt_type
+	elseif object == 2 then
+		B738DR_wpt_id02w = txt_white_id
+		B738DR_wpt_alt02w = txt_white_alt
+		B738DR_wpt_eta02w = txt_white_eta
+		B738DR_wpt_id02m = txt_cyan_id
+		B738DR_wpt_alt02m = txt_cyan_alt
+		B738DR_wpt_eta02m = txt_cyan_eta
+		B738DR_wpt_type02 = wpt_type
+	elseif object == 3 then
+		B738DR_wpt_id03w = txt_white_id
+		B738DR_wpt_alt03w = txt_white_alt
+		B738DR_wpt_eta03w = txt_white_eta
+		B738DR_wpt_id03m = txt_cyan_id
+		B738DR_wpt_alt03m = txt_cyan_alt
+		B738DR_wpt_eta03m = txt_cyan_eta
+		B738DR_wpt_type03 = wpt_type
+	elseif object == 4 then
+		B738DR_wpt_id04w = txt_white_id
+		B738DR_wpt_alt04w = txt_white_alt
+		B738DR_wpt_eta04w = txt_white_eta
+		B738DR_wpt_id04m = txt_cyan_id
+		B738DR_wpt_alt04m = txt_cyan_alt
+		B738DR_wpt_eta04m = txt_cyan_eta
+		B738DR_wpt_type04 = wpt_type
+	elseif object == 5 then
+		B738DR_wpt_id05w = txt_white_id
+		B738DR_wpt_alt05w = txt_white_alt
+		B738DR_wpt_eta05w = txt_white_eta
+		B738DR_wpt_id05m = txt_cyan_id
+		B738DR_wpt_alt05m = txt_cyan_alt
+		B738DR_wpt_eta05m = txt_cyan_eta
+		B738DR_wpt_type05 = wpt_type
+	elseif object == 6 then
+		B738DR_wpt_id06w = txt_white_id
+		B738DR_wpt_alt06w = txt_white_alt
+		B738DR_wpt_eta06w = txt_white_eta
+		B738DR_wpt_id06m = txt_cyan_id
+		B738DR_wpt_alt06m = txt_cyan_alt
+		B738DR_wpt_eta06m = txt_cyan_eta
+		B738DR_wpt_type06 = wpt_type
+	elseif object == 7 then
+		B738DR_wpt_id07w = txt_white_id
+		B738DR_wpt_alt07w = txt_white_alt
+		B738DR_wpt_eta07w = txt_white_eta
+		B738DR_wpt_id07m = txt_cyan_id
+		B738DR_wpt_alt07m = txt_cyan_alt
+		B738DR_wpt_eta07m = txt_cyan_eta
+		B738DR_wpt_type07 = wpt_type
+	elseif object == 8 then
+		B738DR_wpt_id08w = txt_white_id
+		B738DR_wpt_alt08w = txt_white_alt
+		B738DR_wpt_eta08w = txt_white_eta
+		B738DR_wpt_id08m = txt_cyan_id
+		B738DR_wpt_alt08m = txt_cyan_alt
+		B738DR_wpt_eta08m = txt_cyan_eta
+		B738DR_wpt_type08 = wpt_type
+	elseif object == 9 then
+		B738DR_wpt_id09w = txt_white_id
+		B738DR_wpt_alt09w = txt_white_alt
+		B738DR_wpt_eta09w = txt_white_eta
+		B738DR_wpt_id09m = txt_cyan_id
+		B738DR_wpt_alt09m = txt_cyan_alt
+		B738DR_wpt_eta09m = txt_cyan_eta
+		B738DR_wpt_type09 = wpt_type
+	elseif object == 10 then
+		B738DR_wpt_id10w = txt_white_id
+		B738DR_wpt_alt10w = txt_white_alt
+		B738DR_wpt_eta10w = txt_white_eta
+		B738DR_wpt_id10m = txt_cyan_id
+		B738DR_wpt_alt10m = txt_cyan_alt
+		B738DR_wpt_eta10m = txt_cyan_eta
+		B738DR_wpt_type10 = wpt_type
+	elseif object == 11 then
+		B738DR_wpt_id11w = txt_white_id
+		B738DR_wpt_alt11w = txt_white_alt
+		B738DR_wpt_eta11w = txt_white_eta
+		B738DR_wpt_id11m = txt_cyan_id
+		B738DR_wpt_alt11m = txt_cyan_alt
+		B738DR_wpt_eta11m = txt_cyan_eta
+		B738DR_wpt_type11 = wpt_type
+	elseif object == 12 then
+		B738DR_wpt_id12w = txt_white_id
+		B738DR_wpt_alt12w = txt_white_alt
+		B738DR_wpt_eta12w = txt_white_eta
+		B738DR_wpt_id12m = txt_cyan_id
+		B738DR_wpt_alt12m = txt_cyan_alt
+		B738DR_wpt_eta12m = txt_cyan_eta
+		B738DR_wpt_type12 = wpt_type
+	elseif object == 13 then
+		B738DR_wpt_id13w = txt_white_id
+		B738DR_wpt_alt13w = txt_white_alt
+		B738DR_wpt_eta13w = txt_white_eta
+		B738DR_wpt_id13m = txt_cyan_id
+		B738DR_wpt_alt13m = txt_cyan_alt
+		B738DR_wpt_eta13m = txt_cyan_eta
+		B738DR_wpt_type13 = wpt_type
+	elseif object == 14 then
+		B738DR_wpt_id14w = txt_white_id
+		B738DR_wpt_alt14w = txt_white_alt
+		B738DR_wpt_eta14w = txt_white_eta
+		B738DR_wpt_id14m = txt_cyan_id
+		B738DR_wpt_alt14m = txt_cyan_alt
+		B738DR_wpt_eta14m = txt_cyan_eta
+		B738DR_wpt_type14 = wpt_type
+	elseif object == 15 then
+		B738DR_wpt_id15w = txt_white_id
+		B738DR_wpt_alt15w = txt_white_alt
+		B738DR_wpt_eta15w = txt_white_eta
+		B738DR_wpt_id15m = txt_cyan_id
+		B738DR_wpt_alt15m = txt_cyan_alt
+		B738DR_wpt_eta15m = txt_cyan_eta
+		B738DR_wpt_type15 = wpt_type
+	elseif object == 16 then
+		B738DR_wpt_id16w = txt_white_id
+		B738DR_wpt_alt16w = txt_white_alt
+		B738DR_wpt_eta16w = txt_white_eta
+		B738DR_wpt_id16m = txt_cyan_id
+		B738DR_wpt_alt16m = txt_cyan_alt
+		B738DR_wpt_eta16m = txt_cyan_eta
+		B738DR_wpt_type16 = wpt_type
+	elseif object == 17 then
+		B738DR_wpt_id17w = txt_white_id
+		B738DR_wpt_alt17w = txt_white_alt
+		B738DR_wpt_eta17w = txt_white_eta
+		B738DR_wpt_id17m = txt_cyan_id
+		B738DR_wpt_alt17m = txt_cyan_alt
+		B738DR_wpt_eta17m = txt_cyan_eta
+		B738DR_wpt_type17 = wpt_type
+	elseif object == 18 then
+		B738DR_wpt_id18w = txt_white_id
+		B738DR_wpt_alt18w = txt_white_alt
+		B738DR_wpt_eta18w = txt_white_eta
+		B738DR_wpt_id18m = txt_cyan_id
+		B738DR_wpt_alt18m = txt_cyan_alt
+		B738DR_wpt_eta18m = txt_cyan_eta
+		B738DR_wpt_type18 = wpt_type
+	elseif object == 19 then
+		B738DR_wpt_id19w = txt_white_id
+		B738DR_wpt_alt19w = txt_white_alt
+		B738DR_wpt_eta19w = txt_white_eta
+		B738DR_wpt_id19m = txt_cyan_id
+		B738DR_wpt_alt19m = txt_cyan_alt
+		B738DR_wpt_eta19m = txt_cyan_eta
+		B738DR_wpt_type19 = wpt_type
+	end
+	
+end
+
+function disp_type_fo(object, legs_idx, data_status, clr_obj)
+	
+	local wpt_type = 0
+	local txt_white_id = ""
+	local txt_white_alt = ""
+	local txt_white_eta = ""
+	local txt_cyan_id = ""
+	local txt_cyan_alt = ""
+	local txt_cyan_eta = ""
+
+	local tmp_wpt_alt = 0
+	local tmp_wpt_type = 0
+	local wpt_data = 0
+	local tmp_wpt_eta = ""
+	local tmp_wpt_eta2 = 0
+	local tmp_wpt_eta3 = 0
+	
+	if clr_obj == 0 then
+		if legs_idx == offset then
+			txt_white_id = ""
+			txt_white_alt = ""
+			txt_white_eta = ""
+			txt_cyan_id = legs_data[legs_idx][1]
+			txt_cyan_alt = ""
+			txt_cyan_eta = ""
+			if legs_data[legs_idx][13] <= 0 then
+				tmp_wpt_eta = "----Z"
+			else
+				tmp_wpt_eta2 = math.floor(legs_data[legs_idx][13])
+				tmp_wpt_eta3 = (legs_data[legs_idx][13] - tmp_wpt_eta2) * 60
+				tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) --.. "."
+				tmp_wpt_eta = tmp_wpt_eta .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
+				tmp_wpt_eta = tmp_wpt_eta .. "Z"
+			end
+			
+			if legs_data[legs_idx][5] > 0 then
+				tmp_wpt_alt = legs_data[legs_idx][5]
+				tmp_wpt_type = legs_data[legs_idx][6]
+				wpt_data = 1
+			end
+			if wpt_data == 1 then
+				if B738DR_flight_phase < 5 then
+					if tmp_wpt_alt > B738DR_trans_alt then
+						txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+					else
+						txt_cyan_alt = tostring(tmp_wpt_alt)
+					end
+				else
+					if tmp_wpt_alt > B738DR_trans_lvl then
+						txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+					else
+						txt_cyan_alt = tostring(tmp_wpt_alt)
+					end
+				end
+				if tmp_wpt_type == 43 then	-- Above
+					txt_cyan_alt = txt_cyan_alt .. "A"
+				elseif tmp_wpt_type == 45 then	-- Below
+					txt_cyan_alt = txt_cyan_alt .. "B"
+				end
+				if data_status == 1 then
+					txt_cyan_eta = tmp_wpt_eta
+				end
+			else
+				if data_status == 1 then
+					txt_cyan_alt = tmp_wpt_eta
+				end
+			end
+			
+			if legs_data[legs_idx][32] == 0 then
+				wpt_type = 2
+			else
+				wpt_type = 4
+			end
+		else
+			txt_cyan_id = ""
+			txt_cyan_alt = ""
+			txt_cyan_eta = ""
+			txt_white_id = legs_data[legs_idx][1]
+			txt_white_alt = ""
+			txt_white_eta = ""
+			if legs_data[legs_idx][13] <= 0 then
+				tmp_wpt_eta = "----Z"	--"--.--Z"
+			else
+				tmp_wpt_eta2 = math.floor(legs_data[legs_idx][13])
+				tmp_wpt_eta3 = (legs_data[legs_idx][13] - tmp_wpt_eta2) * 60
+				tmp_wpt_eta = string.format("%02d", tmp_wpt_eta2) --.. "."
+				tmp_wpt_eta = tmp_wpt_eta .. string.sub(string.format("%04.1f", tmp_wpt_eta3), 1, 2)
+				tmp_wpt_eta = tmp_wpt_eta .. "Z"
+			end
+			
+			wpt_data = 0
+			if legs_data[legs_idx][5] > 0 then
+				tmp_wpt_alt = legs_data[legs_idx][5]
+				tmp_wpt_type = legs_data[legs_idx][6]
+				wpt_data = 1
+			end
+			
+			if wpt_data == 1 then
+				if B738DR_flight_phase < 5 then
+					if tmp_wpt_alt > B738DR_trans_alt then
+						txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+					else
+						txt_white_alt = tostring(tmp_wpt_alt)
+					end
+				else
+					if tmp_wpt_alt > B738DR_trans_lvl then
+						txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+					else
+						txt_white_alt = tostring(tmp_wpt_alt)
+					end
+				end
+				if tmp_wpt_type == 43 then	-- Above
+					txt_white_alt = txt_white_alt .. "A"
+				elseif tmp_wpt_type == 45 then	-- Below
+					txt_white_alt = txt_white_alt .. "B"
+				end
+				if data_status == 1 then
+					txt_white_eta = tmp_wpt_eta
+				end
+			else
+				if data_status == 1 then
+					txt_white_alt = tmp_wpt_eta
+				end
+			end
+			
+			if legs_data[legs_idx][32] == 0 then
+				wpt_type = 1
+			else
+				wpt_type = 3
+			end
+		end
+		
+		if legs_num == 1 then
+			wpt_type = 0
+			txt_white_id = ""
+			txt_white_alt = ""
+			txt_white_eta = ""
+			txt_cyan_id = ""
+			txt_cyan_alt = ""
+			txt_cyan_eta = ""
+		end
+		
+		if legs_data[legs_idx][1] == "VECTOR" then
+			wpt_type = 0
+			txt_white_id = ""
+			txt_white_alt = ""
+			txt_white_eta = ""
+			txt_cyan_id = ""
+			txt_cyan_alt = ""
+			txt_cyan_eta = ""
+		end
+		if legs_data[legs_idx][31] == "HA" or legs_data[legs_idx][31] == "HF" or legs_data[legs_idx][31] == "HM" then
+			if legs_idx ~= offset then
+				wpt_type = 0
+				txt_white_id = ""
+				txt_white_alt = ""
+				txt_white_eta = ""
+				txt_cyan_id = ""
+				txt_cyan_alt = ""
+				txt_cyan_eta = ""
+			end
+		end
+	end
+	
+	if object == 0 then
+		B738DR_wpt_fo_id00w = txt_white_id
+		B738DR_wpt_fo_alt00w = txt_white_alt
+		B738DR_wpt_fo_eta00w = txt_white_eta
+		B738DR_wpt_fo_id00m = txt_cyan_id
+		B738DR_wpt_fo_alt00m = txt_cyan_alt
+		B738DR_wpt_fo_eta00m = txt_cyan_eta
+		B738DR_wpt_fo_type00 = wpt_type
+	elseif object == 1 then
+		B738DR_wpt_fo_id01w = txt_white_id
+		B738DR_wpt_fo_alt01w = txt_white_alt
+		B738DR_wpt_fo_eta01w = txt_white_eta
+		B738DR_wpt_fo_id01m = txt_cyan_id
+		B738DR_wpt_fo_alt01m = txt_cyan_alt
+		B738DR_wpt_fo_eta01m = txt_cyan_eta
+		B738DR_wpt_fo_type01 = wpt_type
+	elseif object == 2 then
+		B738DR_wpt_fo_id02w = txt_white_id
+		B738DR_wpt_fo_alt02w = txt_white_alt
+		B738DR_wpt_fo_eta02w = txt_white_eta
+		B738DR_wpt_fo_id02m = txt_cyan_id
+		B738DR_wpt_fo_alt02m = txt_cyan_alt
+		B738DR_wpt_fo_eta02m = txt_cyan_eta
+		B738DR_wpt_fo_type02 = wpt_type
+	elseif object == 3 then
+		B738DR_wpt_fo_id03w = txt_white_id
+		B738DR_wpt_fo_alt03w = txt_white_alt
+		B738DR_wpt_fo_eta03w = txt_white_eta
+		B738DR_wpt_fo_id03m = txt_cyan_id
+		B738DR_wpt_fo_alt03m = txt_cyan_alt
+		B738DR_wpt_fo_eta03m = txt_cyan_eta
+		B738DR_wpt_fo_type03 = wpt_type
+	elseif object == 4 then
+		B738DR_wpt_fo_id04w = txt_white_id
+		B738DR_wpt_fo_alt04w = txt_white_alt
+		B738DR_wpt_fo_eta04w = txt_white_eta
+		B738DR_wpt_fo_id04m = txt_cyan_id
+		B738DR_wpt_fo_alt04m = txt_cyan_alt
+		B738DR_wpt_fo_eta04m = txt_cyan_eta
+		B738DR_wpt_fo_type04 = wpt_type
+	elseif object == 5 then
+		B738DR_wpt_fo_id05w = txt_white_id
+		B738DR_wpt_fo_alt05w = txt_white_alt
+		B738DR_wpt_fo_eta05w = txt_white_eta
+		B738DR_wpt_fo_id05m = txt_cyan_id
+		B738DR_wpt_fo_alt05m = txt_cyan_alt
+		B738DR_wpt_fo_eta05m = txt_cyan_eta
+		B738DR_wpt_fo_type05 = wpt_type
+	elseif object == 6 then
+		B738DR_wpt_fo_id06w = txt_white_id
+		B738DR_wpt_fo_alt06w = txt_white_alt
+		B738DR_wpt_fo_eta06w = txt_white_eta
+		B738DR_wpt_fo_id06m = txt_cyan_id
+		B738DR_wpt_fo_alt06m = txt_cyan_alt
+		B738DR_wpt_fo_eta06m = txt_cyan_eta
+		B738DR_wpt_fo_type06 = wpt_type
+	elseif object == 7 then
+		B738DR_wpt_fo_id07w = txt_white_id
+		B738DR_wpt_fo_alt07w = txt_white_alt
+		B738DR_wpt_fo_eta07w = txt_white_eta
+		B738DR_wpt_fo_id07m = txt_cyan_id
+		B738DR_wpt_fo_alt07m = txt_cyan_alt
+		B738DR_wpt_fo_eta07m = txt_cyan_eta
+		B738DR_wpt_fo_type07 = wpt_type
+	elseif object == 8 then
+		B738DR_wpt_fo_id08w = txt_white_id
+		B738DR_wpt_fo_alt08w = txt_white_alt
+		B738DR_wpt_fo_eta08w = txt_white_eta
+		B738DR_wpt_fo_id08m = txt_cyan_id
+		B738DR_wpt_fo_alt08m = txt_cyan_alt
+		B738DR_wpt_fo_eta08m = txt_cyan_eta
+		B738DR_wpt_fo_type08 = wpt_type
+	elseif object == 9 then
+		B738DR_wpt_fo_id09w = txt_white_id
+		B738DR_wpt_fo_alt09w = txt_white_alt
+		B738DR_wpt_fo_eta09w = txt_white_eta
+		B738DR_wpt_fo_id09m = txt_cyan_id
+		B738DR_wpt_fo_alt09m = txt_cyan_alt
+		B738DR_wpt_fo_eta09m = txt_cyan_eta
+		B738DR_wpt_fo_type09 = wpt_type
+	elseif object == 10 then
+		B738DR_wpt_fo_id10w = txt_white_id
+		B738DR_wpt_fo_alt10w = txt_white_alt
+		B738DR_wpt_fo_eta10w = txt_white_eta
+		B738DR_wpt_fo_id10m = txt_cyan_id
+		B738DR_wpt_fo_alt10m = txt_cyan_alt
+		B738DR_wpt_fo_eta10m = txt_cyan_eta
+		B738DR_wpt_fo_type10 = wpt_type
+	elseif object == 11 then
+		B738DR_wpt_fo_id11w = txt_white_id
+		B738DR_wpt_fo_alt11w = txt_white_alt
+		B738DR_wpt_fo_eta11w = txt_white_eta
+		B738DR_wpt_fo_id11m = txt_cyan_id
+		B738DR_wpt_fo_alt11m = txt_cyan_alt
+		B738DR_wpt_fo_eta11m = txt_cyan_eta
+		B738DR_wpt_fo_type11 = wpt_type
+	elseif object == 12 then
+		B738DR_wpt_fo_id12w = txt_white_id
+		B738DR_wpt_fo_alt12w = txt_white_alt
+		B738DR_wpt_fo_eta12w = txt_white_eta
+		B738DR_wpt_fo_id12m = txt_cyan_id
+		B738DR_wpt_fo_alt12m = txt_cyan_alt
+		B738DR_wpt_fo_eta12m = txt_cyan_eta
+		B738DR_wpt_fo_type12 = wpt_type
+	elseif object == 13 then
+		B738DR_wpt_fo_id13w = txt_white_id
+		B738DR_wpt_fo_alt13w = txt_white_alt
+		B738DR_wpt_fo_eta13w = txt_white_eta
+		B738DR_wpt_fo_id13m = txt_cyan_id
+		B738DR_wpt_fo_alt13m = txt_cyan_alt
+		B738DR_wpt_fo_eta13m = txt_cyan_eta
+		B738DR_wpt_fo_type13 = wpt_type
+	elseif object == 14 then
+		B738DR_wpt_fo_id14w = txt_white_id
+		B738DR_wpt_fo_alt14w = txt_white_alt
+		B738DR_wpt_fo_eta14w = txt_white_eta
+		B738DR_wpt_fo_id14m = txt_cyan_id
+		B738DR_wpt_fo_alt14m = txt_cyan_alt
+		B738DR_wpt_fo_eta14m = txt_cyan_eta
+		B738DR_wpt_fo_type14 = wpt_type
+	elseif object == 15 then
+		B738DR_wpt_fo_id15w = txt_white_id
+		B738DR_wpt_fo_alt15w = txt_white_alt
+		B738DR_wpt_fo_eta15w = txt_white_eta
+		B738DR_wpt_fo_id15m = txt_cyan_id
+		B738DR_wpt_fo_alt15m = txt_cyan_alt
+		B738DR_wpt_fo_eta15m = txt_cyan_eta
+		B738DR_wpt_fo_type15 = wpt_type
+	elseif object == 16 then
+		B738DR_wpt_fo_id16w = txt_white_id
+		B738DR_wpt_fo_alt16w = txt_white_alt
+		B738DR_wpt_fo_eta16w = txt_white_eta
+		B738DR_wpt_fo_id16m = txt_cyan_id
+		B738DR_wpt_fo_alt16m = txt_cyan_alt
+		B738DR_wpt_fo_eta16m = txt_cyan_eta
+		B738DR_wpt_fo_type16 = wpt_type
+	elseif object == 17 then
+		B738DR_wpt_fo_id17w = txt_white_id
+		B738DR_wpt_fo_alt17w = txt_white_alt
+		B738DR_wpt_fo_eta17w = txt_white_eta
+		B738DR_wpt_fo_id17m = txt_cyan_id
+		B738DR_wpt_fo_alt17m = txt_cyan_alt
+		B738DR_wpt_fo_eta17m = txt_cyan_eta
+		B738DR_wpt_fo_type17 = wpt_type
+	elseif object == 18 then
+		B738DR_wpt_fo_id18w = txt_white_id
+		B738DR_wpt_fo_alt18w = txt_white_alt
+		B738DR_wpt_fo_eta18w = txt_white_eta
+		B738DR_wpt_fo_id18m = txt_cyan_id
+		B738DR_wpt_fo_alt18m = txt_cyan_alt
+		B738DR_wpt_fo_eta18m = txt_cyan_eta
+		B738DR_wpt_fo_type18 = wpt_type
+	elseif object == 19 then
+		B738DR_wpt_fo_id19w = txt_white_id
+		B738DR_wpt_fo_alt19w = txt_white_alt
+		B738DR_wpt_fo_eta19w = txt_white_eta
+		B738DR_wpt_fo_id19m = txt_cyan_id
+		B738DR_wpt_fo_alt19m = txt_cyan_alt
+		B738DR_wpt_fo_eta19m = txt_cyan_eta
+		B738DR_wpt_fo_type19 = wpt_type
+	end
+	
+end
+
+function disp_type_m_fo(object, legs_idx, clr_obj)
+	
+	local wpt_type = 0
+	local txt_white_id = ""
+	local txt_white_alt = ""
+	local txt_white_eta = ""
+	local txt_cyan_id = ""
+	local txt_cyan_alt = ""
+	local txt_cyan_eta = ""
+
+	if clr_obj == 0 then
+		if legs_data2[legs_idx][17] < 200 then
+			if legs_num == 1 then
+				txt_white_id = legs_data2[legs_idx][1]
+				wpt_type = 1
+			else
+				txt_white_id = ""
+				wpt_type = 0
+			end
+		else
+			txt_white_id = legs_data2[legs_idx][1]
+			wpt_type = 1
+		end
+		
+		if legs_data2[legs_idx][1] == "VECTOR" then
+			wpt_type = 0
+			txt_white_id = ""
+			txt_white_alt = ""
+			txt_white_eta = ""
+			txt_cyan_id = ""
+			txt_cyan_alt = ""
+			txt_cyan_eta = ""
+		end
+		
+		if legs_data2[legs_idx][31] == "HA" or legs_data2[legs_idx][31] == "HF" or legs_data2[legs_idx][31] == "HM" then
+			if legs_idx ~= offset then
+				wpt_type = 0
+				txt_white_id = ""
+				txt_white_alt = ""
+				txt_white_eta = ""
+				txt_cyan_id = ""
+				txt_cyan_alt = ""
+				txt_cyan_eta = ""
+			end
+		end
+	end
+	
+	if object == 0 then
+		B738DR_wpt_fo_id00w = txt_white_id
+		B738DR_wpt_fo_alt00w = txt_white_alt
+		B738DR_wpt_fo_eta00w = txt_white_eta
+		B738DR_wpt_fo_id00m = txt_cyan_id
+		B738DR_wpt_fo_alt00m = txt_cyan_alt
+		B738DR_wpt_fo_eta00m = txt_cyan_eta
+		B738DR_wpt_fo_type00 = wpt_type
+	elseif object == 1 then
+		B738DR_wpt_fo_id01w = txt_white_id
+		B738DR_wpt_fo_alt01w = txt_white_alt
+		B738DR_wpt_fo_eta01w = txt_white_eta
+		B738DR_wpt_fo_id01m = txt_cyan_id
+		B738DR_wpt_fo_alt01m = txt_cyan_alt
+		B738DR_wpt_fo_eta01m = txt_cyan_eta
+		B738DR_wpt_fo_type01 = wpt_type
+	elseif object == 2 then
+		B738DR_wpt_fo_id02w = txt_white_id
+		B738DR_wpt_fo_alt02w = txt_white_alt
+		B738DR_wpt_fo_eta02w = txt_white_eta
+		B738DR_wpt_fo_id02m = txt_cyan_id
+		B738DR_wpt_fo_alt02m = txt_cyan_alt
+		B738DR_wpt_fo_eta02m = txt_cyan_eta
+		B738DR_wpt_fo_type02 = wpt_type
+	elseif object == 3 then
+		B738DR_wpt_fo_id03w = txt_white_id
+		B738DR_wpt_fo_alt03w = txt_white_alt
+		B738DR_wpt_fo_eta03w = txt_white_eta
+		B738DR_wpt_fo_id03m = txt_cyan_id
+		B738DR_wpt_fo_alt03m = txt_cyan_alt
+		B738DR_wpt_fo_eta03m = txt_cyan_eta
+		B738DR_wpt_fo_type03 = wpt_type
+	elseif object == 4 then
+		B738DR_wpt_fo_id04w = txt_white_id
+		B738DR_wpt_fo_alt04w = txt_white_alt
+		B738DR_wpt_fo_eta04w = txt_white_eta
+		B738DR_wpt_fo_id04m = txt_cyan_id
+		B738DR_wpt_fo_alt04m = txt_cyan_alt
+		B738DR_wpt_fo_eta04m = txt_cyan_eta
+		B738DR_wpt_fo_type04 = wpt_type
+	elseif object == 5 then
+		B738DR_wpt_fo_id05w = txt_white_id
+		B738DR_wpt_fo_alt05w = txt_white_alt
+		B738DR_wpt_fo_eta05w = txt_white_eta
+		B738DR_wpt_fo_id05m = txt_cyan_id
+		B738DR_wpt_fo_alt05m = txt_cyan_alt
+		B738DR_wpt_fo_eta05m = txt_cyan_eta
+		B738DR_wpt_fo_type05 = wpt_type
+	elseif object == 6 then
+		B738DR_wpt_fo_id06w = txt_white_id
+		B738DR_wpt_fo_alt06w = txt_white_alt
+		B738DR_wpt_fo_eta06w = txt_white_eta
+		B738DR_wpt_fo_id06m = txt_cyan_id
+		B738DR_wpt_fo_alt06m = txt_cyan_alt
+		B738DR_wpt_fo_eta06m = txt_cyan_eta
+		B738DR_wpt_fo_type06 = wpt_type
+	elseif object == 7 then
+		B738DR_wpt_fo_id07w = txt_white_id
+		B738DR_wpt_fo_alt07w = txt_white_alt
+		B738DR_wpt_fo_eta07w = txt_white_eta
+		B738DR_wpt_fo_id07m = txt_cyan_id
+		B738DR_wpt_fo_alt07m = txt_cyan_alt
+		B738DR_wpt_fo_eta07m = txt_cyan_eta
+		B738DR_wpt_fo_type07 = wpt_type
+	elseif object == 8 then
+		B738DR_wpt_fo_id08w = txt_white_id
+		B738DR_wpt_fo_alt08w = txt_white_alt
+		B738DR_wpt_fo_eta08w = txt_white_eta
+		B738DR_wpt_fo_id08m = txt_cyan_id
+		B738DR_wpt_fo_alt08m = txt_cyan_alt
+		B738DR_wpt_fo_eta08m = txt_cyan_eta
+		B738DR_wpt_fo_type08 = wpt_type
+	elseif object == 9 then
+		B738DR_wpt_fo_id09w = txt_white_id
+		B738DR_wpt_fo_alt09w = txt_white_alt
+		B738DR_wpt_fo_eta09w = txt_white_eta
+		B738DR_wpt_fo_id09m = txt_cyan_id
+		B738DR_wpt_fo_alt09m = txt_cyan_alt
+		B738DR_wpt_fo_eta09m = txt_cyan_eta
+		B738DR_wpt_fo_type09 = wpt_type
+	elseif object == 10 then
+		B738DR_wpt_fo_id10w = txt_white_id
+		B738DR_wpt_fo_alt10w = txt_white_alt
+		B738DR_wpt_fo_eta10w = txt_white_eta
+		B738DR_wpt_fo_id10m = txt_cyan_id
+		B738DR_wpt_fo_alt10m = txt_cyan_alt
+		B738DR_wpt_fo_eta10m = txt_cyan_eta
+		B738DR_wpt_fo_type10 = wpt_type
+	elseif object == 11 then
+		B738DR_wpt_fo_id11w = txt_white_id
+		B738DR_wpt_fo_alt11w = txt_white_alt
+		B738DR_wpt_fo_eta11w = txt_white_eta
+		B738DR_wpt_fo_id11m = txt_cyan_id
+		B738DR_wpt_fo_alt11m = txt_cyan_alt
+		B738DR_wpt_fo_eta11m = txt_cyan_eta
+		B738DR_wpt_fo_type11 = wpt_type
+	elseif object == 12 then
+		B738DR_wpt_fo_id12w = txt_white_id
+		B738DR_wpt_fo_alt12w = txt_white_alt
+		B738DR_wpt_fo_eta12w = txt_white_eta
+		B738DR_wpt_fo_id12m = txt_cyan_id
+		B738DR_wpt_fo_alt12m = txt_cyan_alt
+		B738DR_wpt_fo_eta12m = txt_cyan_eta
+		B738DR_wpt_fo_type12 = wpt_type
+	elseif object == 13 then
+		B738DR_wpt_fo_id13w = txt_white_id
+		B738DR_wpt_fo_alt13w = txt_white_alt
+		B738DR_wpt_fo_eta13w = txt_white_eta
+		B738DR_wpt_fo_id13m = txt_cyan_id
+		B738DR_wpt_fo_alt13m = txt_cyan_alt
+		B738DR_wpt_fo_eta13m = txt_cyan_eta
+		B738DR_wpt_fo_type13 = wpt_type
+	elseif object == 14 then
+		B738DR_wpt_fo_id14w = txt_white_id
+		B738DR_wpt_fo_alt14w = txt_white_alt
+		B738DR_wpt_fo_eta14w = txt_white_eta
+		B738DR_wpt_fo_id14m = txt_cyan_id
+		B738DR_wpt_fo_alt14m = txt_cyan_alt
+		B738DR_wpt_fo_eta14m = txt_cyan_eta
+		B738DR_wpt_fo_type14 = wpt_type
+	elseif object == 15 then
+		B738DR_wpt_fo_id15w = txt_white_id
+		B738DR_wpt_fo_alt15w = txt_white_alt
+		B738DR_wpt_fo_eta15w = txt_white_eta
+		B738DR_wpt_fo_id15m = txt_cyan_id
+		B738DR_wpt_fo_alt15m = txt_cyan_alt
+		B738DR_wpt_fo_eta15m = txt_cyan_eta
+		B738DR_wpt_fo_type15 = wpt_type
+	elseif object == 16 then
+		B738DR_wpt_fo_id16w = txt_white_id
+		B738DR_wpt_fo_alt16w = txt_white_alt
+		B738DR_wpt_fo_eta16w = txt_white_eta
+		B738DR_wpt_fo_id16m = txt_cyan_id
+		B738DR_wpt_fo_alt16m = txt_cyan_alt
+		B738DR_wpt_fo_eta16m = txt_cyan_eta
+		B738DR_wpt_fo_type16 = wpt_type
+	elseif object == 17 then
+		B738DR_wpt_fo_id17w = txt_white_id
+		B738DR_wpt_fo_alt17w = txt_white_alt
+		B738DR_wpt_fo_eta17w = txt_white_eta
+		B738DR_wpt_fo_id17m = txt_cyan_id
+		B738DR_wpt_fo_alt17m = txt_cyan_alt
+		B738DR_wpt_fo_eta17m = txt_cyan_eta
+		B738DR_wpt_fo_type17 = wpt_type
+	elseif object == 18 then
+		B738DR_wpt_fo_id18w = txt_white_id
+		B738DR_wpt_fo_alt18w = txt_white_alt
+		B738DR_wpt_fo_eta18w = txt_white_eta
+		B738DR_wpt_fo_id18m = txt_cyan_id
+		B738DR_wpt_fo_alt18m = txt_cyan_alt
+		B738DR_wpt_fo_eta18m = txt_cyan_eta
+		B738DR_wpt_fo_type18 = wpt_type
+	elseif object == 19 then
+		B738DR_wpt_fo_id19w = txt_white_id
+		B738DR_wpt_fo_alt19w = txt_white_alt
+		B738DR_wpt_fo_eta19w = txt_white_eta
+		B738DR_wpt_fo_id19m = txt_cyan_id
+		B738DR_wpt_fo_alt19m = txt_cyan_alt
+		B738DR_wpt_fo_eta19m = txt_cyan_eta
+		B738DR_wpt_fo_type19 = wpt_type
+	end
+	
+end
+
+
+function B738_displ_wpt2()
+
+	local nd_lat = ndx_lat
+	local nd_lon = ndx_lon
+	local mag_hdg = 0
+	local nd_lat2 = 0
+	local nd_lon2 = 0
+	local nd_dis = 0
+	local nd_x = 0
+	local nd_y = 0
+	local nd_hdg = 0
+	local delta_hdg = 0
+	local delta_hdg_calc = 0
+	local nd_on_off = 0
+	local nd_zoom = 0
+	local nd_shift = 0
+	local nd_corr = 0
+	local n = 0
+	local obj = 0
+	local max_obj = 20
+	local obj_enable = 0
+	local nav_disable = 0
+	local txt_white_id = ""
+	local txt_white_alt = ""
+	local txt_white_eta = ""
+	local txt_cyan_id = ""
+	local txt_cyan_alt = ""
+	local txt_cyan_eta = ""
+	local wpt_type = 0
+	
+	local tmp_wpt_alt = 0
+	local tmp_wpt_type = 0
+	local wpt_data = 0
+	local tmp_wpt_eta = ""
+	local tmp_wpt_eta2 = 0
+	local tmp_wpt_eta3 = 0
+	
+	local wpt_from = 0
+	local wpt_to = 0
+	
+	local rte_act_enable = 0
+	local rte_act_enable_fo = 0
+	local rte_dist = 0
+	local rte_n = 0
+	local rte_plan_mode = 0
+	local nd_x0 = 0
+	local nd_y0 = 0
+	
+	local nd_dist_dir = 0
+	local obj2 = 0
+	local rte_act_enable2 = 0
+	local rte_act_enable2_fo = 0
+	
+	local hold_obj = 0
+	local hold_obj_fo = 0
+	
+	local prev_obj_draw = 0
+	
+	B738DR_rte_show_act = 0
+	B738DR_rte_fo_show_act = 0
+	
+	wpt_2d_dist = {}
+	wpt_2d_x = {}
+	wpt_2d_y = {}
+	wpt_2d_idx = {}
+	wpt_2d_idx_on = {}
+	wpt_2d_num = 0
+	
+	wpt_2d_dist_m = {}
+	wpt_2d_x_m = {}
+	wpt_2d_y_m = {}
+	wpt_2d_idx_m = {}
+	wpt_2d_idx_on_m = {}
+	wpt_2d_num_m = 0
+	
+	if ref_icao == "----" or des_icao == "****" then
+		legs_num = 0
+	end
+	
+	B738DR_tc_show = 0
+	B738DR_tc_id = ""
+
+	B738DR_td_show = 0
+	B738DR_td_id = ""
+
+	B738DR_decel_show = 0
+	B738DR_decel_id = ""
+		
+	if legs_num > 0 then 
+		
+		
+		if offset > legs_num then
+			offset = legs_num
+		end
+		if offset == 0 then
+			offset = 1
+		end
+		
+		if legs_step > legs_num2 then
+			legs_step = legs_num2
+		end
+		
+		if legs_step2 > legs_num2 then
+			legs_step2 = legs_num2
+		end
+		
+		-- CAPTAIN
+		if B738DR_capt_map_mode == 3 then
+			if legs_step == 0 then
+				nd_lat = legs_data2[1][7]
+				nd_lon = legs_data2[1][8]
+			else
+				nd_lat = legs_data2[legs_step][7]
+				nd_lon = legs_data2[legs_step][8]
+			end
+			
+			mag_hdg = -simDR_mag_variation
+			if offset == 1 then
+				wpt_from = 1
+			else
+				wpt_from = offset - 1
+			end
+			rte_plan_mode = 1
+		elseif B738DR_capt_map_mode == 2 then
+			if B738DR_track_up == 0 then
+				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+			else
+				if B738DR_track_up_active == 0 then
+					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				else
+					mag_hdg = ndx_mag_hdg - simDR_mag_variation
+				end
+			end
+			rte_plan_mode = 0
+			-- wpt_from = offset
+			if offset == 1 then
+				wpt_from = 1
+			else
+				wpt_from = offset - 1
+			end
+		else
+			nav_disable = 1
+		end
+		
+		if des_app == "------" then
+			wpt_to = legs_num + 1
+		else
+			wpt_to = legs_num
+		end
+		
+		if nav_disable == 0 then
+			
+			if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+				nd_zoom = 2
+			elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+				nd_zoom = 1
+			elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+				nd_zoom = 0.5
+			elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+				nd_zoom = 0.25
+			elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+				nd_zoom = 0.125
+			elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
+				nd_zoom = 0.0625
+			elseif B738DR_efis_map_range_capt == 6 then	-- 320 NM
+				nd_zoom = 0.03125
+			else	-- 640 NM
+				nd_zoom = 0.015625
+			end
+			
+			if rte_plan_mode == 1 then
+				nd_zoom = nd_zoom * 0.57
+			end
+			
+			if B738DR_capt_map_mode == 3 then
+				nd_shift = 4.1	-- adjust center
+			elseif B738DR_capt_vsd_map_mode == 1 then
+				nd_shift = 5.1	-- adjust center
+			elseif B738DR_capt_exp_map_mode == 0 then
+				nd_shift = 4.1	-- adjust center
+			end
+						
+			for n = wpt_from, wpt_to do
+			
+				if legs_data[n][1] ~= "DISCONTINUITY" then
+					
+					nd_lat2 = legs_data[n][7]
+					nd_lon2 = legs_data[n][8]
+					
+					nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					--nd_dis = nd_calc_dist9(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					
+					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					delta_hdg = calc_rel_brg(nd_hdg, mag_hdg)
+					delta_hdg_calc = delta_hdg
+					
+					if delta_hdg >= 0 and delta_hdg <= 90 then
+						-- right
+						delta_hdg = 90 - delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y = nd_dis * math.sin(delta_hdg)
+						nd_x = nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg < 0 and delta_hdg >= -90 then
+						-- left
+						delta_hdg = 90 + delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y = nd_dis * math.sin(delta_hdg)
+						nd_x = -nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg >= 90 then
+						-- right back
+						delta_hdg = delta_hdg - 90
+						delta_hdg = math.rad(delta_hdg)
+						nd_y = -nd_dis * math.sin(delta_hdg)
+						nd_x = nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg <= -90 then
+						-- left back
+						delta_hdg = -90 - delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y = -nd_dis * math.sin(delta_hdg)
+						nd_x = -nd_dis * math.cos(delta_hdg)
+					end
+					
+					nd_x = nd_x * nd_zoom		-- zoom
+					nd_y = (nd_y * nd_zoom) + nd_shift		-- zoom		-- zoom
+					
+					wpt_2d_num = wpt_2d_num + 1
+					wpt_2d_dist[wpt_2d_num] = legs_data[n][3] * nd_zoom
+					wpt_2d_x[wpt_2d_num] = nd_x
+					wpt_2d_y[wpt_2d_num] = nd_y
+					wpt_2d_idx[wpt_2d_num] = n
+					wpt_2d_idx_on[wpt_2d_num] = 0
+				end
+			end
+			
+			
+			-- MOD LEGS
+			
+			if legs_num2 > 0 then
+			
+				if des_app2 == "------" then
+					wpt_to = legs_num2 + 1
+				else
+					wpt_to = legs_num2
+				end
+				
+				if wpt_from > wpt_to then
+					wpt_from = wpt_to
+				end
+				
+				for n = wpt_from, wpt_to do
+				
+					if legs_data2[n][1] ~= "DISCONTINUITY" then
+						
+						nd_lat2 = legs_data2[n][7]
+						nd_lon2 = legs_data2[n][8]
+						
+						nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
+						--nd_dis = nd_calc_dist9(nd_lat, nd_lon, nd_lat2, nd_lon2)
+						
+						nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+						delta_hdg = calc_rel_brg(nd_hdg, mag_hdg)
+						
+						if delta_hdg >= 0 and delta_hdg <= 90 then
+							-- right
+							delta_hdg = 90 - delta_hdg
+							delta_hdg = math.rad(delta_hdg)
+							nd_y = nd_dis * math.sin(delta_hdg)
+							nd_x = nd_dis * math.cos(delta_hdg)
+						elseif delta_hdg < 0 and delta_hdg >= -90 then
+							-- left
+							delta_hdg = 90 + delta_hdg
+							delta_hdg = math.rad(delta_hdg)
+							nd_y = nd_dis * math.sin(delta_hdg)
+							nd_x = -nd_dis * math.cos(delta_hdg)
+						elseif delta_hdg >= 90 then
+							-- right back
+							delta_hdg = delta_hdg - 90
+							delta_hdg = math.rad(delta_hdg)
+							nd_y = -nd_dis * math.sin(delta_hdg)
+							nd_x = nd_dis * math.cos(delta_hdg)
+						elseif delta_hdg <= -90 then
+							-- left back
+							delta_hdg = -90 - delta_hdg
+							delta_hdg = math.rad(delta_hdg)
+							nd_y = -nd_dis * math.sin(delta_hdg)
+							nd_x = -nd_dis * math.cos(delta_hdg)
+						end
+						
+						nd_x = nd_x * nd_zoom		-- zoom
+						nd_y = (nd_y * nd_zoom) + nd_shift		-- zoom
+						
+						wpt_2d_num_m = wpt_2d_num_m + 1
+						wpt_2d_dist_m[wpt_2d_num_m] = legs_data2[n][3] * nd_zoom
+						wpt_2d_x_m[wpt_2d_num_m] = nd_x
+						wpt_2d_y_m[wpt_2d_num_m] = nd_y
+						wpt_2d_idx_m[wpt_2d_num_m] = n
+						wpt_2d_idx_on_m[wpt_2d_num_m] = 0
+						
+					end
+				end
+			end
+			
+			-- Draw on ND
+			if wpt_2d_num > 0 then
+				for ii = 1, wpt_2d_num do
+					if obj < max_obj then	-- max number displayed objects
+						nd_on_off = 1
+						if wpt_2d_x[ii] < -15.0 or wpt_2d_x[ii] > 15.0 then
+							nd_on_off = 0
+						end
+						if wpt_2d_y[ii] > 15.0 or wpt_2d_y[ii] < -5.0 then
+							nd_on_off = 0
+						end
+						
+						-- before offset
+						if legs_intdir_act == 1 and wpt_2d_idx[ii] == (offset - 1) then
+							nd_on_off = 0
+							wpt_2d_idx_on[ii] = 1
+						end
+						
+						if nd_on_off == 1 then
+							-- waypoint
+							B738DR_wpt_x[obj] = wpt_2d_x[ii]
+							B738DR_wpt_y[obj] = wpt_2d_y[ii]
+							disp_type(obj, wpt_2d_idx[ii], B738DR_efis_data_capt_status, 0)
+							
+							-- route
+							if legs_num == 1 then
+								B738DR_rte_show[obj] = 0
+								wpt_2d_idx_on[ii] = 1
+							else
+								if B738DR_missed_app_act == 0 and (wpt_2d_idx[ii]+1) >= first_miss_app_idx and (wpt_2d_idx[ii]+1) <= last_miss_app_idx then
+									B738DR_rte_edit[obj] = 2	-- blue
+								else
+									B738DR_rte_edit[obj] = 0	-- magenta
+								end
+								
+								if ii == wpt_2d_num then
+									if legs_data[wpt_2d_idx[ii]][1] == "VECTOR" then
+										wpt_2d_idx_on[ii] = 1
+										B738DR_rte_show[obj] = 1
+										B738DR_rte_x[obj] = wpt_2d_x[ii]
+										B738DR_rte_y[obj] = wpt_2d_y[ii]
+										B738DR_rte_rot[obj] = (math.deg(legs_data[wpt_2d_idx[ii]][2]) - mag_hdg + 360) % 360
+										B738DR_rte_dist[obj] = 15
+									else
+										B738DR_rte_show[obj] = 0
+									end
+								else
+									wpt_2d_idx_on[ii] = 1
+									B738DR_rte_show[obj] = 1
+									B738DR_rte_x[obj] = wpt_2d_x[ii]
+									B738DR_rte_y[obj] = wpt_2d_y[ii]
+									B738DR_rte_rot[obj] = calc_rotation(wpt_2d_x[ii], wpt_2d_y[ii], wpt_2d_x[ii+1], wpt_2d_y[ii+1])
+									if legs_data[wpt_2d_idx[ii]][1] == "VECTOR" then
+										B738DR_rte_rot[obj] = (math.deg(legs_data[wpt_2d_idx[ii]][2]) - mag_hdg + 360) % 360
+										B738DR_rte_dist[obj] = 15
+									elseif (wpt_2d_idx[ii] + 1) ~= wpt_2d_idx[ii+1] then
+										-- discontinuity
+										B738DR_rte_show[obj] = 0
+										wpt_2d_idx_on[ii] = 1
+									else
+										if wpt_2d_dist[ii+1] > 15 then
+											B738DR_rte_dist[obj] = 15
+										else
+											B738DR_rte_dist[obj] = wpt_2d_dist[ii+1]
+										end
+									end
+								end
+							end
+							
+							obj = obj + 1
+							
+							if ii > 1 then
+								if wpt_2d_idx_on[ii-1] == 0 and (wpt_2d_idx[ii] - 1) == wpt_2d_idx[ii-1] then
+									if obj < max_obj then	-- max number displayed objects
+										B738DR_wpt_x[obj] = wpt_2d_x[ii]
+										B738DR_wpt_y[obj] = wpt_2d_y[ii]
+										disp_type(obj, wpt_2d_idx[ii], B738DR_efis_data_capt_status, 1)
+										
+										B738DR_rte_show[obj] = 1
+										B738DR_rte_x[obj] = wpt_2d_x[ii]
+										B738DR_rte_y[obj] = wpt_2d_y[ii]
+										B738DR_rte_rot[obj] = calc_rotation(wpt_2d_x[ii], wpt_2d_y[ii], wpt_2d_x[ii-1], wpt_2d_y[ii-1])
+										B738DR_rte_dist[obj] = 15
+										obj = obj + 1
+									end
+								end
+							end
+							
+							-- HOLD
+							if hold_obj < 5 then
+								
+								if wpt_2d_idx[ii] == offset then
+									if legs_data[wpt_2d_idx[ii]][31] == "HA" or legs_data[wpt_2d_idx[ii]][31] == "HF" or legs_data[wpt_2d_idx[ii]][31] == "HM" then
+										B738DR_hold_x[hold_obj] = wpt_2d_x[ii]
+										B738DR_hold_y[hold_obj] = wpt_2d_y[ii]
+										B738DR_hold_crs[hold_obj] = ((tonumber(legs_data[wpt_2d_idx[ii]][29]) / 10) - mag_hdg + 360) % 360
+										if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+											B738DR_hold_type[hold_obj] = legs_data[wpt_2d_idx[ii]][21] + 1
+											B738DR_hold_dist[hold_obj] = calc_hold_dist(wpt_2d_idx[ii])
+										elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+											B738DR_hold_type[hold_obj] = legs_data[wpt_2d_idx[ii]][21] + 3
+											B738DR_hold_dist[hold_obj] = calc_hold_dist(wpt_2d_idx[ii])
+										elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+											B738DR_hold_type[hold_obj] = legs_data[wpt_2d_idx[ii]][21] + 5
+											B738DR_hold_dist[hold_obj] = calc_hold_dist(wpt_2d_idx[ii])
+										elseif B738DR_efis_map_range_capt >= 3 then	-- 40 NM
+											B738DR_hold_type[hold_obj] = legs_data[wpt_2d_idx[ii]][21] + 7
+										end
+										hold_obj = hold_obj + 1
+									end
+								else
+									if wpt_2d_idx[ii] <= legs_num then
+										if legs_data[wpt_2d_idx[ii]+1][31] == "HA" or legs_data[wpt_2d_idx[ii]+1][31] == "HF" or legs_data[wpt_2d_idx[ii]+1][31] == "HM" then
+										
+											if B738DR_missed_app_act == 0 and (wpt_2d_idx[ii]+1) >= first_miss_app_idx and (wpt_2d_idx[ii]+1) <= last_miss_app_idx then
+												rte_dist = 30	-- blue
+											else
+												rte_dist = 0
+											end
+											
+											B738DR_hold_x[hold_obj] = wpt_2d_x[ii]
+											B738DR_hold_y[hold_obj] = wpt_2d_y[ii]
+											B738DR_hold_crs[hold_obj] = ((tonumber(legs_data[wpt_2d_idx[ii]+1][29]) / 10) - mag_hdg + 360) % 360
+											if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+												B738DR_hold_type[hold_obj] = legs_data[wpt_2d_idx[ii]+1][21] + 1 + rte_dist
+												B738DR_hold_dist[hold_obj] = calc_hold_dist(wpt_2d_idx[ii]+1)
+											elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+												B738DR_hold_type[hold_obj] = legs_data[wpt_2d_idx[ii]+1][21] + 3 + rte_dist
+												B738DR_hold_dist[hold_obj] = calc_hold_dist(wpt_2d_idx[ii]+1)
+											elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+												B738DR_hold_type[hold_obj] = legs_data[wpt_2d_idx[ii]+1][21] + 5 + rte_dist
+												B738DR_hold_dist[hold_obj] = calc_hold_dist(wpt_2d_idx[ii]+1)
+											elseif B738DR_efis_map_range_capt >= 3 then	-- 40 NM
+												B738DR_hold_type[hold_obj] = legs_data[wpt_2d_idx[ii]+1][21] + 7 + rte_dist
+											end
+											hold_obj = hold_obj + 1
+										end
+									end
+								end
+							end
+						end
+					end
+					-- direct
+					if wpt_2d_idx[ii] == offset then
+						if legs_intdir_act == 0 then
+							if ii > 1 then
+								if wpt_2d_idx_on[ii] == 0 and wpt_2d_idx_on[ii-1] == 0 then
+									B738DR_rte_show_act = 1
+									rte_act_enable = 1
+									-- calc temp wpt
+									B738DR_rte_rot_act = calc_rotation(wpt_2d_x[ii], wpt_2d_y[ii], wpt_2d_x[ii-1], wpt_2d_y[ii-1])
+									rte_dist = (simDR_fmc_dist * nd_zoom) - 12.5
+									-- calc x,y
+									B738DR_rte_x_act, B738DR_rte_y_act = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], B738DR_rte_rot_act, rte_dist)
+									B738DR_rte_dist_act = 15
+								end
+							end
+						else
+							B738DR_rte_show_act = 1
+							rte_act_enable = 1
+							if wpt_2d_idx_on[ii] == 0 then
+								-- calc temp wpt
+								B738DR_rte_rot_act = (simDR_fmc_trk - mag_hdg + 180) % 360
+								rte_dist = (simDR_fmc_dist * nd_zoom) - 15
+								-- calc x,y
+								B738DR_rte_x_act, B738DR_rte_y_act = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], B738DR_rte_rot_act, rte_dist)
+								B738DR_rte_dist_act = 15
+							else
+								B738DR_rte_x_act = wpt_2d_x[ii]
+								B738DR_rte_y_act = wpt_2d_y[ii]
+								B738DR_rte_rot_act = (simDR_fmc_trk - mag_hdg + 180) % 360
+								rte_dist = simDR_fmc_dist * nd_zoom
+								if rte_dist > 15 then
+									rte_dist = 15
+								end
+								B738DR_rte_dist_act = rte_dist
+							end
+						end
+					end
+					
+					if ii > 1 then
+						-- T/C
+						if wpt_2d_idx[ii] == tc_idx and tc_idx ~= 0 then
+							if legs_intdir_act == 1 and wpt_2d_idx[ii] == offset then
+								-- calc angle
+								delta_hdg = (simDR_fmc_trk - mag_hdg + 180) % 360
+								rte_dist = tc_dist * nd_zoom
+								-- calc x,y
+								B738DR_tc_x, B738DR_tc_y = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], delta_hdg, rte_dist)
+								B738DR_tc_id = "T/C"
+								B738DR_tc_show = 1
+							else
+								-- calc angle
+								delta_hdg = calc_rotation(wpt_2d_x[ii], wpt_2d_y[ii], wpt_2d_x[ii-1], wpt_2d_y[ii-1])
+								rte_dist = tc_dist * nd_zoom
+								-- calc x,y
+								B738DR_tc_x, B738DR_tc_y = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], delta_hdg, rte_dist)
+								B738DR_tc_id = "T/C"
+								B738DR_tc_show = 1
+							end
+						end
+						
+						-- T/D
+						if wpt_2d_idx[ii] == td_idx and td_idx ~= 0 then
+							if legs_intdir_act == 1 and wpt_2d_idx[ii] == offset then
+								-- calc angle
+								delta_hdg = (simDR_fmc_trk - mag_hdg + 180) % 360
+								rte_dist = td_dist * nd_zoom
+								-- calc x,y
+								B738DR_td_x, B738DR_td_y = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], delta_hdg, rte_dist)
+								B738DR_td_id = "T/D"
+								B738DR_td_show = 1
+							else
+								-- calc angle
+								delta_hdg = calc_rotation(wpt_2d_x[ii], wpt_2d_y[ii], wpt_2d_x[ii-1], wpt_2d_y[ii-1])
+								rte_dist = td_dist * nd_zoom
+								-- calc x,y
+								B738DR_td_x, B738DR_td_y = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], delta_hdg, rte_dist)
+								B738DR_td_id = "T/D"
+								B738DR_td_show = 1
+							end
+						end
+						
+						-- DECEL
+						if wpt_2d_idx[ii] == decel_idx and decel_idx ~= 0 then
+							if legs_intdir_act == 1 and wpt_2d_idx[ii] == offset then
+								-- calc angle
+								delta_hdg = (simDR_fmc_trk - mag_hdg + 180) % 360
+								rte_dist = decel_dist * nd_zoom
+								-- calc x,y
+								B738DR_decel_x, B738DR_decel_y = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], delta_hdg, rte_dist)
+								B738DR_decel_id = "DECEL"
+								B738DR_decel_show = 1
+							else
+								-- calc angle
+								delta_hdg = calc_rotation(wpt_2d_x[ii], wpt_2d_y[ii], wpt_2d_x[ii-1], wpt_2d_y[ii-1])
+								rte_dist = decel_dist * nd_zoom
+								-- calc x,y
+								B738DR_decel_x, B738DR_decel_y = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], delta_hdg, rte_dist)
+								B738DR_decel_id = "DECEL"
+								B738DR_decel_show = 1
+							end
+						end
+					end
+				end
+			end
+			
+			-- Draw on ND mod
+			if wpt_2d_num_m > 0 then
+				for ii = 1, wpt_2d_num_m do
+					if obj < max_obj then	-- max number displayed objects
+						nd_on_off = 1
+						
+						if legs_num > 1 then
+							if wpt_2d_idx_m[ii] ~= legs_intdir_idx or legs_intdir ~= 1 then
+								if legs_data2[wpt_2d_idx_m[ii]][17] < 100 then
+									nd_on_off = 0
+								end
+							end
+						end
+						
+						if wpt_2d_x_m[ii] < -15.0 or wpt_2d_x_m[ii] > 15.0 then
+							nd_on_off = 0
+						end
+						if wpt_2d_y_m[ii] > 15.0 or wpt_2d_y_m[ii] < -5.0 then
+							nd_on_off = 0
+						end
+						
+						if wpt_2d_idx_m[ii] == (legs_intdir_idx - 1) and legs_intdir == 1 then
+							nd_on_off = 0
+							wpt_2d_idx_on_m[ii] = 1
+						end
+						
+						if nd_on_off == 1 then
+							-- waypoint
+							B738DR_wpt_x[obj] = wpt_2d_x_m[ii]
+							B738DR_wpt_y[obj] = wpt_2d_y_m[ii]
+							disp_type_m(obj, wpt_2d_idx_m[ii], 0)
+							
+							if legs_data2[wpt_2d_idx_m[ii]][31] == "HA" or legs_data2[wpt_2d_idx_m[ii]][31] == "HF" or legs_data2[wpt_2d_idx_m[ii]][31] == "HM" then
+								
+								disp_type_m(obj, wpt_2d_idx_m[ii], 1)
+								wpt_2d_idx_on_m[ii] = 1
+								
+								-- HOLD
+								if hold_obj < 5 then
+									
+									if wpt_2d_idx_m[ii] <= legs_num2 then
+										if legs_data2[wpt_2d_idx_m[ii]][31] == "HA" or legs_data2[wpt_2d_idx_m[ii]][31] == "HF" or legs_data2[wpt_2d_idx_m[ii]][31] == "HM" then
+										
+											B738DR_hold_x[hold_obj] = wpt_2d_x_m[ii]
+											B738DR_hold_y[hold_obj] = wpt_2d_y_m[ii]
+											B738DR_hold_crs[hold_obj] = ((tonumber(legs_data2[wpt_2d_idx_m[ii]][29]) / 10) - mag_hdg + 360) % 360
+											if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+												B738DR_hold_type[hold_obj] = legs_data2[wpt_2d_idx_m[ii]][21] + 21
+												B738DR_hold_dist[hold_obj] = calc_hold_dist2(wpt_2d_idx_m[ii])
+											elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+												B738DR_hold_type[hold_obj] = legs_data2[wpt_2d_idx_m[ii]][21] + 23
+												B738DR_hold_dist[hold_obj] = calc_hold_dist2(wpt_2d_idx_m[ii])
+											elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+												B738DR_hold_type[hold_obj] = legs_data2[wpt_2d_idx_m[ii]][21] + 25
+												B738DR_hold_dist[hold_obj] = calc_hold_dist2(wpt_2d_idx_m[ii])
+											elseif B738DR_efis_map_range_capt >= 3 then	-- 40 NM
+												B738DR_hold_type[hold_obj] = legs_data2[wpt_2d_idx_m[ii]][21] + 27
+											end
+											hold_obj = hold_obj + 1
+										end
+									end
+								end
+							
+							else
+								-- route
+								if legs_data2[wpt_2d_idx_m[ii]][17] > 99 or legs_num == 1 then
+									
+									B738DR_rte_x[obj] = wpt_2d_x_m[ii]
+									B738DR_rte_y[obj] = wpt_2d_y_m[ii]
+									
+									if legs_num == 1 then
+										B738DR_rte_edit[obj] = 2	-- 0-active, 1-mod, 2-not active
+									else
+										B738DR_rte_edit[obj] = 1	-- 0-active, 1-mod, 2-not active
+									end
+									
+									if wpt_2d_idx_m[ii] == legs_intdir_idx and legs_intdir == 1 then
+										B738DR_rte_show[obj] = 0
+										wpt_2d_idx_on_m[ii] = 1
+									elseif ii == wpt_2d_num_m then
+										if legs_data2[wpt_2d_idx_m[ii]][1] == "VECTOR" then
+											wpt_2d_idx_on_m[ii] = 1
+											B738DR_rte_show[obj] = 1
+											B738DR_rte_x[obj] = wpt_2d_x_m[ii]
+											B738DR_rte_y[obj] = wpt_2d_y_m[ii]
+											B738DR_rte_rot[obj] = (math.deg(legs_data2[wpt_2d_idx_m[ii]][2]) - mag_hdg + 360) % 360
+											B738DR_rte_dist[obj] = 15
+										else
+											B738DR_rte_show[obj] = 0
+										end
+									else
+										B738DR_rte_show[obj] = 1
+										wpt_2d_idx_on_m[ii] = 1
+										B738DR_rte_x[obj] = wpt_2d_x_m[ii]
+										B738DR_rte_y[obj] = wpt_2d_y_m[ii]
+										B738DR_rte_rot[obj] = calc_rotation(wpt_2d_x_m[ii], wpt_2d_y_m[ii], wpt_2d_x_m[ii+1], wpt_2d_y_m[ii+1])
+										if legs_data2[wpt_2d_idx_m[ii]][1] == "VECTOR" then
+											B738DR_rte_rot[obj] = (math.deg(legs_data2[wpt_2d_idx_m[ii]][2]) - mag_hdg + 360) % 360
+											B738DR_rte_dist[obj] = 15
+										elseif (wpt_2d_idx_m[ii] + 1) ~= wpt_2d_idx_m[ii+1] then
+											-- discontinuity
+											B738DR_rte_show[obj] = 0
+											wpt_2d_idx_on_m[ii] = 1
+										else
+											if wpt_2d_dist_m[ii+1] > 15 then
+												B738DR_rte_dist[obj] = 15
+											else
+												B738DR_rte_dist[obj] = wpt_2d_dist_m[ii+1]
+											end
+										end
+									end
+								else
+									B738DR_rte_show[obj] = 0
+								end
+								
+								if wpt_2d_idx_m[ii] == legs_intdir_idx and legs_intdir == 1 then
+									B738DR_rte_show[obj] = 0
+									wpt_2d_idx_on_m[ii] = 1
+								end
+								
+								obj = obj + 1
+							
+							end
+							
+							if ii > 1 then
+								if wpt_2d_idx_on_m[ii] == 0 and (legs_data2[wpt_2d_idx_m[ii]][17] > 99 or legs_num == 1) then
+									if obj < max_obj and ii < wpt_2d_num_m then	-- max number displayed objects
+										B738DR_wpt_x[obj] = wpt_2d_x_m[ii+1]
+										B738DR_wpt_y[obj] = wpt_2d_y_m[ii+1]
+										disp_type_m(obj, wpt_2d_idx_m[ii+1], 1)
+										B738DR_rte_show[obj] = 1
+										if legs_num == 1 then
+											B738DR_rte_edit[obj] = 2	-- 1-mod, 2-not active
+										else
+											B738DR_rte_edit[obj] = 1	-- 1-mod, 2-not active
+										end
+										B738DR_rte_x[obj] = wpt_2d_x_m[ii+1]
+										B738DR_rte_y[obj] = wpt_2d_y_m[ii+1]
+										B738DR_rte_rot[obj] = calc_rotation(wpt_2d_x_m[ii+1], wpt_2d_y_m[ii+1], wpt_2d_x_m[ii], wpt_2d_y_m[ii])
+										B738DR_rte_dist[obj] = 15
+										obj = obj + 1
+									end
+								end
+							end
+							
+						end
+						
+					end
+					
+					if wpt_2d_idx_m[ii] == legs_intdir_idx and legs_intdir == 1 then
+						rte_act_enable2 = 1
+						B738DR_rte_edit_show_act = 1
+						B738DR_rte_edit_type_act = 1
+						
+						if legs_intdir_crs2 == -1 then
+							rte_dist = nd_calc_dist2(ndx_lat, ndx_lon, legs_data2[wpt_2d_idx_m[ii]][7], legs_data2[wpt_2d_idx_m[ii]][8])
+							rte_dist = rte_dist * nd_zoom
+							delta_hdg = nd_calc_brg(ndx_lat, ndx_lon, legs_data2[wpt_2d_idx_m[ii]][7], legs_data2[wpt_2d_idx_m[ii]][8])
+							B738DR_rte_edit_rot_act = (delta_hdg - mag_hdg + 180) % 360
+						else
+							B738DR_rte_edit_rot_act = (legs_intdir_crs_mod - mag_hdg - simDR_mag_variation + 180 + 360) % 360
+							rte_dist = 15
+						end
+						
+						if wpt_2d_idx_on_m[ii] == 0 then
+							rte_dist = rte_dist - 15
+							-- calc x,y
+							B738DR_rte_edit_x_act, B738DR_rte_edit_y_act = calc_wpt_xy(wpt_2d_x_m[ii], wpt_2d_y_m[ii], B738DR_rte_edit_rot_act, rte_dist)
+							B738DR_rte_edit_dist_act = 15
+						else
+							B738DR_rte_edit_x_act = wpt_2d_x_m[ii]
+							B738DR_rte_edit_y_act = wpt_2d_y_m[ii]
+							if rte_dist > 15 then
+								rte_dist = 15
+							end
+							B738DR_rte_edit_dist_act = rte_dist
+						end
+						
+					end
+					
+				end
+			end
+			
+			if tc_idx == 0 or B738DR_flight_phase > 1 then
+				B738DR_tc_show = 0
+				B738DR_tc_id = ""
+			end
+			
+			if td_idx == 0 or B738DR_flight_phase > 4 or B738DR_vnav_td_dist < 0.5 then
+				B738DR_td_show = 0
+				B738DR_td_id = ""
+			end
+			
+			if decel_idx == 0 then
+				B738DR_decel_show = 0
+				B738DR_decel_id = ""
+			end
+			
+		end
+		
+		
+		-- FIRST OFFICIER
+		wpt_2d_dist = {}
+		wpt_2d_x = {}
+		wpt_2d_y = {}
+		wpt_2d_idx = {}
+		wpt_2d_idx_on = {}
+		wpt_2d_num = 0
+		
+		wpt_2d_dist_m = {}
+		wpt_2d_x_m = {}
+		wpt_2d_y_m = {}
+		wpt_2d_idx_m = {}
+		wpt_2d_idx_on_m = {}
+		wpt_2d_num_m = 0
+		
+		nd_shift = 0
+		
+		if B738DR_fo_map_mode == 3 then
+			if legs_step2 == 0 then
+				nd_lat = legs_data2[1][7]
+				nd_lon = legs_data2[1][8]
+			else
+				nd_lat = legs_data2[legs_step2][7]
+				nd_lon = legs_data2[legs_step2][8]
+			end
+			
+			mag_hdg = -simDR_mag_variation
+			if offset == 1 then
+				wpt_from = 1
+			else
+				wpt_from = offset - 1
+			end
+			rte_plan_mode = 1
+		elseif B738DR_fo_map_mode == 2 then
+			if B738DR_track_up == 0 then
+				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+			else
+				if B738DR_track_up_active == 0 then
+					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				else
+					mag_hdg = ndx_mag_hdg - simDR_mag_variation
+				end
+			end
+			rte_plan_mode = 0
+			if offset == 1 then
+				wpt_from = 1
+			else
+				wpt_from = offset - 1
+			end
+		else
+			nav_disable = 1
+		end
+		
+		if des_app == "------" then
+			wpt_to = legs_num + 1
+		else
+			wpt_to = legs_num
+		end
+		
+		if nav_disable == 0 then
+			
+			if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+				nd_zoom = 2
+			elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+				nd_zoom = 1
+			elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+				nd_zoom = 0.5
+			elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+				nd_zoom = 0.25
+			elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+				nd_zoom = 0.125
+			elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
+				nd_zoom = 0.0625
+			elseif B738DR_efis_map_range_fo == 6 then	-- 320 NM
+				nd_zoom = 0.03125
+			else	-- 640 NM
+				nd_zoom = 0.015625
+			end
+			
+			if rte_plan_mode == 1 then
+				nd_zoom = nd_zoom * 0.57
+			end
+			
+			if B738DR_fo_map_mode == 3 then
+				nd_shift = 4.1	-- adjust center
+			elseif B738DR_fo_vsd_map_mode == 1 then
+				nd_shift = 5.1	-- adjust center
+			elseif B738DR_fo_exp_map_mode == 0 then
+				nd_shift = 4.1	-- adjust center
+			end
+						
+			for n = wpt_from, wpt_to do
+			
+				if legs_data[n][1] ~= "DISCONTINUITY" then
+					
+					nd_lat2 = legs_data[n][7]
+					nd_lon2 = legs_data[n][8]
+					
+					nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					--nd_dis = nd_calc_dist9(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					
+					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					delta_hdg = calc_rel_brg(nd_hdg, mag_hdg)
+					delta_hdg_calc = delta_hdg
+					
+					if delta_hdg >= 0 and delta_hdg <= 90 then
+						-- right
+						delta_hdg = 90 - delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y = nd_dis * math.sin(delta_hdg)
+						nd_x = nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg < 0 and delta_hdg >= -90 then
+						-- left
+						delta_hdg = 90 + delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y = nd_dis * math.sin(delta_hdg)
+						nd_x = -nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg >= 90 then
+						-- right back
+						delta_hdg = delta_hdg - 90
+						delta_hdg = math.rad(delta_hdg)
+						nd_y = -nd_dis * math.sin(delta_hdg)
+						nd_x = nd_dis * math.cos(delta_hdg)
+					elseif delta_hdg <= -90 then
+						-- left back
+						delta_hdg = -90 - delta_hdg
+						delta_hdg = math.rad(delta_hdg)
+						nd_y = -nd_dis * math.sin(delta_hdg)
+						nd_x = -nd_dis * math.cos(delta_hdg)
+					end
+					
+					nd_x = nd_x * nd_zoom		-- zoom
+					nd_y = (nd_y * nd_zoom) + nd_shift		-- zoom		-- zoom
+					
+					wpt_2d_num = wpt_2d_num + 1
+					wpt_2d_dist[wpt_2d_num] = legs_data[n][3] * nd_zoom
+					wpt_2d_x[wpt_2d_num] = nd_x
+					wpt_2d_y[wpt_2d_num] = nd_y
+					wpt_2d_idx[wpt_2d_num] = n
+					wpt_2d_idx_on[wpt_2d_num] = 0
+				end
+			end
+			
+			
+			-- MOD LEGS
+			
+			if legs_num2 > 0 then
+			
+				if des_app2 == "------" then
+					wpt_to = legs_num2 + 1
+				else
+					wpt_to = legs_num2
+				end
+				
+				if wpt_from > wpt_to then
+					wpt_from = wpt_to
+				end
+				
+				for n = wpt_from, wpt_to do
+				
+					if legs_data2[n][1] ~= "DISCONTINUITY" then
+						
+						nd_lat2 = legs_data2[n][7]
+						nd_lon2 = legs_data2[n][8]
+						
+						nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
+						--nd_dis = nd_calc_dist9(nd_lat, nd_lon, nd_lat2, nd_lon2)
+						
+						nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+						delta_hdg = calc_rel_brg(nd_hdg, mag_hdg)
+						
+						if delta_hdg >= 0 and delta_hdg <= 90 then
+							-- right
+							delta_hdg = 90 - delta_hdg
+							delta_hdg = math.rad(delta_hdg)
+							nd_y = nd_dis * math.sin(delta_hdg)
+							nd_x = nd_dis * math.cos(delta_hdg)
+						elseif delta_hdg < 0 and delta_hdg >= -90 then
+							-- left
+							delta_hdg = 90 + delta_hdg
+							delta_hdg = math.rad(delta_hdg)
+							nd_y = nd_dis * math.sin(delta_hdg)
+							nd_x = -nd_dis * math.cos(delta_hdg)
+						elseif delta_hdg >= 90 then
+							-- right back
+							delta_hdg = delta_hdg - 90
+							delta_hdg = math.rad(delta_hdg)
+							nd_y = -nd_dis * math.sin(delta_hdg)
+							nd_x = nd_dis * math.cos(delta_hdg)
+						elseif delta_hdg <= -90 then
+							-- left back
+							delta_hdg = -90 - delta_hdg
+							delta_hdg = math.rad(delta_hdg)
+							nd_y = -nd_dis * math.sin(delta_hdg)
+							nd_x = -nd_dis * math.cos(delta_hdg)
+						end
+						
+						nd_x = nd_x * nd_zoom		-- zoom
+						nd_y = (nd_y * nd_zoom) + nd_shift		-- zoom
+						
+						wpt_2d_num_m = wpt_2d_num_m + 1
+						wpt_2d_dist_m[wpt_2d_num_m] = legs_data2[n][3] * nd_zoom
+						wpt_2d_x_m[wpt_2d_num_m] = nd_x
+						wpt_2d_y_m[wpt_2d_num_m] = nd_y
+						wpt_2d_idx_m[wpt_2d_num_m] = n
+						wpt_2d_idx_on_m[wpt_2d_num_m] = 0
+						
+					end
+				end
+			end
+			
+			-- Draw on ND
+			if wpt_2d_num > 0 then
+				for ii = 1, wpt_2d_num do
+					if obj2 < max_obj then	-- max number displayed objects
+						nd_on_off = 1
+						if wpt_2d_x[ii] < -15.0 or wpt_2d_x[ii] > 15.0 then
+							nd_on_off = 0
+						end
+						if wpt_2d_y[ii] > 15.0 or wpt_2d_y[ii] < -5.0 then
+							nd_on_off = 0
+						end
+						
+						-- before offset
+						if legs_intdir_act == 1 and wpt_2d_idx[ii] == (offset - 1) then
+							nd_on_off = 0
+							wpt_2d_idx_on[ii] = 1
+						end
+						
+						if nd_on_off == 1 then
+							-- waypoint
+							B738DR_wpt_fo_x[obj2] = wpt_2d_x[ii]
+							B738DR_wpt_fo_y[obj2] = wpt_2d_y[ii]
+							disp_type_fo(obj2, wpt_2d_idx[ii], B738DR_efis_data_fo_status, 0)
+							
+							-- route
+							if legs_num == 1 then
+								B738DR_rte_fo_show[obj2] = 0
+								wpt_2d_idx_on[ii] = 1
+							else
+								if B738DR_missed_app_act == 0 and (wpt_2d_idx[ii]+1) >= first_miss_app_idx and (wpt_2d_idx[ii]+1) <= last_miss_app_idx then
+									B738DR_rte_fo_edit[obj2] = 2	-- blue
+								else
+									B738DR_rte_fo_edit[obj2] = 0	-- magenta
+								end
+								
+								if ii == wpt_2d_num then
+									if legs_data[wpt_2d_idx[ii]][1] == "VECTOR" then
+										wpt_2d_idx_on[ii] = 1
+										B738DR_rte_fo_show[obj2] = 1
+										B738DR_rte_fo_x[obj2] = wpt_2d_x[ii]
+										B738DR_rte_fo_y[obj2] = wpt_2d_y[ii]
+										B738DR_rte_fo_rot[obj2] = (math.deg(legs_data[wpt_2d_idx[ii]][2]) - mag_hdg + 360) % 360
+										B738DR_rte_fo_dist[obj2] = 15
+									else
+										B738DR_rte_fo_show[obj2] = 0
+									end
+								else
+									wpt_2d_idx_on[ii] = 1
+									B738DR_rte_fo_show[obj2] = 1
+									B738DR_rte_fo_x[obj2] = wpt_2d_x[ii]
+									B738DR_rte_fo_y[obj2] = wpt_2d_y[ii]
+									B738DR_rte_fo_rot[obj2] = calc_rotation(wpt_2d_x[ii], wpt_2d_y[ii], wpt_2d_x[ii+1], wpt_2d_y[ii+1])
+									if legs_data[wpt_2d_idx[ii]][1] == "VECTOR" then
+										B738DR_rte_fo_rot[obj2] = (math.deg(legs_data[wpt_2d_idx[ii]][2]) - mag_hdg + 360) % 360
+										B738DR_rte_fo_dist[obj2] = 15
+									elseif (wpt_2d_idx[ii] + 1) ~= wpt_2d_idx[ii+1] then
+										-- discontinuity
+										B738DR_rte_fo_show[obj2] = 0
+										wpt_2d_idx_on[ii] = 1
+									else
+										if wpt_2d_dist[ii+1] > 15 then
+											B738DR_rte_fo_dist[obj2] = 15
+										else
+											B738DR_rte_fo_dist[obj2] = wpt_2d_dist[ii+1]
+										end
+									end
+								end
+							end
+							
+							obj2 = obj2 + 1
+							
+							if ii > 1 then
+								if wpt_2d_idx_on[ii-1] == 0 and (wpt_2d_idx[ii] - 1) == wpt_2d_idx[ii-1] then
+									if obj2 < max_obj then	-- max number displayed objects
+										B738DR_wpt_fo_x[obj2] = wpt_2d_x[ii]
+										B738DR_wpt_fo_y[obj2] = wpt_2d_y[ii]
+										disp_type_fo(obj2, wpt_2d_idx[ii], B738DR_efis_data_fo_status, 1)
+										
+										B738DR_rte_fo_show[obj2] = 1
+										B738DR_rte_fo_x[obj2] = wpt_2d_x[ii]
+										B738DR_rte_fo_y[obj2] = wpt_2d_y[ii]
+										B738DR_rte_fo_rot[obj2] = calc_rotation(wpt_2d_x[ii], wpt_2d_y[ii], wpt_2d_x[ii-1], wpt_2d_y[ii-1])
+										B738DR_rte_fo_dist[obj2] = 15
+										obj2 = obj2 + 1
+									end
+								end
+							end
+							
+							-- HOLD
+							if hold_obj_fo < 5 then
+								
+								if wpt_2d_idx[ii] == offset then
+									if legs_data[wpt_2d_idx[ii]][31] == "HA" or legs_data[wpt_2d_idx[ii]][31] == "HF" or legs_data[wpt_2d_idx[ii]][31] == "HM" then
+										B738DR_hold_fo_x[hold_obj_fo] = wpt_2d_x[ii]
+										B738DR_hold_fo_y[hold_obj_fo] = wpt_2d_y[ii]
+										B738DR_hold_fo_crs[hold_obj_fo] = ((tonumber(legs_data[wpt_2d_idx[ii]][29]) / 10) - mag_hdg + 360) % 360
+										if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+											B738DR_hold_fo_type[hold_obj_fo] = legs_data[wpt_2d_idx[ii]][21] + 1
+											B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(wpt_2d_idx[ii])
+										elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+											B738DR_hold_fo_type[hold_obj_fo] = legs_data[wpt_2d_idx[ii]][21] + 3
+											B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(wpt_2d_idx[ii])
+										elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+											B738DR_hold_fo_type[hold_obj_fo] = legs_data[wpt_2d_idx[ii]][21] + 5
+											B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(wpt_2d_idx[ii])
+										elseif B738DR_efis_map_range_fo >= 3 then	-- 40 NM
+											B738DR_hold_fo_type[hold_obj_fo] = legs_data[wpt_2d_idx[ii]][21] + 7
+										end
+										hold_obj_fo = hold_obj_fo + 1
+									end
+								else
+									if wpt_2d_idx[ii] <= legs_num then
+										if legs_data[wpt_2d_idx[ii]+1][31] == "HA" or legs_data[wpt_2d_idx[ii]+1][31] == "HF" or legs_data[wpt_2d_idx[ii]+1][31] == "HM" then
+										
+											if B738DR_missed_app_act == 0 and (wpt_2d_idx[ii]+1) >= first_miss_app_idx and (wpt_2d_idx[ii]+1) <= last_miss_app_idx then
+												rte_dist = 30	-- blue
+											else
+												rte_dist = 0
+											end
+											
+											B738DR_hold_fo_x[hold_obj_fo] = wpt_2d_x[ii]
+											B738DR_hold_fo_y[hold_obj_fo] = wpt_2d_y[ii]
+											B738DR_hold_fo_crs[hold_obj_fo] = ((tonumber(legs_data[wpt_2d_idx[ii]+1][29]) / 10) - mag_hdg + 360) % 360
+											if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+												B738DR_hold_fo_type[hold_obj_fo] = legs_data[wpt_2d_idx[ii]+1][21] + 1 + rte_dist
+												B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(wpt_2d_idx[ii]+1)
+											elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+												B738DR_hold_fo_type[hold_obj_fo] = legs_data[wpt_2d_idx[ii]+1][21] + 3 + rte_dist
+												B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(wpt_2d_idx[ii]+1)
+											elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+												B738DR_hold_fo_type[hold_obj_fo] = legs_data[wpt_2d_idx[ii]+1][21] + 5 + rte_dist
+												B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(wpt_2d_idx[ii]+1)
+											elseif B738DR_efis_map_range_fo >= 3 then	-- 40 NM
+												B738DR_hold_fo_type[hold_obj_fo] = legs_data[wpt_2d_idx[ii]+1][21] + 7 + rte_dist
+											end
+											hold_obj_fo = hold_obj_fo + 1
+										end
+									end
+								end
+							end
+						end
+						
+					end
+					
+					-- direct
+					if wpt_2d_idx[ii] == offset then
+						if legs_intdir_act == 0 then
+							if ii > 1 then
+								if wpt_2d_idx_on[ii] == 0 and wpt_2d_idx_on[ii-1] == 0 then
+									B738DR_rte_fo_show_act = 1
+									rte_act_enable_fo = 1
+									-- calc temp wpt
+									B738DR_rte_fo_rot_act = calc_rotation(wpt_2d_x[ii], wpt_2d_y[ii], wpt_2d_x[ii-1], wpt_2d_y[ii-1])
+									rte_dist = (simDR_fmc_dist * nd_zoom) - 12.5
+									-- calc x,y
+									B738DR_rte_fo_x_act, B738DR_rte_fo_y_act = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], B738DR_rte_fo_rot_act, rte_dist)
+									B738DR_rte_fo_dist_act = 15
+								end
+							end
+						else
+							B738DR_rte_fo_show_act = 1
+							rte_act_enable_fo = 1
+							if wpt_2d_idx_on[ii] == 0 then
+								-- calc temp wpt
+								B738DR_rte_fo_rot_act = (simDR_fmc_trk - mag_hdg + 180) % 360
+								rte_dist = (simDR_fmc_dist * nd_zoom) - 15
+								-- calc x,y
+								B738DR_rte_fo_x_act, B738DR_rte_fo_y_act = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], B738DR_rte_fo_rot_act, rte_dist)
+								B738DR_rte_fo_dist_act = 15
+							else
+								B738DR_rte_fo_x_act = wpt_2d_x[ii]
+								B738DR_rte_fo_y_act = wpt_2d_y[ii]
+								B738DR_rte_fo_rot_act = (simDR_fmc_trk - mag_hdg + 180) % 360
+								rte_dist = simDR_fmc_dist * nd_zoom
+								if rte_dist > 15 then
+									rte_dist = 15
+								end
+								B738DR_rte_fo_dist_act = rte_dist
+							end
+						end
+					end
+					
+					if ii > 1 then
+						-- T/C
+						if wpt_2d_idx[ii] == tc_idx and tc_idx ~= 0 then
+							if legs_intdir_act == 1 and wpt_2d_idx[ii] == offset then
+								-- calc angle
+								delta_hdg = (simDR_fmc_trk - mag_hdg + 180) % 360
+								rte_dist = tc_dist * nd_zoom
+								-- calc x,y
+								B738DR_tc_fo_x, B738DR_tc_fo_y = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], delta_hdg, rte_dist)
+								B738DR_tc_fo_id = "T/C"
+								B738DR_tc_fo_show = 1
+							else
+								-- calc angle
+								delta_hdg = calc_rotation(wpt_2d_x[ii], wpt_2d_y[ii], wpt_2d_x[ii-1], wpt_2d_y[ii-1])
+								rte_dist = tc_dist * nd_zoom
+								-- calc x,y
+								B738DR_tc_fo_x, B738DR_tc_fo_y = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], delta_hdg, rte_dist)
+								B738DR_tc_fo_id = "T/C"
+								B738DR_tc_fo_show = 1
+							end
+						end
+						
+						-- T/D
+						if wpt_2d_idx[ii] == td_idx and td_idx ~= 0 then
+							if legs_intdir_act == 1 and wpt_2d_idx[ii] == offset then
+								-- calc angle
+								delta_hdg = (simDR_fmc_trk - mag_hdg + 180) % 360
+								rte_dist = td_dist * nd_zoom
+								-- calc x,y
+								B738DR_td_fo_x, B738DR_td_fo_y = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], delta_hdg, rte_dist)
+								B738DR_td_fo_id = "T/D"
+								B738DR_td_fo_show = 1
+							else
+								-- calc angle
+								delta_hdg = calc_rotation(wpt_2d_x[ii], wpt_2d_y[ii], wpt_2d_x[ii-1], wpt_2d_y[ii-1])
+								rte_dist = td_dist * nd_zoom
+								-- calc x,y
+								B738DR_td_fo_x, B738DR_td_fo_y = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], delta_hdg, rte_dist)
+								B738DR_td_fo_id = "T/D"
+								B738DR_td_fo_show = 1
+							end
+						end
+						
+						-- DECEL
+						if wpt_2d_idx[ii] == decel_idx and decel_idx ~= 0 then
+							if legs_intdir_act == 1 and wpt_2d_idx[ii] == offset then
+								-- calc angle
+								delta_hdg = (simDR_fmc_trk - mag_hdg + 180) % 360
+								rte_dist = decel_dist * nd_zoom
+								-- calc x,y
+								B738DR_decel_fo_x, B738DR_decel_fo_y = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], delta_hdg, rte_dist)
+								B738DR_decel_fo_id = "DECEL"
+								B738DR_decel_fo_show = 1
+							else
+								-- calc angle
+								delta_hdg = calc_rotation(wpt_2d_x[ii], wpt_2d_y[ii], wpt_2d_x[ii-1], wpt_2d_y[ii-1])
+								rte_dist = decel_dist * nd_zoom
+								-- calc x,y
+								B738DR_decel_fo_x, B738DR_decel_fo_y = calc_wpt_xy(wpt_2d_x[ii], wpt_2d_y[ii], delta_hdg, rte_dist)
+								B738DR_decel_fo_id = "DECEL"
+								B738DR_decel_fo_show = 1
+							end
+						end
+					end
+					
+					
+				end
+			end
+			
+			-- Draw on ND mod
+			if wpt_2d_num_m > 0 then
+				for ii = 1, wpt_2d_num_m do
+					if obj2 < max_obj then	-- max number displayed objects
+						nd_on_off = 1
+						
+						if legs_num > 1 then
+							if wpt_2d_idx_m[ii] ~= legs_intdir_idx or legs_intdir ~= 1 then
+								if legs_data2[wpt_2d_idx_m[ii]][17] < 100 then
+									nd_on_off = 0
+								end
+							end
+						end
+						
+						if wpt_2d_x_m[ii] < -15.0 or wpt_2d_x_m[ii] > 15.0 then
+							nd_on_off = 0
+						end
+						if wpt_2d_y_m[ii] > 15.0 or wpt_2d_y_m[ii] < -5.0 then
+							nd_on_off = 0
+						end
+						
+						if wpt_2d_idx_m[ii] == (legs_intdir_idx - 1) and legs_intdir == 1 then
+							nd_on_off = 0
+							wpt_2d_idx_on_m[ii] = 1
+						end
+						
+						if nd_on_off == 1 then
+							-- waypoint
+							B738DR_wpt_fo_x[obj2] = wpt_2d_x_m[ii]
+							B738DR_wpt_fo_y[obj2] = wpt_2d_y_m[ii]
+							disp_type_m_fo(obj2, wpt_2d_idx_m[ii], 0)
+							
+							if legs_data2[wpt_2d_idx_m[ii]][31] == "HA" or legs_data2[wpt_2d_idx_m[ii]][31] == "HF" or legs_data2[wpt_2d_idx_m[ii]][31] == "HM" then
+								
+								disp_type_m_fo(obj2, wpt_2d_idx_m[ii], 1)
+								wpt_2d_idx_on_m[ii] = 1
+								
+								-- HOLD
+								if hold_obj < 5 then
+									
+									if wpt_2d_idx_m[ii] <= legs_num2 then
+										if legs_data2[wpt_2d_idx_m[ii]][31] == "HA" or legs_data2[wpt_2d_idx_m[ii]][31] == "HF" or legs_data2[wpt_2d_idx_m[ii]][31] == "HM" then
+										
+											B738DR_hold_fo_x[hold_obj] = wpt_2d_x_m[ii]
+											B738DR_hold_fo_y[hold_obj] = wpt_2d_y_m[ii]
+											B738DR_hold_fo_crs[hold_obj] = ((tonumber(legs_data2[wpt_2d_idx_m[ii]][29]) / 10) - mag_hdg + 360) % 360
+											if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+												B738DR_hold_fo_type[hold_obj] = legs_data2[wpt_2d_idx_m[ii]][21] + 21
+												B738DR_hold_fo_dist[hold_obj] = calc_hold_dist2(wpt_2d_idx_m[ii])
+											elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+												B738DR_hold_fo_type[hold_obj] = legs_data2[wpt_2d_idx_m[ii]][21] + 23
+												B738DR_hold_fo_dist[hold_obj] = calc_hold_dist2(wpt_2d_idx_m[ii])
+											elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+												B738DR_hold_fo_type[hold_obj] = legs_data2[wpt_2d_idx_m[ii]][21] + 25
+												B738DR_hold_fo_dist[hold_obj] = calc_hold_dist2(wpt_2d_idx_m[ii])
+											elseif B738DR_efis_map_range_capt >= 3 then	-- 40 NM
+												B738DR_hold_fo_type[hold_obj] = legs_data2[wpt_2d_idx_m[ii]][21] + 27
+											end
+											hold_obj_fo = hold_obj_fo + 1
+										end
+									end
+								end
+							
+							else
+								-- route
+								if legs_data2[wpt_2d_idx_m[ii]][17] > 99 or legs_num == 1 then
+									
+									B738DR_rte_fo_x[obj2] = wpt_2d_x_m[ii]
+									B738DR_rte_fo_y[obj2] = wpt_2d_y_m[ii]
+									
+									if legs_num == 1 then
+										B738DR_rte_fo_edit[obj2] = 2	-- 0-active, 1-mod, 2-not active
+									else
+										B738DR_rte_fo_edit[obj2] = 1	-- 0-active, 1-mod, 2-not active
+									end
+									
+									if wpt_2d_idx_m[ii] == legs_intdir_idx and legs_intdir == 1 then
+										B738DR_rte_fo_show[obj2] = 0
+										wpt_2d_idx_on_m[ii] = 1
+									elseif ii == wpt_2d_num_m then
+										if legs_data2[wpt_2d_idx_m[ii]][1] == "VECTOR" then
+											wpt_2d_idx_on_m[ii] = 1
+											B738DR_rte_fo_show[obj2] = 1
+											B738DR_rte_fo_x[obj2] = wpt_2d_x_m[ii]
+											B738DR_rte_fo_y[obj2] = wpt_2d_y_m[ii]
+											B738DR_rte_fo_rot[obj2] = (math.deg(legs_data2[wpt_2d_idx_m[ii]][2]) - mag_hdg + 360) % 360
+											B738DR_rte_fo_dist[obj2] = 15
+										else
+											B738DR_rte_fo_show[obj2] = 0
+										end
+									else
+										B738DR_rte_fo_show[obj2] = 1
+										wpt_2d_idx_on_m[ii] = 1
+										B738DR_rte_fo_x[obj2] = wpt_2d_x_m[ii]
+										B738DR_rte_fo_y[obj2] = wpt_2d_y_m[ii]
+										B738DR_rte_fo_rot[obj2] = calc_rotation(wpt_2d_x_m[ii], wpt_2d_y_m[ii], wpt_2d_x_m[ii+1], wpt_2d_y_m[ii+1])
+										if legs_data2[wpt_2d_idx_m[ii]][1] == "VECTOR" then
+											B738DR_rte_fo_rot[obj2] = (math.deg(legs_data2[wpt_2d_idx_m[ii]][2]) - mag_hdg + 360) % 360
+											B738DR_rte_fo_dist[obj2] = 15
+										elseif (wpt_2d_idx_m[ii] + 1) ~= wpt_2d_idx_m[ii+1] then
+											-- discontinuity
+											B738DR_rte_fo_show[obj2] = 0
+											wpt_2d_idx_on_m[ii] = 1
+										else
+											if wpt_2d_dist_m[ii+1] > 15 then
+												B738DR_rte_fo_dist[obj2] = 15
+											else
+												B738DR_rte_fo_dist[obj2] = wpt_2d_dist_m[ii+1]
+											end
+										end
+									end
+								else
+									B738DR_rte_fo_show[obj2] = 0
+								end
+								
+								if wpt_2d_idx_m[ii] == legs_intdir_idx and legs_intdir == 1 then
+									B738DR_rte_fo_show[obj2] = 0
+									wpt_2d_idx_on_m[ii] = 1
+								end
+								
+								obj2 = obj2 + 1
+							
+							end
+							
+							if ii > 1 then
+								if wpt_2d_idx_on_m[ii] == 0 and (legs_data2[wpt_2d_idx_m[ii]][17] > 99 or legs_num == 1) then
+									if obj2 < max_obj and ii < wpt_2d_num_m then	-- max number displayed objects
+										B738DR_wpt_fo_x[obj2] = wpt_2d_x_m[ii+1]
+										B738DR_wpt_fo_y[obj2] = wpt_2d_y_m[ii+1]
+										disp_type_m_fo(obj2, wpt_2d_idx_m[ii+1], 1)
+										B738DR_rte_fo_show[obj2] = 1
+										if legs_num == 1 then
+											B738DR_rte_fo_edit[obj2] = 2	-- 1-mod, 2-not active
+										else
+											B738DR_rte_fo_edit[obj2] = 1	-- 1-mod, 2-not active
+										end
+										B738DR_rte_fo_x[obj2] = wpt_2d_x_m[ii+1]
+										B738DR_rte_fo_y[obj2] = wpt_2d_y_m[ii+1]
+										B738DR_rte_fo_rot[obj2] = calc_rotation(wpt_2d_x_m[ii+1], wpt_2d_y_m[ii+1], wpt_2d_x_m[ii], wpt_2d_y_m[ii])
+										B738DR_rte_fo_dist[obj2] = 15
+										obj2 = obj2 + 1
+									end
+								end
+							end
+							
+						end
+						
+					end
+					
+					if wpt_2d_idx_m[ii] == legs_intdir_idx and legs_intdir == 1 then
+						rte_act_enable2_fo = 1
+						B738DR_rte_fo_edit_show_act = 1
+						B738DR_rte_fo_edit_type_act = 1
+						
+						if legs_intdir_crs2 == -1 then
+							rte_dist = nd_calc_dist2(ndx_lat, ndx_lon, legs_data2[wpt_2d_idx_m[ii]][7], legs_data2[wpt_2d_idx_m[ii]][8])
+							rte_dist = rte_dist * nd_zoom
+							delta_hdg = nd_calc_brg(ndx_lat, ndx_lon, legs_data2[wpt_2d_idx_m[ii]][7], legs_data2[wpt_2d_idx_m[ii]][8])
+							B738DR_rte_fo_edit_rot_act = (delta_hdg - mag_hdg + 180) % 360
+						else
+							B738DR_rte_fo_edit_rot_act = (legs_intdir_crs_mod - mag_hdg - simDR_mag_variation + 180 + 360) % 360
+							rte_dist = 15
+						end
+						
+						if wpt_2d_idx_on_m[ii] == 0 then
+							rte_dist = rte_dist - 15
+							-- calc x,y
+							B738DR_rte_fo_edit_x_act, B738DR_rte_fo_edit_y_act = calc_wpt_xy(wpt_2d_x_m[ii], wpt_2d_y_m[ii], B738DR_rte_fo_edit_rot_act, rte_dist)
+							B738DR_rte_fo_edit_dist_act = 15
+						else
+							B738DR_rte_fo_edit_x_act = wpt_2d_x_m[ii]
+							B738DR_rte_fo_edit_y_act = wpt_2d_y_m[ii]
+							if rte_dist > 15 then
+								rte_dist = 15
+							end
+							B738DR_rte_fo_edit_dist_act = rte_dist
+						end
+						
+					end
+					
+					
+				end
+			end
+			
+			if tc_idx == 0 or B738DR_flight_phase > 1 then
+				B738DR_tc_fo_show = 0
+				B738DR_tc_fo_id = ""
+			end
+			
+			if td_idx == 0 or B738DR_flight_phase > 4 or B738DR_vnav_td_dist < 0.5 then
+				B738DR_td_fo_show = 0
+				B738DR_td_fo_id = ""
+			end
+			
+			if decel_idx == 0 then
+				B738DR_decel_fo_show = 0
+				B738DR_decel_fo_id = ""
+			end
+			
+		end
+	end
+	
+		--B738DR_fms_test = obj
+			
+	-- turn off unused objects
+	if obj < max_obj then
+		for n = obj, max_obj-1 do
+			if n == 0 then
+				B738DR_wpt_id00w = ""
+				B738DR_wpt_alt00w = ""
+				B738DR_wpt_eta00w = ""
+				B738DR_wpt_id00m = ""
+				B738DR_wpt_alt00m = ""
+				B738DR_wpt_eta00m = ""
+				B738DR_wpt_type00 = 0
+			elseif n == 1 then
+				B738DR_wpt_id01w = ""
+				B738DR_wpt_alt01w = ""
+				B738DR_wpt_eta01w = ""
+				B738DR_wpt_id01m = ""
+				B738DR_wpt_alt01m = ""
+				B738DR_wpt_eta01m = ""
+				B738DR_wpt_type01 = 0
+			elseif n == 2 then
+				B738DR_wpt_id02w = ""
+				B738DR_wpt_alt02w = ""
+				B738DR_wpt_eta02w = ""
+				B738DR_wpt_id02m = ""
+				B738DR_wpt_alt02m = ""
+				B738DR_wpt_eta02m = ""
+				B738DR_wpt_type02 = 0
+			elseif n == 3 then
+				B738DR_wpt_id03w = ""
+				B738DR_wpt_alt03w = ""
+				B738DR_wpt_eta03w = ""
+				B738DR_wpt_id03m = ""
+				B738DR_wpt_alt03m = ""
+				B738DR_wpt_eta03m = ""
+				B738DR_wpt_type03 = 0
+			elseif n == 4 then
+				B738DR_wpt_id04w = ""
+				B738DR_wpt_alt04w = ""
+				B738DR_wpt_eta04w = ""
+				B738DR_wpt_id04m = ""
+				B738DR_wpt_alt04m = ""
+				B738DR_wpt_eta04m = ""
+				B738DR_wpt_type04 = 0
+			elseif n == 5 then
+				B738DR_wpt_id05w = ""
+				B738DR_wpt_alt05w = ""
+				B738DR_wpt_eta05w = ""
+				B738DR_wpt_id05m = ""
+				B738DR_wpt_alt05m = ""
+				B738DR_wpt_eta05m = ""
+				B738DR_wpt_type05 = 0
+			elseif n == 6 then
+				B738DR_wpt_id06w = ""
+				B738DR_wpt_alt06w = ""
+				B738DR_wpt_eta06w = ""
+				B738DR_wpt_id06m = ""
+				B738DR_wpt_alt06m = ""
+				B738DR_wpt_eta06m = ""
+				B738DR_wpt_type06 = 0
+			elseif n == 7 then
+				B738DR_wpt_id07w = ""
+				B738DR_wpt_alt07w = ""
+				B738DR_wpt_eta07w = ""
+				B738DR_wpt_id07m = ""
+				B738DR_wpt_alt07m = ""
+				B738DR_wpt_eta07m = ""
+				B738DR_wpt_type07 = 0
+			elseif n == 8 then
+				B738DR_wpt_id08w = ""
+				B738DR_wpt_alt08w = ""
+				B738DR_wpt_eta08w = ""
+				B738DR_wpt_id08m = ""
+				B738DR_wpt_alt08m = ""
+				B738DR_wpt_eta08m = ""
+				B738DR_wpt_type08 = 0
+			elseif n == 9 then
+				B738DR_wpt_id09w = ""
+				B738DR_wpt_alt09w = ""
+				B738DR_wpt_eta09w = ""
+				B738DR_wpt_id09m = ""
+				B738DR_wpt_alt09m = ""
+				B738DR_wpt_eta09m = ""
+				B738DR_wpt_type09 = 0
+			elseif n == 10 then
+				B738DR_wpt_id10w = ""
+				B738DR_wpt_alt10w = ""
+				B738DR_wpt_eta10w = ""
+				B738DR_wpt_id10m = ""
+				B738DR_wpt_alt10m = ""
+				B738DR_wpt_eta10m = ""
+				B738DR_wpt_type10 = 0
+			elseif n == 11 then
+				B738DR_wpt_id11w = ""
+				B738DR_wpt_alt11w = ""
+				B738DR_wpt_eta11w = ""
+				B738DR_wpt_id11m = ""
+				B738DR_wpt_alt11m = ""
+				B738DR_wpt_eta11m = ""
+				B738DR_wpt_type11 = 0
+			elseif n == 12 then
+				B738DR_wpt_id12w = ""
+				B738DR_wpt_alt12w = ""
+				B738DR_wpt_eta12w = ""
+				B738DR_wpt_id12m = ""
+				B738DR_wpt_alt12m = ""
+				B738DR_wpt_eta12m = ""
+				B738DR_wpt_type12 = 0
+			elseif n == 13 then
+				B738DR_wpt_id13w = ""
+				B738DR_wpt_alt13w = ""
+				B738DR_wpt_eta13w = ""
+				B738DR_wpt_id13m = ""
+				B738DR_wpt_alt13m = ""
+				B738DR_wpt_eta13m = ""
+				B738DR_wpt_type13 = 0
+			elseif n == 14 then
+				B738DR_wpt_id14w = ""
+				B738DR_wpt_alt14w = ""
+				B738DR_wpt_eta14w = ""
+				B738DR_wpt_id14m = ""
+				B738DR_wpt_alt14m = ""
+				B738DR_wpt_eta14m = ""
+				B738DR_wpt_type14 = 0
+			elseif n == 15 then
+				B738DR_wpt_id15w = ""
+				B738DR_wpt_alt15w = ""
+				B738DR_wpt_eta15w = ""
+				B738DR_wpt_id15m = ""
+				B738DR_wpt_alt15m = ""
+				B738DR_wpt_eta15m = ""
+				B738DR_wpt_type15 = 0
+			elseif n == 16 then
+				B738DR_wpt_id16w = ""
+				B738DR_wpt_alt16w = ""
+				B738DR_wpt_eta16w = ""
+				B738DR_wpt_id16m = ""
+				B738DR_wpt_alt16m = ""
+				B738DR_wpt_eta16m = ""
+				B738DR_wpt_type16 = 0
+			elseif n == 17 then
+				B738DR_wpt_id17w = ""
+				B738DR_wpt_alt17w = ""
+				B738DR_wpt_eta17w = ""
+				B738DR_wpt_id17m = ""
+				B738DR_wpt_alt17m = ""
+				B738DR_wpt_eta17m = ""
+				B738DR_wpt_type17 = 0
+			elseif n == 18 then
+				B738DR_wpt_id18w = ""
+				B738DR_wpt_alt18w = ""
+				B738DR_wpt_eta18w = ""
+				B738DR_wpt_id18m = ""
+				B738DR_wpt_alt18m = ""
+				B738DR_wpt_eta18m = ""
+				B738DR_wpt_type18 = 0
+			elseif n == 19 then
+				B738DR_wpt_id19w = ""
+				B738DR_wpt_alt19w = ""
+				B738DR_wpt_eta19w = ""
+				B738DR_wpt_id19m = ""
+				B738DR_wpt_alt19m = ""
+				B738DR_wpt_eta19m = ""
+				B738DR_wpt_type19 = 0
+			end
+			
+			B738DR_rte_show[n] = 0
+		end
+	end
+	
+	if rte_act_enable == 0 then
+		B738DR_rte_show_act = 0
+	end
+	if rte_act_enable2 == 0 then
+		B738DR_rte_edit_show_act = 0
+	end
+	
+	if obj2 < max_obj then
+		for n = obj2, max_obj-1 do
+			if n == 0 then
+				B738DR_wpt_fo_id00w = ""
+				B738DR_wpt_fo_alt00w = ""
+				B738DR_wpt_fo_eta00w = ""
+				B738DR_wpt_fo_id00m = ""
+				B738DR_wpt_fo_alt00m = ""
+				B738DR_wpt_fo_eta00m = ""
+				B738DR_wpt_fo_type00 = 0
+			elseif n == 1 then
+				B738DR_wpt_fo_id01w = ""
+				B738DR_wpt_fo_alt01w = ""
+				B738DR_wpt_fo_eta01w = ""
+				B738DR_wpt_fo_id01m = ""
+				B738DR_wpt_fo_alt01m = ""
+				B738DR_wpt_fo_eta01m = ""
+				B738DR_wpt_fo_type01 = 0
+			elseif n == 2 then
+				B738DR_wpt_fo_id02w = ""
+				B738DR_wpt_fo_alt02w = ""
+				B738DR_wpt_fo_eta02w = ""
+				B738DR_wpt_fo_id02m = ""
+				B738DR_wpt_fo_alt02m = ""
+				B738DR_wpt_fo_eta02m = ""
+				B738DR_wpt_fo_type02 = 0
+			elseif n == 3 then
+				B738DR_wpt_fo_id03w = ""
+				B738DR_wpt_fo_alt03w = ""
+				B738DR_wpt_fo_eta03w = ""
+				B738DR_wpt_fo_id03m = ""
+				B738DR_wpt_fo_alt03m = ""
+				B738DR_wpt_fo_eta03m = ""
+				B738DR_wpt_fo_type03 = 0
+			elseif n == 4 then
+				B738DR_wpt_fo_id04w = ""
+				B738DR_wpt_fo_alt04w = ""
+				B738DR_wpt_fo_eta04w = ""
+				B738DR_wpt_fo_id04m = ""
+				B738DR_wpt_fo_alt04m = ""
+				B738DR_wpt_fo_eta04m = ""
+				B738DR_wpt_fo_type04 = 0
+			elseif n == 5 then
+				B738DR_wpt_fo_id05w = ""
+				B738DR_wpt_fo_alt05w = ""
+				B738DR_wpt_fo_eta05w = ""
+				B738DR_wpt_fo_id05m = ""
+				B738DR_wpt_fo_alt05m = ""
+				B738DR_wpt_fo_eta05m = ""
+				B738DR_wpt_fo_type05 = 0
+			elseif n == 6 then
+				B738DR_wpt_fo_id06w = ""
+				B738DR_wpt_fo_alt06w = ""
+				B738DR_wpt_fo_eta06w = ""
+				B738DR_wpt_fo_id06m = ""
+				B738DR_wpt_fo_alt06m = ""
+				B738DR_wpt_fo_eta06m = ""
+				B738DR_wpt_fo_type06 = 0
+			elseif n == 7 then
+				B738DR_wpt_fo_id07w = ""
+				B738DR_wpt_fo_alt07w = ""
+				B738DR_wpt_fo_eta07w = ""
+				B738DR_wpt_fo_id07m = ""
+				B738DR_wpt_fo_alt07m = ""
+				B738DR_wpt_fo_eta07m = ""
+				B738DR_wpt_fo_type07 = 0
+			elseif n == 8 then
+				B738DR_wpt_fo_id08w = ""
+				B738DR_wpt_fo_alt08w = ""
+				B738DR_wpt_fo_eta08w = ""
+				B738DR_wpt_fo_id08m = ""
+				B738DR_wpt_fo_alt08m = ""
+				B738DR_wpt_fo_eta08m = ""
+				B738DR_wpt_fo_type08 = 0
+			elseif n == 9 then
+				B738DR_wpt_fo_id09w = ""
+				B738DR_wpt_fo_alt09w = ""
+				B738DR_wpt_fo_eta09w = ""
+				B738DR_wpt_fo_id09m = ""
+				B738DR_wpt_fo_alt09m = ""
+				B738DR_wpt_fo_eta09m = ""
+				B738DR_wpt_fo_type09 = 0
+			elseif n == 10 then
+				B738DR_wpt_fo_id10w = ""
+				B738DR_wpt_fo_alt10w = ""
+				B738DR_wpt_fo_eta10w = ""
+				B738DR_wpt_fo_id10m = ""
+				B738DR_wpt_fo_alt10m = ""
+				B738DR_wpt_fo_eta10m = ""
+				B738DR_wpt_fo_type10 = 0
+			elseif n == 11 then
+				B738DR_wpt_fo_id11w = ""
+				B738DR_wpt_fo_alt11w = ""
+				B738DR_wpt_fo_eta11w = ""
+				B738DR_wpt_fo_id11m = ""
+				B738DR_wpt_fo_alt11m = ""
+				B738DR_wpt_fo_eta11m = ""
+				B738DR_wpt_fo_type11 = 0
+			elseif n == 12 then
+				B738DR_wpt_fo_id12w = ""
+				B738DR_wpt_fo_alt12w = ""
+				B738DR_wpt_fo_eta12w = ""
+				B738DR_wpt_fo_id12m = ""
+				B738DR_wpt_fo_alt12m = ""
+				B738DR_wpt_fo_eta12m = ""
+				B738DR_wpt_fo_type12 = 0
+			elseif n == 13 then
+				B738DR_wpt_fo_id13w = ""
+				B738DR_wpt_fo_alt13w = ""
+				B738DR_wpt_fo_eta13w = ""
+				B738DR_wpt_fo_id13m = ""
+				B738DR_wpt_fo_alt13m = ""
+				B738DR_wpt_fo_eta13m = ""
+				B738DR_wpt_fo_type13 = 0
+			elseif n == 14 then
+				B738DR_wpt_fo_id14w = ""
+				B738DR_wpt_fo_alt14w = ""
+				B738DR_wpt_fo_eta14w = ""
+				B738DR_wpt_fo_id14m = ""
+				B738DR_wpt_fo_alt14m = ""
+				B738DR_wpt_fo_eta14m = ""
+				B738DR_wpt_fo_type14 = 0
+			elseif n == 15 then
+				B738DR_wpt_fo_id15w = ""
+				B738DR_wpt_fo_alt15w = ""
+				B738DR_wpt_fo_eta15w = ""
+				B738DR_wpt_fo_id15m = ""
+				B738DR_wpt_fo_alt15m = ""
+				B738DR_wpt_fo_eta15m = ""
+				B738DR_wpt_fo_type15 = 0
+			elseif n == 16 then
+				B738DR_wpt_fo_id16w = ""
+				B738DR_wpt_fo_alt16w = ""
+				B738DR_wpt_fo_eta16w = ""
+				B738DR_wpt_fo_id16m = ""
+				B738DR_wpt_fo_alt16m = ""
+				B738DR_wpt_fo_eta16m = ""
+				B738DR_wpt_fo_type16 = 0
+			elseif n == 17 then
+				B738DR_wpt_fo_id17w = ""
+				B738DR_wpt_fo_alt17w = ""
+				B738DR_wpt_fo_eta17w = ""
+				B738DR_wpt_fo_id17m = ""
+				B738DR_wpt_fo_alt17m = ""
+				B738DR_wpt_fo_eta17m = ""
+				B738DR_wpt_fo_type17 = 0
+			elseif n == 18 then
+				B738DR_wpt_fo_id18w = ""
+				B738DR_wpt_fo_alt18w = ""
+				B738DR_wpt_fo_eta18w = ""
+				B738DR_wpt_fo_id18m = ""
+				B738DR_wpt_fo_alt18m = ""
+				B738DR_wpt_fo_eta18m = ""
+				B738DR_wpt_fo_type18 = 0
+			elseif n == 19 then
+				B738DR_wpt_fo_id19w = ""
+				B738DR_wpt_fo_alt19w = ""
+				B738DR_wpt_fo_eta19w = ""
+				B738DR_wpt_fo_id19m = ""
+				B738DR_wpt_fo_alt19m = ""
+				B738DR_wpt_fo_eta19m = ""
+				B738DR_wpt_fo_type19 = 0
+			end
+			
+			B738DR_rte_fo_show[n] = 0
+		end
+	end
+	
+	if rte_act_enable_fo == 0 then
+		B738DR_rte_fo_show_act = 0
+	end
+	if rte_act_enable2_fo == 0 then
+		B738DR_rte_fo_edit_show_act = 0
+	end
+	
+	if hold_obj < 5 then
+		for n = hold_obj, 4 do
+			B738DR_hold_type[n] = 0
+		end
+	end
+	if hold_obj_fo < 5 then
+		for n = hold_obj_fo, 4 do
+			B738DR_hold_fo_type[n] = 0
+		end
+	end
+
+end
+
+
+
+
 function calc_dist(c_spd, c_vvi, c_d_alt)
 
 	local calc_temp = 0
@@ -55197,51 +58480,33 @@ function B738_vnav_calc()
 							tc_dist = 0
 						end
 						
-						-- calc bearing
-						-- nd_lat = math.rad(legs_data[n][7])
-						-- nd_lon = math.rad(legs_data[n][8])
-						if n == 1 then
-							temp_brg = legs_data[n][2] + math.pi	--math.rad(180) --3.1415926535
-						else
-							if legs_intdir_act == 1 and n == offset2 then
-								-- temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
-								if B738DR_wpt_path == "DF" then
-									temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
-								else
-									temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
-								end
-							else
-								-- nd_lat2 = math.rad(legs_data[n-1][7])
-								-- nd_lon2 = math.rad(legs_data[n-1][8])
-								-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-								-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-								-- temp_brg = math.atan2(nd_y, nd_x)
-								--temp_brg = math.rad((math.deg(legs_data[n][2]) + 180) % 360)
-								temp_brg = legs_data[n][2] + math.pi	--math.rad(180) --3.1415926535
-							end
-						end
+						-- -- calc bearing
+						-- if n == 1 then
+							-- temp_brg = legs_data[n][2] + math.pi	--math.rad(180) --3.1415926535
+						-- else
+							-- if legs_intdir_act == 1 and n == offset2 then
+								-- if B738DR_wpt_path == "DF" then
+									-- temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
+								-- else
+									-- temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
+								-- end
+							-- else
+								-- temp_brg = legs_data[n][2] + math.pi	--math.rad(180) --3.1415926535
+							-- end
+						-- end
 						
 						tc_idx = n	-- before idx
-						-- lat_wpt = math.rad(legs_data[n][7])
-						-- lon_wpt = math.rad(legs_data[n][8])
-						-- temp_d_R = tc_dist / 3440.064795					-- distance NM
-						-- --temp_brg = legs_data[n][2] + 3.1415926535	-- back course radians
-						-- temp_lat = math.asin(math.sin(lat_wpt)*math.cos(temp_d_R) + math.cos(lat_wpt)*math.sin(temp_d_R)*math.cos(temp_brg))
-						-- temp_lon = lon_wpt + math.atan2(math.sin(temp_brg)*math.sin(temp_d_R)*math.cos(lat_wpt), math.cos(temp_d_R)-math.sin(lat_wpt)*math.sin(temp_lat))
-						-- tc_lat = temp_lat
-						-- tc_lon = temp_lon
 						
-						if tc_idx == 1 or (legs_intdir_act == 1 and n == offset2) then
-							calc_brg_dist(legs_data[tc_idx][7], legs_data[tc_idx][8], temp_brg, tc_dist)
-						else
-							dist2 = legs_data[tc_idx][3] - tc_dist
-							temp_brg = legs_data[tc_idx][2]
-							calc_brg_dist(legs_data[tc_idx-1][7], legs_data[tc_idx-1][8], temp_brg, dist2)
-						end
+						-- if tc_idx == 1 or (legs_intdir_act == 1 and n == offset2) then
+							-- calc_brg_dist(legs_data[tc_idx][7], legs_data[tc_idx][8], temp_brg, tc_dist)
+						-- else
+							-- dist2 = legs_data[tc_idx][3] - tc_dist
+							-- temp_brg = legs_data[tc_idx][2]
+							-- calc_brg_dist(legs_data[tc_idx-1][7], legs_data[tc_idx-1][8], temp_brg, dist2)
+						-- end
 						
-						--calc_brg_dist(legs_data[tc_idx][7], legs_data[tc_idx][8], temp_brg, tc_dist)
-						tc_lat = math.rad(calc_lat)
-						tc_lon = math.rad(calc_lon)
+						-- tc_lat = math.rad(calc_lat)
+						-- tc_lon = math.rad(calc_lon)
 						
 						
 						
@@ -55386,44 +58651,28 @@ function B738_vnav_calc()
 						
 						if td_dist > ed_dist then
 							
-							if legs_intdir_act == 1 and ii == offset2 then
-								if B738DR_wpt_path == "DF" then
-									temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
-								else
-									temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
-								end
-							else
-								-- nd_lat = math.rad(legs_data[ii][7])
-								-- nd_lon = math.rad(legs_data[ii][8])
-								-- nd_lat2 = math.rad(legs_data[ii-1][7])
-								-- nd_lon2 = math.rad(legs_data[ii-1][8])
-								-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-								-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-								-- temp_brg = math.atan2(nd_y, nd_x)
-								--temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
-								temp_brg = legs_data[ii][2] + math.pi	--math.rad(180) --3.1415926535
-							end
+							-- if legs_intdir_act == 1 and ii == offset2 then
+								-- if B738DR_wpt_path == "DF" then
+									-- temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
+								-- else
+									-- temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
+								-- end
+							-- else
+								-- temp_brg = legs_data[ii][2] + math.pi	--math.rad(180) --3.1415926535
+							-- end
 							
 							td_dist = legs_data[ii][3] - (td_dist - ed_dist)
 							td_idx = ii 	-- before idx
-							-- lat_wpt = math.rad(legs_data[ii][7])
-							-- lon_wpt = math.rad(legs_data[ii][8])
-							-- temp_d_R = td_dist / 3440.064795					-- distance NM
-							-- temp_lat = math.asin(math.sin(lat_wpt)*math.cos(temp_d_R) + math.cos(lat_wpt)*math.sin(temp_d_R)*math.cos(temp_brg))
-							-- temp_lon = lon_wpt + math.atan2(math.sin(temp_brg)*math.sin(temp_d_R)*math.cos(lat_wpt), math.cos(temp_d_R)-math.sin(lat_wpt)*math.sin(temp_lat))
-							-- td_lat = temp_lat
-							-- td_lon = temp_lon
 							
-							if td_idx == 1 or (legs_intdir_act == 1 and ii == offset2) then
-								calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
-							else
-								dist2 = legs_data[td_idx][3] - td_dist
-								temp_brg = legs_data[td_idx][2]
-								calc_brg_dist(legs_data[td_idx-1][7], legs_data[td_idx-1][8], temp_brg, dist2)
-							end
-							--calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
-							td_lat = math.rad(calc_lat)
-							td_lon = math.rad(calc_lon)
+							-- if td_idx == 1 or (legs_intdir_act == 1 and ii == offset2) then
+								-- calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
+							-- else
+								-- dist2 = legs_data[td_idx][3] - td_dist
+								-- temp_brg = legs_data[td_idx][2]
+								-- calc_brg_dist(legs_data[td_idx-1][7], legs_data[td_idx-1][8], temp_brg, dist2)
+							-- end
+							-- td_lat = math.rad(calc_lat)
+							-- td_lon = math.rad(calc_lon)
 							
 							
 							break
@@ -55582,44 +58831,28 @@ function B738_vnav_calc()
 									if td_dist > ed_dist and ed_fix_num == 1 then
 										
 										-- calc bearing
-											if legs_intdir_act == 1 and kk == offset2 then
-												if B738DR_wpt_path == "DF" then
-													temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
-												else
-													temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
-												end
-											else
-												-- nd_lat = math.rad(legs_data[kk][7])
-												-- nd_lon = math.rad(legs_data[kk][8])
-												-- nd_lat2 = math.rad(legs_data[kk-1][7])
-												-- nd_lon2 = math.rad(legs_data[kk-1][8])
-												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-												-- temp_brg = math.atan2(nd_y, nd_x)
-												--temp_brg = math.rad((math.deg(legs_data[kk][2]) + 180) % 360)
-												temp_brg = legs_data[kk][2] + math.pi	--math.rad(180) --3.1415926535
-											end
+										-- if legs_intdir_act == 1 and kk == offset2 then
+											-- if B738DR_wpt_path == "DF" then
+												-- temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
+											-- else
+												-- temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
+											-- end
+										-- else
+											-- temp_brg = legs_data[kk][2] + math.pi	--math.rad(180) --3.1415926535
 										-- end
+										
 										td_dist = legs_data[kk][3] - (td_dist - ed_dist)
 										td_idx = kk 	-- before idx
-										-- lat_wpt = math.rad(legs_data[kk][7])
-										-- lon_wpt = math.rad(legs_data[kk][8])
-										-- temp_d_R = td_dist / 3440.064795					-- distance NM
-										-- temp_lat = math.asin(math.sin(lat_wpt)*math.cos(temp_d_R) + math.cos(lat_wpt)*math.sin(temp_d_R)*math.cos(temp_brg))
-										-- temp_lon = lon_wpt + math.atan2(math.sin(temp_brg)*math.sin(temp_d_R)*math.cos(lat_wpt), math.cos(temp_d_R)-math.sin(lat_wpt)*math.sin(temp_lat))
-										-- td_lat = temp_lat
-										-- td_lon = temp_lon
 										
-										if td_idx == 1 or (legs_intdir_act == 1 and kk == offset2) then
-											calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
-										else
-											dist2 = legs_data[td_idx][3] - td_dist
-											temp_brg = legs_data[td_idx][2]
-											calc_brg_dist(legs_data[td_idx-1][7], legs_data[td_idx-1][8], temp_brg, dist2)
-										end
-										--calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
-										td_lat = math.rad(calc_lat)
-										td_lon = math.rad(calc_lon)
+										-- if td_idx == 1 or (legs_intdir_act == 1 and kk == offset2) then
+											-- calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
+										-- else
+											-- dist2 = legs_data[td_idx][3] - td_dist
+											-- temp_brg = legs_data[td_idx][2]
+											-- calc_brg_dist(legs_data[td_idx-1][7], legs_data[td_idx-1][8], temp_brg, dist2)
+										-- end
+										-- td_lat = math.rad(calc_lat)
+										-- td_lon = math.rad(calc_lon)
 										
 										
 										break
@@ -55868,58 +59101,37 @@ function B738_vnav_calc()
 									
 									if td_dist > ed_dist and first_restrict == 0 then
 										
-											if legs_intdir_act == 1 and kk == offset2 then
-												if B738DR_wpt_path == "DF" then
-													temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
-												else
-													temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
-												end
-											else
-												-- nd_lat = math.rad(legs_data[kk][7])
-												-- nd_lon = math.rad(legs_data[kk][8])
-												-- nd_lat2 = math.rad(legs_data[kk-1][7])
-												-- nd_lon2 = math.rad(legs_data[kk-1][8])
-												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-												-- temp_brg = math.atan2(nd_y, nd_x)
-												--temp_brg =  math.rad((math.deg(legs_data[kk][2]) + 180) % 360)
-												temp_brg = legs_data[kk][2] + math.pi	--math.rad(180) --3.1415926535
-											end
+										-- if legs_intdir_act == 1 and kk == offset2 then
+											-- if B738DR_wpt_path == "DF" then
+												-- temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
+											-- else
+												-- temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
+											-- end
+										-- else
+											-- temp_brg = legs_data[kk][2] + math.pi	--math.rad(180) --3.1415926535
+										-- end
+										
 										td_dist = legs_data[kk][3] - (td_dist - ed_dist)
 										td_idx = kk 	-- before idx
-										-- lat_wpt = math.rad(legs_data[kk][7])
-										-- lon_wpt = math.rad(legs_data[kk][8])
-										-- temp_d_R = td_dist / 3440.064795					-- distance NM
-										-- temp_lat = math.asin(math.sin(lat_wpt)*math.cos(temp_d_R) + math.cos(lat_wpt)*math.sin(temp_d_R)*math.cos(temp_brg))
-										-- temp_lon = lon_wpt + math.atan2(math.sin(temp_brg)*math.sin(temp_d_R)*math.cos(lat_wpt), math.cos(temp_d_R)-math.sin(lat_wpt)*math.sin(temp_lat))
-										-- td_lat = temp_lat
-										-- td_lon = temp_lon
 										
-										if td_idx == 1 or (legs_intdir_act == 1 and kk == offset2) then
-											calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
-										else
-											dist2 = legs_data[td_idx][3] - td_dist
-											temp_brg = legs_data[td_idx][2]
-											calc_brg_dist(legs_data[td_idx-1][7], legs_data[td_idx-1][8], temp_brg, dist2)
-										end
-										--calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
-										td_lat = math.rad(calc_lat)
-										td_lon = math.rad(calc_lon)
+										-- if td_idx == 1 or (legs_intdir_act == 1 and kk == offset2) then
+											-- calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
+										-- else
+											-- dist2 = legs_data[td_idx][3] - td_dist
+											-- temp_brg = legs_data[td_idx][2]
+											-- calc_brg_dist(legs_data[td_idx-1][7], legs_data[td_idx-1][8], temp_brg, dist2)
+										-- end
+										-- td_lat = math.rad(calc_lat)
+										-- td_lon = math.rad(calc_lon)
 										
 										
 										break
 									end
-									-- if ed_fix_num > 1 and calc_wpt_alt > ed_fix_alt2[ed_fix_num-1] then
-										-- legs_data[kk][11] = ed_fix_alt2[ed_fix_num-1]
-										-- break
-									-- end
 								end
 								
 									----------------------------------
 									if B738DR_fms_test == 4 and ed_fix_num == B738DR_fms_test3 then
 										dump_leg_mod()
-										--B738DR_fms_test3 = first_restrict
-										--B738DR_fms_test = 0
 									end
 									----------------------------------
 								-----------------------------------
@@ -56088,44 +59300,28 @@ function B738_vnav_calc()
 										if simDR_fmc_dist > 6.7 then
 											-- DECEL calc
 											
-											if legs_intdir_act == 1 and ii == offset2 then
-												if B738DR_wpt_path == "DF" then
-													temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
-												else
-													temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
-												end
-											else
-												-- nd_lat = math.rad(legs_data[ii][7])
-												-- nd_lon = math.rad(legs_data[ii][8])
-												-- nd_lat2 = math.rad(legs_data[ii-1][7])
-												-- nd_lon2 = math.rad(legs_data[ii-1][8])
-												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-												-- temp_brg = math.atan2(nd_y, nd_x)
-												--temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
-												temp_brg = legs_data[ii][2] + math.pi	--math.rad(180)		--3.1415926535
-											end
+											-- if legs_intdir_act == 1 and ii == offset2 then
+												-- if B738DR_wpt_path == "DF" then
+													-- temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
+												-- else
+													-- temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
+												-- end
+											-- else
+												-- temp_brg = legs_data[ii][2] + math.pi	--math.rad(180)		--3.1415926535
+											-- end
 											
 											decel_dist = 6.7 -- before dist (6.7NM)
 											decel_idx = ii
-											-- lat_wpt = math.rad(legs_data[ii][7])
-											-- lon_wpt = math.rad(legs_data[ii][8])
-											-- temp_d_R = decel_dist / 3440.064795					-- distance NM
-											-- temp_lat = math.asin(math.sin(lat_wpt)*math.cos(temp_d_R) + math.cos(lat_wpt)*math.sin(temp_d_R)*math.cos(temp_brg))
-											-- temp_lon = lon_wpt + math.atan2(math.sin(temp_brg)*math.sin(temp_d_R)*math.cos(lat_wpt), math.cos(temp_d_R)-math.sin(lat_wpt)*math.sin(temp_lat))
-											-- decel_lat = temp_lat
-											-- decel_lon = temp_lon
 											
-											if decel_idx == 1 or (legs_intdir_act == 1 and ii == offset2) then
-												calc_brg_dist(legs_data[decel_idx][7], legs_data[decel_idx][8], temp_brg, decel_dist)
-											else
-												dist2 = legs_data[decel_idx][3] - decel_dist
-												temp_brg = legs_data[decel_idx][2]
-												calc_brg_dist(legs_data[decel_idx-1][7], legs_data[decel_idx-1][8], temp_brg, dist2)
-											end
-											--calc_brg_dist(legs_data[decel_idx][7], legs_data[decel_idx][8], temp_brg, decel_dist)
-											decel_lat = math.rad(calc_lat)
-											decel_lon = math.rad(calc_lon)
+											-- if decel_idx == 1 or (legs_intdir_act == 1 and ii == offset2) then
+												-- calc_brg_dist(legs_data[decel_idx][7], legs_data[decel_idx][8], temp_brg, decel_dist)
+											-- else
+												-- dist2 = legs_data[decel_idx][3] - decel_dist
+												-- temp_brg = legs_data[decel_idx][2]
+												-- calc_brg_dist(legs_data[decel_idx-1][7], legs_data[decel_idx-1][8], temp_brg, dist2)
+											-- end
+											-- decel_lat = math.rad(calc_lat)
+											-- decel_lon = math.rad(calc_lon)
 											
 											
 										end
@@ -56137,34 +59333,27 @@ function B738_vnav_calc()
 											-- if ii-1 is restrict wpt then
 											---------------------------------
 											if legs_data[ii-1][4] == 0 then		-- speed restrict
-												pom5 = ii - 1
-												if legs_intdir_act == 1 and pom5 == offset2 then
-													if B738DR_wpt_path == "DF" then
-														temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
-													else
-														temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
-													end
-												else
-													-- nd_lat = math.rad(legs_data[ii][7])
-													-- nd_lon = math.rad(legs_data[ii][8])
-													-- nd_lat2 = math.rad(legs_data[ii-1][7])
-													-- nd_lon2 = math.rad(legs_data[ii-1][8])
-													-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-													-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-													-- temp_brg = math.atan2(nd_y, nd_x)
-													--temp_brg = math.rad((math.deg(legs_data[ii-1][2]) + 180) % 360)
-													temp_brg = legs_data[ii-1][2] + math.pi	--math.rad(180) --3.1415926535
-												end
+												-- pom5 = ii - 1
+												-- if legs_intdir_act == 1 and pom5 == offset2 then
+													-- if B738DR_wpt_path == "DF" then
+														-- temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
+													-- else
+														-- temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
+													-- end
+												-- else
+													-- temp_brg = legs_data[ii-1][2] + math.pi	--math.rad(180) --3.1415926535
+												-- end
 											
 												decel_idx = ii - 1
-												lat_wpt = math.rad(legs_data[ii-1][7])
-												lon_wpt = math.rad(legs_data[ii-1][8])
+												
+												-- lat_wpt = math.rad(legs_data[ii-1][7])
+												-- lon_wpt = math.rad(legs_data[ii-1][8])
 												if legs_data[ii-1][4] ~= 0 then
 													decel_idx = ii
 													decel_dist = legs_data[ii][3] - 0.3
-													if legs_intdir_act ~= 1 or pom5 ~= offset2 then
-														temp_brg = legs_data[ii][2] + math.pi	--math.rad(180) --3.1415926535
-													end
+													-- if legs_intdir_act ~= 1 or pom5 ~= offset2 then
+														-- temp_brg = legs_data[ii][2] + math.pi	--math.rad(180) --3.1415926535
+													-- end
 												else
 													decel_dist = 6.7 - legs_data[ii][3]
 													if legs_data[ii-1][3] < decel_dist then
@@ -56174,69 +59363,47 @@ function B738_vnav_calc()
 											else
 												decel_dist = legs_data[ii][3] - 0.3 -- 0.3 NM before
 											
-												if legs_intdir_act == 1 and ii == offset2 then
-													if B738DR_wpt_path == "DF" then
-														temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
-													else
-														temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
-													end
-												else
-													-- nd_lat = math.rad(legs_data[ii][7])
-													-- nd_lon = math.rad(legs_data[ii][8])
-													-- nd_lat2 = math.rad(legs_data[ii-1][7])
-													-- nd_lon2 = math.rad(legs_data[ii-1][8])
-													-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-													-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-													-- temp_brg = math.atan2(nd_y, nd_x)
-													--temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
-													temp_brg = legs_data[ii][2] + math.pi	--math.rad(180) --3.1415926535
-												end
+												-- if legs_intdir_act == 1 and ii == offset2 then
+													-- if B738DR_wpt_path == "DF" then
+														-- temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
+													-- else
+														-- temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
+													-- end
+												-- else
+													-- temp_brg = legs_data[ii][2] + math.pi	--math.rad(180) --3.1415926535
+												-- end
 											
 												decel_idx = ii
-												lat_wpt = math.rad(legs_data[ii][7])
-												lon_wpt = math.rad(legs_data[ii][8])
+												-- lat_wpt = math.rad(legs_data[ii][7])
+												-- lon_wpt = math.rad(legs_data[ii][8])
 											end
 										else
 											decel_dist = 6.7 -- before dist (6.7NM)
 											
-											if legs_intdir_act == 1 and ii == offset2 then
-												if B738DR_wpt_path == "DF" then
-													temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
-												else
-													temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
-												end
-											else
-												-- nd_lat = math.rad(legs_data[ii][7])
-												-- nd_lon = math.rad(legs_data[ii][8])
-												-- nd_lat2 = math.rad(legs_data[ii-1][7])
-												-- nd_lon2 = math.rad(legs_data[ii-1][8])
-												-- nd_y = math.sin(nd_lon2 - nd_lon) * math.cos(nd_lat2)
-												-- nd_x = math.cos(nd_lat) * math.sin(nd_lat2) - math.sin(nd_lat) * math.cos(nd_lat2) * math.cos(nd_lon2 - nd_lon)
-												-- temp_brg = math.atan2(nd_y, nd_x)
-												--temp_brg = math.rad((math.deg(legs_data[ii][2]) + 180) % 360)
-												temp_brg = legs_data[ii][2] + math.pi	--math.rad(180) --3.1415926535
-											end
+											-- if legs_intdir_act == 1 and ii == offset2 then
+												-- if B738DR_wpt_path == "DF" then
+													-- temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
+												-- else
+													-- temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
+												-- end
+											-- else
+												-- temp_brg = legs_data[ii][2] + math.pi	--math.rad(180) --3.1415926535
+											-- end
 											
 											decel_idx = ii
-											lat_wpt = math.rad(legs_data[ii][7])
-											lon_wpt = math.rad(legs_data[ii][8])
+											-- lat_wpt = math.rad(legs_data[ii][7])
+											-- lon_wpt = math.rad(legs_data[ii][8])
 										end
-										-- temp_d_R = decel_dist / 3440.064795					-- distance NM
-										-- temp_lat = math.asin(math.sin(lat_wpt)*math.cos(temp_d_R) + math.cos(lat_wpt)*math.sin(temp_d_R)*math.cos(temp_brg))
-										-- temp_lon = lon_wpt + math.atan2(math.sin(temp_brg)*math.sin(temp_d_R)*math.cos(lat_wpt), math.cos(temp_d_R)-math.sin(lat_wpt)*math.sin(temp_lat))
-										-- decel_lat = temp_lat
-										-- decel_lon = temp_lon
 										
-										if decel_idx == 1 or (legs_intdir_act == 1 and ii == offset2) then
-											calc_brg_dist(legs_data[decel_idx][7], legs_data[decel_idx][8], temp_brg, decel_dist)
-										else
-											dist2 = legs_data[decel_idx][3] - decel_dist
-											temp_brg = legs_data[decel_idx][2]
-											calc_brg_dist(legs_data[decel_idx-1][7], legs_data[decel_idx-1][8], temp_brg, dist2)
-										end
-										--calc_brg_dist(legs_data[decel_idx][7], legs_data[decel_idx][8], temp_brg, decel_dist)
-										decel_lat = math.rad(calc_lat)
-										decel_lon = math.rad(calc_lon)
+										-- if decel_idx == 1 or (legs_intdir_act == 1 and ii == offset2) then
+											-- calc_brg_dist(legs_data[decel_idx][7], legs_data[decel_idx][8], temp_brg, decel_dist)
+										-- else
+											-- dist2 = legs_data[decel_idx][3] - decel_dist
+											-- temp_brg = legs_data[decel_idx][2]
+											-- calc_brg_dist(legs_data[decel_idx-1][7], legs_data[decel_idx-1][8], temp_brg, dist2)
+										-- end
+										-- decel_lat = math.rad(calc_lat)
+										-- decel_lon = math.rad(calc_lon)
 										
 									end
 								end
@@ -57874,1083 +61041,1081 @@ function find_alt_restrict_mod(rest_from, rest_to)
 end
 
 
-function B738_displ_tc()
-	-- local ils_lat = math.rad(ndx_lat)
-	-- local ils_lon = math.rad(ndx_lon)
-	local ils_lat = ndx_lat
-	local ils_lon = ndx_lon
-	local mag_hdg = 0
-	local delta_ils_hdg = 0
-	local ils_hdg = 0
-	local ils_on_off = 0
-	local ils_x = 0
-	local ils_y = 0
-	local ils_dis = 0
-	local ils_zoom = 0
-	local ils_disable = 0
-	local ils_corr = 0
-	local rte_plan_mode = 0
+-- function B738_displ_tc()
+	-- local ils_lat = ndx_lat
+	-- local ils_lon = ndx_lon
+	-- local mag_hdg = 0
+	-- local delta_ils_hdg = 0
+	-- local ils_hdg = 0
+	-- local ils_on_off = 0
+	-- local ils_x = 0
+	-- local ils_y = 0
+	-- local ils_dis = 0
+	-- local ils_zoom = 0
+	-- local ils_disable = 0
+	-- local ils_corr = 0
+	-- local rte_plan_mode = 0
 	
-	if legs_num > 0 then -- and legs_step <= legs_num then
+	-- if legs_num > 0 then -- and legs_step <= legs_num then
 	
-		-- if offset == 0 then
-			-- offset = 1
+		-- -- if offset == 0 then
+			-- -- offset = 1
+		-- -- end
+	
+		-- if legs_step > legs_num2 then
+			-- legs_step = legs_num2
 		-- end
-	
-		if legs_step > legs_num2 then
-			legs_step = legs_num2
-		end
 		
-		-- CAPTAIN
-		if B738DR_capt_map_mode == 3 then
+		-- -- CAPTAIN
+		-- if B738DR_capt_map_mode == 3 then
+			-- -- if legs_step == 0 then
+				-- -- ils_lat = math.rad(legs_data2[1][7])
+				-- -- ils_lon = math.rad(legs_data2[1][8])
+			-- -- else
+				-- -- ils_lat = math.rad(legs_data2[legs_step][7])
+				-- -- ils_lon = math.rad(legs_data2[legs_step][8])
+			-- -- end
 			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data2[1][7])
-				-- ils_lon = math.rad(legs_data2[1][8])
+				-- ils_lat = legs_data2[1][7]
+				-- ils_lon = legs_data2[1][8]
 			-- else
-				-- ils_lat = math.rad(legs_data2[legs_step][7])
-				-- ils_lon = math.rad(legs_data2[legs_step][8])
+				-- ils_lat = legs_data2[legs_step][7]
+				-- ils_lon = legs_data2[legs_step][8]
 			-- end
-			if legs_step == 0 then
-				ils_lat = legs_data2[1][7]
-				ils_lon = legs_data2[1][8]
-			else
-				ils_lat = legs_data2[legs_step][7]
-				ils_lon = legs_data2[legs_step][8]
-			end
 			
-			mag_hdg = -simDR_mag_variation
-			rte_plan_mode = 1
-		elseif B738DR_capt_map_mode == 2 then
-			-- if B738DR_capt_map_mode < 2 then
-				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				-- -- if simDR_efis_map_mode == 0 then
-				-- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
-					-- ils_disable = 1
+			-- mag_hdg = -simDR_mag_variation
+			-- rte_plan_mode = 1
+		-- elseif B738DR_capt_map_mode == 2 then
+			-- -- if B738DR_capt_map_mode < 2 then
+				-- -- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- -- -- if simDR_efis_map_mode == 0 then
+				-- -- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
+					-- -- ils_disable = 1
+				-- -- end
+			-- -- -- elseif simDR_efis_sub_mode == 4 then
+				-- -- -- ils_disable = 1
+			-- -- else
+				-- if B738DR_track_up == 0 then
+					-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- else
+					-- if B738DR_track_up_active == 0 then
+						-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+					-- else
+						-- mag_hdg = ndx_mag_hdg - simDR_mag_variation
+					-- end
 				-- end
-			-- -- elseif simDR_efis_sub_mode == 4 then
-				-- -- ils_disable = 1
-			-- else
-				if B738DR_track_up == 0 then
-					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				else
-					if B738DR_track_up_active == 0 then
-						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-					else
-						mag_hdg = ndx_mag_hdg - simDR_mag_variation
-					end
-				end
-			-- end
-		else
-			ils_disable = 1
-		end
-		if tc_idx == 0 or B738DR_flight_phase > 1 then
-			ils_disable = 1
-		end
+			-- -- end
+		-- else
+			-- ils_disable = 1
+		-- end
+		-- if tc_idx == 0 or B738DR_flight_phase > 1 then
+			-- ils_disable = 1
+		-- end
 			
+			
+		-- -- if ils_disable == 0 then
+			
+			-- -- B738DR_tc_lat = math.deg(tc_lat)
+			-- -- B738DR_tc_lon = math.deg(tc_lon)
+			
+			-- -- -- Calculate distance
+			-- -- -- ils_x = (tc_lon - ils_lon) * math.cos((ils_lat + tc_lat)/2)
+			-- -- -- ils_y = tc_lat - ils_lat
+			-- -- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- -- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(tc_lat), math.deg(tc_lon))
+			
+			-- -- ils_y = math.sin(tc_lon - ils_lon) * math.cos(tc_lat)
+			-- -- ils_x = math.cos(ils_lat) * math.sin(tc_lat) - math.sin(ils_lat) * math.cos(tc_lat) * math.cos(tc_lon - ils_lon)
+			-- -- ils_hdg = math.atan2(ils_y, ils_x)
+			-- -- ils_hdg = math.deg(ils_hdg)
+			-- -- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- -- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
 			
 		-- if ils_disable == 0 then
 			
 			-- B738DR_tc_lat = math.deg(tc_lat)
 			-- B738DR_tc_lon = math.deg(tc_lon)
 			
-			-- -- Calculate distance
-			-- -- ils_x = (tc_lon - ils_lon) * math.cos((ils_lat + tc_lat)/2)
-			-- -- ils_y = tc_lat - ils_lat
-			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			-- ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(tc_lat), math.deg(tc_lon))
 			
-			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(tc_lat), math.deg(tc_lon))
+			-- ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(tc_lat), math.deg(tc_lon))
+			-- delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
-			-- ils_y = math.sin(tc_lon - ils_lon) * math.cos(tc_lat)
-			-- ils_x = math.cos(ils_lat) * math.sin(tc_lat) - math.sin(ils_lat) * math.cos(tc_lat) * math.cos(tc_lon - ils_lon)
-			-- ils_hdg = math.atan2(ils_y, ils_x)
-			-- ils_hdg = math.deg(ils_hdg)
-			-- ils_hdg = (ils_hdg + 360) % 360
-			
-			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
-			
-		if ils_disable == 0 then
-			
-			B738DR_tc_lat = math.deg(tc_lat)
-			B738DR_tc_lon = math.deg(tc_lon)
-			
-			ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(tc_lat), math.deg(tc_lon))
-			
-			ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(tc_lat), math.deg(tc_lon))
-			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
-			
-			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
-				-- right
-				ils_on_off = 1
-				delta_ils_hdg = 90 - delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = ils_dis * math.sin(delta_ils_hdg)
-				ils_x = ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg < 0 and delta_ils_hdg >= -90 then
-				-- left
-				ils_on_off = 1
-				delta_ils_hdg = 90 + delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = ils_dis * math.sin(delta_ils_hdg)
-				ils_x = -ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg >= 90 then
-				-- right back
-				ils_on_off = 1
-				delta_ils_hdg = delta_ils_hdg - 90
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = -ils_dis * math.sin(delta_ils_hdg)
-				ils_x = ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg <= -90 then
-				-- left back
-				ils_on_off = 1
-				delta_ils_hdg = -90 - delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = -ils_dis * math.sin(delta_ils_hdg)
-				ils_x = -ils_dis * math.cos(delta_ils_hdg)
-			end
+			-- if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
+				-- -- right
+				-- ils_on_off = 1
+				-- delta_ils_hdg = 90 - delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg < 0 and delta_ils_hdg >= -90 then
+				-- -- left
+				-- ils_on_off = 1
+				-- delta_ils_hdg = 90 + delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = -ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg >= 90 then
+				-- -- right back
+				-- ils_on_off = 1
+				-- delta_ils_hdg = delta_ils_hdg - 90
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = -ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg <= -90 then
+				-- -- left back
+				-- ils_on_off = 1
+				-- delta_ils_hdg = -90 - delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = -ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = -ils_dis * math.cos(delta_ils_hdg)
+			-- end
 
-			if B738DR_efis_map_range_capt == 0 then	-- 5 NM
-				ils_zoom = 2
-			elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
-				ils_zoom = 1
-			elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
-				ils_zoom = 0.5
-			elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
-				ils_zoom = 0.25
-			elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
-				ils_zoom = 0.125
-			elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
-				ils_zoom = 0.0625
-			elseif B738DR_efis_map_range_capt == 6 then	-- 320 NM
-				ils_zoom = 0.03125
-			else	-- 640 NM
-				ils_zoom = 0.015625
-				--ils_on_off = 0
-			end
-			
-			if rte_plan_mode == 1 then
-				--ils_zoom = ils_zoom / 2
-				ils_zoom = ils_zoom * 0.57
-			end
-
-			ils_x = ils_x * ils_zoom		-- zoom
-			ils_y = ils_y * ils_zoom		-- zoom
-			-- if simDR_efis_sub_mode == 4 then
-				-- ils_y = ils_y + 4.1	-- adjust
+			-- if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+				-- ils_zoom = 2
+			-- elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+				-- ils_zoom = 1
+			-- elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+				-- ils_zoom = 0.5
+			-- elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+				-- ils_zoom = 0.25
+			-- elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+				-- ils_zoom = 0.125
+			-- elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
+				-- ils_zoom = 0.0625
+			-- elseif B738DR_efis_map_range_capt == 6 then	-- 320 NM
+				-- ils_zoom = 0.03125
+			-- else	-- 640 NM
+				-- ils_zoom = 0.015625
+				-- --ils_on_off = 0
 			-- end
 			
-			if B738DR_capt_map_mode == 3 then
-				ils_y = ils_y + 4.1	-- adjust center
-			elseif B738DR_capt_exp_map_mode == 0 then
-				ils_y = ils_y + 4.1	-- adjust center
-			end
+			-- if rte_plan_mode == 1 then
+				-- --ils_zoom = ils_zoom / 2
+				-- ils_zoom = ils_zoom * 0.57
+			-- end
+
+			-- ils_x = ils_x * ils_zoom		-- zoom
+			-- ils_y = ils_y * ils_zoom		-- zoom
+			-- -- if simDR_efis_sub_mode == 4 then
+				-- -- ils_y = ils_y + 4.1	-- adjust
+			-- -- end
 			
-			if ils_x < -8.0 or ils_x > 8.0 then
-				ils_on_off = 0
-			end
-			if ils_y > 11.0 or ils_y < -2 then
-				ils_on_off = 0
-			end
+			-- if B738DR_capt_map_mode == 3 then
+				-- ils_y = ils_y + 4.1	-- adjust center
+			-- elseif B738DR_capt_exp_map_mode == 0 then
+				-- ils_y = ils_y + 4.1	-- adjust center
+			-- end
+			
+			-- if ils_x < -8.0 or ils_x > 8.0 then
+				-- ils_on_off = 0
+			-- end
+			-- if ils_y > 11.0 or ils_y < -2 then
+				-- ils_on_off = 0
+			-- end
 				
-			if ils_on_off == 1 then
-				B738DR_tc_x = ils_x
-				B738DR_tc_y = ils_y
-				B738DR_tc_id = "T/C"
-				B738DR_tc_show = 1
-			else
-				B738DR_tc_show = 0
-				B738DR_tc_id = ""
-			end
-		else
-			B738DR_tc_show = 0
-			B738DR_tc_id = ""
-		end
-	
-		-- FIRST OFFICER
-		rte_plan_mode = 0
-		ils_disable = 0
-		ils_on_off = 0
-		-- ils_lat = math.rad(ndx_lat)
-		-- ils_lon = math.rad(ndx_lon)
-		
-		ils_lat = ndx_lat
-		ils_lon = ndx_lon
-		
-		if B738DR_fo_map_mode == 3 then
-			-- temporary
-			--ils_disable = 1
-			--rte_plan_mode = 1
-			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data[1][7])
-				-- ils_lon = math.rad(legs_data[1][8])
+			-- if ils_on_off == 1 then
+				-- B738DR_tc_x = ils_x
+				-- B738DR_tc_y = ils_y
+				-- B738DR_tc_id = "T/C"
+				-- B738DR_tc_show = 1
 			-- else
-				-- ils_lat = math.rad(legs_data[legs_step][7])
-				-- ils_lon = math.rad(legs_data[legs_step][8])
+				-- B738DR_tc_show = 0
+				-- B738DR_tc_id = ""
 			-- end
+		-- else
+			-- B738DR_tc_show = 0
+			-- B738DR_tc_id = ""
+		-- end
+	
+		-- -- FIRST OFFICER
+		-- rte_plan_mode = 0
+		-- ils_disable = 0
+		-- ils_on_off = 0
+		-- -- ils_lat = math.rad(ndx_lat)
+		-- -- ils_lon = math.rad(ndx_lon)
+		
+		-- ils_lat = ndx_lat
+		-- ils_lon = ndx_lon
+		
+		-- if B738DR_fo_map_mode == 3 then
+			-- -- temporary
+			-- --ils_disable = 1
+			-- --rte_plan_mode = 1
+			-- -- if legs_step == 0 then
+				-- -- ils_lat = math.rad(legs_data[1][7])
+				-- -- ils_lon = math.rad(legs_data[1][8])
+			-- -- else
+				-- -- ils_lat = math.rad(legs_data[legs_step][7])
+				-- -- ils_lon = math.rad(legs_data[legs_step][8])
+			-- -- end
+			-- -- mag_hdg = -simDR_mag_variation
+			-- if legs_step2 == 0 then
+				-- ils_lat = legs_data2[1][7]
+				-- ils_lon = legs_data2[1][8]
+			-- else
+				-- ils_lat = legs_data2[legs_step2][7]
+				-- ils_lon = legs_data2[legs_step2][8]
+			-- end
+			
 			-- mag_hdg = -simDR_mag_variation
-			if legs_step2 == 0 then
-				ils_lat = legs_data2[1][7]
-				ils_lon = legs_data2[1][8]
-			else
-				ils_lat = legs_data2[legs_step2][7]
-				ils_lon = legs_data2[legs_step2][8]
-			end
-			
-			mag_hdg = -simDR_mag_variation
-			rte_plan_mode = 1
-		elseif B738DR_fo_map_mode == 2 then
-			-- if B738DR_fo_map_mode < 2 then
-				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				-- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
-					-- ils_disable = 1
+			-- rte_plan_mode = 1
+		-- elseif B738DR_fo_map_mode == 2 then
+			-- -- if B738DR_fo_map_mode < 2 then
+				-- -- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- -- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
+					-- -- ils_disable = 1
+				-- -- end
+			-- -- else
+				-- if B738DR_track_up == 0 then
+					-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- else
+					-- if B738DR_track_up_active == 0 then
+						-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+					-- else
+						-- mag_hdg = ndx_mag_hdg - simDR_mag_variation
+					-- end
 				-- end
-			-- else
-				if B738DR_track_up == 0 then
-					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				else
-					if B738DR_track_up_active == 0 then
-						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-					else
-						mag_hdg = ndx_mag_hdg - simDR_mag_variation
-					end
-				end
-				-- mag_hdg = simDR_mag_hdg - simDR_mag_variation
-			-- end
-		else
-			ils_disable = 1
-		end
-		if tc_idx == 0 or B738DR_flight_phase > 1 then
-			ils_disable = 1
-		end
+				-- -- mag_hdg = simDR_mag_hdg - simDR_mag_variation
+			-- -- end
+		-- else
+			-- ils_disable = 1
+		-- end
+		-- if tc_idx == 0 or B738DR_flight_phase > 1 then
+			-- ils_disable = 1
+		-- end
 			
+			
+		-- -- if ils_disable == 0 then
+			
+			
+			-- -- -- Calculate distance
+			-- -- -- ils_x = (tc_lon - ils_lon) * math.cos((ils_lat + tc_lat)/2)
+			-- -- -- ils_y = tc_lat - ils_lat
+			-- -- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- -- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(tc_lat), math.deg(tc_lon))
+			
+			-- -- ils_y = math.sin(tc_lon - ils_lon) * math.cos(tc_lat)
+			-- -- ils_x = math.cos(ils_lat) * math.sin(tc_lat) - math.sin(ils_lat) * math.cos(tc_lat) * math.cos(tc_lon - ils_lon)
+			-- -- ils_hdg = math.atan2(ils_y, ils_x)
+			-- -- ils_hdg = math.deg(ils_hdg)
+			-- -- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- -- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
 			
 		-- if ils_disable == 0 then
 			
+			-- ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(tc_lat), math.deg(tc_lon))
 			
-			-- -- Calculate distance
-			-- -- ils_x = (tc_lon - ils_lon) * math.cos((ils_lat + tc_lat)/2)
-			-- -- ils_y = tc_lat - ils_lat
-			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			-- ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(tc_lat), math.deg(tc_lon))
+			-- delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
-			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(tc_lat), math.deg(tc_lon))
-			
-			-- ils_y = math.sin(tc_lon - ils_lon) * math.cos(tc_lat)
-			-- ils_x = math.cos(ils_lat) * math.sin(tc_lat) - math.sin(ils_lat) * math.cos(tc_lat) * math.cos(tc_lon - ils_lon)
-			-- ils_hdg = math.atan2(ils_y, ils_x)
-			-- ils_hdg = math.deg(ils_hdg)
-			-- ils_hdg = (ils_hdg + 360) % 360
-			
-			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
-			
-		if ils_disable == 0 then
-			
-			ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(tc_lat), math.deg(tc_lon))
-			
-			ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(tc_lat), math.deg(tc_lon))
-			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
-			
-			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
-				-- right
-				ils_on_off = 1
-				delta_ils_hdg = 90 - delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = ils_dis * math.sin(delta_ils_hdg)
-				ils_x = ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg < 0 and delta_ils_hdg >= -90 then
-				-- left
-				ils_on_off = 1
-				delta_ils_hdg = 90 + delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = ils_dis * math.sin(delta_ils_hdg)
-				ils_x = -ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg >= 90 then
-				-- right back
-				ils_on_off = 1
-				delta_ils_hdg = delta_ils_hdg - 90
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = -ils_dis * math.sin(delta_ils_hdg)
-				ils_x = ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg <= -90 then
-				-- left back
-				ils_on_off = 1
-				delta_ils_hdg = -90 - delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = -ils_dis * math.sin(delta_ils_hdg)
-				ils_x = -ils_dis * math.cos(delta_ils_hdg)
-			end
+			-- if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
+				-- -- right
+				-- ils_on_off = 1
+				-- delta_ils_hdg = 90 - delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg < 0 and delta_ils_hdg >= -90 then
+				-- -- left
+				-- ils_on_off = 1
+				-- delta_ils_hdg = 90 + delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = -ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg >= 90 then
+				-- -- right back
+				-- ils_on_off = 1
+				-- delta_ils_hdg = delta_ils_hdg - 90
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = -ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg <= -90 then
+				-- -- left back
+				-- ils_on_off = 1
+				-- delta_ils_hdg = -90 - delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = -ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = -ils_dis * math.cos(delta_ils_hdg)
+			-- end
 
-			if B738DR_efis_map_range_fo == 0 then	-- 5 NM
-				ils_zoom = 2
-			elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
-				ils_zoom = 1
-			elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
-				ils_zoom = 0.5
-			elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
-				ils_zoom = 0.25
-			elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
-				ils_zoom = 0.125
-			elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
-				ils_zoom = 0.0625
-			elseif B738DR_efis_map_range_fo == 6 then	-- 320 NM
-				ils_zoom = 0.03125
-			else	-- 640 NM
-				ils_zoom = 0.015625
-				--ils_on_off = 0
-			end
+			-- if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+				-- ils_zoom = 2
+			-- elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+				-- ils_zoom = 1
+			-- elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+				-- ils_zoom = 0.5
+			-- elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+				-- ils_zoom = 0.25
+			-- elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+				-- ils_zoom = 0.125
+			-- elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
+				-- ils_zoom = 0.0625
+			-- elseif B738DR_efis_map_range_fo == 6 then	-- 320 NM
+				-- ils_zoom = 0.03125
+			-- else	-- 640 NM
+				-- ils_zoom = 0.015625
+				-- --ils_on_off = 0
+			-- end
 			
-			if rte_plan_mode == 1 then
-				--ils_zoom = ils_zoom / 2
-				ils_zoom = ils_zoom * 0.57
-			end
+			-- if rte_plan_mode == 1 then
+				-- --ils_zoom = ils_zoom / 2
+				-- ils_zoom = ils_zoom * 0.57
+			-- end
 			
-			ils_x = ils_x * ils_zoom		-- zoom
-			ils_y = ils_y * ils_zoom		-- zoom
+			-- ils_x = ils_x * ils_zoom		-- zoom
+			-- ils_y = ils_y * ils_zoom		-- zoom
 			
-			if B738DR_fo_map_mode == 3 then
-				ils_y = ils_y + 4.1	-- adjust center
-			elseif B738DR_fo_exp_map_mode == 0 then
-				ils_y = ils_y + 4.1	-- adjust center
-			end
+			-- if B738DR_fo_map_mode == 3 then
+				-- ils_y = ils_y + 4.1	-- adjust center
+			-- elseif B738DR_fo_exp_map_mode == 0 then
+				-- ils_y = ils_y + 4.1	-- adjust center
+			-- end
 			
-			if ils_x < -8.0 or ils_x > 8.0 then
-				ils_on_off = 0
-			end
-			if ils_y > 11.0 or ils_y < -2 then
-				ils_on_off = 0
-			end
+			-- if ils_x < -8.0 or ils_x > 8.0 then
+				-- ils_on_off = 0
+			-- end
+			-- if ils_y > 11.0 or ils_y < -2 then
+				-- ils_on_off = 0
+			-- end
 				
-			if ils_on_off == 1 then
-				B738DR_tc_fo_x = ils_x
-				B738DR_tc_fo_y = ils_y
-				B738DR_tc_fo_id = "T/C"
-				B738DR_tc_fo_show = 1
-			else
-				B738DR_tc_fo_show = 0
-				B738DR_tc_fo_id = ""
-			end
-		else
-			B738DR_tc_fo_show = 0
-			B738DR_tc_fo_id = ""
-		end
+			-- if ils_on_off == 1 then
+				-- B738DR_tc_fo_x = ils_x
+				-- B738DR_tc_fo_y = ils_y
+				-- B738DR_tc_fo_id = "T/C"
+				-- B738DR_tc_fo_show = 1
+			-- else
+				-- B738DR_tc_fo_show = 0
+				-- B738DR_tc_fo_id = ""
+			-- end
+		-- else
+			-- B738DR_tc_fo_show = 0
+			-- B738DR_tc_fo_id = ""
+		-- end
 		
-	else
-		B738DR_tc_show = 0
-		B738DR_tc_id = ""
-		B738DR_tc_fo_show = 0
-		B738DR_tc_fo_id = ""
-	end
+	-- else
+		-- B738DR_tc_show = 0
+		-- B738DR_tc_id = ""
+		-- B738DR_tc_fo_show = 0
+		-- B738DR_tc_fo_id = ""
+	-- end
 
-end
+-- end
 
-function B738_displ_decel()
-	-- local ils_lat = math.rad(ndx_lat)
-	-- local ils_lon = math.rad(ndx_lon)
-	local ils_lat = ndx_lat
-	local ils_lon = ndx_lon
-	local mag_hdg = 0
-	local delta_ils_hdg = 0
-	local ils_hdg = 0
-	local ils_on_off = 0
-	local ils_x = 0
-	local ils_y = 0
-	local ils_dis = 0
-	local ils_zoom = 0
-	local ils_disable = 0
-	local ils_corr = 0
-	local rte_plan_mode = 0
+-- function B738_displ_decel()
+	-- -- local ils_lat = math.rad(ndx_lat)
+	-- -- local ils_lon = math.rad(ndx_lon)
+	-- local ils_lat = ndx_lat
+	-- local ils_lon = ndx_lon
+	-- local mag_hdg = 0
+	-- local delta_ils_hdg = 0
+	-- local ils_hdg = 0
+	-- local ils_on_off = 0
+	-- local ils_x = 0
+	-- local ils_y = 0
+	-- local ils_dis = 0
+	-- local ils_zoom = 0
+	-- local ils_disable = 0
+	-- local ils_corr = 0
+	-- local rte_plan_mode = 0
 	
-	if legs_num > 0 then	--and B738DR_altitude_mode == 5 then --and legs_step <= legs_num then
+	-- if legs_num > 0 then	--and B738DR_altitude_mode == 5 then --and legs_step <= legs_num then
 	
-		if legs_step > legs_num2 then
-			legs_step = legs_num2
-		end
+		-- if legs_step > legs_num2 then
+			-- legs_step = legs_num2
+		-- end
 		
-		-- CAPTAIN
-		if B738DR_capt_map_mode == 3 then
+		-- -- CAPTAIN
+		-- if B738DR_capt_map_mode == 3 then
+			-- -- if legs_step == 0 then
+				-- -- ils_lat = math.rad(legs_data2[1][7])
+				-- -- ils_lon = math.rad(legs_data2[1][8])
+			-- -- else
+				-- -- ils_lat = math.rad(legs_data2[legs_step][7])
+				-- -- ils_lon = math.rad(legs_data2[legs_step][8])
+			-- -- end
 			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data2[1][7])
-				-- ils_lon = math.rad(legs_data2[1][8])
+				-- ils_lat = legs_data2[1][7]
+				-- ils_lon = legs_data2[1][8]
 			-- else
-				-- ils_lat = math.rad(legs_data2[legs_step][7])
-				-- ils_lon = math.rad(legs_data2[legs_step][8])
+				-- ils_lat = legs_data2[legs_step][7]
+				-- ils_lon = legs_data2[legs_step][8]
 			-- end
-			if legs_step == 0 then
-				ils_lat = legs_data2[1][7]
-				ils_lon = legs_data2[1][8]
-			else
-				ils_lat = legs_data2[legs_step][7]
-				ils_lon = legs_data2[legs_step][8]
-			end
 			
-			mag_hdg = -simDR_mag_variation
-			rte_plan_mode = 1
-		elseif B738DR_capt_map_mode == 2 then
-			-- if B738DR_capt_map_mode < 2 then
-				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				-- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
-					-- ils_disable = 1
+			-- mag_hdg = -simDR_mag_variation
+			-- rte_plan_mode = 1
+		-- elseif B738DR_capt_map_mode == 2 then
+			-- -- if B738DR_capt_map_mode < 2 then
+				-- -- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- -- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
+					-- -- ils_disable = 1
+				-- -- end
+			-- -- else
+				-- if B738DR_track_up == 0 then
+					-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- else
+					-- if B738DR_track_up_active == 0 then
+						-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+					-- else
+						-- mag_hdg = ndx_mag_hdg - simDR_mag_variation
+					-- end
 				-- end
-			-- else
-				if B738DR_track_up == 0 then
-					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				else
-					if B738DR_track_up_active == 0 then
-						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-					else
-						mag_hdg = ndx_mag_hdg - simDR_mag_variation
-					end
-				end
-			-- end
-		else
-			ils_disable = 1
-		end
-		if decel_idx == 0 or was_decel == 1 then
-			ils_disable = 1
-		end
+			-- -- end
+		-- else
+			-- ils_disable = 1
+		-- end
+		-- if decel_idx == 0 or was_decel == 1 then
+			-- ils_disable = 1
+		-- end
 			
 			
-		-- if ils_disable == 0 then
+		-- -- if ils_disable == 0 then
 			
+			
+			-- -- B738DR_decel_lat = math.deg(decel_lat)
+			-- -- B738DR_decel_lon = math.deg(decel_lon)
+			
+			-- -- -- Calculate distance
+			
+			-- -- -- ils_x = (decel_lon - ils_lon) * math.cos((ils_lat + decel_lat)/2)
+			-- -- -- ils_y = decel_lat - ils_lat
+			-- -- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- -- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(decel_lat), math.deg(decel_lon))
+			
+			-- -- ils_y = math.sin(decel_lon - ils_lon) * math.cos(decel_lat)
+			-- -- ils_x = math.cos(ils_lat) * math.sin(decel_lat) - math.sin(ils_lat) * math.cos(decel_lat) * math.cos(decel_lon - ils_lon)
+			-- -- ils_hdg = math.atan2(ils_y, ils_x)
+			-- -- ils_hdg = math.deg(ils_hdg)
+			-- -- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- -- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			
+	-- if ils_disable == 0 then
 			
 			-- B738DR_decel_lat = math.deg(decel_lat)
 			-- B738DR_decel_lon = math.deg(decel_lon)
 			
-			-- -- Calculate distance
+			-- ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(decel_lat), math.deg(decel_lon))
 			
-			-- -- ils_x = (decel_lon - ils_lon) * math.cos((ils_lat + decel_lat)/2)
-			-- -- ils_y = decel_lat - ils_lat
-			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			-- ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(decel_lat), math.deg(decel_lon))
+			-- delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
-			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(decel_lat), math.deg(decel_lon))
+			-- if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
+				-- -- right
+				-- ils_on_off = 1
+				-- delta_ils_hdg = 90 - delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg < 0 and delta_ils_hdg >= -90 then
+				-- -- left
+				-- ils_on_off = 1
+				-- delta_ils_hdg = 90 + delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = -ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg >= 90 then
+				-- -- right back
+				-- ils_on_off = 1
+				-- delta_ils_hdg = delta_ils_hdg - 90
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = -ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg <= -90 then
+				-- -- left back
+				-- ils_on_off = 1
+				-- delta_ils_hdg = -90 - delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = -ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = -ils_dis * math.cos(delta_ils_hdg)
+			-- end
 			
-			-- ils_y = math.sin(decel_lon - ils_lon) * math.cos(decel_lat)
-			-- ils_x = math.cos(ils_lat) * math.sin(decel_lat) - math.sin(ils_lat) * math.cos(decel_lat) * math.cos(decel_lon - ils_lon)
-			-- ils_hdg = math.atan2(ils_y, ils_x)
-			-- ils_hdg = math.deg(ils_hdg)
-			-- ils_hdg = (ils_hdg + 360) % 360
+			-- if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+				-- ils_zoom = 2
+			-- elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+				-- ils_zoom = 1
+			-- elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+				-- ils_zoom = 0.5
+			-- elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+				-- ils_zoom = 0.25
+			-- elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+				-- ils_zoom = 0.125
+			-- elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
+				-- ils_zoom = 0.0625
+			-- elseif B738DR_efis_map_range_capt == 6 then	-- 320 NM
+				-- ils_zoom = 0.03125
+			-- else	-- 640 NM
+				-- ils_zoom = 0.015625
+				-- --ils_on_off = 0
+			-- end
 			
-			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			-- if rte_plan_mode == 1 then
+				-- --ils_zoom = ils_zoom / 2
+				-- ils_zoom = ils_zoom * 0.57
+			-- end
 			
-	if ils_disable == 0 then
+			-- ils_x = ils_x * ils_zoom		-- zoom
+			-- ils_y = ils_y * ils_zoom		-- zoom
 			
-			B738DR_decel_lat = math.deg(decel_lat)
-			B738DR_decel_lon = math.deg(decel_lon)
-			
-			ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(decel_lat), math.deg(decel_lon))
-			
-			ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(decel_lat), math.deg(decel_lon))
-			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
-			
-			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
-				-- right
-				ils_on_off = 1
-				delta_ils_hdg = 90 - delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = ils_dis * math.sin(delta_ils_hdg)
-				ils_x = ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg < 0 and delta_ils_hdg >= -90 then
-				-- left
-				ils_on_off = 1
-				delta_ils_hdg = 90 + delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = ils_dis * math.sin(delta_ils_hdg)
-				ils_x = -ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg >= 90 then
-				-- right back
-				ils_on_off = 1
-				delta_ils_hdg = delta_ils_hdg - 90
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = -ils_dis * math.sin(delta_ils_hdg)
-				ils_x = ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg <= -90 then
-				-- left back
-				ils_on_off = 1
-				delta_ils_hdg = -90 - delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = -ils_dis * math.sin(delta_ils_hdg)
-				ils_x = -ils_dis * math.cos(delta_ils_hdg)
-			end
-			
-			if B738DR_efis_map_range_capt == 0 then	-- 5 NM
-				ils_zoom = 2
-			elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
-				ils_zoom = 1
-			elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
-				ils_zoom = 0.5
-			elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
-				ils_zoom = 0.25
-			elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
-				ils_zoom = 0.125
-			elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
-				ils_zoom = 0.0625
-			elseif B738DR_efis_map_range_capt == 6 then	-- 320 NM
-				ils_zoom = 0.03125
-			else	-- 640 NM
-				ils_zoom = 0.015625
-				--ils_on_off = 0
-			end
-			
-			if rte_plan_mode == 1 then
-				--ils_zoom = ils_zoom / 2
-				ils_zoom = ils_zoom * 0.57
-			end
-			
-			ils_x = ils_x * ils_zoom		-- zoom
-			ils_y = ils_y * ils_zoom		-- zoom
-			
-			if B738DR_capt_map_mode == 3 then
-				ils_y = ils_y + 4.1	-- adjust center
-			elseif B738DR_capt_exp_map_mode == 0 then
-				ils_y = ils_y + 4.1	-- adjust center
-			end
+			-- if B738DR_capt_map_mode == 3 then
+				-- ils_y = ils_y + 4.1	-- adjust center
+			-- elseif B738DR_capt_exp_map_mode == 0 then
+				-- ils_y = ils_y + 4.1	-- adjust center
+			-- end
 				
-			if ils_x < -8.0 or ils_x > 8.0 then
-				ils_on_off = 0
-			end
-			if ils_y > 11.0 or ils_y < -2 then			ils_on_off = 0
-			end
+			-- if ils_x < -8.0 or ils_x > 8.0 then
+				-- ils_on_off = 0
+			-- end
+			-- if ils_y > 11.0 or ils_y < -2 then			ils_on_off = 0
+			-- end
 			
-			if ils_on_off == 1 then
-				B738DR_decel_x = ils_x
-				B738DR_decel_y = ils_y
-				B738DR_decel_id = "DECEL"
-				B738DR_decel_show = 1
-			else
-				B738DR_decel_show = 0
-				B738DR_decel_id = ""
-			end
-		else
-			B738DR_decel_show = 0
-			B738DR_decel_id = ""
-		end
+			-- if ils_on_off == 1 then
+				-- B738DR_decel_x = ils_x
+				-- B738DR_decel_y = ils_y
+				-- B738DR_decel_id = "DECEL"
+				-- B738DR_decel_show = 1
+			-- else
+				-- B738DR_decel_show = 0
+				-- B738DR_decel_id = ""
+			-- end
+		-- else
+			-- B738DR_decel_show = 0
+			-- B738DR_decel_id = ""
+		-- end
 		
-		-- FIRST OFFICER
-		rte_plan_mode = 0
-		ils_disable = 0
-		ils_on_off = 0
-		--ils_lat = math.rad(ndx_lat) 
-		--ils_lon = math.rad(ndx_lon) 
+		-- -- FIRST OFFICER
+		-- rte_plan_mode = 0
+		-- ils_disable = 0
+		-- ils_on_off = 0
+		-- --ils_lat = math.rad(ndx_lat) 
+		-- --ils_lon = math.rad(ndx_lon) 
 		
-		ils_lat = ndx_lat 
-		ils_lon = ndx_lon 
+		-- ils_lat = ndx_lat 
+		-- ils_lon = ndx_lon 
 		
-		if B738DR_fo_map_mode == 3 then
-			-- -- temporary
-			-- ils_disable = 1
+		-- if B738DR_fo_map_mode == 3 then
+			-- -- -- temporary
+			-- -- ils_disable = 1
+			-- -- rte_plan_mode = 1
+			-- if legs_step2 == 0 then
+				-- ils_lat = legs_data2[1][7]
+				-- ils_lon = legs_data2[1][8]
+			-- else
+				-- ils_lat = legs_data2[legs_step2][7]
+				-- ils_lon = legs_data2[legs_step2][8]
+			-- end
+			
+			-- mag_hdg = -simDR_mag_variation
 			-- rte_plan_mode = 1
-			if legs_step2 == 0 then
-				ils_lat = legs_data2[1][7]
-				ils_lon = legs_data2[1][8]
-			else
-				ils_lat = legs_data2[legs_step2][7]
-				ils_lon = legs_data2[legs_step2][8]
-			end
-			
-			mag_hdg = -simDR_mag_variation
-			rte_plan_mode = 1
-		elseif B738DR_fo_map_mode == 2 then
-			-- if B738DR_fo_map_mode < 2 then
-				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				-- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
-					-- ils_disable = 1
+		-- elseif B738DR_fo_map_mode == 2 then
+			-- -- if B738DR_fo_map_mode < 2 then
+				-- -- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- -- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
+					-- -- ils_disable = 1
+				-- -- end
+			-- -- else
+				-- if B738DR_track_up == 0 then
+					-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- else
+					-- if B738DR_track_up_active == 0 then
+						-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+					-- else
+						-- mag_hdg = ndx_mag_hdg - simDR_mag_variation
+					-- end
 				-- end
-			-- else
-				if B738DR_track_up == 0 then
-					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				else
-					if B738DR_track_up_active == 0 then
-						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-					else
-						mag_hdg = ndx_mag_hdg - simDR_mag_variation
-					end
-				end
-				-- mag_hdg = simDR_mag_hdg - simDR_mag_variation
-			-- end
-		else
-			ils_disable = 1
-		end
-		if decel_idx == 0 or was_decel == 1 then
-			ils_disable = 1
-		end
+				-- -- mag_hdg = simDR_mag_hdg - simDR_mag_variation
+			-- -- end
+		-- else
+			-- ils_disable = 1
+		-- end
+		-- if decel_idx == 0 or was_decel == 1 then
+			-- ils_disable = 1
+		-- end
 			
+			
+		-- -- if ils_disable == 0 then
+			
+			
+			-- -- -- Calculate distance
+			
+			-- -- -- ils_x = (decel_lon - ils_lon) * math.cos((ils_lat + decel_lat)/2)
+			-- -- -- ils_y = decel_lat - ils_lat
+			-- -- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- -- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(decel_lat), math.deg(decel_lon))
+			
+			-- -- ils_y = math.sin(decel_lon - ils_lon) * math.cos(decel_lat)
+			-- -- ils_x = math.cos(ils_lat) * math.sin(decel_lat) - math.sin(ils_lat) * math.cos(decel_lat) * math.cos(decel_lon - ils_lon)
+			-- -- ils_hdg = math.atan2(ils_y, ils_x)
+			-- -- ils_hdg = math.deg(ils_hdg)
+			-- -- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- -- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
 			
 		-- if ils_disable == 0 then
 			
+			-- ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(decel_lat), math.deg(decel_lon))
 			
-			-- -- Calculate distance
+			-- ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(decel_lat), math.deg(decel_lon))
+			-- delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
-			-- -- ils_x = (decel_lon - ils_lon) * math.cos((ils_lat + decel_lat)/2)
-			-- -- ils_y = decel_lat - ils_lat
-			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			-- if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
+				-- -- right
+				-- ils_on_off = 1
+				-- delta_ils_hdg = 90 - delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg < 0 and delta_ils_hdg >= -90 then
+				-- -- left
+				-- ils_on_off = 1
+				-- delta_ils_hdg = 90 + delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = -ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg >= 90 then
+				-- -- right back
+				-- ils_on_off = 1
+				-- delta_ils_hdg = delta_ils_hdg - 90
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = -ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg <= -90 then
+				-- -- left back
+				-- ils_on_off = 1
+				-- delta_ils_hdg = -90 - delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = -ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = -ils_dis * math.cos(delta_ils_hdg)
+			-- end
 			
-			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(decel_lat), math.deg(decel_lon))
+			-- if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+				-- ils_zoom = 2
+			-- elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+				-- ils_zoom = 1
+			-- elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+				-- ils_zoom = 0.5
+			-- elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+				-- ils_zoom = 0.25
+			-- elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+				-- ils_zoom = 0.125
+			-- elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
+				-- ils_zoom = 0.0625
+			-- elseif B738DR_efis_map_range_fo == 6 then	-- 320 NM
+				-- ils_zoom = 0.03125
+			-- else	-- 640 NM
+				-- ils_zoom = 0.015625
+				-- --ils_on_off = 0
+			-- end
 			
-			-- ils_y = math.sin(decel_lon - ils_lon) * math.cos(decel_lat)
-			-- ils_x = math.cos(ils_lat) * math.sin(decel_lat) - math.sin(ils_lat) * math.cos(decel_lat) * math.cos(decel_lon - ils_lon)
-			-- ils_hdg = math.atan2(ils_y, ils_x)
-			-- ils_hdg = math.deg(ils_hdg)
-			-- ils_hdg = (ils_hdg + 360) % 360
+			-- if rte_plan_mode == 1 then
+				-- --ils_zoom = ils_zoom / 2
+				-- ils_zoom = ils_zoom * 0.57
+			-- end
 			
-			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
+			-- ils_x = ils_x * ils_zoom		-- zoom
+			-- ils_y = ils_y * ils_zoom		-- zoom
 			
-		if ils_disable == 0 then
-			
-			ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(decel_lat), math.deg(decel_lon))
-			
-			ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(decel_lat), math.deg(decel_lon))
-			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
-			
-			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
-				-- right
-				ils_on_off = 1
-				delta_ils_hdg = 90 - delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = ils_dis * math.sin(delta_ils_hdg)
-				ils_x = ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg < 0 and delta_ils_hdg >= -90 then
-				-- left
-				ils_on_off = 1
-				delta_ils_hdg = 90 + delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = ils_dis * math.sin(delta_ils_hdg)
-				ils_x = -ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg >= 90 then
-				-- right back
-				ils_on_off = 1
-				delta_ils_hdg = delta_ils_hdg - 90
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = -ils_dis * math.sin(delta_ils_hdg)
-				ils_x = ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg <= -90 then
-				-- left back
-				ils_on_off = 1
-				delta_ils_hdg = -90 - delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = -ils_dis * math.sin(delta_ils_hdg)
-				ils_x = -ils_dis * math.cos(delta_ils_hdg)
-			end
-			
-			if B738DR_efis_map_range_fo == 0 then	-- 5 NM
-				ils_zoom = 2
-			elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
-				ils_zoom = 1
-			elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
-				ils_zoom = 0.5
-			elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
-				ils_zoom = 0.25
-			elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
-				ils_zoom = 0.125
-			elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
-				ils_zoom = 0.0625
-			elseif B738DR_efis_map_range_fo == 6 then	-- 320 NM
-				ils_zoom = 0.03125
-			else	-- 640 NM
-				ils_zoom = 0.015625
-				--ils_on_off = 0
-			end
-			
-			if rte_plan_mode == 1 then
-				--ils_zoom = ils_zoom / 2
-				ils_zoom = ils_zoom * 0.57
-			end
-			
-			ils_x = ils_x * ils_zoom		-- zoom
-			ils_y = ils_y * ils_zoom		-- zoom
-			
-			if B738DR_fo_map_mode == 3 then
-				ils_y = ils_y + 4.1	-- adjust center
-			elseif B738DR_fo_exp_map_mode == 0 then
-				ils_y = ils_y + 4.1	-- adjust center
-			end
+			-- if B738DR_fo_map_mode == 3 then
+				-- ils_y = ils_y + 4.1	-- adjust center
+			-- elseif B738DR_fo_exp_map_mode == 0 then
+				-- ils_y = ils_y + 4.1	-- adjust center
+			-- end
 				
-			if ils_x < -8.0 or ils_x > 8.0 then
-				ils_on_off = 0
-			end
-			if ils_y > 11.0 or ils_y < -2 then			ils_on_off = 0
-			end
+			-- if ils_x < -8.0 or ils_x > 8.0 then
+				-- ils_on_off = 0
+			-- end
+			-- if ils_y > 11.0 or ils_y < -2 then			ils_on_off = 0
+			-- end
 			
-			if ils_on_off == 1 then
-				B738DR_decel_fo_x = ils_x
-				B738DR_decel_fo_y = ils_y
-				B738DR_decel_fo_id = "DECEL"
-				B738DR_decel_fo_show = 1
-			else
-				B738DR_decel_fo_show = 0
-				B738DR_decel_fo_id = ""
-			end
-		else
-			B738DR_decel_fo_show = 0
-			B738DR_decel_fo_id = ""
-		end
+			-- if ils_on_off == 1 then
+				-- B738DR_decel_fo_x = ils_x
+				-- B738DR_decel_fo_y = ils_y
+				-- B738DR_decel_fo_id = "DECEL"
+				-- B738DR_decel_fo_show = 1
+			-- else
+				-- B738DR_decel_fo_show = 0
+				-- B738DR_decel_fo_id = ""
+			-- end
+		-- else
+			-- B738DR_decel_fo_show = 0
+			-- B738DR_decel_fo_id = ""
+		-- end
 		
-	else
-		B738DR_decel_show = 0
-		B738DR_decel_id = ""
-		B738DR_decel_fo_show = 0
-		B738DR_decel_fo_id = ""
-	end
+	-- else
+		-- B738DR_decel_show = 0
+		-- B738DR_decel_id = ""
+		-- B738DR_decel_fo_show = 0
+		-- B738DR_decel_fo_id = ""
+	-- end
 
-end
+-- end
 
-function B738_displ_td()
-	-- local ils_lat = math.rad(ndx_lat)
-	-- local ils_lon = math.rad(ndx_lon)
-	local ils_lat = ndx_lat
-	local ils_lon = ndx_lon
-	local mag_hdg = 0
-	local delta_ils_hdg = 0
-	local ils_hdg = 0
-	local ils_on_off = 0
-	local ils_x = 0
-	local ils_y = 0
-	local ils_dis = 0
-	local ils_zoom = 0
-	local ils_disable = 0
-	local ils_corr = 0
-	local rte_plan_mode = 0
+-- function B738_displ_td()
+	-- -- local ils_lat = math.rad(ndx_lat)
+	-- -- local ils_lon = math.rad(ndx_lon)
+	-- local ils_lat = ndx_lat
+	-- local ils_lon = ndx_lon
+	-- local mag_hdg = 0
+	-- local delta_ils_hdg = 0
+	-- local ils_hdg = 0
+	-- local ils_on_off = 0
+	-- local ils_x = 0
+	-- local ils_y = 0
+	-- local ils_dis = 0
+	-- local ils_zoom = 0
+	-- local ils_disable = 0
+	-- local ils_corr = 0
+	-- local rte_plan_mode = 0
 	
-	if legs_num > 0 then --and legs_step <= legs_num then
+	-- if legs_num > 0 then --and legs_step <= legs_num then
 	
-		if legs_step > legs_num2 then
-			legs_step = legs_num2
-		end
+		-- if legs_step > legs_num2 then
+			-- legs_step = legs_num2
+		-- end
 		
-		-- CAPTAIN
-		if B738DR_capt_map_mode == 3 then
+		-- -- CAPTAIN
+		-- if B738DR_capt_map_mode == 3 then
+			-- -- if legs_step == 0 then
+				-- -- ils_lat = math.rad(legs_data2[1][7])
+				-- -- ils_lon = math.rad(legs_data2[1][8])
+			-- -- else
+				-- -- ils_lat = math.rad(legs_data2[legs_step][7])
+				-- -- ils_lon = math.rad(legs_data2[legs_step][8])
+			-- -- end
+			
 			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data2[1][7])
-				-- ils_lon = math.rad(legs_data2[1][8])
+				-- ils_lat = legs_data2[1][7]
+				-- ils_lon = legs_data2[1][8]
 			-- else
-				-- ils_lat = math.rad(legs_data2[legs_step][7])
-				-- ils_lon = math.rad(legs_data2[legs_step][8])
+				-- ils_lat = legs_data2[legs_step][7]
+				-- ils_lon = legs_data2[legs_step][8]
 			-- end
 			
-			if legs_step == 0 then
-				ils_lat = legs_data2[1][7]
-				ils_lon = legs_data2[1][8]
-			else
-				ils_lat = legs_data2[legs_step][7]
-				ils_lon = legs_data2[legs_step][8]
-			end
+			-- mag_hdg = -simDR_mag_variation
+			-- rte_plan_mode = 1
 			
-			mag_hdg = -simDR_mag_variation
-			rte_plan_mode = 1
-			
-		elseif B738DR_capt_map_mode == 2 then
-			-- if B738DR_capt_map_mode < 2 then
-				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				-- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
-					-- ils_disable = 1
+		-- elseif B738DR_capt_map_mode == 2 then
+			-- -- if B738DR_capt_map_mode < 2 then
+				-- -- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- -- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
+					-- -- ils_disable = 1
+				-- -- end
+			-- -- else
+				-- if B738DR_track_up == 0 then
+					-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- else
+					-- if B738DR_track_up_active == 0 then
+						-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+					-- else
+						-- mag_hdg = ndx_mag_hdg - simDR_mag_variation
+					-- end
 				-- end
-			-- else
-				if B738DR_track_up == 0 then
-					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				else
-					if B738DR_track_up_active == 0 then
-						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-					else
-						mag_hdg = ndx_mag_hdg - simDR_mag_variation
-					end
-				end
-			-- end
-		else
-			ils_disable = 1
-		end
+			-- -- end
+		-- else
+			-- ils_disable = 1
+		-- end
 		
-		if td_idx == 0 or B738DR_flight_phase > 4 or B738DR_vnav_td_dist < 0.5 then
-			ils_disable = 1
-		end
+		-- if td_idx == 0 or B738DR_flight_phase > 4 or B738DR_vnav_td_dist < 0.5 then
+			-- ils_disable = 1
+		-- end
 			
+			
+		-- -- if ils_disable == 0 then
+			
+			
+			-- -- B738DR_td_lat = math.deg(td_lat)
+			-- -- B738DR_td_lon = math.deg(td_lon)
+			
+			-- -- -- Calculate distance
+			
+			-- -- -- ils_x = (td_lon - ils_lon) * math.cos((ils_lat + td_lat)/2)
+			-- -- -- ils_y = td_lat - ils_lat
+			-- -- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- -- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(td_lat), math.deg(td_lon))
+			
+			-- -- ils_y = math.sin(td_lon - ils_lon) * math.cos(td_lat)
+			-- -- ils_x = math.cos(ils_lat) * math.sin(td_lat) - math.sin(ils_lat) * math.cos(td_lat) * math.cos(td_lon - ils_lon)
+			-- -- ils_hdg = math.atan2(ils_y, ils_x)
+			-- -- ils_hdg = math.deg(ils_hdg)
+			-- -- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- -- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
 			
 		-- if ils_disable == 0 then
-			
 			
 			-- B738DR_td_lat = math.deg(td_lat)
 			-- B738DR_td_lon = math.deg(td_lon)
 			
-			-- -- Calculate distance
+			-- ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(td_lat), math.deg(td_lon))
 			
-			-- -- ils_x = (td_lon - ils_lon) * math.cos((ils_lat + td_lat)/2)
-			-- -- ils_y = td_lat - ils_lat
-			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			-- ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(td_lat), math.deg(td_lon))
+			-- delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
-			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(td_lat), math.deg(td_lon))
-			
-			-- ils_y = math.sin(td_lon - ils_lon) * math.cos(td_lat)
-			-- ils_x = math.cos(ils_lat) * math.sin(td_lat) - math.sin(ils_lat) * math.cos(td_lat) * math.cos(td_lon - ils_lon)
-			-- ils_hdg = math.atan2(ils_y, ils_x)
-			-- ils_hdg = math.deg(ils_hdg)
-			-- ils_hdg = (ils_hdg + 360) % 360
-			
-			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
-			
-		if ils_disable == 0 then
-			
-			B738DR_td_lat = math.deg(td_lat)
-			B738DR_td_lon = math.deg(td_lon)
-			
-			ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(td_lat), math.deg(td_lon))
-			
-			ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(td_lat), math.deg(td_lon))
-			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
-			
-			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
-				-- right
-				ils_on_off = 1
-				delta_ils_hdg = 90 - delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = ils_dis * math.sin(delta_ils_hdg)
-				ils_x = ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg < 0 and delta_ils_hdg >= -90 then
-				-- left
-				ils_on_off = 1
-				delta_ils_hdg = 90 + delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = ils_dis * math.sin(delta_ils_hdg)
-				ils_x = -ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg >= 90 then
-				-- right back
-				ils_on_off = 1
-				delta_ils_hdg = delta_ils_hdg - 90
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = -ils_dis * math.sin(delta_ils_hdg)
-				ils_x = ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg <= -90 then
-				-- left back
-				ils_on_off = 1
-				delta_ils_hdg = -90 - delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = -ils_dis * math.sin(delta_ils_hdg)
-				ils_x = -ils_dis * math.cos(delta_ils_hdg)
-			end
-			
-			if B738DR_efis_map_range_capt == 0 then	-- 5 NM
-				ils_zoom = 2
-			elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
-				ils_zoom = 1
-			elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
-				ils_zoom = 0.5
-			elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
-				ils_zoom = 0.25
-			elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
-				ils_zoom = 0.125
-			elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
-				ils_zoom = 0.0625
-			elseif B738DR_efis_map_range_capt == 6 then	-- 320 NM
-				ils_zoom = 0.03125
-			else	-- 640 NM
-				ils_zoom = 0.015625
-				--ils_on_off = 0
-			end
-			
-			if rte_plan_mode == 1 then
-				--ils_zoom = ils_zoom / 2
-				ils_zoom = ils_zoom * 0.57
-			end
-			
-			ils_x = ils_x * ils_zoom		-- zoom
-			ils_y = ils_y * ils_zoom		-- zoom
-			-- if simDR_efis_sub_mode == 4 then
-				-- ils_y = ils_y + 4.1	-- adjust
+			-- if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
+				-- -- right
+				-- ils_on_off = 1
+				-- delta_ils_hdg = 90 - delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg < 0 and delta_ils_hdg >= -90 then
+				-- -- left
+				-- ils_on_off = 1
+				-- delta_ils_hdg = 90 + delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = -ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg >= 90 then
+				-- -- right back
+				-- ils_on_off = 1
+				-- delta_ils_hdg = delta_ils_hdg - 90
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = -ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg <= -90 then
+				-- -- left back
+				-- ils_on_off = 1
+				-- delta_ils_hdg = -90 - delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = -ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = -ils_dis * math.cos(delta_ils_hdg)
 			-- end
 			
-			if B738DR_capt_map_mode == 3 then
-				ils_y = ils_y + 4.1	-- adjust center
-			elseif B738DR_capt_exp_map_mode == 0 then
-				ils_y = ils_y + 4.1	-- adjust center
-			end
+			-- if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+				-- ils_zoom = 2
+			-- elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+				-- ils_zoom = 1
+			-- elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+				-- ils_zoom = 0.5
+			-- elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+				-- ils_zoom = 0.25
+			-- elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+				-- ils_zoom = 0.125
+			-- elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
+				-- ils_zoom = 0.0625
+			-- elseif B738DR_efis_map_range_capt == 6 then	-- 320 NM
+				-- ils_zoom = 0.03125
+			-- else	-- 640 NM
+				-- ils_zoom = 0.015625
+				-- --ils_on_off = 0
+			-- end
+			
+			-- if rte_plan_mode == 1 then
+				-- --ils_zoom = ils_zoom / 2
+				-- ils_zoom = ils_zoom * 0.57
+			-- end
+			
+			-- ils_x = ils_x * ils_zoom		-- zoom
+			-- ils_y = ils_y * ils_zoom		-- zoom
+			-- -- if simDR_efis_sub_mode == 4 then
+				-- -- ils_y = ils_y + 4.1	-- adjust
+			-- -- end
+			
+			-- if B738DR_capt_map_mode == 3 then
+				-- ils_y = ils_y + 4.1	-- adjust center
+			-- elseif B738DR_capt_exp_map_mode == 0 then
+				-- ils_y = ils_y + 4.1	-- adjust center
+			-- end
 				
 				
-			if ils_x < -8.0 or ils_x > 8.0 then
-				ils_on_off = 0
-			end
-			if ils_y > 11.0 or ils_y < -2 then
-				ils_on_off = 0
-			end
+			-- if ils_x < -8.0 or ils_x > 8.0 then
+				-- ils_on_off = 0
+			-- end
+			-- if ils_y > 11.0 or ils_y < -2 then
+				-- ils_on_off = 0
+			-- end
 			
-			if ils_on_off == 1 then
-				B738DR_td_x = ils_x
-				B738DR_td_y = ils_y
-				B738DR_td_id = "T/D"
-				B738DR_td_show = 1
-			else
-				B738DR_td_show = 0
-				B738DR_td_id = ""
-			end
-		else
-			B738DR_td_show = 0
-			B738DR_td_id = ""
-		end
-	
-		-- FIRST OFFICER
-		rte_plan_mode = 0
-		ils_disable = 0
-		ils_on_off = 0
-		-- ils_lat = math.rad(ndx_lat) 
-		-- ils_lon = math.rad(ndx_lon) 
-		ils_lat = ndx_lat 
-		ils_lon = ndx_lon 
-		if B738DR_fo_map_mode == 3 then
-			-- -- temporary
-			-- ils_disable = 1
-			-- rte_plan_mode = 1
-			if legs_step2 == 0 then
-				ils_lat = legs_data2[1][7]
-				ils_lon = legs_data2[1][8]
-			else
-				ils_lat = legs_data2[legs_step2][7]
-				ils_lon = legs_data2[legs_step2][8]
-			end
-			
-			mag_hdg = -simDR_mag_variation
-			rte_plan_mode = 1
-		elseif B738DR_fo_map_mode == 2 then
-			-- if B738DR_fo_map_mode < 2 then
-				-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				-- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
-					-- ils_disable = 1
-				-- end
+			-- if ils_on_off == 1 then
+				-- B738DR_td_x = ils_x
+				-- B738DR_td_y = ils_y
+				-- B738DR_td_id = "T/D"
+				-- B738DR_td_show = 1
 			-- else
-				if B738DR_track_up == 0 then
-					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-				else
-					if B738DR_track_up_active == 0 then
-						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-					else
-						mag_hdg = ndx_mag_hdg - simDR_mag_variation
-					end
-				end
-				-- mag_hdg = simDR_mag_hdg - simDR_mag_variation
+				-- B738DR_td_show = 0
+				-- B738DR_td_id = ""
 			-- end
-		else
-			ils_disable = 1
-		end
-		
-		if td_idx == 0 or B738DR_flight_phase > 4 or B738DR_vnav_td_dist < 0.5 then
-			ils_disable = 1
-		end
+		-- else
+			-- B738DR_td_show = 0
+			-- B738DR_td_id = ""
+		-- end
+	
+		-- -- FIRST OFFICER
+		-- rte_plan_mode = 0
+		-- ils_disable = 0
+		-- ils_on_off = 0
+		-- -- ils_lat = math.rad(ndx_lat) 
+		-- -- ils_lon = math.rad(ndx_lon) 
+		-- ils_lat = ndx_lat 
+		-- ils_lon = ndx_lon 
+		-- if B738DR_fo_map_mode == 3 then
+			-- -- -- temporary
+			-- -- ils_disable = 1
+			-- -- rte_plan_mode = 1
+			-- if legs_step2 == 0 then
+				-- ils_lat = legs_data2[1][7]
+				-- ils_lon = legs_data2[1][8]
+			-- else
+				-- ils_lat = legs_data2[legs_step2][7]
+				-- ils_lon = legs_data2[legs_step2][8]
+			-- end
 			
+			-- mag_hdg = -simDR_mag_variation
+			-- rte_plan_mode = 1
+		-- elseif B738DR_fo_map_mode == 2 then
+			-- -- if B738DR_fo_map_mode < 2 then
+				-- -- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- -- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
+					-- -- ils_disable = 1
+				-- -- end
+			-- -- else
+				-- if B738DR_track_up == 0 then
+					-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				-- else
+					-- if B738DR_track_up_active == 0 then
+						-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+					-- else
+						-- mag_hdg = ndx_mag_hdg - simDR_mag_variation
+					-- end
+				-- end
+				-- -- mag_hdg = simDR_mag_hdg - simDR_mag_variation
+			-- -- end
+		-- else
+			-- ils_disable = 1
+		-- end
+		
+		-- if td_idx == 0 or B738DR_flight_phase > 4 or B738DR_vnav_td_dist < 0.5 then
+			-- ils_disable = 1
+		-- end
+			
+			
+		-- -- if ils_disable == 0 then
+			
+			
+			-- -- -- Calculate distance
+			
+			-- -- -- ils_x = (td_lon - ils_lon) * math.cos((ils_lat + td_lat)/2)
+			-- -- -- ils_y = td_lat - ils_lat
+			-- -- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
+			
+			-- -- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(td_lat), math.deg(td_lon))
+			
+			-- -- ils_y = math.sin(td_lon - ils_lon) * math.cos(td_lat)
+			-- -- ils_x = math.cos(ils_lat) * math.sin(td_lat) - math.sin(ils_lat) * math.cos(td_lat) * math.cos(td_lon - ils_lon)
+			-- -- ils_hdg = math.atan2(ils_y, ils_x)
+			-- -- ils_hdg = math.deg(ils_hdg)
+			-- -- ils_hdg = (ils_hdg + 360) % 360
+			
+			-- -- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
 			
 		-- if ils_disable == 0 then
 			
+			-- ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(td_lat), math.deg(td_lon))
 			
-			-- -- Calculate distance
+			-- ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(td_lat), math.deg(td_lon))
+			-- delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
 			
-			-- -- ils_x = (td_lon - ils_lon) * math.cos((ils_lat + td_lat)/2)
-			-- -- ils_y = td_lat - ils_lat
-			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), math.deg(td_lat), math.deg(td_lon))
-			
-			-- ils_y = math.sin(td_lon - ils_lon) * math.cos(td_lat)
-			-- ils_x = math.cos(ils_lat) * math.sin(td_lat) - math.sin(ils_lat) * math.cos(td_lat) * math.cos(td_lon - ils_lon)
-			-- ils_hdg = math.atan2(ils_y, ils_x)
-			-- ils_hdg = math.deg(ils_hdg)
-			-- ils_hdg = (ils_hdg + 360) % 360
-			
-			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
-			
-		if ils_disable == 0 then
-			
-			ils_dis = nd_calc_dist2(ils_lat, ils_lon, math.deg(td_lat), math.deg(td_lon))
-			
-			ils_hdg = nd_calc_brg(ils_lat, ils_lon, math.deg(td_lat), math.deg(td_lon))
-			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
-			
-			if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
-				-- right
-				ils_on_off = 1
-				delta_ils_hdg = 90 - delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = ils_dis * math.sin(delta_ils_hdg)
-				ils_x = ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg < 0 and delta_ils_hdg >= -90 then
-				-- left
-				ils_on_off = 1
-				delta_ils_hdg = 90 + delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = ils_dis * math.sin(delta_ils_hdg)
-				ils_x = -ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg >= 90 then
-				-- right back
-				ils_on_off = 1
-				delta_ils_hdg = delta_ils_hdg - 90
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = -ils_dis * math.sin(delta_ils_hdg)
-				ils_x = ils_dis * math.cos(delta_ils_hdg)
-			elseif delta_ils_hdg <= -90 then
-				-- left back
-				ils_on_off = 1
-				delta_ils_hdg = -90 - delta_ils_hdg
-				delta_ils_hdg = math.rad(delta_ils_hdg)
-				ils_y = -ils_dis * math.sin(delta_ils_hdg)
-				ils_x = -ils_dis * math.cos(delta_ils_hdg)
-			end
-			
-			if B738DR_efis_map_range_fo == 0 then	-- 5 NM
-				ils_zoom = 2
-			elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
-				ils_zoom = 1
-			elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
-				ils_zoom = 0.5
-			elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
-				ils_zoom = 0.25
-			elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
-				ils_zoom = 0.125
-			elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
-				ils_zoom = 0.0625
-			elseif B738DR_efis_map_range_fo == 6 then	-- 320 NM
-				ils_zoom = 0.03125
-			else	-- 640 NM
-				ils_zoom = 0.015625
-				--ils_on_off = 0
-			end
-			
-			if rte_plan_mode == 1 then
-				--ils_zoom = ils_zoom / 2
-				ils_zoom = ils_zoom * 0.57
-			end
-			
-			ils_x = ils_x * ils_zoom		-- zoom
-			ils_y = ils_y * ils_zoom		-- zoom
-			-- if simDR_efis_sub_mode == 4 then
-				-- ils_y = ils_y + 4.1	-- adjust
+			-- if delta_ils_hdg >= 0 and delta_ils_hdg <= 90 then
+				-- -- right
+				-- ils_on_off = 1
+				-- delta_ils_hdg = 90 - delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg < 0 and delta_ils_hdg >= -90 then
+				-- -- left
+				-- ils_on_off = 1
+				-- delta_ils_hdg = 90 + delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = -ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg >= 90 then
+				-- -- right back
+				-- ils_on_off = 1
+				-- delta_ils_hdg = delta_ils_hdg - 90
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = -ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = ils_dis * math.cos(delta_ils_hdg)
+			-- elseif delta_ils_hdg <= -90 then
+				-- -- left back
+				-- ils_on_off = 1
+				-- delta_ils_hdg = -90 - delta_ils_hdg
+				-- delta_ils_hdg = math.rad(delta_ils_hdg)
+				-- ils_y = -ils_dis * math.sin(delta_ils_hdg)
+				-- ils_x = -ils_dis * math.cos(delta_ils_hdg)
 			-- end
 			
-			if B738DR_fo_map_mode == 3 then
-				ils_y = ils_y + 4.1	-- adjust center
-			elseif B738DR_fo_exp_map_mode == 0 then
-				ils_y = ils_y + 4.1	-- adjust center
-			end
-				
-			if ils_x < -8.0 or ils_x > 8.0 then
-				ils_on_off = 0
-			end
-			if ils_y > 11.0 or ils_y < -2 then
-				ils_on_off = 0
-			end
+			-- if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+				-- ils_zoom = 2
+			-- elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+				-- ils_zoom = 1
+			-- elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+				-- ils_zoom = 0.5
+			-- elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+				-- ils_zoom = 0.25
+			-- elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+				-- ils_zoom = 0.125
+			-- elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
+				-- ils_zoom = 0.0625
+			-- elseif B738DR_efis_map_range_fo == 6 then	-- 320 NM
+				-- ils_zoom = 0.03125
+			-- else	-- 640 NM
+				-- ils_zoom = 0.015625
+				-- --ils_on_off = 0
+			-- end
 			
-			if ils_on_off == 1 then
-				B738DR_td_fo_x = ils_x
-				B738DR_td_fo_y = ils_y
-				B738DR_td_fo_id = "T/D"
-				B738DR_td_fo_show = 1
-			else
-				B738DR_td_fo_show = 0
-				B738DR_td_fo_id = ""
-			end
-		else
-			B738DR_td_fo_show = 0
-			B738DR_td_fo_id = ""
-		end
+			-- if rte_plan_mode == 1 then
+				-- --ils_zoom = ils_zoom / 2
+				-- ils_zoom = ils_zoom * 0.57
+			-- end
+			
+			-- ils_x = ils_x * ils_zoom		-- zoom
+			-- ils_y = ils_y * ils_zoom		-- zoom
+			-- -- if simDR_efis_sub_mode == 4 then
+				-- -- ils_y = ils_y + 4.1	-- adjust
+			-- -- end
+			
+			-- if B738DR_fo_map_mode == 3 then
+				-- ils_y = ils_y + 4.1	-- adjust center
+			-- elseif B738DR_fo_exp_map_mode == 0 then
+				-- ils_y = ils_y + 4.1	-- adjust center
+			-- end
+				
+			-- if ils_x < -8.0 or ils_x > 8.0 then
+				-- ils_on_off = 0
+			-- end
+			-- if ils_y > 11.0 or ils_y < -2 then
+				-- ils_on_off = 0
+			-- end
+			
+			-- if ils_on_off == 1 then
+				-- B738DR_td_fo_x = ils_x
+				-- B738DR_td_fo_y = ils_y
+				-- B738DR_td_fo_id = "T/D"
+				-- B738DR_td_fo_show = 1
+			-- else
+				-- B738DR_td_fo_show = 0
+				-- B738DR_td_fo_id = ""
+			-- end
+		-- else
+			-- B738DR_td_fo_show = 0
+			-- B738DR_td_fo_id = ""
+		-- end
 		
-	else
-		B738DR_td_show = 0
-		B738DR_td_id = ""
-		B738DR_td_fo_show = 0
-		B738DR_td_fo_id = ""
-	end
+	-- else
+		-- B738DR_td_show = 0
+		-- B738DR_td_id = ""
+		-- B738DR_td_fo_show = 0
+		-- B738DR_td_fo_id = ""
+	-- end
 
-end
+-- end
 
 
 
@@ -58959,8 +62124,6 @@ function B738_displ_rnw()
 
 	local ils_lat2 = 0
 	local ils_lon2 = 0
-	-- local ils_lat = math.rad(ndx_lat)
-	-- local ils_lon = math.rad(ndx_lon)
 	local ils_lat = ndx_lat
 	local ils_lon = ndx_lon
 	local mag_hdg = 0
@@ -58982,22 +62145,7 @@ function B738_displ_rnw()
 		
 		-- CAPTAIN
 		-- DES RUNWAY
-		-- if B738DR_capt_map_mode < 2 then
-			-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-			-- -- if simDR_efis_map_mode == 0 then
-			-- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
-				-- ils_disable = 1
-			-- end
-		-- -- elseif simDR_efis_sub_mode == 4 then
-			-- -- ils_disable = 1
 		if B738DR_capt_map_mode == 3 then
-			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data2[1][7])
-				-- ils_lon = math.rad(legs_data2[1][8])
-			-- else
-				-- ils_lat = math.rad(legs_data2[legs_step][7])
-				-- ils_lon = math.rad(legs_data2[legs_step][8])
-			-- end
 			if legs_step == 0 then
 				ils_lat = legs_data2[1][7]
 				ils_lon = legs_data2[1][8]
@@ -59026,32 +62174,11 @@ function B738_displ_rnw()
 		elseif des_app2 == "------" and legs_num == 1 then
 			ils_disable = 1
 		end
-		-- if des_app == "------" then
-			-- ils_disable = 1
-		-- end
-			
-		-- if ils_disable == 0 then
-			
-			-- ils_lat2 = math.rad(des_runway_lat)
-			-- ils_lon2 = math.rad(des_runway_lon)
-			
-			-- -- ils_x = (ils_lon2 - ils_lon) * math.cos((ils_lat + ils_lat2)/2)
-			-- -- ils_y = ils_lat2 - ils_lat
-			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), des_runway_lat, des_runway_lon)
-			
-			-- ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
-			-- ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
-			-- ils_hdg = math.atan2(ils_y, ils_x)
-			-- ils_hdg = math.deg(ils_hdg)
-			-- ils_hdg = (ils_hdg + 360) % 360
-			
-			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
 			
 		if ils_disable == 0 then
 			
 			ils_dis = nd_calc_dist2(ils_lat, ils_lon, des_runway_lat, des_runway_lon)
+			--ils_dis = nd_calc_dist9(ils_lat, ils_lon, des_runway_lat, des_runway_lon)
 			
 			ils_hdg = nd_calc_brg(ils_lat, ils_lon, des_runway_lat, des_runway_lon)
 			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
@@ -59099,7 +62226,6 @@ function B738_displ_rnw()
 			end
 			
 			if rte_plan_mode == 1 then
-				--ils_zoom = ils_zoom / 2
 				ils_zoom = ils_zoom * 0.57
 			end
 			
@@ -59108,6 +62234,8 @@ function B738_displ_rnw()
 			
 			if B738DR_capt_map_mode == 3 then
 				ils_y = ils_y + 4.1	-- adjust center
+			elseif B738DR_capt_vsd_map_mode == 1 then
+				ils_y = ils_y + 5.1	-- adjust center
 			elseif B738DR_capt_exp_map_mode == 0 then
 				ils_y = ils_y + 4.1	-- adjust center
 			end
@@ -59115,7 +62243,7 @@ function B738_displ_rnw()
 			if ils_y > 14 or ils_y < -5 then		-- 7.7 / -1
 				ils_on_off = 0
 			end
-			if ils_x < -10.0 or ils_x > 10.0 then		-- -6.0 / 6.0
+			if ils_x < -11 or ils_x > 11 then		-- -6.0 / 6.0
 				ils_on_off = 0
 			end
 				
@@ -59155,22 +62283,7 @@ function B738_displ_rnw()
 		
 		ils_disable = 0
 		ils_on_off = 0
-		-- if B738DR_capt_map_mode < 2 then
-			-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-			-- -- if simDR_efis_map_mode == 0 then
-			-- if B738DR_capt_map_mode == 1 and B738DR_capt_exp_map_mode == 0 then
-				-- ils_disable = 1
-			-- end
-		-- -- elseif simDR_efis_sub_mode == 4 then
-			-- -- ils_disable = 1
 		if B738DR_capt_map_mode == 3 then
-			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data2[1][7])
-				-- ils_lon = math.rad(legs_data2[1][8])
-			-- else
-				-- ils_lat = math.rad(legs_data2[legs_step][7])
-				-- ils_lon = math.rad(legs_data2[legs_step][8])
-			-- end
 			if legs_step == 0 then
 				ils_lat = legs_data2[1][7]
 				ils_lon = legs_data2[1][8]
@@ -59199,26 +62312,10 @@ function B738_displ_rnw()
 			ils_disable = 1
 		end
 			
-		-- if ils_disable == 0 and ref_runway_lenght > 0 then
-			
-			-- ils_lat2 = math.rad(ref_runway_lat)
-			-- ils_lon2 = math.rad(ref_runway_lon)
-			
-			-- ils_x = (ils_lon2 - ils_lon) * math.cos((ils_lat + ils_lat2)/2)
-			-- ils_y = ils_lat2 - ils_lat
-			-- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			-- ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
-			-- ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
-			-- ils_hdg = math.atan2(ils_y, ils_x)
-			-- ils_hdg = math.deg(ils_hdg)
-			-- ils_hdg = (ils_hdg + 360) % 360
-			
-			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
-			
 		if ils_disable == 0 and ref_runway_lenght > 0 then
 			
 			ils_dis = nd_calc_dist2(ils_lat, ils_lon, ref_runway_lat, ref_runway_lon)
+			--ils_dis = nd_calc_dist9(ils_lat, ils_lon, ref_runway_lat, ref_runway_lon)
 			
 			ils_hdg = nd_calc_brg(ils_lat, ils_lon, ref_runway_lat, ref_runway_lon)
 			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
@@ -59266,7 +62363,6 @@ function B738_displ_rnw()
 			end
 			
 			if rte_plan_mode == 1 then
-				--ils_zoom = ils_zoom / 2
 				ils_zoom = ils_zoom * 0.57
 			end
 			
@@ -59275,6 +62371,8 @@ function B738_displ_rnw()
 			
 			if B738DR_capt_map_mode == 3 then
 				ils_y = ils_y + 4.1	-- adjust center
+			elseif B738DR_capt_vsd_map_mode == 1 then
+				ils_y = ils_y + 5.1	-- adjust center
 			elseif B738DR_capt_exp_map_mode == 0 then
 				ils_y = ils_y + 4.1	-- adjust center
 			end
@@ -59282,7 +62380,7 @@ function B738_displ_rnw()
 			if ils_y > 14 or ils_y < -5 then		-- 7.7 / -1
 				ils_on_off = 0
 			end
-			if ils_x < -10.0 or ils_x > 10.0 then		-- -6.0 / 6.0
+			if ils_x < -11 or ils_x > 11 then		-- -6.0 / 6.0
 				ils_on_off = 0
 			end
 			
@@ -59325,18 +62423,9 @@ function B738_displ_rnw()
 		rte_plan_mode = 0
 		ils_disable = 0
 		ils_on_off = 0
-		-- ils_lat = math.rad(ndx_lat) 
-		-- ils_lon = math.rad(ndx_lon) 
 		ils_lat = ndx_lat 
 		ils_lon = ndx_lon 
 		if B738DR_fo_map_mode == 3 then
-			-- if legs_step2 == 0 then
-				-- ils_lat = math.rad(legs_data2[1][7])
-				-- ils_lon = math.rad(legs_data2[1][8])
-			-- else
-				-- ils_lat = math.rad(legs_data2[legs_step2][7])
-				-- ils_lon = math.rad(legs_data2[legs_step2][8])
-			-- end
 			if legs_step2 == 0 then
 				ils_lat = legs_data2[1][7]
 				ils_lon = legs_data2[1][8]
@@ -59345,17 +62434,7 @@ function B738_displ_rnw()
 				ils_lon = legs_data2[legs_step2][8]
 			end
 			mag_hdg = -simDR_mag_variation
-			-- temporary
-			--ils_disable = 1
 			rte_plan_mode = 1
-			-- if legs_step == 0 then
-				-- ils_lat = math.rad(legs_data[1][7])
-				-- ils_lon = math.rad(legs_data[1][8])
-			-- else
-				-- ils_lat = math.rad(legs_data[legs_step][7])
-				-- ils_lon = math.rad(legs_data[legs_step][8])
-			-- end
-			-- mag_hdg = -simDR_mag_variation
 		elseif B738DR_fo_map_mode == 2 then
 			if B738DR_track_up == 0 then
 				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
@@ -59366,42 +62445,19 @@ function B738_displ_rnw()
 					mag_hdg = ndx_mag_hdg - simDR_mag_variation
 				end
 			end
-			-- mag_hdg = simDR_mag_hdg - simDR_mag_variation
 		else
 			ils_disable = 1
 		end
-		-- if des_app == "------" then
-			-- ils_disable = 1
-		-- end
 		if des_app == "------" and des_app2 == "------" then
 			ils_disable = 1
 		elseif des_app2 == "------" and legs_num == 1 then
 			ils_disable = 1
 		end
 			
-			
-		-- if ils_disable == 0 then
-			
-			-- ils_lat2 = math.rad(des_runway_lat)
-			-- ils_lon2 = math.rad(des_runway_lon)
-			
-			-- -- ils_x = (ils_lon2 - ils_lon) * math.cos((ils_lat + ils_lat2)/2)
-			-- -- ils_y = ils_lat2 - ils_lat
-			-- -- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), des_runway_lat, des_runway_lon)
-			
-			-- ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
-			-- ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
-			-- ils_hdg = math.atan2(ils_y, ils_x)
-			-- ils_hdg = math.deg(ils_hdg)
-			-- ils_hdg = (ils_hdg + 360) % 360
-			
-			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
-			
 		if ils_disable == 0 then
 			
 			ils_dis = nd_calc_dist2(ils_lat, ils_lon, des_runway_lat, des_runway_lon)
+			--ils_dis = nd_calc_dist9(ils_lat, ils_lon, des_runway_lat, des_runway_lon)
 			
 			ils_hdg = nd_calc_brg(ils_lat, ils_lon, des_runway_lat, des_runway_lon)
 			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
@@ -59449,7 +62505,6 @@ function B738_displ_rnw()
 			end
 			
 			if rte_plan_mode == 1 then
-				--ils_zoom = ils_zoom / 2
 				ils_zoom = ils_zoom * 0.57
 			end
 			
@@ -59458,20 +62513,16 @@ function B738_displ_rnw()
 			
 			if B738DR_fo_map_mode == 3 then
 				ils_y = ils_y + 4.1	-- adjust center
+			elseif B738DR_fo_vsd_map_mode == 1 then
+				ils_y = ils_y + 5.1	-- adjust center
 			elseif B738DR_fo_exp_map_mode == 0 then
-				ils_y = ils_y + 4.1	-- adjust center
-			end
-			
-			if B738DR_capt_map_mode == 3 then
-				ils_y = ils_y + 4.1	-- adjust center
-			elseif B738DR_capt_exp_map_mode == 0 then
 				ils_y = ils_y + 4.1	-- adjust center
 			end
 			
 			if ils_y > 14 or ils_y < -5 then		-- 7.7 / -1
 				ils_on_off = 0
 			end
-			if ils_x < -10.0 or ils_x > 10.0 then		-- -6.0 / 6.0
+			if ils_x < -11 or ils_x > 11 then		-- -6.0 / 6.0
 				ils_on_off = 0
 			end
 				
@@ -59511,22 +62562,7 @@ function B738_displ_rnw()
 		
 		ils_disable = 0
 		ils_on_off = 0
-		-- if B738DR_fo_map_mode < 2 then
-			-- mag_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
-			-- -- if simDR_efis_map_mode == 0 then
-			-- if B738DR_fo_map_mode == 1 and B738DR_fo_exp_map_mode == 0 then
-				-- ils_disable = 1
-			-- end
-		-- -- elseif simDR_efis_sub_mode == 4 then
-			-- -- ils_disable = 1
 		if B738DR_fo_map_mode == 3 then
-			-- if legs_step2 == 0 then
-				-- ils_lat = math.rad(legs_data2[1][7])
-				-- ils_lon = math.rad(legs_data2[1][8])
-			-- else
-				-- ils_lat = math.rad(legs_data2[legs_step2][7])
-				-- ils_lon = math.rad(legs_data2[legs_step2][8])
-			-- end
 			if legs_step2 == 0 then
 				ils_lat = legs_data2[1][7]
 				ils_lon = legs_data2[1][8]
@@ -59545,40 +62581,20 @@ function B738_displ_rnw()
 					mag_hdg = simDR_mag_hdg - simDR_mag_variation
 				end
 			end
-			-- mag_hdg = simDR_mag_hdg - simDR_mag_variation
 		else
 			ils_disable = 1
 		end
 		
-		-- if ref_rwy == "-----" then
-			-- ils_disable = 1
-		-- end
 		if ref_rwy == "-----" and ref_rwy2 == "-----" then
 			ils_disable = 1
 		elseif ref_rwy2 == "-----" and legs_num == 1 then
 			ils_disable = 1
 		end
 			
-		-- if ils_disable == 0 and ref_runway_lenght > 0 then
-			
-			-- ils_lat2 = math.rad(ref_runway_lat)
-			-- ils_lon2 = math.rad(ref_runway_lon)
-			
-			-- ils_x = (ils_lon2 - ils_lon) * math.cos((ils_lat + ils_lat2)/2)
-			-- ils_y = ils_lat2 - ils_lat
-			-- ils_dis = math.sqrt(ils_x*ils_x + ils_y*ils_y) * 3440.064795	--nm
-			
-			-- ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
-			-- ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
-			-- ils_hdg = math.atan2(ils_y, ils_x)
-			-- ils_hdg = math.deg(ils_hdg)
-			-- ils_hdg = (ils_hdg + 360) % 360
-			
-			-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
-			
 		if ils_disable == 0 and ref_runway_lenght > 0 then
 			
 			ils_dis = nd_calc_dist2(ils_lat, ils_lon, ref_runway_lat, ref_runway_lon)
+			--ils_dis = nd_calc_dist9(ils_lat, ils_lon, ref_runway_lat, ref_runway_lon)
 			
 			ils_hdg = nd_calc_brg(ils_lat, ils_lon, ref_runway_lat, ref_runway_lon)
 			delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
@@ -59626,7 +62642,6 @@ function B738_displ_rnw()
 			end
 			
 			if rte_plan_mode == 1 then
-				--ils_zoom = ils_zoom / 2
 				ils_zoom = ils_zoom * 0.57
 			end
 			
@@ -59635,6 +62650,8 @@ function B738_displ_rnw()
 			
 			if B738DR_fo_map_mode == 3 then
 				ils_y = ils_y + 4.1	-- adjust center
+			elseif B738DR_fo_vsd_map_mode == 1 then
+				ils_y = ils_y + 5.1	-- adjust center
 			elseif B738DR_fo_exp_map_mode == 0 then
 				ils_y = ils_y + 4.1	-- adjust center
 			end
@@ -59642,7 +62659,7 @@ function B738_displ_rnw()
 			if ils_y > 14 or ils_y < -5 then		-- 7.7 / -1
 				ils_on_off = 0
 			end
-			if ils_x < -10.0 or ils_x > 10.0 then		-- -6.0 / 6.0
+			if ils_x < -11 or ils_x > 11 then		-- -6.0 / 6.0
 				ils_on_off = 0
 			end
 			
@@ -59672,7 +62689,6 @@ function B738_displ_rnw()
 				else
 					B738DR_ils_runway0 = ref_rwy
 				end
-				-- B738DR_ils_runway0 = ref_rwy
 				B738DR_ils_fo_show0 = 1
 			else
 				B738DR_ils_fo_show0 = 0
@@ -59695,8 +62711,6 @@ function B738_displ_fix()
 	
 	local ils_lat2 = 0
 	local ils_lon2 = 0
-	-- local ils_lat = math.rad(ndx_lat)
-	-- local ils_lon = math.rad(ndx_lon)
 	local ils_lat = ndx_lat
 	local ils_lon = ndx_lon
 	local mag_hdg = 0
@@ -59746,23 +62760,11 @@ function B738_displ_fix()
 			
 			for ii = 1, fix_data_num do
 			
-				-- ils_lat2 = math.rad(fix_data[ii][3])
-				-- ils_lon2 = math.rad(fix_data[ii][4])
-				
-				-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), fix_data[ii][3], fix_data[ii][4])
-				
-				-- ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
-				-- ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
-				-- ils_hdg = math.atan2(ils_y, ils_x)
-				-- ils_hdg = math.deg(ils_hdg)
-				-- ils_hdg = (ils_hdg + 360) % 360
-				
-				-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
-				
 				ils_lat2 =fix_data[ii][3]
 				ils_lon2 = fix_data[ii][4]
 					
 				ils_dis = nd_calc_dist2(ils_lat, ils_lon, ils_lat2, ils_lon2)
+				--ils_dis = nd_calc_dist9(ils_lat, ils_lon, ils_lat2, ils_lon2)
 				
 				ils_hdg = nd_calc_brg(ils_lat, ils_lon, ils_lat2, ils_lon2)
 				delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
@@ -59816,7 +62818,6 @@ function B738_displ_fix()
 				end
 				
 				if B738DR_capt_map_mode == 3 then
-					--ils_zoom = ils_zoom / 2
 					ils_zoom = ils_zoom * 0.57
 				end
 				
@@ -59825,17 +62826,12 @@ function B738_displ_fix()
 				
 				if B738DR_capt_map_mode == 3 then
 					ils_y = ils_y + 4.1	-- adjust center
+				elseif B738DR_capt_vsd_map_mode == 1 then
+					ils_y = ils_y + 5.1	-- adjust center
 				elseif B738DR_capt_exp_map_mode == 0 then
 					ils_y = ils_y + 4.1	-- adjust center
 				end
 				
-				-- if ils_y > 28 or ils_y < -28 then
-					-- ils_on_off = 0
-				-- end
-				-- if ils_x < -28 or ils_x > 28 then
-					-- ils_on_off = 0
-				-- end
-					
 				if ils_on_off == 1 then
 					
 					-- show FIX
@@ -59951,56 +62947,71 @@ function B738_displ_fix()
 								if jj == 0 then
 									B738DR_fix_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_0_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 1 then
 									B738DR_fix_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_1_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 2 then
 									B738DR_fix_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_2_nm[ii-1] = fix_data[ii][kk+1]
 								end
 							elseif ii == 2 then
 								if jj == 0 then
 									B738DR_fix_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_0_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 1 then
 									B738DR_fix_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_1_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 2 then
 									B738DR_fix_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_2_nm[ii-1] = fix_data[ii][kk+1]
 								end
 							elseif ii == 3 then
 								if jj == 0 then
 									B738DR_fix_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_0_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 1 then
 									B738DR_fix_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_1_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 2 then
 									B738DR_fix_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_2_nm[ii-1] = fix_data[ii][kk+1]
 								end
 							elseif ii == 4 then
 								if jj == 0 then
 									B738DR_fix_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_0_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 1 then
 									B738DR_fix_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_1_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 2 then
 									B738DR_fix_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_2_nm[ii-1] = fix_data[ii][kk+1]
 								end
 							elseif ii == 5 then
 								if jj == 0 then
 									B738DR_fix_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_0_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 1 then
 									B738DR_fix_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_1_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 2 then
 									B738DR_fix_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_dist_2_nm[ii-1] = fix_data[ii][kk+1]
 								end
 							end
 						else
@@ -60065,23 +63076,11 @@ function B738_displ_fix()
 			
 			for ii = 1, fix_data_num do
 			
-				-- ils_lat2 = math.rad(fix_data[ii][3])
-				-- ils_lon2 = math.rad(fix_data[ii][4])
-				
-				-- ils_dis = nd_calc_dist2(math.deg(ils_lat), math.deg(ils_lon), fix_data[ii][3], fix_data[ii][4])
-				
-				-- ils_y = math.sin(ils_lon2 - ils_lon) * math.cos(ils_lat2)
-				-- ils_x = math.cos(ils_lat) * math.sin(ils_lat2) - math.sin(ils_lat) * math.cos(ils_lat2) * math.cos(ils_lon2 - ils_lon)
-				-- ils_hdg = math.atan2(ils_y, ils_x)
-				-- ils_hdg = math.deg(ils_hdg)
-				-- ils_hdg = (ils_hdg + 360) % 360
-				
-				-- delta_ils_hdg = ((((ils_hdg - mag_hdg) % 360) + 540) % 360) - 180
-				
 				ils_lat2 =fix_data[ii][3]
 				ils_lon2 = fix_data[ii][4]
 					
 				ils_dis = nd_calc_dist2(ils_lat, ils_lon, ils_lat2, ils_lon2)
+				--ils_dis = nd_calc_dist9(ils_lat, ils_lon, ils_lat2, ils_lon2)
 				
 				ils_hdg = nd_calc_brg(ils_lat, ils_lon, ils_lat2, ils_lon2)
 				delta_ils_hdg = calc_rel_brg(ils_hdg, mag_hdg)
@@ -60144,23 +63143,12 @@ function B738_displ_fix()
 				
 				if B738DR_fo_map_mode == 3 then
 					ils_y = ils_y + 4.1	-- adjust center
+				elseif B738DR_fo_vsd_map_mode == 1 then
+					ils_y = ils_y + 5.1	-- adjust center
 				elseif B738DR_fo_exp_map_mode == 0 then
 					ils_y = ils_y + 4.1	-- adjust center
 				end
 				
-				-- if ils_y > 14 or ils_y < -5 then
-					-- ils_on_off = 0
-				-- end
-				-- if ils_x < -10.0 or ils_x > 10.0 then
-					-- ils_on_off = 0
-				-- end
-				-- if ils_y > 28 or ils_y < -28 then
-					-- ils_on_off = 0
-				-- end
-				-- if ils_x < -28 or ils_x > 28 then
-					-- ils_on_off = 0
-				-- end
-					
 				if ils_on_off == 1 then
 					
 					-- show FIX
@@ -60276,56 +63264,71 @@ function B738_displ_fix()
 								if jj == 0 then
 									B738DR_fix_fo_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_0_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 1 then
 									B738DR_fix_fo_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_1_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 2 then
 									B738DR_fix_fo_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_2_nm[ii-1] = fix_data[ii][kk+1]
 								end
 							elseif ii == 2 then
 								if jj == 0 then
 									B738DR_fix_fo_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_0_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 1 then
 									B738DR_fix_fo_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_1_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 2 then
 									B738DR_fix_fo_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_2_nm[ii-1] = fix_data[ii][kk+1]
 								end
 							elseif ii == 3 then
 								if jj == 0 then
 									B738DR_fix_fo_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_0_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 1 then
 									B738DR_fix_fo_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_1_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 2 then
 									B738DR_fix_fo_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_2_nm[ii-1] = fix_data[ii][kk+1]
 								end
 							elseif ii == 4 then
 								if jj == 0 then
 									B738DR_fix_fo_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_0_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 1 then
 									B738DR_fix_fo_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_1_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 2 then
 									B738DR_fix_fo_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_2_nm[ii-1] = fix_data[ii][kk+1]
 								end
 							elseif ii == 5 then
 								if jj == 0 then
 									B738DR_fix_fo_rad_dist_0[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_0[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_0_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 1 then
 									B738DR_fix_fo_rad_dist_1[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_1[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_1_nm[ii-1] = fix_data[ii][kk+1]
 								elseif jj == 2 then
 									B738DR_fix_fo_rad_dist_2[ii-1] = 2	-- 0-none, 1-radial, 2-distance
 									B738DR_fix_fo_dist_2[ii-1] = fix_data[ii][kk+1] * ils_zoom
+									B738DR_fix_fo_dist_2_nm[ii-1] = fix_data[ii][kk+1]
 								end
 							end
 						else
@@ -60416,14 +63419,14 @@ function B738_nd_perf()
 		
 		skip = 0
 		delta_pos = nd_lat2 - nd_lat
-		if delta_pos < 0  then
+		if delta_pos < 0 then
 			delta_pos = -delta_pos
 		end
 		if delta_pos > 8 then
 			skip = 1
 		end
 		delta_pos = nd_lon2 - nd_lon
-		if delta_pos < 0  then
+		if delta_pos < 0 then
 			delta_pos = -delta_pos
 		end
 		if delta_pos > 8 then
@@ -60502,6 +63505,15 @@ function B738_displ_apt()
 	local nav_disable2 = 0
 	local nav_disable3 = 0
 	local obj3 = 0
+	local nd_thr = 0
+	local nd_zoom2 = 0
+	local nd_thr2 = 0
+	
+	local nd_lat_fo = 0
+	local nd_lon_fo = 0
+	local mag_hdg_fo = 0
+	local nd_shift = 0
+	local nd_shift_fo = 0
 		
 	if B738DR_efis_apt_on == 0 or B738DR_capt_map_mode < 2 then
 		nav_disable = 1
@@ -60535,9 +63547,126 @@ function B738_displ_apt()
 	
 	if page_max > 0 and nav_disable3 == 0 then
 		
+		if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+			nd_zoom = 2
+			nd_thr = 6
+		elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+			nd_zoom = 1
+			nd_thr = 11
+		elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+			nd_zoom = 0.5
+			nd_thr = 21
+		elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+			nd_zoom = 0.25
+			nd_thr = 41
+		elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+			nd_zoom = 0.125
+			nd_thr = 81
+		elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
+			nd_zoom = 0.0625
+			nd_thr = 161
+		else
+			nd_thr = 161
+			nd_zoom = 0
+		end
+		
+		if B738DR_capt_map_mode == 3 then
+			nd_zoom = nd_zoom * 0.57
+		end
+		
+		nd_lat = ndx_lat
+		nd_lon = ndx_lon
+		if B738DR_capt_map_mode == 3 and legs_num2 ~= 0 then
+			if legs_step == 0 then
+				nd_lat = legs_data2[1][7]
+				nd_lon = legs_data2[1][8]
+			else
+				nd_lat = legs_data2[legs_step][7]
+				nd_lon = legs_data2[legs_step][8]
+			end
+			mag_hdg = -simDR_mag_variation
+		elseif B738DR_capt_map_mode == 2 then
+			if B738DR_track_up == 0 then
+				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+			else
+				if B738DR_track_up_active == 0 then
+					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				else
+					mag_hdg = ndx_mag_hdg - simDR_mag_variation
+				end
+			end
+		end
+		
+		if B738DR_capt_map_mode == 3 then
+			nd_shift = 4.1	-- adjust center
+		elseif B738DR_capt_vsd_map_mode == 1 then
+			nd_shift = 5.1	-- adjust center
+		elseif B738DR_capt_exp_map_mode == 0 then
+			nd_shift = 4.1	-- adjust center
+		end
+		
+		if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+			nd_zoom2 = 2
+			nd_thr2 = 6
+		elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+			nd_zoom2 = 1
+			nd_thr2 = 11
+		elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+			nd_zoom2 = 0.5
+			nd_thr2 = 21
+		elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+			nd_zoom2 = 0.25
+			nd_thr2 = 41
+		elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+			nd_zoom2 = 0.125
+			nd_thr2 = 81
+		elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
+			nd_zoom2 = 0.0625
+			nd_thr2 = 161
+		else
+			nd_thr2 = 161
+			nd_zoom2 = 0
+		end
+		
+		if B738DR_fo_map_mode == 3 then
+			nd_zoom2 = nd_zoom2 * 0.57
+		end
+		
+		nd_lat_fo = ndx_lat
+		nd_lon_fo = ndx_lon
+		if B738DR_fo_map_mode == 3 and legs_num2 ~= 0 then
+			if legs_step2 == 0 then
+				nd_lat_fo = legs_data2[1][7]
+				nd_lon_fo = legs_data2[1][8]
+			else
+				nd_lat_fo = legs_data2[legs_step2][7]
+				nd_lon_fo = legs_data2[legs_step2][8]
+			end
+			
+			mag_hdg_fo = -simDR_mag_variation
+		elseif B738DR_fo_map_mode == 2 then
+			if B738DR_track_up == 0 then
+				mag_hdg_fo = ndx_ahars_mag_hdg - simDR_mag_variation
+			else
+				if B738DR_track_up_active == 0 then
+					mag_hdg_fo = ndx_ahars_mag_hdg - simDR_mag_variation
+				else
+					mag_hdg_fo = ndx_mag_hdg - simDR_mag_variation
+				end
+			end
+		end
+		
+		if B738DR_fo_map_mode == 3 then
+			nd_shift_fo = 4.1	-- adjust center
+		elseif B738DR_fo_vsd_map_mode == 1 then
+			nd_shift_fo = 5.1	-- adjust center
+		elseif B738DR_fo_exp_map_mode == 0 then
+			nd_shift_fo = 4.1	-- adjust center
+		end
+		
 		for n = 1, page_max do 
 			
-			nd_on_off2 = 0
+			--nd_on_off2 = 0
 			if nd_page == 0 then
 				page_1 = nd_page2[n][1]
 				page_2 = nd_page2[n][2]
@@ -60553,32 +63682,11 @@ function B738_displ_apt()
 			
 			if nav_disable == 0 then
 				-- CAPTAIN
-				nd_lat = ndx_lat
-				nd_lon = ndx_lon
-				if B738DR_capt_map_mode == 3 then
-					if legs_step == 0 then
-						nd_lat = legs_data2[1][7]
-						nd_lon = legs_data2[1][8]
-					else
-						nd_lat = legs_data2[legs_step][7]
-						nd_lon = legs_data2[legs_step][8]
-					end
-					mag_hdg = -simDR_mag_variation
-				elseif B738DR_capt_map_mode == 2 then
-					if B738DR_track_up == 0 then
-						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-					else
-						if B738DR_track_up_active == 0 then
-							mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-						else
-							mag_hdg = ndx_mag_hdg - simDR_mag_variation
-						end
-					end
-				end
 				
 				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
-				
-				if nd_dis < 165 and obj3 >= 0 then	--and nav_disable3 == 0 then
+					
+				--if nd_dis < 165 and obj3 >= 0 then	--and nav_disable3 == 0 then
+				if nd_dis < nd_thr and obj3 >= 0 and nd_zoom ~= 0 then	--and nav_disable3 == 0 then
 					
 					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
 					
@@ -60587,30 +63695,31 @@ function B738_displ_apt()
 						delta_hdg = delta_hdg - 360
 					end
 					
+					nd_on_off = 0
 					if delta_hdg >= 0 and delta_hdg <= 90 then
 						-- right
-						nd_on_off2 = 1
+						nd_on_off = 1
 						delta_hdg = 90 - delta_hdg
 						delta_hdg = math.rad(delta_hdg)
 						nd_y2 = nd_dis * math.sin(delta_hdg)
 						nd_x2 = nd_dis * math.cos(delta_hdg)
 					elseif delta_hdg < 0 and delta_hdg >= -90 then
 						-- left
-						nd_on_off2 = 1
+						nd_on_off = 1
 						delta_hdg = 90 + delta_hdg
 						delta_hdg = math.rad(delta_hdg)
 						nd_y2 = nd_dis * math.sin(delta_hdg)
 						nd_x2 = -nd_dis * math.cos(delta_hdg)
 					elseif delta_hdg >= 90 then
 						-- right back
-						nd_on_off2 = 1
+						nd_on_off = 1
 						delta_hdg = delta_hdg - 90
 						delta_hdg = math.rad(delta_hdg)
 						nd_y2 = -nd_dis * math.sin(delta_hdg)
 						nd_x2 = nd_dis * math.cos(delta_hdg)
 					elseif delta_hdg <= -90 then
 						-- left back
-						nd_on_off2 = 1
+						nd_on_off = 1
 						delta_hdg = -90 - delta_hdg
 						delta_hdg = math.rad(delta_hdg)
 						nd_y2 = -nd_dis * math.sin(delta_hdg)
@@ -60618,179 +63727,131 @@ function B738_displ_apt()
 					end
 					
 					-- CPT
-					nd_on_off = nd_on_off2
-					if B738DR_efis_map_range_capt == 0 then	-- 5 NM
-						nd_zoom = 2
-					elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
-						nd_zoom = 1
-					elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
-						nd_zoom = 0.5
-					elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
-						nd_zoom = 0.25
-					elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
-						nd_zoom = 0.125
-					elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
-						nd_zoom = 0.0625
-					else
-						nd_on_off = 0
-					end
-					
-					if B738DR_capt_map_mode == 3 then
-						--nd_zoom = nd_zoom / 2
-						nd_zoom = nd_zoom * 0.57
-					end
-					
 					nd_x = nd_x2 * nd_zoom		-- zoom
-					nd_y = nd_y2 * nd_zoom		-- zoom
-					if nd_x < -8.0 or nd_x > 8.0 then
-						nd_on_off = 0
-					end
-					if nd_y > 11.0 or nd_y < -2 then
-						nd_on_off = 0
-					end
+					nd_y = (nd_y2 * nd_zoom) + nd_shift		-- zoom
 					
-					if B738DR_capt_map_mode == 3 then
-						nd_y = nd_y + 4.1	-- adjust center
-					elseif B738DR_capt_exp_map_mode == 0 then
-						nd_y = nd_y + 4.1	-- adjust center
+					if nd_x < -11 or nd_x > 11 then
+						nd_on_off = 0
+					end
+					if nd_y > 11 or nd_y < -5 then
+						nd_on_off = 0
 					end
 					
 					if nd_on_off == 1 and obj >= 0 then	--and nav_disable == 0 then
-						--if obj >= 0 then
-							apt_txt = page_1
-							if B738DR_fpln_nav_id ~= apt_txt then
-								B738DR_apt_obj[obj] = 1
-								B738DR_apt_x[obj] = nd_x
-								B738DR_apt_y[obj] = nd_y
-								if obj == 0 then
-									B738DR_apt_id00 = apt_txt
-								elseif obj == 1 then
-									B738DR_apt_id01 = apt_txt
-								elseif obj == 2 then
-									B738DR_apt_id02 = apt_txt
-								elseif obj == 3 then
-									B738DR_apt_id03 = apt_txt
-								elseif obj == 4 then
-									B738DR_apt_id04 = apt_txt
-								elseif obj == 5 then
-									B738DR_apt_id05 = apt_txt
-								elseif obj == 6 then
-									B738DR_apt_id06 = apt_txt
-								elseif obj == 7 then
-									B738DR_apt_id07 = apt_txt
-								elseif obj == 8 then
-									B738DR_apt_id08 = apt_txt
-								elseif obj == 9 then
-									B738DR_apt_id09 = apt_txt
-								elseif obj == 10 then
-									B738DR_apt_id10 = apt_txt
-								elseif obj == 11 then
-									B738DR_apt_id11 = apt_txt
-								elseif obj == 12 then
-									B738DR_apt_id12 = apt_txt
-								elseif obj == 13 then
-									B738DR_apt_id13 = apt_txt
-								elseif obj == 14 then
-									B738DR_apt_id14 = apt_txt
-								elseif obj == 15 then
-									B738DR_apt_id15 = apt_txt
-								elseif obj == 16 then
-									B738DR_apt_id16 = apt_txt
-								elseif obj == 17 then
-									B738DR_apt_id17 = apt_txt
-								elseif obj == 18 then
-									B738DR_apt_id18 = apt_txt
-								elseif obj == 19 then
-									B738DR_apt_id19 = apt_txt
-								elseif obj == 20 then
-									B738DR_apt_id20 = apt_txt
-								elseif obj == 21 then
-									B738DR_apt_id21 = apt_txt
-								elseif obj == 22 then
-									B738DR_apt_id22 = apt_txt
-								elseif obj == 23 then
-									B738DR_apt_id23 = apt_txt
-								elseif obj == 24 then
-									B738DR_apt_id24 = apt_txt
-								elseif obj == 25 then
-									B738DR_apt_id25 = apt_txt
-								elseif obj == 26 then
-									B738DR_apt_id26 = apt_txt
-								elseif obj == 27 then
-									B738DR_apt_id27 = apt_txt
-								elseif obj == 28 then
-									B738DR_apt_id28 = apt_txt
-								elseif obj == 29 then
-									B738DR_apt_id29 = apt_txt
-								end
-								obj = obj - 1
+						apt_txt = page_1
+						if B738DR_fpln_nav_id ~= apt_txt then
+							B738DR_apt_obj[obj] = 1
+							B738DR_apt_x[obj] = nd_x
+							B738DR_apt_y[obj] = nd_y
+							if obj == 0 then
+								B738DR_apt_id00 = apt_txt
+							elseif obj == 1 then
+								B738DR_apt_id01 = apt_txt
+							elseif obj == 2 then
+								B738DR_apt_id02 = apt_txt
+							elseif obj == 3 then
+								B738DR_apt_id03 = apt_txt
+							elseif obj == 4 then
+								B738DR_apt_id04 = apt_txt
+							elseif obj == 5 then
+								B738DR_apt_id05 = apt_txt
+							elseif obj == 6 then
+								B738DR_apt_id06 = apt_txt
+							elseif obj == 7 then
+								B738DR_apt_id07 = apt_txt
+							elseif obj == 8 then
+								B738DR_apt_id08 = apt_txt
+							elseif obj == 9 then
+								B738DR_apt_id09 = apt_txt
+							elseif obj == 10 then
+								B738DR_apt_id10 = apt_txt
+							elseif obj == 11 then
+								B738DR_apt_id11 = apt_txt
+							elseif obj == 12 then
+								B738DR_apt_id12 = apt_txt
+							elseif obj == 13 then
+								B738DR_apt_id13 = apt_txt
+							elseif obj == 14 then
+								B738DR_apt_id14 = apt_txt
+							elseif obj == 15 then
+								B738DR_apt_id15 = apt_txt
+							elseif obj == 16 then
+								B738DR_apt_id16 = apt_txt
+							elseif obj == 17 then
+								B738DR_apt_id17 = apt_txt
+							elseif obj == 18 then
+								B738DR_apt_id18 = apt_txt
+							elseif obj == 19 then
+								B738DR_apt_id19 = apt_txt
+							elseif obj == 20 then
+								B738DR_apt_id20 = apt_txt
+							elseif obj == 21 then
+								B738DR_apt_id21 = apt_txt
+							elseif obj == 22 then
+								B738DR_apt_id22 = apt_txt
+							elseif obj == 23 then
+								B738DR_apt_id23 = apt_txt
+							elseif obj == 24 then
+								B738DR_apt_id24 = apt_txt
+							elseif obj == 25 then
+								B738DR_apt_id25 = apt_txt
+							elseif obj == 26 then
+								B738DR_apt_id26 = apt_txt
+							elseif obj == 27 then
+								B738DR_apt_id27 = apt_txt
+							elseif obj == 28 then
+								B738DR_apt_id28 = apt_txt
+							elseif obj == 29 then
+								B738DR_apt_id29 = apt_txt
 							end
-						--end
+							obj = obj - 1
+						end
 					end
 				end
 			end
 			
 			if nav_disable2 == 0 then
 				-- FIRST OFFICER
-				nd_lat = ndx_lat
-				nd_lon = ndx_lon
-				if B738DR_fo_map_mode == 3 then
-					if legs_step2 == 0 then
-						nd_lat = legs_data2[1][7]
-						nd_lon = legs_data2[1][8]
-					else
-						nd_lat = legs_data2[legs_step2][7]
-						nd_lon = legs_data2[legs_step2][8]
-					end
-					
-					mag_hdg = -simDR_mag_variation
-				elseif B738DR_fo_map_mode == 2 then
-					if B738DR_track_up == 0 then
-						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-					else
-						if B738DR_track_up_active == 0 then
-							mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-						else
-							mag_hdg = ndx_mag_hdg - simDR_mag_variation
-						end
-					end
-				end
+				--nd_on_off = 0
 				
-				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
+				nd_dis = nd_calc_dist2(nd_lat_fo, nd_lon_fo, nd_lat2, nd_lon2)
+				--nd_dis = nd_calc_dist9(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
-				if nd_dis < 165 and obj3 >= 0 then	--and nav_disable3 == 0 then
+				if nd_dis < nd_thr2 and obj3 >= 0 and nd_zoom2 ~= 0 then	--and nav_disable3 == 0 then
+				--if nd_dis < 165 and obj3 >= 0 then	--and nav_disable3 == 0 then
 					
-					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					nd_hdg = nd_calc_brg(nd_lat_fo, nd_lon_fo, nd_lat2, nd_lon2)
 					
-					delta_hdg = (nd_hdg - mag_hdg + 360) % 360
+					delta_hdg = (nd_hdg - mag_hdg_fo + 360) % 360
 					if delta_hdg > 180 then
 						delta_hdg = delta_hdg - 360
 					end
 					
+					nd_on_off = 0
 					if delta_hdg >= 0 and delta_hdg <= 90 then
 						-- right
-						nd_on_off2 = 1
+						nd_on_off = 1
 						delta_hdg = 90 - delta_hdg
 						delta_hdg = math.rad(delta_hdg)
 						nd_y2 = nd_dis * math.sin(delta_hdg)
 						nd_x2 = nd_dis * math.cos(delta_hdg)
 					elseif delta_hdg < 0 and delta_hdg >= -90 then
 						-- left
-						nd_on_off2 = 1
+						nd_on_off = 1
 						delta_hdg = 90 + delta_hdg
 						delta_hdg = math.rad(delta_hdg)
 						nd_y2 = nd_dis * math.sin(delta_hdg)
 						nd_x2 = -nd_dis * math.cos(delta_hdg)
 					elseif delta_hdg >= 90 then
 						-- right back
-						nd_on_off2 = 1
+						nd_on_off = 1
 						delta_hdg = delta_hdg - 90
 						delta_hdg = math.rad(delta_hdg)
 						nd_y2 = -nd_dis * math.sin(delta_hdg)
 						nd_x2 = nd_dis * math.cos(delta_hdg)
 					elseif delta_hdg <= -90 then
 						-- left back
-						nd_on_off2 = 1
+						nd_on_off = 1
 						delta_hdg = -90 - delta_hdg
 						delta_hdg = math.rad(delta_hdg)
 						nd_y2 = -nd_dis * math.sin(delta_hdg)
@@ -60798,114 +63859,85 @@ function B738_displ_apt()
 					end
 				
 					-- FO
-					nd_on_off = nd_on_off2
-					if B738DR_efis_map_range_fo == 0 then	-- 5 NM
-						nd_zoom = 2
-					elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
-						nd_zoom = 1
-					elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
-						nd_zoom = 0.5
-					elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
-						nd_zoom = 0.25
-					elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
-						nd_zoom = 0.125
-					elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
-						nd_zoom = 0.0625
-					else
+					nd_x = nd_x2 * nd_zoom2		-- zoom
+					nd_y = (nd_y2 * nd_zoom2) + nd_shift_fo		-- zoom
+					
+					if nd_x < -11 or nd_x > 11 then
 						nd_on_off = 0
 					end
-					
-					if B738DR_fo_map_mode == 3 then
-						--nd_zoom = nd_zoom / 2
-						nd_zoom = nd_zoom * 0.57
-					end
-					
-					nd_x = nd_x2 * nd_zoom		-- zoom
-					nd_y = nd_y2 * nd_zoom		-- zoom
-					if nd_x < -8.0 or nd_x > 8.0 then
+					if nd_y > 11 or nd_y < -5 then
 						nd_on_off = 0
-					end
-					if nd_y > 11.0 or nd_y < -2 then
-						nd_on_off = 0
-					end
-					
-					if B738DR_fo_map_mode == 3 then
-						nd_y = nd_y + 4.1	-- adjust center
-					elseif B738DR_fo_exp_map_mode == 0 then
-						nd_y = nd_y + 4.1	-- adjust center
 					end
 					
 					if nd_on_off == 1 and obj2 >= 0 then	--and nav_disable2 == 0 then
-						--if obj2 >= 0 then
-							apt_txt = page_1
-							if B738DR_fpln_nav_id ~= apt_txt then
-								B738DR_apt_fo_obj[obj2] = 1
-								B738DR_apt_fo_x[obj2] = nd_x
-								B738DR_apt_fo_y[obj2] = nd_y
-								if obj2 == 0 then
-									B738DR_apt_fo_id00 = apt_txt
-								elseif obj2 == 1 then
-									B738DR_apt_fo_id01 = apt_txt
-								elseif obj2 == 2 then
-									B738DR_apt_fo_id02 = apt_txt
-								elseif obj2 == 3 then
-									B738DR_apt_fo_id03 = apt_txt
-								elseif obj2 == 4 then
-									B738DR_apt_fo_id04 = apt_txt
-								elseif obj2 == 5 then
-									B738DR_apt_fo_id05 = apt_txt
-								elseif obj2 == 6 then
-									B738DR_apt_fo_id06 = apt_txt
-								elseif obj2 == 7 then
-									B738DR_apt_fo_id07 = apt_txt
-								elseif obj2 == 8 then
-									B738DR_apt_fo_id08 = apt_txt
-								elseif obj2 == 9 then
-									B738DR_apt_fo_id09 = apt_txt
-								elseif obj2 == 10 then
-									B738DR_apt_fo_id10 = apt_txt
-								elseif obj2 == 11 then
-									B738DR_apt_fo_id11 = apt_txt
-								elseif obj2 == 12 then
-									B738DR_apt_fo_id12 = apt_txt
-								elseif obj2 == 13 then
-									B738DR_apt_fo_id13 = apt_txt
-								elseif obj2 == 14 then
-									B738DR_apt_fo_id14 = apt_txt
-								elseif obj2 == 15 then
-									B738DR_apt_fo_id15 = apt_txt
-								elseif obj2 == 16 then
-									B738DR_apt_fo_id16 = apt_txt
-								elseif obj2 == 17 then
-									B738DR_apt_fo_id17 = apt_txt
-								elseif obj2 == 18 then
-									B738DR_apt_fo_id18 = apt_txt
-								elseif obj2 == 19 then
-									B738DR_apt_fo_id19 = apt_txt
-								elseif obj2 == 20 then
-									B738DR_apt_fo_id20 = apt_txt
-								elseif obj2 == 21 then
-									B738DR_apt_fo_id21 = apt_txt
-								elseif obj2 == 22 then
-									B738DR_apt_fo_id22 = apt_txt
-								elseif obj2 == 23 then
-									B738DR_apt_fo_id23 = apt_txt
-								elseif obj2 == 24 then
-									B738DR_apt_fo_id24 = apt_txt
-								elseif obj2 == 25 then
-									B738DR_apt_fo_id25 = apt_txt
-								elseif obj2 == 26 then
-									B738DR_apt_fo_id26 = apt_txt
-								elseif obj2 == 27 then
-									B738DR_apt_fo_id27 = apt_txt
-								elseif obj2 == 28 then
-									B738DR_apt_fo_id28 = apt_txt
-								elseif obj2 == 29 then
-									B738DR_apt_fo_id29 = apt_txt
-								end
-								obj2 = obj2 - 1
+						apt_txt = page_1
+						if B738DR_fpln_nav_id ~= apt_txt then
+							B738DR_apt_fo_obj[obj2] = 1
+							B738DR_apt_fo_x[obj2] = nd_x
+							B738DR_apt_fo_y[obj2] = nd_y
+							if obj2 == 0 then
+								B738DR_apt_fo_id00 = apt_txt
+							elseif obj2 == 1 then
+								B738DR_apt_fo_id01 = apt_txt
+							elseif obj2 == 2 then
+								B738DR_apt_fo_id02 = apt_txt
+							elseif obj2 == 3 then
+								B738DR_apt_fo_id03 = apt_txt
+							elseif obj2 == 4 then
+								B738DR_apt_fo_id04 = apt_txt
+							elseif obj2 == 5 then
+								B738DR_apt_fo_id05 = apt_txt
+							elseif obj2 == 6 then
+								B738DR_apt_fo_id06 = apt_txt
+							elseif obj2 == 7 then
+								B738DR_apt_fo_id07 = apt_txt
+							elseif obj2 == 8 then
+								B738DR_apt_fo_id08 = apt_txt
+							elseif obj2 == 9 then
+								B738DR_apt_fo_id09 = apt_txt
+							elseif obj2 == 10 then
+								B738DR_apt_fo_id10 = apt_txt
+							elseif obj2 == 11 then
+								B738DR_apt_fo_id11 = apt_txt
+							elseif obj2 == 12 then
+								B738DR_apt_fo_id12 = apt_txt
+							elseif obj2 == 13 then
+								B738DR_apt_fo_id13 = apt_txt
+							elseif obj2 == 14 then
+								B738DR_apt_fo_id14 = apt_txt
+							elseif obj2 == 15 then
+								B738DR_apt_fo_id15 = apt_txt
+							elseif obj2 == 16 then
+								B738DR_apt_fo_id16 = apt_txt
+							elseif obj2 == 17 then
+								B738DR_apt_fo_id17 = apt_txt
+							elseif obj2 == 18 then
+								B738DR_apt_fo_id18 = apt_txt
+							elseif obj2 == 19 then
+								B738DR_apt_fo_id19 = apt_txt
+							elseif obj2 == 20 then
+								B738DR_apt_fo_id20 = apt_txt
+							elseif obj2 == 21 then
+								B738DR_apt_fo_id21 = apt_txt
+							elseif obj2 == 22 then
+								B738DR_apt_fo_id22 = apt_txt
+							elseif obj2 == 23 then
+								B738DR_apt_fo_id23 = apt_txt
+							elseif obj2 == 24 then
+								B738DR_apt_fo_id24 = apt_txt
+							elseif obj2 == 25 then
+								B738DR_apt_fo_id25 = apt_txt
+							elseif obj2 == 26 then
+								B738DR_apt_fo_id26 = apt_txt
+							elseif obj2 == 27 then
+								B738DR_apt_fo_id27 = apt_txt
+							elseif obj2 == 28 then
+								B738DR_apt_fo_id28 = apt_txt
+							elseif obj2 == 29 then
+								B738DR_apt_fo_id29 = apt_txt
 							end
-						--end
+							obj2 = obj2 - 1
+						end
 					end
 				end
 			end
@@ -61058,10 +64090,6 @@ end
 
 function B738_nd_perf2()
 	
-	-- local nd_lat = simDR_latitude
-	-- local nd_lon = simDR_longitude
-	-- local nd_lat = math.rad(ndx_lat) 
-	-- local nd_lon = math.rad(ndx_lon) 
 	local nd_lat = ndx_lat
 	local nd_lon = ndx_lon
 	local nd_lat2 = 0
@@ -61077,7 +64105,6 @@ function B738_nd_perf2()
 	
 	if xnd_to == earth_nav_num then
 		if xfirst_time2 == 1 then
-		--if precalc_done == 0 then
 			xnd_teak = 0
 			xfirst_time = 1
 			if xnd_page == 0 then
@@ -61091,9 +64118,6 @@ function B738_nd_perf2()
 			end
 		else
 			block_switch = 1
-					
-				
-									
 		end
 	else
 		xnd_teak = xnd_teak + 1
@@ -61146,6 +64170,12 @@ function B738_nd_perf2()
 						xnd_page1[xnd_page1_num][2] = earth_nav[n][2]
 						xnd_page1[xnd_page1_num][3] = earth_nav[n][3]
 						xnd_page1[xnd_page1_num][4] = earth_nav[n][4]
+						xnd_page1[xnd_page1_num][5] = 0
+						xnd_page1[xnd_page1_num][6] = 0
+						xnd_page1[xnd_page1_num][7] = 0
+						xnd_page1[xnd_page1_num][8] = 0
+						xnd_page1[xnd_page1_num][9] = 0
+						xnd_page1[xnd_page1_num][10] = 0
 					else					-- create xnd_page2
 						xnd_page2_num = xnd_page2_num + 1
 						xnd_page2[xnd_page2_num] = {}
@@ -61153,6 +64183,12 @@ function B738_nd_perf2()
 						xnd_page2[xnd_page2_num][2] = earth_nav[n][2]
 						xnd_page2[xnd_page2_num][3] = earth_nav[n][3]
 						xnd_page2[xnd_page2_num][4] = earth_nav[n][4]
+						xnd_page2[xnd_page2_num][5] = 0
+						xnd_page2[xnd_page2_num][6] = 0
+						xnd_page2[xnd_page2_num][7] = 0
+						xnd_page2[xnd_page2_num][8] = 0
+						xnd_page2[xnd_page2_num][9] = 0
+						xnd_page2[xnd_page2_num][10] = 0
 					end
 				end
 			
@@ -61167,14 +64203,8 @@ end
 function B738_calc_navaid()
 	
 	local page_max = 0
-	-- local page_1 = 0
 	local page_2 = 0
 	local page_3 = 0
-	-- local page_4 = ""
-	-- local page_5 = 0 	-- x
-	-- local page_6 = 0 	-- y
-	-- local nd_lat = math.rad(ndx_lat)
-	-- local nd_lon = math.rad(ndx_lon)
 	local nd_lat = ndx_lat
 	local nd_lon = ndx_lon
 	local mag_hdg = 0
@@ -61190,10 +64220,15 @@ function B738_calc_navaid()
 	local to0 = 0
 	local n = 0
 	local nd_hdg = 0
+	local nd_thrshld = 0
+	local nd_thrshld2 = 0
+	
+	local mag_hdg_fo = 0
 	
 	local nav_disable = 0
 	local nav_disable2 = 0
-	-- local nav_disable3 = 0
+	local nd_lat_fo = 0
+	local nd_lon_fo = 0
 	
 	if xnd_page == 0 then
 		page_max = xnd_page2_num
@@ -61215,12 +64250,7 @@ function B738_calc_navaid()
 		nav_disable2 = 1
 	end
 	
-	-- nav_disable3 = 1
-	-- if nav_disable == 0 or nav_disable2 == 0 then
-		-- nav_disable3 = 0
-	-- end
-	
-	if page_max > 0 then --and nav_disable3 == 0 then
+	if page_max > 0 then
 	
 		
 		if xfirst_time2 == 1 then
@@ -61230,16 +64260,6 @@ function B738_calc_navaid()
 			from0 = math.floor(page_max / 2) + 1
 			to0 = page_max
 		end
-		-- if xfirst_time2 == 1 then
-			-- from0 = 1
-			-- to0 = math.floor(page_max / 3)
-		-- elseif xfirst_time2 == 2 then
-			-- from0 = math.floor(page_max / 3) + 1
-			-- to0 = 2 * math.floor(page_max / 3) + 1
-		-- else
-			-- from0 = 2 * math.floor(page_max / 3) + 2
-			-- to0 = page_max
-		-- end
 		
 		if to0 == 0 or to0 > page_max then
 			to0 = page_max
@@ -61251,49 +64271,146 @@ function B738_calc_navaid()
 			from0 = 1
 		end
 		
+		if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+			nd_thrshld = 6
+		elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+			nd_thrshld = 16
+		elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+			nd_thrshld = 21
+		elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+			nd_thrshld = 41
+		elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+			nd_thrshld = 81
+		elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
+			nd_thrshld = 161
+		else
+			nd_thrshld = 161
+		end
+		
+		nd_lat = ndx_lat
+		nd_lon = ndx_lon
+		if B738DR_capt_map_mode == 3 and legs_num2 ~= 0 then
+			if legs_step == 0 then
+				nd_lat = legs_data2[1][7]
+				nd_lon = legs_data2[1][8]
+			else
+				nd_lat = legs_data2[legs_step][7]
+				nd_lon = legs_data2[legs_step][8]
+			end
+			mag_hdg = -simDR_mag_variation
+		elseif B738DR_capt_map_mode == 2 then
+			if B738DR_track_up == 0 then
+				mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+			else
+				if B738DR_track_up_active == 0 then
+					mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+				else
+					mag_hdg = ndx_mag_hdg - simDR_mag_variation
+				end
+			end
+		end
+		
+		if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+			nd_thrshld2 = 6
+		elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+			nd_thrshld2 = 16
+		elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+			nd_thrshld2 = 21
+		elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+			nd_thrshld2 = 41
+		elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+			nd_thrshld2 = 81
+		elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
+			nd_thrshld2 = 161
+		else
+			nd_thrshld2 = 161
+		end
+		
+		nd_lat_fo = ndx_lat
+		nd_lon_fo = ndx_lon
+		if B738DR_fo_map_mode == 3 and legs_num2 ~= 0 then
+			if legs_step2 == 0 then
+				nd_lat_fo = legs_data2[1][7]
+				nd_lon_fo = legs_data2[1][8]
+			else
+				nd_lat_fo = legs_data2[legs_step2][7]
+				nd_lon_fo = legs_data2[legs_step2][8]
+			end
+			
+			mag_hdg_fo = -simDR_mag_variation
+		elseif B738DR_fo_map_mode == 2 then
+			if B738DR_track_up == 0 then
+				mag_hdg_fo = ndx_ahars_mag_hdg - simDR_mag_variation
+			else
+				if B738DR_track_up_active == 0 then
+					mag_hdg_fo = ndx_ahars_mag_hdg - simDR_mag_variation
+				else
+					mag_hdg_fo = ndx_mag_hdg - simDR_mag_variation
+				end
+			end
+		end
+		
 		for n = from0, to0 do 
 			
 			if xnd_page == 0 then
-				page_2 = xnd_page2[n][2]
-				page_3 = xnd_page2[n][3]
+				nd_lat2 = xnd_page2[n][2]
+				nd_lon2 = xnd_page2[n][3]
 			else
-				page_2 = xnd_page1[n][2]
-				page_3 = xnd_page1[n][3]
+				nd_lat2 = xnd_page1[n][2]
+				nd_lon2 = xnd_page1[n][3]
 			end
 		
 			
-			nd_lat2 = page_2
-			nd_lon2 = page_3
+			-- nd_lat2 = page_2
+			-- nd_lon2 = page_3
 			
 			if nav_disable == 0 then
 				-- CAPTAIN
-				nd_lat = ndx_lat
-				nd_lon = ndx_lon
-				if B738DR_capt_map_mode == 3 then
-					if legs_step == 0 then
-						nd_lat = legs_data2[1][7]
-						nd_lon = legs_data2[1][8]
-					else
-						nd_lat = legs_data2[legs_step][7]
-						nd_lon = legs_data2[legs_step][8]
-					end
-					mag_hdg = -simDR_mag_variation
-				elseif B738DR_capt_map_mode == 2 then
-					if B738DR_track_up == 0 then
-						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-					else
-						if B738DR_track_up_active == 0 then
-							mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-						else
-							mag_hdg = ndx_mag_hdg - simDR_mag_variation
-						end
-					end
-				end
+				-- nd_lat = ndx_lat
+				-- nd_lon = ndx_lon
+				-- if B738DR_capt_map_mode == 3 then
+					-- if legs_step == 0 then
+						-- nd_lat = legs_data2[1][7]
+						-- nd_lon = legs_data2[1][8]
+					-- else
+						-- nd_lat = legs_data2[legs_step][7]
+						-- nd_lon = legs_data2[legs_step][8]
+					-- end
+					-- mag_hdg = -simDR_mag_variation
+				-- elseif B738DR_capt_map_mode == 2 then
+					-- if B738DR_track_up == 0 then
+						-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+					-- else
+						-- if B738DR_track_up_active == 0 then
+							-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+						-- else
+							-- mag_hdg = ndx_mag_hdg - simDR_mag_variation
+						-- end
+					-- end
+				-- end
 			
 			
 				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
+				--nd_dis = nd_calc_dist9(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
-				if nd_dis < 165 then
+				-- if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+					-- nd_thrshld = 6
+				-- elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+					-- nd_thrshld = 16
+				-- elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+					-- nd_thrshld = 21
+				-- elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+					-- nd_thrshld = 41
+				-- elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+					-- nd_thrshld = 81
+				-- elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
+					-- nd_thrshld = 161
+				-- else
+					-- nd_thrshld = 161
+				-- end
+				
+				--if nd_dis < 165 then
+				if nd_dis < nd_thrshld then
 					
 					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
 					
@@ -61362,37 +64479,55 @@ function B738_calc_navaid()
 			
 			if nav_disable2 == 0 then
 				-- FIRST OFFICER
-				nd_lat = ndx_lat
-				nd_lon = ndx_lon
-				if B738DR_fo_map_mode == 3 then
-					if legs_step2 == 0 then
-						nd_lat = legs_data2[1][7]
-						nd_lon = legs_data2[1][8]
-					else
-						nd_lat = legs_data2[legs_step2][7]
-						nd_lon = legs_data2[legs_step2][8]
-					end
+				-- nd_lat = ndx_lat
+				-- nd_lon = ndx_lon
+				-- if B738DR_fo_map_mode == 3 then
+					-- if legs_step2 == 0 then
+						-- nd_lat = legs_data2[1][7]
+						-- nd_lon = legs_data2[1][8]
+					-- else
+						-- nd_lat = legs_data2[legs_step2][7]
+						-- nd_lon = legs_data2[legs_step2][8]
+					-- end
 					
-					mag_hdg = -simDR_mag_variation
-				elseif B738DR_fo_map_mode == 2 then
-					if B738DR_track_up == 0 then
-						mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-					else
-						if B738DR_track_up_active == 0 then
-							mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
-						else
-							mag_hdg = ndx_mag_hdg - simDR_mag_variation
-						end
-					end
-				end
+					-- mag_hdg = -simDR_mag_variation
+				-- elseif B738DR_fo_map_mode == 2 then
+					-- if B738DR_track_up == 0 then
+						-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+					-- else
+						-- if B738DR_track_up_active == 0 then
+							-- mag_hdg = ndx_ahars_mag_hdg - simDR_mag_variation
+						-- else
+							-- mag_hdg = ndx_mag_hdg - simDR_mag_variation
+						-- end
+					-- end
+				-- end
 			
-				nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
+				nd_dis = nd_calc_dist2(nd_lat_fo, nd_lon_fo, nd_lat2, nd_lon2)
+				--nd_dis = nd_calc_dist9(nd_lat, nd_lon, nd_lat2, nd_lon2)
 				
-				if nd_dis < 165 then
+				-- if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+					-- nd_thrshld = 6
+				-- elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+					-- nd_thrshld = 16
+				-- elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+					-- nd_thrshld = 21
+				-- elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+					-- nd_thrshld = 41
+				-- elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+					-- nd_thrshld = 81
+				-- elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
+					-- nd_thrshld = 161
+				-- else
+					-- nd_thrshld = 161
+				-- end
+				
+				--if nd_dis < 165 then
+				if nd_dis < nd_thrshld2 then
 					
-					nd_hdg = nd_calc_brg(nd_lat, nd_lon, nd_lat2, nd_lon2)
+					nd_hdg = nd_calc_brg(nd_lat_fo, nd_lon_fo, nd_lat2, nd_lon2)
 					
-					delta_hdg = (nd_hdg - mag_hdg + 360) % 360
+					delta_hdg = (nd_hdg - mag_hdg_fo + 360) % 360
 					if delta_hdg > 180 then
 						delta_hdg = delta_hdg - 360
 					end
@@ -61461,12 +64596,6 @@ end
 
 function B738_displ_navaid()
 
-	-- local nd_lat = math.rad(ndx_lat) 	--math.rad(simDR_latitude) 
-	-- local nd_lon = math.rad(ndx_lon) 	--math.rad(simDR_longitude) 
-	-- local mag_hdg = 0
-	-- local nd_lat2 = 0
-	-- local nd_lon2 = 0
-	-- local nd_dis = 0
 	local nd_x = 0
 	local nd_y = 0
 	local nd_hdg = 0
@@ -61495,7 +64624,6 @@ function B738_displ_navaid()
 	local txt_cyan = ""
 	local vor_sel1 = B738DR_vor1_sel_id
 	local vor_sel2 = B738DR_vor2_sel_id
-	--local wpt_enable = 0
 	
 	local nav_disable2 = 0
 	local obj2 = 49
@@ -61504,6 +64632,9 @@ function B738_displ_navaid()
 	local nd_x2 = 0
 	local nd_y2 = 0
 	local nd_on_off2 = 0
+	local nd_zoom2 = 0
+	local nd_shift = 0
+	local nd_shift_fo = 0
 	
 	if (B738DR_efis_vor_on == 0 and B738DR_efis_fix_on == 0) or B738DR_capt_map_mode < 2 then
 		nav_disable = 1
@@ -61538,6 +64669,62 @@ function B738_displ_navaid()
 	
 	if page_max > 0 and nav_disable3 == 0 then
 		
+		if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+			nd_zoom = 2
+		elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+			nd_zoom = 1
+		elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+			nd_zoom = 0.5
+		elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+			nd_zoom = 0.25
+		elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+			nd_zoom = 0.125
+		elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
+			nd_zoom = 0.0625
+		else
+			nd_zoom = 0
+		end
+		
+		if B738DR_capt_map_mode == 3 then
+			nd_zoom = nd_zoom * 0.57
+		end
+		
+		if B738DR_capt_map_mode == 3 then
+			nd_shift = 4.1	-- adjust center
+		elseif B738DR_capt_vsd_map_mode == 1 then
+			nd_shift = 5.1	-- adjust center
+		elseif B738DR_capt_exp_map_mode == 0 then
+			nd_shift = 4.1	-- adjust center
+		end
+		
+		if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+			nd_zoom2 = 2
+		elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+			nd_zoom2 = 1
+		elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+			nd_zoom2 = 0.5
+		elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+			nd_zoom2 = 0.25
+		elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+			nd_zoom2 = 0.125
+		elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
+			nd_zoom2 = 0.0625
+		else
+			nd_zoom2 = 0
+		end
+		
+		if B738DR_fo_map_mode == 3 then
+			nd_zoom = nd_zoom * 0.57
+		end
+		
+		if B738DR_fo_map_mode == 3 then
+			nd_shift_fo = 4.1	-- adjust center
+		elseif B738DR_capt_vsd_map_mode == 1 then
+			nd_shift_fo = 5.1	-- adjust center
+		elseif B738DR_fo_exp_map_mode == 0 then
+			nd_shift_fo = 4.1	-- adjust center
+		end
+				
 		for n = 1, page_max do 
 			
 			nd_on_off2 = 0
@@ -61550,6 +64737,7 @@ function B738_displ_navaid()
 				page_8 = xnd_page2[n][8]
 				page_9 = xnd_page2[n][9]
 				page_10 = xnd_page2[n][10]
+				
 			else
 				page_1 = xnd_page1[n][1]
 				page_4 = xnd_page1[n][4]
@@ -61559,51 +64747,58 @@ function B738_displ_navaid()
 				page_8 = xnd_page1[n][8]
 				page_9 = xnd_page1[n][9]
 				page_10 = xnd_page1[n][10]
+				
 			end
 			
-			if page_7 > 0 and obj3 >= 0 and nav_disable == 0 then
+			--if page_7 > 0 and obj3 >= 0 and nav_disable == 0 then
+			if page_7 > 0 and obj3 >= 0 and nav_disable == 0 and nd_zoom ~= 0 then
 				
-				nd_x2 = page_5
-				nd_y2 = page_6
-				nd_on_off2 = 1
+				-- nd_x2 = page_5
+				-- nd_y2 = page_6
+				-- nd_on_off2 = 1
 				
 				-- CAPTAIN
-				nd_on_off = nd_on_off2
-				if B738DR_efis_map_range_capt == 0 then	-- 5 NM
-					nd_zoom = 2
-				elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
-					nd_zoom = 1
-				elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
-					nd_zoom = 0.5
-				elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
-					nd_zoom = 0.25
-				elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
-					nd_zoom = 0.125
-				elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
-					nd_zoom = 0.0625
-				else
-					nd_on_off = 0
-				end
+				-- nd_on_off = nd_on_off2
+				-- if B738DR_efis_map_range_capt == 0 then	-- 5 NM
+					-- nd_zoom = 2
+				-- elseif B738DR_efis_map_range_capt == 1 then	-- 10 NM
+					-- nd_zoom = 1
+				-- elseif B738DR_efis_map_range_capt == 2 then	-- 20 NM
+					-- nd_zoom = 0.5
+				-- elseif B738DR_efis_map_range_capt == 3 then	-- 40 NM
+					-- nd_zoom = 0.25
+				-- elseif B738DR_efis_map_range_capt == 4 then	-- 80 NM
+					-- nd_zoom = 0.125
+				-- elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
+					-- nd_zoom = 0.0625
+				-- else
+					-- nd_on_off = 0
+				-- end
 				
-				if B738DR_capt_map_mode == 3 then
-					--nd_zoom = nd_zoom / 2
-					nd_zoom = nd_zoom * 0.57
-				end
+				-- if B738DR_capt_map_mode == 3 then
+					-- nd_zoom = nd_zoom * 0.57
+				-- end
 					
-				nd_x = nd_x2 * nd_zoom		-- zoom
-				nd_y = nd_y2 * nd_zoom		-- zoom
+				-- nd_x = nd_x2 * nd_zoom		-- zoom
+				-- nd_y = nd_y2 * nd_zoom		-- zoom
 				
-				if nd_x < -8.0 or nd_x > 8.0 then
+				nd_on_off = 1
+				nd_x = page_5 * nd_zoom		-- zoom
+				nd_y = (page_6 * nd_zoom) + nd_shift		-- zoom
+				
+				-- if B738DR_capt_map_mode == 3 then
+					-- nd_y = nd_y + 4.1	-- adjust center
+				-- elseif B738DR_capt_vsd_map_mode == 1 then
+					-- nd_y = nd_y + 5.1	-- adjust center
+				-- elseif B738DR_capt_exp_map_mode == 0 then
+					-- nd_y = nd_y + 4.1	-- adjust center
+				-- end
+				
+				if nd_x < -11 or nd_x > 11 then
 					nd_on_off = 0
 				end
-				if nd_y > 11.0 or nd_y < -2 then
+				if nd_y > 11 or nd_y < -5 then
 					nd_on_off = 0
-				end
-				
-				if B738DR_capt_map_mode == 3 then
-					nd_y = nd_y + 4.1	-- adjust center
-				elseif B738DR_capt_exp_map_mode == 0 then
-					nd_y = nd_y + 4.1	-- adjust center
 				end
 				
 				if nd_on_off == 1 and obj >= 0 then	--and nav_disable == 0 then
@@ -61848,48 +65043,55 @@ function B738_displ_navaid()
 				end
 			end
 			
-			if page_10 > 0 and obj3 >= 0 and nav_disable2 == 0 then
+			--if page_10 > 0 and obj3 >= 0 and nav_disable2 == 0 then
+			if page_10 > 0 and obj3 >= 0 and nav_disable2 == 0 and nd_zoom2 ~= 0 then
 				
-				nd_x2 = page_8
-				nd_y2 = page_9
-				nd_on_off2 = 1
+				-- nd_x2 = page_8
+				-- nd_y2 = page_9
+				-- nd_on_off2 = 1
 			
 				-- FIRST OFFICER
-				nd_on_off = nd_on_off2
-				if B738DR_efis_map_range_fo == 0 then	-- 5 NM
-					nd_zoom = 2
-				elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
-					nd_zoom = 1
-				elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
-					nd_zoom = 0.5
-				elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
-					nd_zoom = 0.25
-				elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
-					nd_zoom = 0.125
-				elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
-					nd_zoom = 0.0625
-				else
-					nd_on_off = 0
-				end
+				-- nd_on_off = nd_on_off2
+				-- if B738DR_efis_map_range_fo == 0 then	-- 5 NM
+					-- nd_zoom = 2
+				-- elseif B738DR_efis_map_range_fo == 1 then	-- 10 NM
+					-- nd_zoom = 1
+				-- elseif B738DR_efis_map_range_fo == 2 then	-- 20 NM
+					-- nd_zoom = 0.5
+				-- elseif B738DR_efis_map_range_fo == 3 then	-- 40 NM
+					-- nd_zoom = 0.25
+				-- elseif B738DR_efis_map_range_fo == 4 then	-- 80 NM
+					-- nd_zoom = 0.125
+				-- elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
+					-- nd_zoom = 0.0625
+				-- else
+					-- nd_on_off = 0
+				-- end
 				
-				if B738DR_fo_map_mode == 3 then
-					--nd_zoom = nd_zoom / 2
-					nd_zoom = nd_zoom * 0.57
-				end
+				-- if B738DR_fo_map_mode == 3 then
+					-- nd_zoom = nd_zoom * 0.57
+				-- end
 					
-				nd_x = nd_x2 * nd_zoom		-- zoom
-				nd_y = nd_y2 * nd_zoom		-- zoom
-				if nd_x < -8.0 or nd_x > 8.0 then
-					nd_on_off = 0
-				end
-				if nd_y > 11.0 or nd_y < -2 then
-					nd_on_off = 0
-				end
+				-- nd_x = nd_x2 * nd_zoom2		-- zoom
+				-- nd_y = nd_y2 * nd_zoom2		-- zoom
 				
-				if B738DR_fo_map_mode == 3 then
-					nd_y = nd_y + 4.1	-- adjust center
-				elseif B738DR_fo_exp_map_mode == 0 then
-					nd_y = nd_y + 4.1	-- adjust center
+				nd_on_off = 1
+				nd_x = page_8 * nd_zoom2		-- zoom
+				nd_y = (page_9 * nd_zoom2) + nd_shift_fo		-- zoom
+				
+				-- if B738DR_fo_map_mode == 3 then
+					-- nd_y = nd_y + 4.1	-- adjust center
+				-- elseif B738DR_capt_vsd_map_mode == 1 then
+					-- nd_y = nd_y + 5.1	-- adjust center
+				-- elseif B738DR_fo_exp_map_mode == 0 then
+					-- nd_y = nd_y + 4.1	-- adjust center
+				-- end
+				
+				if nd_x < -11 or nd_x > 11 then
+					nd_on_off = 0
+				end
+				if nd_y > 11 or nd_y < -5 then
+					nd_on_off = 0
 				end
 				
 				if nd_on_off == 1 and obj2 >= 0 and nav_disable2 == 0 then
@@ -62566,8 +65768,6 @@ function B738_restrict_data()
 	local jj = 0
 	local temp_alt = 0
 	local td_idx_temp = 0
-	--local missed_app_act = 0
-	
 	
 	if ref_icao == "----" or des_icao == "****" then
 		legs_num = 0
@@ -62801,7 +66001,7 @@ function B738_restrict_data()
 									end
 								elseif legs_restr_alt[ii][4] == 41 then	-- between
 									B738DR_rest_wpt_alt_id = legs_restr_alt[ii][1]
-									B738DR_rest_wpt_alt = legs_restr_alt2[ii][3]
+									B738DR_rest_wpt_alt = legs_restr_alt[ii][5]
 									B738DR_rest_wpt_alt_t = legs_restr_alt[ii][4]
 									B738DR_rest_wpt_alt_idx = legs_restr_alt[ii][2]
 									break
@@ -66479,7 +69679,7 @@ function B738_vnav_desc_spd()
 	local vnav_desc_spd_disable = 0
 	
 	if B738DR_autopilot_vnav_status == 1 then
-		if legs_num > 0 and offset > 1 and offset < (legs_num + 1) then
+		if legs_num > 0 and offset > 2 and offset < (legs_num + 1) then
 			if legs_data[offset-1][9] == des_app
 			or legs_data[offset-1][9] == des_app_tns
 			or offset > ed_found then
@@ -67573,7 +70773,9 @@ temp_ils4 = ""
 	B738DR_climb_mode = 3		-- xxxKT/M.xxx CLB
 	B738DR_cruise_mode = 2		-- xxxKT/M.xxx CRZ
 	B738DR_descent_mode = 2		-- xxxKT/M.xxx SPD DES
+	
 	B738DR_flight_phase = 0
+	
 	B738DR_fms_descent_now = 0
 	des_now_enable = 0
 
@@ -67937,8 +71139,9 @@ temp_ils4 = ""
 	vhf_in_prog = "           "
 	atis_send_time = "     "
 	receive_msg = 0
+	x_delay = 0
 	
-	version = "v3.259"
+	version = "v3.26a"
 
 end
 
@@ -68238,6 +71441,20 @@ function flight_start()
 	menu_timer = 0
 	--fuel_tank_correct()
 	
+	wpt_2d_dist = {}
+	wpt_2d_x = {}
+	wpt_2d_y = {}
+	wpt_2d_idx = {}
+	wpt_2d_idx_on = {}
+	wpt_2d_num = 0
+	
+	wpt_2d_dist_m = {}
+	wpt_2d_x_m = {}
+	wpt_2d_y_m = {}
+	wpt_2d_idx_m = {}
+	wpt_2d_idx_on_m = {}
+	wpt_2d_num_m = 0
+	
 	--cold n dark
 	if simDR_startup_running == 0 and B738DR_chock_status == 1 and B738DR_engine_no_running_state == 0 then
 		set_chock = 1
@@ -68309,11 +71526,11 @@ function after_physics()
 		if B738DR_kill_fms_navaid2 == 0 then
 		if xfirst_time2 == 0 then
 			B738DR_fms_test1 = 12
-			B738_displ_tc()
+			--B738_displ_tc()
 			B738DR_fms_test1 = 13
-			B738_displ_td()
+			--B738_displ_td()
 			B738DR_fms_test1 = 14
-			B738_displ_decel()
+			--B738_displ_decel()
 			B738DR_fms_test1 = 15
 			B738_displ_rnw()
 		end
@@ -68323,6 +71540,7 @@ function after_physics()
 		B738_nd_perf()
 		if first_time_apt > 0 then
 			if xfirst_time2 == 0 then
+				B738DR_fms_test1 = 99
 				B738_displ_apt()
 			end
 		else
@@ -68341,6 +71559,7 @@ function after_physics()
 					end
 					precalc_done = 0
 				else
+					B738DR_fms_test1 = 98
 					B738_calc_navaid()
 					if xfirst_time2 == 2 then
 					--if xfirst_time2 == 3 then
@@ -68356,7 +71575,8 @@ function after_physics()
 		B738DR_fms_test1 = 18
 		if calc_rte_enable == 0 then
 			if xfirst_time2 == 0 then
-				B738_displ_wpt()
+				--B738_displ_wpt()
+				B738_displ_wpt2()
 				B738_displ_acf()
 			end
 		end
@@ -68457,6 +71677,16 @@ function after_physics()
 		
 		B738DR_fms_test1 = 38
 		chocks_on_start()
+		
+		if x_delay == 0 then
+			x_delay = 1
+		elseif x_delay == 1 then
+			if simDR_radio_height_pilot_ft > 500 then
+				B738DR_flight_phase = 2
+			end
+			x_delay = 2
+		end
+
 		
 		B738_mod_change()
 		B738_read_atis()
