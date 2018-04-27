@@ -77,11 +77,17 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26f:
+------
+- add option WINDSHIELD REFLECTION (ON/OFF) to Advanced menu
+- fixed some bugs (night lighting for some parts, AP pitch mode, ND graphics bugs...)
+- tested with xplane 11.11r2 and 11.20r2
+
 3.26e:
 ------
 - add RW wpts (runways) entry for FIX page
 - improved A/T code for turbulence/ghust conditions
-- fixed wiper lighting at nigth (with landing lights ON)
+- fixed wiper lighting at night (with landing lights ON)
 - fixed FIX page (if you enter uknown wpt, fmc freeze)
 - fixed small bugs
 

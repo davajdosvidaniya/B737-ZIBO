@@ -91,7 +91,7 @@ B738DR_align_horizon3	= create_dataref("laminar/B738/hud/align_horizon3", "numbe
 function B738DR_kill_effect_DRhandler() end
 function B738DR_kill_windshield_DRhandler() end
 
-function B738DR_hide_glass_DRhandler() end
+--function B738DR_hide_glass_DRhandler() end
 
 function B738DR_hide_windows_xt_DRhandler() end
 
@@ -107,7 +107,7 @@ function B738DR_hide_windows_xt_DRhandler() end
 B738DR_kill_effect	= create_dataref("laminar/B738/perf/kill_effect", "number", B738DR_kill_effect_DRhandler)
 B738DR_kill_windshield	= create_dataref("laminar/B738/perf/kill_windshield", "number", B738DR_kill_windshield_DRhandler)
 
-B738DR_hide_glass = create_dataref("laminar/B738/effect/hide_glass", "number", B738DR_hide_glass_DRhandler)
+--B738DR_hide_glass = create_dataref("laminar/B738/effect/hide_glass", "number", B738DR_hide_glass_DRhandler)
 
 B738DR_hide_windows_xt = create_dataref("laminar/B738/effect/hide_windows_xt", "number", B738DR_hide_windows_xt_DRhandler)
 --simDR_rain_acf_ratio = create_dataref("laminar/B738/effect/hide_windows_xt", "number", B738DR_hide_windows_xt_DRhandler)
@@ -713,14 +713,12 @@ function after_physics()
 		else
 			precip_acf_ratio = math.max(XE_DR_rain, XE_DR_snow)
 		end
-		--B738DR_hide_glass = 1
 		rain_triger()
 		window_ratio()
 		if timer_rain > rain_ratio then
 			timer_rain = 0
 		end
 	else
-		--B738DR_hide_glass = 0
 		left_out_window_ratio = 0
 		right_out_window_ratio = 0
 		left_side_window_ratio = 0
@@ -747,7 +745,6 @@ function after_physics()
 			animR_ratio[h] = 0
 		end
 	end
-
 end
 
 

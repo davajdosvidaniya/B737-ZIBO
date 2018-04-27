@@ -14298,8 +14298,8 @@ function control_SPD4()
 	
 	local limit = 15	--10	--20
 	
-	if simDR_autopilot_altitude_mode ~= altitude_mode_old and altitude_mode_old ~= 0 and block_ghust == 0 then
-		if simDR_autopilot_altitude_mode == 6 or ap_pitch_mode == 3 or ap_pitch_mode == 6 then
+	if simDR_autopilot_altitude_mode ~= altitude_mode_old then
+		if altitude_mode_old ~= 0 and B738DR_autoland_status == 0 then
 			block_ghust = 1
 			if is_timer_scheduled(rst_block_ghust) == true then
 				stop_timer(rst_block_ghust)
