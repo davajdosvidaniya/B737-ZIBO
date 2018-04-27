@@ -77,6 +77,10 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26b:
+------
+- improved and tuned autoland
+
 3.26a:
 ------
 - optimise code

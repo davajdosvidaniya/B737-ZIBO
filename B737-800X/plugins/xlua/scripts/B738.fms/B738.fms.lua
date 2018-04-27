@@ -71141,7 +71141,7 @@ temp_ils4 = ""
 	receive_msg = 0
 	x_delay = 0
 	
-	version = "v3.26a"
+	version = "v3.26b"
 
 end
 
