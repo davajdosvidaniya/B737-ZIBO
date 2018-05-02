@@ -77,6 +77,13 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26g:
+------
+- add dataref "laminar/B738/nosewheel_steer_ratio" (for using set option NOSEWHEEL AXIS to VR)
+- add option TIRE BLOWN ADVANCED - ON/OFF
+- fixed and corrected manipulators (landing emergency landing gear, knobs...)
+
+
 3.26f:
 ------
 - add option WINDSHIELD REFLECTION (ON/OFF) to Advanced menu

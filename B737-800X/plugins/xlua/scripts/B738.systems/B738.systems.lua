@@ -974,6 +974,8 @@ B738DR_speed_mode				= find_dataref("laminar/B738/autopilot/speed_mode")
 B738DR_capt_vsd_map_mode	= find_dataref("laminar/B738/EFIS_control/capt/vsd_map")
 B738DR_fo_vsd_map_mode		= find_dataref("laminar/B738/EFIS_control/fo/vsd_map")
 
+B738DR_tire_blown				= find_dataref("laminar/B738/effect/tire_blown")
+
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -1578,10 +1580,7 @@ function B738DR_eicas_shift_y_DRhandler() end
 ----- SPEEDBRAKE LEVER ------------------------------------------------------------------
 function B738_speedbrake_lever_DRhandler()
 	
-
-
 	if B738_speedbrake_stop == 1 then
-
 		if B738DR_speedbrake_lever < 0.15 then
 			if B738DR_speedbrake_lever < 0.07 then
 				simDR_speedbrake_ratio = 0.0
@@ -1597,9 +1596,7 @@ function B738_speedbrake_lever_DRhandler()
 		
 			simDR_speedbrake_ratio = spdbrake_lever_stopped
 		end
-
 	elseif B738_speedbrake_stop == 0 then
-
 		if B738DR_speedbrake_lever < 0.15 then
 			if B738DR_speedbrake_lever < 0.07 then
 				simDR_speedbrake_ratio = 0.0
@@ -1629,12 +1626,15 @@ function B738_speedbrake_stop_pos_DRhandler()end
 
 
 function B738DR_steer_speed_DRhandler()end
+function B738DR_nosewheel_steer_ratio_DRhandler()end
 
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
 
 steer_speed						= create_dataref("laminar/B738/steer_speed", "number", B738DR_steer_speed_DRhandler)
+
+B738DR_nosewheel_steer_ratio	= create_dataref("laminar/B738/nosewheel_steer_ratio", "number", B738DR_nosewheel_steer_ratio_DRhandler)
 
 B738DR_flap_lever_stop_pos		= create_dataref("laminar/B738/handles/flap_lever/stop_pos", "number", B738DR_flap_lever_stop_pos_DRhandler)
 B738DR_speedbrake_lever			= create_dataref("laminar/B738/flt_ctrls/speedbrake_lever", "number", B738_speedbrake_lever_DRhandler)
@@ -8118,37 +8118,40 @@ function B738_nose_steer()
 			if simDR_on_ground_0 == 1 or simDR_on_ground_1 == 1
 			or simDR_on_ground_2 == 1 then
 				
-				steer_limit = B738_rescale(0, 78, 51, 7, gs_limit2)
+				steer_limit = B738_rescale(0, 78, 51, 6, gs_limit2)
 				
 				simDR_toe_brakes_ovr = 1
 				if B738DR_nosewheel == 0 then
-					nose_steer_deg_trg = simDR_steer_cmd
+					B738DR_nosewheel_steer_ratio = B738_rescale(-78, -1, 78, 1, simDR_steer_cmd)
 				elseif B738DR_nosewheel == 1 then
 					nose_steer_deg_trg = B738_rescale(-1, -steer_limit, 1, steer_limit, simDR_yoke_hdg_ratio)
+					B738DR_nosewheel_steer_ratio = simDR_yoke_hdg_ratio
 				elseif B738DR_nosewheel == 2 then
 					nose_steer_deg_trg = B738_rescale(-1, -steer_limit, 1, steer_limit, simDR_yoke_roll2_ratio)
+					B738DR_nosewheel_steer_ratio = simDR_yoke_roll2_ratio
 				else
-					nose_steer_deg_trg = simDR_steer_cmd
+					--nose_steer_deg_trg = simDR_steer_cmd
+					nose_steer_deg_trg = B738_rescale(-1, -steer_limit, 1, steer_limit, B738DR_nosewheel_steer_ratio)
 				end
 				
 				if simDR_ground_speed > 23 then
-					if nose_steer_deg_trg < -7 then
-						nose_steer_deg_trg = -7
+					if nose_steer_deg_trg < -6 then
+						nose_steer_deg_trg = -6
 					end
-					if nose_steer_deg_trg > 7 then
-						nose_steer_deg_trg = 7
+					if nose_steer_deg_trg > 6 then
+						nose_steer_deg_trg = 6
 					end
 				end
 				
 				if B738DR_nosewheel == 0 then
 					simDR_steer_ovr = 0
-				elseif B738DR_nosewheel == 3 then
-					simDR_steer_ovr = 1
+				-- elseif B738DR_nosewheel == 3 then
+					-- simDR_steer_ovr = 1
 				--if B738DR_nosewheel > 0 then
 				else
 					simDR_steer_ovr = 1
-					--simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, 0.028)
-					simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, steer_speed)
+					simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, 0.11)
+					--simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, steer_speed)
 				end
 				
 				if simDR_steer_cmd < 0 then
@@ -8192,7 +8195,6 @@ function B738_nose_steer()
 					simDR_toe_brakes_ovr = 0
 				end
 				simDR_steer_cmd = 0
-				--simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos)
 			end
 			
 		end
@@ -8201,26 +8203,16 @@ function B738_nose_steer()
 			roll_co_max = B738_rescale(0, 0.040, 225, 0.200, gs_limit * gs_limit)
 			if simDR_steer_cmd < 0 then
 				simDR_roll_co = B738_rescale(-78, roll_co_max, 0, 0.025, simDR_steer_cmd)
-				-- steer_spd = B738_rescale(-78, 1.5, 0, 1, simDR_steer_cmd)
 			else
 				simDR_roll_co = B738_rescale(0, 0.025, 78, roll_co_max, simDR_steer_cmd)
-				-- steer_spd = B738_rescale(0, 1, 78, 1.5, simDR_steer_cmd)
 			end
 		else
 			simDR_roll_co = 0.025
-			-- steer_spd = 1
 		end
 		
 	else
 		simDR_steer_ovr = 1
-		-- steer_spd = 1
 	end
-	-- gs_limit2 = math.min(gs_limit2, 5)
-	-- brake_max2 = B738_rescale(0, 0.8, 5, 1.5, gs_limit2)
-	-- if simDR_ground_speed < 4 then
-		-- steer_spd = 1
-	-- end
-	--simDR_roll_brake = B738_rescale(0, brake_max2, 0.5, 0.8, throttle_used) * steer_spd
 	simDR_roll_brake = 0.8
 	
 	
@@ -10919,17 +10911,19 @@ function B738_speedbrake_handle_animation()
 end
 
 
-function B738DR_tire()
+function B738_tire()
 	
-	if simDR_ground_speed > 35 then
-		if B738DR_tire_on_noisy[0] == 1 and B738DR_tire_blow0 == 0 then
-			B738DR_tire_blow0 = 6
-		end
-		if B738DR_tire_on_noisy[1] == 1 and B738DR_tire_blow1 == 0 then
-			B738DR_tire_blow1 = 6
-		end
-		if B738DR_tire_on_noisy[2] == 1 and B738DR_tire_blow2 == 0 then
-			B738DR_tire_blow2 = 6
+	if B738DR_tire_blown ~= 0 then
+		if simDR_ground_speed > 35 then
+			if B738DR_tire_on_noisy[0] == 1 and B738DR_tire_blow0 == 0 then
+				B738DR_tire_blow0 = 6
+			end
+			if B738DR_tire_on_noisy[1] == 1 and B738DR_tire_blow1 == 0 then
+				B738DR_tire_blow1 = 6
+			end
+			if B738DR_tire_on_noisy[2] == 1 and B738DR_tire_blow2 == 0 then
+				B738DR_tire_blow2 = 6
+			end
 		end
 	end
 	
@@ -11203,7 +11197,7 @@ function after_physics()
 		B738_speedbrake_lever_stop()
 		B738_speedbrake_handle_animation()
 		B738_speedbrake_disagree_monitor()
-		B738DR_tire()
+		B738_tire()
 		
 		if fmod_flap_sound == 1 then
 			fmod_flap_sound = 2

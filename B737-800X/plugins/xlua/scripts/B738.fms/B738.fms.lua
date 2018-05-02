@@ -1676,6 +1676,7 @@ B738DR_kill_effect				= find_dataref("laminar/B738/perf/kill_effect")
 B738DR_kill_windshield			= find_dataref("laminar/B738/perf/kill_windshield")
 
 B738DR_hide_glass 				= create_dataref("laminar/B738/effect/hide_glass", "number")
+B738DR_tire_blown				= create_dataref("laminar/B738/effect/tire_blown", "number")
 
 B738DR_mcp_speed_dial		= find_dataref("laminar/B738/autopilot/mcp_speed_dial_kts_mach")
 
@@ -15339,6 +15340,7 @@ function B738_default_others_config()
 	B738DR_min_baro_radio = 0
 	B738DR_kill_windshield = 0
 	B738DR_hide_glass = 0
+	B738DR_tire_blown = 1
 	
 	simDR_pitch_nz = 0
 	simDR_roll_nz = 0
@@ -15942,6 +15944,18 @@ function B738_load_config()
 								B738DR_hide_glass = 1
 							else
 								B738DR_hide_glass = 0
+							end
+						end
+					end
+				elseif string.sub(fms_line, 1, 16) == "TIRE BLOWN     =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							if temp_fmod == 1 then
+								B738DR_tire_blown = 1
+							else
+								B738DR_tire_blown = 0
 							end
 						end
 					end
@@ -16578,6 +16592,8 @@ function B738_save_config()
 		fms_line = "WINDSH.EFFECTS = " .. string.format("%2d", B738DR_kill_windshield) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "WINDSH.REFLECT = " .. string.format("%2d", B738DR_hide_glass) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "TIRE BLOWN     = " .. string.format("%2d", B738DR_tire_blown) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "PITCH 0 ZONE   = " .. string.format("%2d", simDR_pitch_nz * 100) .. "\n"
 		file_navdata:write(fms_line)
@@ -19935,6 +19951,12 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 				B738DR_track_up = 1
 			else
 				B738DR_track_up = 0
+			end
+		elseif page_xtras_others == 4 then
+			if B738DR_tire_blown == 0 then
+				B738DR_tire_blown = 1
+			else
+				B738DR_tire_blown = 0
 			end
 		elseif page_fix == 1 then
 			local ii = 0
@@ -31858,6 +31880,12 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 			else
 				B738DR_track_up = 0
 			end
+		elseif page_xtras_others2 == 4 then
+			if B738DR_tire_blown == 0 then
+				B738DR_tire_blown = 1
+			else
+				B738DR_tire_blown = 0
+			end
 		elseif page_fix2 == 1 then
 			local ii = 0
 			local jj = string.len(entry2)
@@ -41725,13 +41753,23 @@ function B738_fmc_xtras_others()
 		line0_s = "                    4/5 "
 		line1_x = " WINDSHIELD REFLECTION  "
 		if B738DR_hide_glass == 0 then
-			line1_l = "<  /                    "
-			line1_g = " ON                     "
-			line1_s = "    OFF                 "
+			line1_l = "<   /                   "
+			line1_g = "     ON                 "
+			line1_s = " OFF                    "
 		else
-			line1_l = "<  /                    "
-			line1_g = "    OFF                 "
-			line1_s = " ON                     "
+			line1_l = "<   /                   "
+			line1_g = " OFF                    "
+			line1_s = "     ON                 "
+		end
+		line2_x = " TIRE BLOWN ADVANCED    "
+		if B738DR_tire_blown == 0 then
+			line2_l = "<   /                   "
+			line2_g = " OFF                    "
+			line2_s = "     ON                 "
+		else
+			line2_l = "<   /                   "
+			line2_g = "     ON                 "
+			line2_s = " OFF                    "
 		end
 		line6_l = "<DEFAULT           BACK>"
 	elseif page_xtras_others == 5 then
@@ -71222,7 +71260,7 @@ temp_ils4 = ""
 	receive_msg = 0
 	x_delay = 0
 	
-	version = "v3.26f"
+	version = "v3.26g"
 
 end
 
