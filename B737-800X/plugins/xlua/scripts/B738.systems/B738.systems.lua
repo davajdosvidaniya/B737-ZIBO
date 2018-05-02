@@ -4086,7 +4086,6 @@ function sim_toggle_speedbrakes_CMDhandler(phase, duration)
 end
 
 
-
 --*************************************************************************************--
 --** 				              CREATE CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -10199,9 +10198,9 @@ function B738_pressurization2()
 	elseif press_mode < 3 then
 		tgt_outflow_valve = 0
 		cabin_alt = math.max(10000, simDR_press_max_alt)
-		if simDR_altitude_pilot > (cabin_alt + 600) then
+		if simDR_altitude_pilot > (cabin_alt + 900) then
 			depress_on = 6
-		elseif simDR_altitude_pilot <= (cabin_alt + 200) then
+		elseif simDR_altitude_pilot <= (cabin_alt + 500) then
 			depress_on = 0
 		end
 		if simDR_altitude_pilot < alt_pressurize_land then

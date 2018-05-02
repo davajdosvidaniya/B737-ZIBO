@@ -406,7 +406,7 @@ function window_ratio()
 	end
 	if l_fwd_temp < 0.2 then
 		was_left_frost = 1
-		if ratio_tgt < left_out_window_ratio_t then
+		if ratio_tgt < left_out_window_ratio_t or ratio_tgt == 0 then
 			ratio_time = 240
 		end
 		ratio_tgt = 0.977
@@ -421,7 +421,7 @@ function window_ratio()
 	end
 	--if left_out_window_ratio == ratio_tgt or was_left_frost == 1 then
 	if left_out_window_ratio == 1 or ratio_tgt == 0 or was_left_frost == 1 then
-		left_out_window_ratio_t = B738_set_animation_rate(left_out_window_ratio_t, ratio_tgt, 0, 0.977, math.min(ratio_time, 2))
+		left_out_window_ratio_t = B738_set_animation_rate(left_out_window_ratio_t, ratio_tgt, 0, 0.977, math.max(ratio_time, 2))
 	end
 	B738DR_window_effect_L = left_out_window_ratio_t
 	
@@ -431,7 +431,7 @@ function window_ratio()
 		end
 		L02_timer = 0
 		L02_cnt = 0
-	else
+	elseif left_out_window_ratio > 0 then
 		if left_out_window_ratio < 0.1 then
 			B738DR_window_effect_L02[0] = 1
 		elseif left_out_window_ratio < 0.2 then
@@ -560,7 +560,7 @@ function window_ratio()
 	end
 	if r_fwd_temp < 0.2 then
 		was_right_frost = 1
-		if ratio_tgt < right_out_window_ratio_t then
+		if ratio_tgt < right_out_window_ratio_t or ratio_tgt == 0 then
 			ratio_time = 240
 		end
 		ratio_tgt = 0.977
@@ -574,7 +574,7 @@ function window_ratio()
 	end
 	--if right_out_window_ratio == ratio_tgt or was_right_frost == 1 then
 	if right_out_window_ratio == 1 or ratio_tgt == 0 or was_right_frost == 1 then
-		right_out_window_ratio_t = B738_set_animation_rate(right_out_window_ratio_t, ratio_tgt, 0, 0.977, math.min(ratio_time, 2))
+		right_out_window_ratio_t = B738_set_animation_rate(right_out_window_ratio_t, ratio_tgt, 0, 0.977, math.max(ratio_time, 2))
 	end
 	B738DR_window_effect_R = right_out_window_ratio_t
 	
@@ -584,7 +584,7 @@ function window_ratio()
 		end
 		R02_timer = 0
 		R02_cnt = 0
-	else
+	elseif right_out_window_ratio > 0 then
 		if right_out_window_ratio < 0.1 then
 			B738DR_window_effect_R02[0] = 1
 		elseif right_out_window_ratio < 0.2 then
@@ -731,7 +731,7 @@ function window_ratio()
 		end
 		if l_fwd_temp < 0.2 then
 			was_left_frost = 1
-			if animL_ratio_tgt[k] < animL_transp_ratio[k] then
+			if animL_ratio_tgt[k] < animL_transp_ratio[k] or animL_ratio_tgt[k] == 0 then
 				ratio_time = 240
 				animL_ratio_tgt_w[k] = 0
 			end
@@ -761,7 +761,7 @@ function window_ratio()
 			end
 			--if animL_ratio[k] == animL_ratio_tgt[k] or was_left_frost == 1 then
 			if animL_ratio[k] == 1 or animL_ratio_tgt[k] == 0 or was_left_frost == 1 then
-				animL_transp_ratio[k] = B738_set_animation_rate(animL_transp_ratio[k], animL_ratio_tgt[k], 0, 0.977, math.min(ratio_time, 2))
+				animL_transp_ratio[k] = B738_set_animation_rate(animL_transp_ratio[k], animL_ratio_tgt[k], 0, 0.977, math.max(ratio_time, 2))
 			end
 		end
 		if animL_ratio[k] == 0 then
@@ -805,7 +805,7 @@ function window_ratio()
 			end
 			L_anim_timer[k] = 0
 			L_anim_cnt[k] = 0
-		else
+		elseif animL_ratio[k] > 0 then
 			if animL_ratio[k] < 0.111 then
 				B738DR_window_effect_animL02[tmp+rndm_L[k][0]] = 1
 			elseif animL_ratio[k] < 0.222 then
@@ -910,7 +910,7 @@ function window_ratio()
 		end
 		if r_fwd_temp < 0.2 then
 			was_right_frost = 1
-			if animR_ratio_tgt[k] < animR_transp_ratio[k] then
+			if animR_ratio_tgt[k] < animR_transp_ratio[k] or animR_ratio_tgt[k] == 0 then
 				ratio_time = 240
 				animR_ratio_tgt_w[k] = 0
 			end
@@ -940,7 +940,7 @@ function window_ratio()
 			end
 			--if animR_ratio[k] == animR_ratio_tgt[k] or was_right_frost == 1 then
 			if animR_ratio[k] == 1 or animR_ratio_tgt[k] == 0 or was_right_frost == 1 then
-				animR_transp_ratio[k] = B738_set_animation_rate(animR_transp_ratio[k], animR_ratio_tgt[k], 0, 0.977, math.min(ratio_time, 2))
+				animR_transp_ratio[k] = B738_set_animation_rate(animR_transp_ratio[k], animR_ratio_tgt[k], 0, 0.977, math.max(ratio_time, 2))
 			end
 		end
 		if animR_ratio[k] == 0 then
@@ -984,7 +984,7 @@ function window_ratio()
 			end
 			R_anim_timer[k] = 0
 			R_anim_cnt[k] = 0
-		else
+		elseif animR_ratio[k] > 0 then
 			if animR_ratio[k] < 0.111 then
 				B738DR_window_effect_animR02[tmp+rndm_R[k][0]] = 1
 			elseif animR_ratio[k] < 0.222 then

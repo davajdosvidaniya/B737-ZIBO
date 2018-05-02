@@ -900,6 +900,8 @@ B738DR_windshear				= find_dataref("laminar/b738/fmodpack/msg_windshear")
 
 cross_wind						= find_dataref("laminar/B738/fms/cross_wind")
 
+B738DR_nd_rings					= find_dataref("laminar/B738/effect/nd_rings")
+
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -5539,7 +5541,9 @@ function B738_autopilot_spd_interv_CMDhandler(phase, duration)
 				simDR_airspeed_dial_kts = simDR_airspeed_pilot
 			else
 				B738DR_ap_spd_interv_status = 0
-				vnav_desc_spd = 0
+				if B738DR_thrust1_leveler ~= 0 and B738DR_thrust2_leveler ~= 0 then 
+					vnav_desc_spd = 0
+				end
 				vnav_desc_protect_spd = 0
 			end
 		end
@@ -8468,7 +8472,7 @@ function B738_vnav6()
 					if B738DR_alt_hold_mem == 0 then
 						if B738DR_rest_wpt_alt < B738DR_fmc_descent_r_alt1 then 
 							if simDR_altitude_pilot < (B738DR_fmc_descent_r_alt1 + 900) then
-								spd_250_10000 = B738DR_fmc_descent_r_speed1 - 10
+								spd_250_10000 = B738DR_fmc_descent_r_speed1 --- 10
 							else
 								spd_250_10000 = 340
 							end
@@ -8878,10 +8882,16 @@ function B738_vnav6()
 					if B738DR_vnav_td_dist < 0.8 then
 						if simDR_ap_altitude_dial_ft < B738DR_fmc_cruise_alt then
 							-- vnav descent
-							if simDR_autopilot_altitude_mode ~= 4 then
-								simDR_ap_vvi_dial = B738DR_vnav_vvi
-								simCMD_autopilot_vs_sel:once()
+							-- if simDR_autopilot_altitude_mode ~= 4 then
+								-- simDR_ap_vvi_dial = B738DR_vnav_vvi
+								-- simCMD_autopilot_vs_sel:once()
+							-- end
+							----------------------------------
+							if simDR_autopilot_altitude_mode ~= 5 then
+								simCMD_autopilot_lvl_chg:once()
 							end
+							vnav_desc_spd = 1	-- change to VNAV SPD
+							----------------------------------
 							at_mode = 7
 							eng1_N1_thrust_trg = 0.0
 							eng2_N1_thrust_trg = 0.0
@@ -8899,6 +8909,7 @@ function B738_vnav6()
 						B738DR_flight_phase = 5
 						vnav_alt_hold_act = 0
 						mcp_alt_hold = -1
+						
 					end
 				end
 				
@@ -9001,7 +9012,7 @@ function B738_vnav6()
 						if B738DR_alt_hold_mem == 0 then
 							if B738DR_rest_wpt_alt < B738DR_fmc_descent_r_alt1 then 
 								if simDR_altitude_pilot < (B738DR_fmc_descent_r_alt1 + 900) then
-									spd_250_10000 = B738DR_fmc_descent_r_speed1 - 10
+									spd_250_10000 = B738DR_fmc_descent_r_speed1 --- 10
 								else
 									spd_250_10000 = 340
 								end
@@ -9349,7 +9360,7 @@ function B738_vnav6()
 						-- VNAV ALT
 						if vnav_alt_mode == 0 then
 						
-							-- if B738DR_vnav_desc_spd_disable == 0 then
+							if B738DR_vnav_desc_spd_disable == 0 then
 								-- if vnav_desc_spd == 0 then
 									-- if B738DR_vnav_alt_err > -100 and B738DR_vnav_alt_err < 125 then
 										-- if simDR_autopilot_altitude_mode ~= 5 and simDR_glideslope_status == 0 then
@@ -9359,18 +9370,21 @@ function B738_vnav6()
 										-- end
 									-- end
 								-- else
-									-- if simDR_autopilot_altitude_mode ~= 6 then
-										-- if B738DR_vnav_alt_err < -150 or B738DR_vnav_alt_err > 150 then
-											-- if simDR_autopilot_altitude_mode ~= 4 and simDR_glideslope_status == 0 then
-												-- simDR_ap_vvi_dial = B738DR_vnav_vvi
-												-- simCMD_autopilot_vs_sel:once()
-												-- at_mode = 2
-												-- vnav_desc_spd = 0 -- change to VNAV PTH
-											-- end
-										-- end
-									-- end
-								-- end
-							-- end
+								if vnav_desc_spd ~= 0 then
+									if B738DR_ap_spd_interv_status == 0 then
+										if simDR_autopilot_altitude_mode ~= 6 then
+											if B738DR_vnav_alt_err < -350 or B738DR_vnav_alt_err > 350 then
+												if simDR_autopilot_altitude_mode ~= 4 and simDR_glideslope_status == 0 then
+													simDR_ap_vvi_dial = B738DR_vnav_vvi
+													simCMD_autopilot_vs_sel:once()
+													at_mode = 2
+													vnav_desc_spd = 0 -- change to VNAV PTH
+												end
+											end
+										end
+									end
+								end
+							end
 							
 							-- prevent overspeed
 							--if simDR_airspeed_pilot > (B738DR_pfd_max_speed - 6) and B738DR_vnav_desc_spd_disable == 0 and vnav_desc_spd == 0 then
@@ -10567,7 +10581,7 @@ function B738_lnav_vnav()
 	local r_delta_alt = 0
 	
 	if ap_pitch_mode_eng == 5 and ap_pitch_mode == 5 	-- VNAV
-	and lnav_engaged == 1 and B738DR_pfd_vert_path == 1 and B738DR_vnav_app_active == 1 and alt_acq_disable == 1 then	-- LNAV/VNAV
+	and lnav_engaged == 1 and B738DR_pfd_vert_path == 1 and B738DR_vnav_app_active == 1 and alt_acq_disable == 1 and vnav_alt_mode == 0 then	-- LNAV/VNAV
 		if pitch_mode_old ~= ap_pitch_mode_eng or at_on_old ~= B738DR_autopilot_autothr_arm_pos then
 			if B738DR_autopilot_autothr_arm_pos == 1 then
 				at_mode = 2
@@ -10626,7 +10640,7 @@ function B738_loc_vnav()
 	local r_delta_alt = 0
 	if ap_pitch_mode_eng == 5 and ap_pitch_mode == 5 	-- VNAV
 	and ap_roll_mode_eng == 2 and ap_roll_mode == 2		-- VOR LOC
-	and B738DR_nd_vert_path == 1 and alt_acq_disable == 1 then	-- LOC/VNAV
+	and B738DR_nd_vert_path == 1 and alt_acq_disable == 1 and vnav_alt_mode == 0 then	-- LOC/VNAV
 		if simDR_nav_status == 0 then
 			ap_roll_mode = 0
 			ap_pitch_mode = 0
@@ -17169,17 +17183,21 @@ function B738_nd()
 	
 	-- ND Rings
 	local efis_rings = 0
-	if B738DR_capt_exp_map_mode == 1 and B738DR_capt_map_mode <= 2 then
-		if B738DR_efis_terr_on == 1 or B738DR_efis_wxr_on == 1 or B738DR_EFIS_TCAS_on == 1 then
-			efis_rings = 1
+	if B738DR_nd_rings ~= 0 then
+		if B738DR_capt_exp_map_mode == 1 and B738DR_capt_map_mode <= 2 then
+			if B738DR_efis_terr_on == 1 or B738DR_efis_wxr_on == 1 or B738DR_EFIS_TCAS_on == 1 then
+				efis_rings = 1
+			end
 		end
 	end
 	B738DR_efis_rings = efis_rings
 	
 	efis_rings = 0
-	if B738DR_fo_exp_map_mode == 1 and B738DR_fo_map_mode <= 2 then
-		if B738DR_efis_fo_terr_on == 1 or B738DR_efis_fo_wxr_on == 1 or B738DR_EFIS_TCAS_on_fo == 1 then
-			efis_rings = 1
+	if B738DR_nd_rings ~= 0 then
+		if B738DR_fo_exp_map_mode == 1 and B738DR_fo_map_mode <= 2 then
+			if B738DR_efis_fo_terr_on == 1 or B738DR_efis_fo_wxr_on == 1 or B738DR_EFIS_TCAS_on_fo == 1 then
+				efis_rings = 1
+			end
 		end
 	end
 	B738DR_efis_fo_rings = efis_rings

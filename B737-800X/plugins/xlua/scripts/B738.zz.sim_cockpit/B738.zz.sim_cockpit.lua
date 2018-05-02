@@ -146,10 +146,7 @@ simCMD_gpu_on					= find_command("sim/electrical/GPU_on")
 simCMD_generator_1_off			= find_command("sim/electrical/generator_1_off")
 simCMD_generator_2_off			= find_command("sim/electrical/generator_2_off")
 
-
-
-
-
+simDR_flaps_ratio				= find_dataref("sim/cockpit2/controls/flap_ratio")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM DATAREFS             			    	 **--
@@ -500,17 +497,79 @@ B738_fmc_prev			= create_dataref("laminar/B738/buttons/fmc/capt/prev", "number",
 B738_fmc_next			= create_dataref("laminar/B738/buttons/fmc/capt/next", "number", B738_fmc_next_DRhandler)
 B738_fmc_prog			= create_dataref("laminar/B738/buttons/fmc/capt/prog", "number", B738_fmc_prog_DRhandler)
 
+
+
 --*************************************************************************************--
 --** 				             CUSTOM COMMAND HANDLERS            			     **--
 --*************************************************************************************--
 
+function flaps_0_CMDhandler(phase, duration)
+	if phase == 0 then
+		simDR_flaps_ratio = 0
+	end
+end
 
-			
+function flaps_1_CMDhandler(phase, duration)
+	if phase == 0 then
+		simDR_flaps_ratio = 0.125
+	end
+end
+
+function flaps_2_CMDhandler(phase, duration)
+	if phase == 0 then
+		simDR_flaps_ratio = 0.250
+	end
+end
+
+function flaps_5_CMDhandler(phase, duration)
+	if phase == 0 then
+		simDR_flaps_ratio = 0.375
+	end
+end
+
+function flaps_10_CMDhandler(phase, duration)
+	if phase == 0 then
+		simDR_flaps_ratio = 0.500
+	end
+end
+
+function flaps_15_CMDhandler(phase, duration)
+	if phase == 0 then
+		simDR_flaps_ratio = 0.625
+	end
+end
+
+function flaps_25_CMDhandler(phase, duration)
+	if phase == 0 then
+		simDR_flaps_ratio = 0.750
+	end
+end
+
+function flaps_30_CMDhandler(phase, duration)
+	if phase == 0 then
+		simDR_flaps_ratio = 0.875
+	end
+end
+
+function flaps_40_CMDhandler(phase, duration)
+	if phase == 0 then
+		simDR_flaps_ratio = 1.0
+	end
+end
+
 --*************************************************************************************--
 --** 				              CREATE CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
 
-
+B738CMD_flaps_0				= create_command("laminar/B738/push_button/flaps_0", "Flaps up", flaps_0_CMDhandler)
+B738CMD_flaps_1				= create_command("laminar/B738/push_button/flaps_1", "Flaps 1", flaps_1_CMDhandler)
+B738CMD_flaps_2				= create_command("laminar/B738/push_button/flaps_2", "Flaps 2", flaps_2_CMDhandler)
+B738CMD_flaps_5				= create_command("laminar/B738/push_button/flaps_5", "Flaps 5", flaps_5_CMDhandler)
+B738CMD_flaps_10			= create_command("laminar/B738/push_button/flaps_10", "Flaps 10", flaps_10_CMDhandler)
+B738CMD_flaps_15			= create_command("laminar/B738/push_button/flaps_15", "Flaps 15", flaps_15_CMDhandler)
+B738CMD_flaps_25			= create_command("laminar/B738/push_button/flaps_25", "Flaps 25", flaps_25_CMDhandler)
+B738CMD_flaps_30			= create_command("laminar/B738/push_button/flaps_30", "Flaps 30", flaps_30_CMDhandler)
+B738CMD_flaps_40			= create_command("laminar/B738/push_button/flaps_40", "Flaps 40", flaps_40_CMDhandler)
 
 --*************************************************************************************--
 --** 				             X-PLANE COMMAND HANDLERS               	    	 **--

@@ -112,15 +112,24 @@ month_table =
 
 
 -- 18 idx
-vnav_des_alt = { 1500, 5000, 10000, 11000, 15000, 17000, 19000, 21000, 23000, 25000, 27000, 29000, 31000, 33000, 35000, 37000, 39000, 41000 }
+-- vnav_des_alt = { 1500, 5000, 10000, 11000, 15000, 17000, 19000, 21000, 23000, 25000, 27000, 29000, 31000, 33000, 35000, 37000, 39000, 41000 }
+
+-- vnav_des_dist =
+	-- {	[40] = { 13, 26, 42, 48, 58, 63, 67, 72, 77,  81,  87,  90,  95,  99, 103, 107, 113, 115 },
+		-- [50] = { 13, 27, 46, 53, 64, 70, 75, 80, 86,  91,  97, 102, 108, 113, 117, 122, 127, 133 },
+		-- [60] = { 13, 28, 48, 56, 70, 76, 82, 88, 94, 100, 106, 112, 119, 125, 129, 135, 139, 146 },
+		-- [70] = { 13, 29, 50, 58, 73, 79, 86, 92, 99, 106, 112, 119, 126, 132, 137, 143, 148, 153 }
+	-- }
+
+-- 20 idx
+vnav_des_alt = { 1500, 5000, 10000, 10300, 10600, 11000, 15000, 17000, 19000, 21000, 23000, 25000, 27000, 29000, 31000, 33000, 35000, 37000, 39000, 41000 }
 
 vnav_des_dist =
-	{	[40] = { 13, 26, 42, 48, 58, 63, 67, 72, 77,  81,  87,  90,  95,  99, 103, 107, 113, 115 },
-		[50] = { 13, 27, 46, 53, 64, 70, 75, 80, 86,  91,  97, 102, 108, 113, 117, 122, 127, 133 },
-		[60] = { 13, 28, 48, 56, 70, 76, 82, 88, 94, 100, 106, 112, 119, 125, 129, 135, 139, 146 },
-		[70] = { 13, 29, 50, 58, 73, 79, 86, 92, 99, 106, 112, 119, 126, 132, 137, 143, 148, 153 }
+	{	[40] = { 13, 25, 43, 45, 48, 50, 61.2, 67.3, 73.3, 79.2, 85, 90.7, 96.3, 101.8, 107.2, 112.5, 117.7, 122.8, 127.8, 132.7 },
+		[50] = { 13, 25, 43, 45, 48, 50, 61.2, 67.3, 73.3, 79.2, 85, 90.7, 96.3, 101.8, 107.2, 112.5, 117.7, 122.8, 127.8, 132.7 },
+		[60] = { 13, 25, 43, 45, 48, 50, 61.2, 67.3, 73.3, 79.2, 85, 90.7, 96.3, 101.8, 107.2, 112.5, 117.7, 122.8, 127.8, 132.7 },
+		[70] = { 13, 25, 43, 45, 48, 50, 61.2, 67.3, 73.3, 79.2, 85, 90.7, 96.3, 101.8, 107.2, 112.5, 117.7, 122.8, 127.8, 132.7 }
 	}
-
 
 FILE_NAME_CFG = "b738x.cfg"
 FILE_NAME_STATUS = "b738x_status.dat"
@@ -1677,6 +1686,7 @@ B738DR_kill_windshield			= find_dataref("laminar/B738/perf/kill_windshield")
 
 B738DR_hide_glass 				= create_dataref("laminar/B738/effect/hide_glass", "number")
 B738DR_tire_blown				= create_dataref("laminar/B738/effect/tire_blown", "number")
+B738DR_nd_rings					= create_dataref("laminar/B738/effect/nd_rings", "number")
 
 B738DR_mcp_speed_dial		= find_dataref("laminar/B738/autopilot/mcp_speed_dial_kts_mach")
 
@@ -15341,6 +15351,7 @@ function B738_default_others_config()
 	B738DR_kill_windshield = 0
 	B738DR_hide_glass = 0
 	B738DR_tire_blown = 1
+	B738DR_nd_rings = 1
 	
 	simDR_pitch_nz = 0
 	simDR_roll_nz = 0
@@ -15956,6 +15967,18 @@ function B738_load_config()
 								B738DR_tire_blown = 1
 							else
 								B738DR_tire_blown = 0
+							end
+						end
+					end
+				elseif string.sub(fms_line, 1, 16) == "ND RINGS       =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							if temp_fmod == 1 then
+								B738DR_nd_rings = 1
+							else
+								B738DR_nd_rings = 0
 							end
 						end
 					end
@@ -16594,6 +16617,8 @@ function B738_save_config()
 		fms_line = "WINDSH.REFLECT = " .. string.format("%2d", B738DR_hide_glass) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "TIRE BLOWN     = " .. string.format("%2d", B738DR_tire_blown) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "ND RINGS       = " .. string.format("%2d", B738DR_nd_rings) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "PITCH 0 ZONE   = " .. string.format("%2d", simDR_pitch_nz * 100) .. "\n"
 		file_navdata:write(fms_line)
@@ -21251,6 +21276,12 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 				B738DR_baro_in_hpa = 1
 			else
 				B738DR_baro_in_hpa = 0
+			end
+		elseif page_xtras_others == 4 then
+			if B738DR_nd_rings == 0 then
+				B738DR_nd_rings = 1
+			else
+				B738DR_nd_rings = 0
 			end
 		elseif page_arr == 1 then
 			if des_star2 == "------" then
@@ -33180,6 +33211,12 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 			else
 				B738DR_baro_in_hpa = 0
 			end
+		elseif page_xtras_others2 == 4 then
+			if B738DR_nd_rings == 0 then
+				B738DR_nd_rings = 1
+			else
+				B738DR_nd_rings = 0
+			end
 		elseif page_arr2 == 1 then
 			if des_star2 == "------" then
 				if des_star_sel[3] ~= "------" then
@@ -41771,6 +41808,16 @@ function B738_fmc_xtras_others()
 			line2_g = "     ON                 "
 			line2_s = " OFF                    "
 		end
+		line3_x = " ND DISTANCE RINGS      "
+		if B738DR_nd_rings == 0 then
+			line3_l = "<  /                    "
+			line3_g = " NO                     "
+			line3_s = "    YES                 "
+		else
+			line3_l = "<  /                    "
+			line3_g = "    YES                 "
+			line3_s = " NO                     "
+		end
 		line6_l = "<DEFAULT           BACK>"
 	elseif page_xtras_others == 5 then
 		act_page = 5
@@ -47827,16 +47874,16 @@ function B738_fmc_descent()
 				temp_speed = tonumber(string.format("%3d", B738DR_fmc_descent_speed))
 				if simDR_airspeed_is_mach == 0 then
 					if ap_mcp_spd == temp_speed then
-						line2_m = string.format("%3d", B738DR_fmc_descent_speed)
-						line2_l = "   /" .. string.sub(string.format("%5.3f", B738DR_fmc_descent_speed_mach), 2, 5)
+						line2_m = "     " .. string.format("%3d", B738DR_fmc_descent_speed)
+						line2_l = string.sub(string.format("%5.3f", B738DR_fmc_descent_speed_mach), 2, 5) .. "/   "
 					else
-						line2_l = string.format("%3d", B738DR_fmc_descent_speed) .. "/"
-						line2_l = line2_l .. string.sub(string.format("%5.3f", B738DR_fmc_descent_speed_mach), 2, 5)
+						line2_l = string.sub(string.format("%5.3f", B738DR_fmc_descent_speed_mach), 2, 5) .. "/"
+						line2_l = line2_l .. string.format("%3d", B738DR_fmc_descent_speed)
 						line2_m = ""
 					end
 				else
-					line2_l = string.format("%3d", B738DR_fmc_descent_speed) .. "/    "
-					line2_m = "    " .. string.sub(string.format("%5.3f", B738DR_fmc_descent_speed_mach), 2, 5)
+					line2_l = "    /" .. string.format("%3d", B738DR_fmc_descent_speed)
+					line2_m = string.sub(string.format("%5.3f", B738DR_fmc_descent_speed_mach), 2, 5)
 				end
 			else
 				if simDR_airspeed_is_mach == 0 then
@@ -47859,8 +47906,8 @@ function B738_fmc_descent()
 				TOD_str = TOD_str .. "NM"
 			end
 		else
-			line2_l = string.format("%3d", B738DR_fmc_descent_speed) .. "/"
-			line2_l = line2_l .. string.sub(string.format("%5.3f", B738DR_fmc_descent_speed_mach), 2, 5)
+			line2_l = string.sub(string.format("%5.3f", B738DR_fmc_descent_speed_mach), 2, 5) .. "/"
+			line2_l = line2_l .. string.format("%3d", B738DR_fmc_descent_speed)
 			line2_m = ""
 		end
 		line2_l = line2_l .. TOD_str	--"   ----.- /---NM"
@@ -56747,8 +56794,10 @@ function B738_displ_wpt2()
 							-- HOLD
 							if hold_obj < 5 then
 								
-								if wpt_2d_idx[ii] == offset then
-									if legs_data[wpt_2d_idx[ii]][31] == "HA" or legs_data[wpt_2d_idx[ii]][31] == "HF" or legs_data[wpt_2d_idx[ii]][31] == "HM" then
+								-- if wpt_2d_idx[ii] == offset then
+									-- if legs_data[wpt_2d_idx[ii]][31] == "HA" or legs_data[wpt_2d_idx[ii]][31] == "HF" or legs_data[wpt_2d_idx[ii]][31] == "HM" then
+								if wpt_2d_idx[ii] == offset and
+									(legs_data[wpt_2d_idx[ii]][31] == "HA" or legs_data[wpt_2d_idx[ii]][31] == "HF" or legs_data[wpt_2d_idx[ii]][31] == "HM") then
 										B738DR_hold_x[hold_obj] = wpt_2d_x[ii]
 										B738DR_hold_y[hold_obj] = wpt_2d_y[ii]
 										B738DR_hold_crs[hold_obj] = ((tonumber(legs_data[wpt_2d_idx[ii]][29]) / 10) - mag_hdg + 360) % 360
@@ -56765,7 +56814,7 @@ function B738_displ_wpt2()
 											B738DR_hold_type[hold_obj] = legs_data[wpt_2d_idx[ii]][21] + 7
 										end
 										hold_obj = hold_obj + 1
-									end
+									--end
 								else
 									if wpt_2d_idx[ii] <= legs_num then
 										if legs_data[wpt_2d_idx[ii]+1][31] == "HA" or legs_data[wpt_2d_idx[ii]+1][31] == "HF" or legs_data[wpt_2d_idx[ii]+1][31] == "HM" then
@@ -57409,8 +57458,10 @@ function B738_displ_wpt2()
 							-- HOLD
 							if hold_obj_fo < 5 then
 								
-								if wpt_2d_idx[ii] == offset then
-									if legs_data[wpt_2d_idx[ii]][31] == "HA" or legs_data[wpt_2d_idx[ii]][31] == "HF" or legs_data[wpt_2d_idx[ii]][31] == "HM" then
+								-- if wpt_2d_idx[ii] == offset then
+									-- if legs_data[wpt_2d_idx[ii]][31] == "HA" or legs_data[wpt_2d_idx[ii]][31] == "HF" or legs_data[wpt_2d_idx[ii]][31] == "HM" then
+								if wpt_2d_idx[ii] == offset and
+									(legs_data[wpt_2d_idx[ii]][31] == "HA" or legs_data[wpt_2d_idx[ii]][31] == "HF" or legs_data[wpt_2d_idx[ii]][31] == "HM") then
 										B738DR_hold_fo_x[hold_obj_fo] = wpt_2d_x[ii]
 										B738DR_hold_fo_y[hold_obj_fo] = wpt_2d_y[ii]
 										B738DR_hold_fo_crs[hold_obj_fo] = ((tonumber(legs_data[wpt_2d_idx[ii]][29]) / 10) - mag_hdg + 360) % 360
@@ -57427,7 +57478,7 @@ function B738_displ_wpt2()
 											B738DR_hold_fo_type[hold_obj_fo] = legs_data[wpt_2d_idx[ii]][21] + 7
 										end
 										hold_obj_fo = hold_obj_fo + 1
-									end
+									--end
 								else
 									if wpt_2d_idx[ii] <= legs_num then
 										if legs_data[wpt_2d_idx[ii]+1][31] == "HA" or legs_data[wpt_2d_idx[ii]+1][31] == "HF" or legs_data[wpt_2d_idx[ii]+1][31] == "HM" then
@@ -63498,7 +63549,7 @@ function B738_nd_perf()
 	local nd_x = 0
 	local nd_y = 0
 	local n = 0
-	local range = 165	-- 165 NM
+	local range = 645	-- 165 NM
 	local delta_pos = 0
 	local skip = 0
 	
@@ -63684,9 +63735,15 @@ function B738_displ_apt()
 		elseif B738DR_efis_map_range_capt == 5 then	-- 160 NM
 			nd_zoom = 0.0625
 			nd_thr = 161
-		else
-			nd_thr = 161
-			nd_zoom = 0
+		elseif B738DR_efis_map_range_capt == 6 then	-- 320 NM
+			nd_zoom = 0.03125
+			nd_thr = 322
+		elseif B738DR_efis_map_range_capt == 7 then	-- 640 NM
+			nd_zoom = 0.015625
+			nd_thr = 642
+		-- else
+			-- nd_thr = 161
+			-- nd_zoom = 0
 		end
 		
 		if B738DR_capt_map_mode == 3 then
@@ -63742,9 +63799,15 @@ function B738_displ_apt()
 		elseif B738DR_efis_map_range_fo == 5 then	-- 160 NM
 			nd_zoom2 = 0.0625
 			nd_thr2 = 161
-		else
-			nd_thr2 = 161
-			nd_zoom2 = 0
+		elseif B738DR_efis_map_range_fo == 6 then	-- 320 NM
+			nd_zoom2 = 0.03125
+			nd_thr2 = 322
+		elseif B738DR_efis_map_range_fo == 7 then	-- 640 NM
+			nd_zoom2 = 0.015625
+			nd_thr2 = 642
+		-- else
+			-- nd_thr2 = 161
+			-- nd_zoom2 = 0
 		end
 		
 		if B738DR_fo_map_mode == 3 then
@@ -66651,7 +66714,8 @@ function create_vpth_table(x_gw_str)
 	vnav_des_table_dist = {}
 	vnav_des_table_alt = {}
 	vnav_des_table_num = 0
-	for ii = 1, 18 do
+	--for ii = 1, 18 do
+	for ii = 1, 20 do
 		x_dist1 = vnav_des_dist[x_gw1][ii]
 		x_dist2 = vnav_des_dist[x_gw2][ii]
 		if vnav_des_alt[ii] >= 11000 then
@@ -66808,7 +66872,8 @@ function create_vpth_table2(x_gw_str)
 	vnav_des_table_dist2 = {}
 	vnav_des_table_alt2 = {}
 	vnav_des_table_num2 = 0
-	for ii = 1, 18 do
+	--for ii = 1, 18 do
+	for ii = 1, 20 do
 		x_dist1 = vnav_des_dist[x_gw1][ii]
 		x_dist2 = vnav_des_dist[x_gw2][ii]
 		if vnav_des_alt[ii] >= 11000 then
@@ -67034,19 +67099,19 @@ function B738_vnav_pth3()
 					vnav_vvi_trg = simDR_vvi_fpm_pilot + B738DR_vnav_vvi_corr
 					
 					vnav_vvi_trg = vnav_vvi_trg / 1000
-					vnav_vvi_trg = math.max (vnav_vvi_trg, -2.9)
+					vnav_vvi_trg = math.max (vnav_vvi_trg, -3.0)
 					vnav_vvi_trg = math.min (vnav_vvi_trg, 0)
 					vnav_vvi_tmp = B738DR_vnav_vvi / 1000
 					
 					if B738DR_altitude_mode == 5 and simDR_autopilot_altitude_mode ~= 6 then -- VNAV
-						vnav_vvi_tmp = B738_set_anim_value2(vnav_vvi_tmp, vnav_vvi_trg, -2.9, 0, 2, 0.02)
+						vnav_vvi_tmp = B738_set_anim_value2(vnav_vvi_tmp, vnav_vvi_trg, -3.0, 0, 2, 0.02)
 						B738DR_vnav_vvi = vnav_vvi_tmp * 1000
 					else
 						B738DR_vnav_vvi = 0
 					end
 					
-					if B738DR_vnav_vvi < -2900 then		-- max descent vvi -2500
-						B738DR_vnav_vvi= -2900
+					if B738DR_vnav_vvi < -3000 then		-- max descent vvi -2500
+						B738DR_vnav_vvi= -3000
 					end
 					if B738DR_vnav_vvi > 0 then		-- min descent vvi 0
 						B738DR_vnav_vvi = 0
@@ -67131,7 +67196,7 @@ function B738_vnav_pth3()
 						vnav_vvi_trg = simDR_vvi_fpm_pilot + B738DR_vnav_vvi_corr
 						
 						vnav_vvi_trg = vnav_vvi_trg / 1000
-						vnav_vvi_trg = math.max (vnav_vvi_trg, -2.2)
+						vnav_vvi_trg = math.max (vnav_vvi_trg, -2.5)
 						vnav_vvi_trg = math.min (vnav_vvi_trg, 0)
 						vnav_vvi_tmp = B738DR_vnav_vvi / 1000
 						
@@ -67139,15 +67204,15 @@ function B738_vnav_pth3()
 						if simDR_autopilot_altitude_mode ~= 6 then
 							if B738DR_altitude_mode == 5 or B738DR_altitude_mode == 7 then	-- VNAV or G/P
 								--vnav_vvi_tmp = B738_set_anim_value2(vnav_vvi_tmp, vnav_vvi_trg, -2.2, 0, 2, 0.08)
-								vnav_vvi_tmp = B738_set_anim_value2(vnav_vvi_tmp, vnav_vvi_trg, -2.2, 0, 2, 0.02)
+								vnav_vvi_tmp = B738_set_anim_value2(vnav_vvi_tmp, vnav_vvi_trg, -2.5, 0, 2, 0.02)
 								B738DR_vnav_vvi = vnav_vvi_tmp * 1000
 							end
 						else
 							B738DR_vnav_vvi = 0
 						end
 						
-						if B738DR_vnav_vvi < -2200 then		-- max vvi
-							B738DR_vnav_vvi= -2200
+						if B738DR_vnav_vvi < -2500 then		-- max vvi
+							B738DR_vnav_vvi= -2500
 						end
 						if B738DR_vnav_vvi > 0 then		-- min vvi -200
 							B738DR_vnav_vvi = 0
@@ -67271,15 +67336,15 @@ function B738_vnav_pth3()
 						gp_vvi_trg = simDR_vvi_fpm_pilot + B738DR_gp_vvi_corr
 						
 						gp_vvi_trg = gp_vvi_trg / 1000
-						gp_vvi_trg = math.max (gp_vvi_trg, -2.2)
+						gp_vvi_trg = math.max (gp_vvi_trg, -2.5)
 						gp_vvi_trg = math.min (gp_vvi_trg, 0)
 						gp_vvi_tmp = B738DR_gp_vvi / 1000
 						
-						gp_vvi_tmp = B738_set_anim_value2(gp_vvi_tmp, gp_vvi_trg, -2.2, 0, 2, 0.02)
+						gp_vvi_tmp = B738_set_anim_value2(gp_vvi_tmp, gp_vvi_trg, -2.5, 0, 2, 0.02)
 						B738DR_gp_vvi = gp_vvi_tmp * 1000
 						
-						if B738DR_gp_vvi < -2200 then		-- max vvi
-							B738DR_gp_vvi= -2200
+						if B738DR_gp_vvi < -2500 then		-- max vvi
+							B738DR_gp_vvi= -2500
 						end
 						if B738DR_gp_vvi > 0 then		-- min vvi -200
 							B738DR_gp_vvi = 0
@@ -68237,6 +68302,9 @@ function B738_fmc_calc()
 										if relative_brg >= 110 then
 											-- Tear-drop
 											simDR_fmc_trk = ((tonumber(legs_data[offset][29]) / 10) + 120) % 360
+											if legs_data[offset][21] == 0 then
+												simDR_fmc_trk = (simDR_fmc_trk + 90) % 360
+											end
 											B738DR_hold_phase = 4
 										elseif relative_brg <= -70 then
 											-- Parallel
@@ -68615,6 +68683,9 @@ function B738_fmc_calc()
 				B738DR_wpt_path = legs_data[offset][31]
 				simDR_fmc_trk_turn = -1
 				simDR_fmc_trk = ((tonumber(legs_data[offset][29]) / 10) + 120) % 360
+				if legs_data[offset][21] == 0 then
+					simDR_fmc_trk = (simDR_fmc_trk + 90) % 360
+				end
 				hold_timer = hold_timer + SIM_PERIOD
 				if hold_timer > hold_time_set then
 					hold_timer = 0
@@ -68650,6 +68721,9 @@ function B738_fmc_calc()
 							simDR_fmc_trk_turn = 0
 						end
 						simDR_fmc_trk = ((tonumber(legs_data[offset][29]) / 10) + 315) % 360
+						if legs_data[offset][21] == 0 then
+							simDR_fmc_trk = (simDR_fmc_trk + 90) % 360
+						end
 						simDR_fmc_crs = tonumber(legs_data[offset][29]) / 10
 						hold_timer = 0
 						B738DR_hold_phase = 6
@@ -68665,6 +68739,9 @@ function B738_fmc_calc()
 					simDR_fmc_trk_turn = 0
 				end
 				simDR_fmc_trk = ((tonumber(legs_data[offset][29]) / 10) + 135) % 360
+				if legs_data[offset][21] == 0 then
+					simDR_fmc_trk = (simDR_fmc_trk + 90) % 360
+				end
 				simDR_fmc_crs = tonumber(legs_data[offset][29]) / 10
 			
 			elseif B738DR_hold_phase == 7 then
@@ -68672,6 +68749,9 @@ function B738_fmc_calc()
 				B738DR_wpt_path = legs_data[offset][31]
 				simDR_fmc_trk_turn = -1
 				simDR_fmc_trk = ((tonumber(legs_data[offset][29]) / 10) + 135) % 360
+				-- if legs_data[offset][21] == 0 then
+					-- simDR_fmc_trk = (simDR_fmc_trk + 180) % 360
+				-- end
 				
 				relative_brg = (simDR_fmc_crs - simDR_ahars_mag_hdg + 360) % 360
 				if relative_brg > 180 then
@@ -70871,7 +70951,7 @@ temp_ils4 = ""
 	B738DR_fmc_descent_speed		= 280
 	B738DR_fmc_descent_speed_mach	= 0.78
 	B738DR_fmc_descent_alt			= 4000
-	B738DR_fmc_descent_r_speed1		= 250
+	B738DR_fmc_descent_r_speed1		= 240
 	B738DR_fmc_descent_r_alt1		= 10000
 	B738DR_fmc_descent_r_speed2		= 0
 	B738DR_fmc_descent_r_alt2		= 0
@@ -71260,7 +71340,7 @@ temp_ils4 = ""
 	receive_msg = 0
 	x_delay = 0
 	
-	version = "v3.26h"
+	version = "v3.26i"
 
 end
 
