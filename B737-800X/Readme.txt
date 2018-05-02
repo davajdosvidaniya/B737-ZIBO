@@ -77,6 +77,10 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26h:
+------
+- improved rain windshield effect
+
 3.26g:
 ------
 - add dataref "laminar/B738/nosewheel_steer_ratio" (for using set option NOSEWHEEL AXIS to VR)

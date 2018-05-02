@@ -11633,27 +11633,27 @@ function copy_to_legsdata()
 				else
 					fms_line = fms_line .. " " .. legs_data[ii][1]
 				end
-				B738DR_fms_legs_lat[ii] = legs_data[ii][7]
-				B738DR_fms_legs_lon[ii] = legs_data[ii][8]
-				B738DR_fms_legs_alt_rest1[ii] = legs_data[ii][5]
+				B738DR_fms_legs_lat[ii-1] = legs_data[ii][7]
+				B738DR_fms_legs_lon[ii-1] = legs_data[ii][8]
+				B738DR_fms_legs_alt_rest1[ii-1] = legs_data[ii][5]
 				if legs_data[ii][6] == 45 then	-- Below
-					B738DR_fms_legs_alt_rest_type[ii] = 1
-					B738DR_fms_legs_alt_rest2[ii] = 0
+					B738DR_fms_legs_alt_rest_type[ii-1] = 1
+					B738DR_fms_legs_alt_rest2[ii-1] = 0
 				elseif legs_data[ii][6] == 43 then	-- Above
-					B738DR_fms_legs_alt_rest_type[ii] = 2
-					B738DR_fms_legs_alt_rest2[ii] = 0
-				--elseif legs_data[ii][6] == 41 then	-- Between
-					--B738DR_fms_legs_alt_rest_type[ii] = 3
-					--B738DR_fms_legs_alt_rest2[ii] = 0
+					B738DR_fms_legs_alt_rest_type[ii-1] = 2
+					B738DR_fms_legs_alt_rest2[ii-1] = 0
+				-- elseif legs_data[ii][6] == 41 then	-- Between
+					-- B738DR_fms_legs_alt_rest_type[ii] = 3
+					-- B738DR_fms_legs_alt_rest2[ii] = 0
 				else	-- At
-					B738DR_fms_legs_alt_rest_type[ii] = 0
-					B738DR_fms_legs_alt_rest2[ii] = 0
+					B738DR_fms_legs_alt_rest_type[ii-1] = 0
+					B738DR_fms_legs_alt_rest2[ii-1] = 0
 				end
-				B738DR_fms_legs_alt_calc[ii] = legs_data[ii][10]
+				B738DR_fms_legs_alt_calc[ii-1] = legs_data[ii][11]
 				if legs_data[ii][32] ~= 0 then
-					B738DR_fms_legs_type[ii] = 5
+					B738DR_fms_legs_type[ii-1] = 5
 				else
-					B738DR_fms_legs_type[ii] = 0
+					B738DR_fms_legs_type[ii-1] = 0
 				end
 			end
 			
@@ -59741,7 +59741,7 @@ function B738_vnav_calc()
 		end
 		msg_chk_alt_constr = 1
 		for n = 1, legs_num do
-			B738DR_fms_legs_alt_calc[n] = legs_data[n][10]
+			B738DR_fms_legs_alt_calc[n-1] = legs_data[n][11]
 		end
 	end
 	
@@ -71260,7 +71260,7 @@ temp_ils4 = ""
 	receive_msg = 0
 	x_delay = 0
 	
-	version = "v3.26g"
+	version = "v3.26h"
 
 end
 
