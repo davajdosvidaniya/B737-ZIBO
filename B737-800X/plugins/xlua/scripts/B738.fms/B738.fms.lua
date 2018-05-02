@@ -125,11 +125,13 @@ month_table =
 vnav_des_alt = { 1500, 5000, 10000, 10300, 10600, 11000, 15000, 17000, 19000, 21000, 23000, 25000, 27000, 29000, 31000, 33000, 35000, 37000, 39000, 41000 }
 
 vnav_des_dist =
-	{	[40] = { 13, 25, 43, 45, 48, 50, 61.2, 67.3, 73.3, 79.2, 85, 90.7, 96.3, 101.8, 107.2, 112.5, 117.7, 122.8, 127.8, 132.7 },
-		[50] = { 13, 25, 43, 45, 48, 50, 61.2, 67.3, 73.3, 79.2, 85, 90.7, 96.3, 101.8, 107.2, 112.5, 117.7, 122.8, 127.8, 132.7 },
-		[60] = { 13, 25, 43, 45, 48, 50, 61.2, 67.3, 73.3, 79.2, 85, 90.7, 96.3, 101.8, 107.2, 112.5, 117.7, 122.8, 127.8, 132.7 },
-		[70] = { 13, 25, 43, 45, 48, 50, 61.2, 67.3, 73.3, 79.2, 85, 90.7, 96.3, 101.8, 107.2, 112.5, 117.7, 122.8, 127.8, 132.7 }
+	{	[40] = { 13, 25.2, 43.2, 45.2, 48.2, 50.2, 61.3, 67.4, 73.4, 79.3, 85.1, 90.8, 96.4, 101.9, 107.3, 112.6, 117.8, 122.9, 127.9, 132.8 },
+		[50] = { 13, 25.2, 43.2, 45.2, 48.2, 50.2, 61.3, 67.4, 73.4, 79.3, 85.1, 90.8, 96.4, 101.9, 107.3, 112.6, 117.8, 122.9, 127.9, 132.8 },
+		[60] = { 13, 25.2, 43.2, 45.2, 48.2, 50.2, 61.3, 67.4, 73.4, 79.3, 85.1, 90.8, 96.4, 101.9, 107.3, 112.6, 117.8, 122.9, 127.9, 132.8 },
+		[70] = { 13, 25.2, 43.2, 45.2, 48.2, 50.2, 61.3, 67.4, 73.4, 79.3, 85.1, 90.8, 96.4, 101.9, 107.3, 112.6, 117.8, 122.9, 127.9, 132.8 }
 	}
+
+--		{	[40] = { 13, 25, 43, 45, 48, 50, 61.2, 67.3, 73.3, 79.2, 85, 90.7, 96.3, 101.8, 107.2, 112.5, 117.7, 122.8, 127.8, 132.7 },
 
 FILE_NAME_CFG = "b738x.cfg"
 FILE_NAME_STATUS = "b738x_status.dat"
@@ -1395,6 +1397,10 @@ ff_sample = 0
 	wpt_2d_num_m = 0
 	
 	x_delay = 0
+	
+	des_app_rw_only = 0
+	rw_ext_dist = "--.-"
+	rw_ext_fpa = "-.--"
 	
 --*************************************************************************************--
 --** 				             FIND X-PLANE DATAREFS            			    	 **--
@@ -13738,6 +13744,9 @@ function rte_add_app2()
 	local temp_str = ""
 	local add_wpt = 0
 	
+	local nd_x = 0
+	local idx_rec = 0
+	
 	--dump_leg()
 	rte_lat = 0
 	rte_lon = 0
@@ -13745,9 +13754,7 @@ function rte_add_app2()
 	disco_status = 0
 	if rte_add_app_act == 2 then
 		if rte_app_num > 0 then
-			
 			if des_app2 ~= "------" then
-				
 				gg = sid_cnt
 				if gg <= rte_app_num then
 					
@@ -14117,6 +14124,83 @@ function rte_add_app2()
 		end
 	end
 	
+	local nd_fpa = tonumber(rw_ext_fpa)
+	if nd_fpa == nil then
+		nd_fpa = 3.00
+	end
+	
+	if rte_add_app_act == 3 and des_app_rw_only ~= 0 then
+		-- RW only
+		if rnw_data_num > 0 then
+			nd_x = string.byte(string.sub(des_icao_x, 1, 1))
+			if (nd_x >= 48 and nd_x <= 57) or (nd_x >= 65 and nd_x <= 90) then
+				if idx_rnw[nd_x][99999] > 0 then
+					for ii = 1, idx_rnw[nd_x][99999] do
+						idx_rec = idx_rnw[nd_x][ii]
+						if des_icao_x == rnw_data[idx_rec][1] and string.sub(des_app2, 3, -1) == rnw_data[idx_rec][2] then
+							
+							-- add RX
+							if tonumber(rw_ext_dist) ~= nil then
+								add_ok = math.rad((rnw_data[idx_rec][8] + 180) % 360)
+								rte_add_rw_ext(rnw_data[idx_rec][3], rnw_data[idx_rec][4], add_ok, des_icao_alt)
+								nd_fpa = -nd_fpa
+							else
+								nd_fpa = 0
+							end
+							
+							add_ok = 1
+							legs_num2b = legs_num2b + 1
+							legs_data2b[legs_num2b] = {}
+							legs_data2b[legs_num2b][1] = des_app2
+							legs_data2b[legs_num2b][2] = math.rad((rnw_data[idx_rec][8]+ mag_variation_deg(rnw_data[idx_rec][3], rnw_data[idx_rec][4])) % 360)		-- brg
+							legs_data2b[legs_num2b][3] = 0		-- distance
+							legs_data2b[legs_num2b][4] = 0		-- speed
+							legs_data2b[legs_num2b][5] = des_icao_alt		-- altitude
+							legs_data2b[legs_num2b][6] = 0	-- altitude type
+							legs_data2b[legs_num2b][7] = rnw_data[idx_rec][3]		-- latitude
+							legs_data2b[legs_num2b][8] = rnw_data[idx_rec][4]		-- longitude
+							legs_data2b[legs_num2b][9] = des_app2	--des_icao_x			-- via id
+							legs_data2b[legs_num2b][10] = 0		-- calc speed
+							legs_data2b[legs_num2b][11] = 0		-- calc altitude
+							legs_data2b[legs_num2b][12] = 0		-- calc altitude vnav pth
+							legs_data2b[legs_num2b][13] = 0
+							legs_data2b[legs_num2b][14] = 0		-- rest alt
+							legs_data2b[legs_num2b][15] = 0		-- last fuel
+							legs_data2b[legs_num2b][16] = ""
+							legs_data2b[legs_num2b][17] = 200		-- 1 - FAF
+							--legs_data2b[legs_num2b][18] = math.rad(rnw_data[idx_rec][8])
+							legs_data2b[legs_num2b][18] = math.rad((rnw_data[idx_rec][8] - mag_variation_deg(rnw_data[idx_rec][3], rnw_data[idx_rec][4])) % 360)		-- brg
+							legs_data2b[legs_num2b][19] = 7		-- 0-none, 1-SID, 2-STAR, 3-APP
+							legs_data2b[legs_num2b][20] = nd_fpa
+							legs_data2b[legs_num2b][21] = -1
+							legs_data2b[legs_num2b][22] = ""
+							legs_data2b[legs_num2b][23] = 0
+							legs_data2b[legs_num2b][24] = 0
+							legs_data2b[legs_num2b][25] = 0
+							legs_data2b[legs_num2b][26] = 0
+							legs_data2b[legs_num2b][27] = ""
+							legs_data2b[legs_num2b][28] = ""
+							legs_data2b[legs_num2b][29] = ""
+							legs_data2b[legs_num2b][30] = ""
+							legs_data2b[legs_num2b][31] = ""
+							legs_data2b[legs_num2b][32] = 0
+							legs_data2b[legs_num2b][33] = ""
+							legs_data2b[legs_num2b][34] = ""
+							legs_data2b[legs_num2b][35] = ""
+							legs_data2b[legs_num2b][36] = 4
+							legs_data2b[legs_num2b][37] = 0
+							legs_data2b[legs_num2b][38] = ""
+							legs_data2b[legs_num2b][39] = ""
+							legs_data2b[legs_num2b][40] = 0
+							legs_data2b[legs_num2b][41] = 0
+							break
+						end
+					end
+				end
+			end
+		end
+	end
+	
 	if add_ok == 1 and rte_add_app_act == 3 then
 		rte_pasteb(legs_num2b + 1)
 	end
@@ -14124,6 +14208,67 @@ function rte_add_app2()
 		rte_add_app_act = 4
 	end
 	
+end
+
+
+-- add ruwnway extension wpt RX...
+function rte_add_rw_ext(rx_lat, rx_lon, rx_brg, rx_alt)
+
+	local nd_dis = 0
+	local nd_fpa = tonumber(rw_ext_fpa)
+	
+	if nd_fpa == nil then
+		nd_fpa = 3.00
+	end
+	
+	nd_dis = tonumber(rw_ext_dist)	-- / 3440.064795					-- distance NM
+	calc_brg_dist(rx_lat, rx_lon, rx_brg, nd_dis)
+	
+	legs_num2b = legs_num2b + 1
+	legs_data2b[legs_num2b] = {}
+	legs_data2b[legs_num2b][1] = "RX" .. string.sub(des_app2, 3, -1)	--entry
+	legs_data2b[legs_num2b][2] = 0		-- brg
+	legs_data2b[legs_num2b][3] = 0		-- distance
+	legs_data2b[legs_num2b][4] = 0		-- speed
+	legs_data2b[legs_num2b][5] = 0		-- altitude fpa
+	legs_data2b[legs_num2b][5] = math.floor(rx_alt + ((nd_dis * (math.tan(math.rad(nd_fpa)))) * 6076.11549))	-- in ft
+	legs_data2b[legs_num2b][6] = 0	-- altitude type
+	legs_data2b[legs_num2b][7] = calc_lat	-- latitude
+	legs_data2b[legs_num2b][8] = calc_lon	-- longitude
+	legs_data2b[legs_num2b][9] = des_app2	--"DIRECT"			-- via id
+	legs_data2b[legs_num2b][10] = 0		-- calc speed
+	legs_data2b[legs_num2b][11] = 0		-- calc altitude
+	legs_data2b[legs_num2b][12] = 0		-- calc altitude vnav pth
+	legs_data2b[legs_num2b][13] = 0
+	legs_data2b[legs_num2b][14] = 0		-- rest alt
+	legs_data2b[legs_num2b][15] = 0		-- last fuel
+	legs_data2b[legs_num2b][16] = "" --navaid_list[1][8]		-- reg code
+	legs_data2b[legs_num2b][17] = 201		-- FAF
+	legs_data2b[legs_num2b][18] = 0		-- alt flag 0-default restrict, 1-custom restrict
+	legs_data2b[legs_num2b][19] = 7		-- 0-none, 1-SID, 2-STAR/APP, 7 - APP
+	legs_data2b[legs_num2b][20] = -nd_fpa
+	legs_data2b[legs_num2b][21] = -1
+	legs_data2b[legs_num2b][22] = ""
+	legs_data2b[legs_num2b][23] = 0
+	legs_data2b[legs_num2b][24] = 0
+	legs_data2b[legs_num2b][25] = 0
+	legs_data2b[legs_num2b][26] = 0
+	legs_data2b[legs_num2b][27] = ""
+	legs_data2b[legs_num2b][28] = ""
+	legs_data2b[legs_num2b][29] = ""
+	legs_data2b[legs_num2b][30] = ""
+	legs_data2b[legs_num2b][31] = ""
+	legs_data2b[legs_num2b][32] = 0
+	legs_data2b[legs_num2b][33] = ""
+	legs_data2b[legs_num2b][34] = ""
+	legs_data2b[legs_num2b][35] = ""
+	legs_data2b[legs_num2b][36] = 4
+	legs_data2b[legs_num2b][37] = 0
+	legs_data2b[legs_num2b][38] = ""
+	legs_data2b[legs_num2b][39] = ""
+	legs_data2b[legs_num2b][40] = 0
+	legs_data2b[legs_num2b][41] = 0
+
 end
 
 
@@ -17060,7 +17205,11 @@ function B738_find_rnav()
 					alt_ed = legs_data[ii][5]
 					alt_type_ed = legs_data[ii][6]
 					-- find first and last RNAV wpt
-					rnav_idx_first = idx_ed + 1
+					if des_app_rw_only == 0 then
+						rnav_idx_first = idx_ed + 1
+					else
+						rnav_idx_first = idx_ed
+					end
 					if rnav_idx_first > legs_num then
 						rnav_idx_first = 0
 					else
@@ -17174,7 +17323,11 @@ function B738_find_rnav_mod()
 					alt_ed_mod = legs_data2[ii][5]
 					alt_type_ed_mod = legs_data2[ii][6]
 					-- find first and last RNAV wpt
-					rnav_idx_first_mod = idx_ed_mod + 1
+					if des_app_rw_only == 0 then
+						rnav_idx_first_mod = idx_ed_mod + 1
+					else
+						rnav_idx_first_mod = idx_ed_mod
+					end
 					if rnav_idx_first_mod > legs_num2 then
 						rnav_idx_first_mod = 0
 					else
@@ -20948,10 +21101,10 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 		elseif page_offset == 1 then
 			local strlen = string.len(entry)
 			local n = 0
-			if strlen < 3 then
-				add_fmc_msg(INVALID_INPUT, 1)
-			else
-				if entry == ">DELETE" then
+			if entry == ">DELETE" then
+				if offset_dist == 0 then
+					entry = INVALID_DELETE
+				else
 					offset_act = 0
 					offset_start = 0
 					offset_end = 0
@@ -20961,43 +21114,45 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 					copy_to_legsdata_3()
 					copy_to_legsdata2()
 					create_fpln()
-					
 					entry = ""
-				elseif strlen == 3 or strlen == 5 then
-					if string.sub(entry, 1, 1) == "L" then
-						offset_side = 1
-						n = tonumber(string.sub(entry, 2, -1))
-					elseif string.sub(entry, -1, -1) == "L" then
-						offset_side = 1
-						n = tonumber(string.sub(entry, 1, -2))
-					elseif string.sub(entry, 1, 1) == "R" then
-						offset_side = 2
-						n = tonumber(string.sub(entry, 2, -1))
-					elseif string.sub(entry, -1, -1) == "R" then
-						offset_side = 2
-						n = tonumber(string.sub(entry, 1, -2))
-					else
-						add_fmc_msg(INVALID_INPUT, 1)
-					end
-					if offset_side ~= 0 then
-						if n == nil then
-							add_fmc_msg(INVALID_INPUT, 1)
-						else
-							if n > 0 and n < 50 then
-								offset_dist = n
-								entry = ""
-								offset_act = 1
-								if offset_dist ~= 0 and offset_start ~= 0 and offset_end ~= 0 then
-									offset_act = 2
-								end
-							else
-								add_fmc_msg(INVALID_INPUT, 1)
-							end
-						end
-					end
+				end
+			--elseif strlen == 3 or strlen == 5 then
+			elseif strlen > 1 and strlen < 6 then
+				if string.sub(entry, 1, 1) == "L" then
+					offset_side = 1
+					n = tonumber(string.sub(entry, 2, -1))
+				elseif string.sub(entry, -1, -1) == "L" then
+					offset_side = 1
+					n = tonumber(string.sub(entry, 1, -2))
+				elseif string.sub(entry, 1, 1) == "R" then
+					offset_side = 2
+					n = tonumber(string.sub(entry, 2, -1))
+				elseif string.sub(entry, -1, -1) == "R" then
+					offset_side = 2
+					n = tonumber(string.sub(entry, 1, -2))
 				else
 					add_fmc_msg(INVALID_INPUT, 1)
 				end
+				if offset_side ~= 0 then
+					if n == nil then
+						add_fmc_msg(INVALID_INPUT, 1)
+						offset_side = 0
+					else
+						if n > 0 and n < 50 then
+							offset_dist = n
+							entry = ""
+							offset_act = 1
+							if offset_dist ~= 0 and offset_start ~= 0 and offset_end ~= 0 then
+								offset_act = 2
+							end
+						else
+							add_fmc_msg(INVALID_INPUT, 1)
+							offset_side = 0
+						end
+					end
+				end
+			else
+				add_fmc_msg(INVALID_INPUT, 1)
 			end
 		elseif page_menu == 1 then
 			-- go to ACARS
@@ -24156,6 +24311,8 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 				end
 			else
 				des_app2 = "------"
+				rw_ext_dist = "--.-"
+				rw_ext_fpa = "-.--"
 				if des_star2 == "------" then
 					create_star_list()
 				end
@@ -24944,19 +25101,59 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 					act_page = 1
 					des_app_exec = 1
 					create_app_tns_list()
+				else
+					if simDR_glideslope_status == 0 then
+						if B738DR_fms_ils_disable == 0 then
+							B738DR_fms_ils_disable = 1
+						else
+							B738DR_fms_ils_disable = 0
+						end
+					end
 				end
 			else
-				if des_app_tns2 == "------" then
-					if des_tns_sel[2] ~= "------" then
-						des_app_tns2 = des_tns_sel[2]
-						act_page = 1
-						des_app_tns_exec = 1
+				if simDR_glideslope_status == 0 then
+					if B738DR_fms_ils_disable == 0 then
+						B738DR_fms_ils_disable = 1
+					else
+						B738DR_fms_ils_disable = 0
 					end
-				else
-					des_app_tns2 = "------"
-					act_page = 1
-					des_app_tns_exec = 1
 				end
+				-- if des_app_tns2 == "------" then
+					-- if des_tns_sel[2] ~= "------" then
+						-- des_app_tns2 = des_tns_sel[2]
+						-- act_page = 1
+						-- des_app_tns_exec = 1
+					-- end
+					-- if des_app_tns_list_num == 0 then
+						-- if simDR_glideslope_status == 0 then
+							-- if B738DR_fms_ils_disable == 0 then
+								-- B738DR_fms_ils_disable = 1
+							-- else
+								-- B738DR_fms_ils_disable = 0
+							-- end
+						-- end
+					-- end
+				-- else
+					-- if simDR_glideslope_status == 0 then
+						-- if B738DR_fms_ils_disable == 0 then
+							-- B738DR_fms_ils_disable = 1
+						-- else
+							-- B738DR_fms_ils_disable = 0
+						-- end
+					-- end
+				-- end
+				
+				-- if des_app_tns2 == "------" then
+					-- if des_tns_sel[2] ~= "------" then
+						-- des_app_tns2 = des_tns_sel[2]
+						-- act_page = 1
+						-- des_app_tns_exec = 1
+					-- end
+				-- else
+					-- des_app_tns2 = "------"
+					-- act_page = 1
+					-- des_app_tns_exec = 1
+				-- end
 			end
 			rte_add_dep_arr()
 		elseif page_dep_arr == 1 then
@@ -25377,6 +25574,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 			end
 			rte_add_dep_arr()
 		elseif page_arr == 1 then
+			local n = 0
 			if des_app2 == "------" then
 				if des_app_sel[3] ~= "------" then
 					des_app2 = des_app_sel[3]
@@ -25387,33 +25585,40 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 					des_app_exec = 1
 					create_app_tns_list()
 				end
+				rte_add_dep_arr()
 			else
-				if des_app_tns2 == "------" then
-					if des_tns_sel[3] ~= "------" then
-						des_app_tns2 = des_tns_sel[3]
+				if des_app_rw_only == 0 then
+					if des_app_tns2 == "------" then
+						if des_tns_sel[3] ~= "------" then
+							des_app_tns2 = des_tns_sel[3]
+							act_page = 1
+							des_app_tns_exec = 1
+						end
+					else
+						des_app_tns2 = "------"
 						act_page = 1
 						des_app_tns_exec = 1
 					end
-					if des_app_tns_list_num == 0 then
-						if simDR_glideslope_status == 0 then
-							if B738DR_fms_ils_disable == 0 then
-								B738DR_fms_ils_disable = 1
-							else
-								B738DR_fms_ils_disable = 0
-							end
-						end
-					end
+					rte_add_dep_arr()
 				else
-					if simDR_glideslope_status == 0 then
-						if B738DR_fms_ils_disable == 0 then
-							B738DR_fms_ils_disable = 1
+					-- rwy extension distance RX...
+					n = tonumber(entry)
+					if n == nil then
+						add_fmc_msg(INVALID_INPUT, 1)
+					else
+						if n >= 1 and n <= 25 then
+							rw_ext_dist = string.format("%4.1f", entry)
+							entry = ""
+							des_app2_old = "------"
+							des_app_exec = 1
+							rte_add_dep_arr()
 						else
-							B738DR_fms_ils_disable = 0
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					end
 				end
 			end
-			rte_add_dep_arr()
+			--rte_add_dep_arr()
 		elseif page_rte_init == 1 then
 			if act_page == 1 then
 				--save route
@@ -25992,16 +26197,42 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 					des_app_exec = 1
 					create_app_tns_list()
 				end
+				rte_add_dep_arr()
 			else
-				if des_app_tns2 == "------" then
-					if des_tns_sel[4] ~= "------" then
-						des_app_tns2 = des_tns_sel[4]
-						act_page = 1
-						des_app_tns_exec = 1
+				if des_app_rw_only == 0 then
+					if des_app_tns2 == "------" then
+						if des_tns_sel[4] ~= "------" then
+							des_app_tns2 = des_tns_sel[4]
+							act_page = 1
+							des_app_tns_exec = 1
+						end
+					end
+					rte_add_dep_arr()
+				else
+					-- rwy extension fpa RX...
+					n = tonumber(entry)
+					if entry == ">DELETE" then
+						rw_ext_fpa = "-.--"
+						entry = ""
+						des_app2_old = "------"
+						des_app_exec = 1
+						rte_add_dep_arr()
+					elseif n == nil then
+						add_fmc_msg(INVALID_INPUT, 1)
+					else
+						if n >= 2.0 and n <= 5.5 then
+							rw_ext_fpa = string.format("%4.2f", entry)
+							entry = ""
+							des_app2_old = "------"
+							des_app_exec = 1
+							rte_add_dep_arr()
+						else
+							add_fmc_msg(INVALID_INPUT, 1)
+						end
 					end
 				end
 			end
-			rte_add_dep_arr()
+			--rte_add_dep_arr()
 		elseif page_rte_init == 1 then
 			if act_page > 1 then
 				local item = 0
@@ -32882,10 +33113,10 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 		elseif page_offset2 == 1 then
 			local strlen = string.len(entry2)
 			local n = 0
-			if strlen < 3 then
-				add_fmc_msg(INVALID_INPUT, 1)
-			else
-				if entry2 == ">DELETE" then
+			if entry2 == ">DELETE" then
+				if offset_dist == 0 then
+					entry2 = INVALID_DELETE
+				else
 					offset_act = 0
 					offset_start = 0
 					offset_end = 0
@@ -32895,43 +33126,45 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 					copy_to_legsdata_3()
 					copy_to_legsdata2()
 					create_fpln()
-					
 					entry2 = ""
-				elseif strlen == 3 or strlen == 5 then
-					if string.sub(entry2, 1, 1) == "L" then
-						offset_side = 1
-						n = tonumber(string.sub(entry2, 2, -1))
-					elseif string.sub(entry2, -1, -1) == "L" then
-						offset_side = 1
-						n = tonumber(string.sub(entry2, 1, -2))
-					elseif string.sub(entry2, 1, 1) == "R" then
-						offset_side = 2
-						n = tonumber(string.sub(entry2, 2, -1))
-					elseif string.sub(entry2, -1, -1) == "R" then
-						offset_side = 2
-						n = tonumber(string.sub(entry2, 1, -2))
-					else
-						add_fmc_msg(INVALID_INPUT, 1)
-					end
-					if offset_side ~= 0 then
-						if n == nil then
-							add_fmc_msg(INVALID_INPUT, 1)
-						else
-							if n > 0 and n < 50 then
-								offset_dist = n
-								entry2 = ""
-								offset_act = 1
-								if offset_dist ~= 0 and offset_start ~= 0 and offset_end ~= 0 then
-									offset_act = 2
-								end
-							else
-								add_fmc_msg(INVALID_INPUT, 1)
-							end
-						end
-					end
+				end
+			--elseif strlen == 3 or strlen == 5 then
+			elseif strlen > 1 and strlen < 6 then
+				if string.sub(entry2, 1, 1) == "L" then
+					offset_side = 1
+					n = tonumber(string.sub(entry2, 2, -1))
+				elseif string.sub(entry2, -1, -1) == "L" then
+					offset_side = 1
+					n = tonumber(string.sub(entry2, 1, -2))
+				elseif string.sub(entry2, 1, 1) == "R" then
+					offset_side = 2
+					n = tonumber(string.sub(entry2, 2, -1))
+				elseif string.sub(entry2, -1, -1) == "R" then
+					offset_side = 2
+					n = tonumber(string.sub(entry2, 1, -2))
 				else
 					add_fmc_msg(INVALID_INPUT, 1)
 				end
+				if offset_side ~= 0 then
+					if n == nil then
+						add_fmc_msg(INVALID_INPUT, 1)
+						offset_side = 0
+					else
+						if n > 0 and n < 50 then
+							offset_dist = n
+							entry2 = ""
+							offset_act = 1
+							if offset_dist ~= 0 and offset_start ~= 0 and offset_end ~= 0 then
+								offset_act = 2
+							end
+						else
+							add_fmc_msg(INVALID_INPUT, 1)
+							offset_side = 0
+						end
+					end
+				end
+			else
+				add_fmc_msg(INVALID_INPUT, 1)
 			end
 		elseif page_menu2 == 1 then
 			-- go to ACARS
@@ -36090,6 +36323,8 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 				end
 			else
 				des_app2 = "------"
+				rw_ext_dist = "--.-"
+				rw_ext_fpa = "-.--"
 				if des_star2 == "------" then
 					create_star_list()
 				end
@@ -36878,21 +37113,89 @@ function B738_fmc2_2R_CMDhandler(phase, duration)
 					act_page2 = 1
 					des_app_exec = 1
 					create_app_tns_list()
+				else
+					if simDR_glideslope_status == 0 then
+						if B738DR_fms_ils_disable == 0 then
+							B738DR_fms_ils_disable = 1
+						else
+							B738DR_fms_ils_disable = 0
+						end
+					end
 				end
 			else
-				if des_app_tns2 == "------" then
-					if des_tns_sel[2] ~= "------" then
-						des_app_tns2 = des_tns_sel[2]
-						act_page2 = 1
-						des_app_tns_exec = 1
+				if simDR_glideslope_status == 0 then
+					if B738DR_fms_ils_disable == 0 then
+						B738DR_fms_ils_disable = 1
+					else
+						B738DR_fms_ils_disable = 0
 					end
-				else
-					des_app_tns2 = "------"
-					act_page2 = 1
-					des_app_tns_exec = 1
 				end
+				-- if des_app_tns2 == "------" then
+					-- if des_tns_sel[2] ~= "------" then
+						-- des_app_tns2 = des_tns_sel[2]
+						-- act_page = 1
+						-- des_app_tns_exec = 1
+					-- end
+					-- if des_app_tns_list_num == 0 then
+						-- if simDR_glideslope_status == 0 then
+							-- if B738DR_fms_ils_disable == 0 then
+								-- B738DR_fms_ils_disable = 1
+							-- else
+								-- B738DR_fms_ils_disable = 0
+							-- end
+						-- end
+					-- end
+				-- else
+					-- if simDR_glideslope_status == 0 then
+						-- if B738DR_fms_ils_disable == 0 then
+							-- B738DR_fms_ils_disable = 1
+						-- else
+							-- B738DR_fms_ils_disable = 0
+						-- end
+					-- end
+				-- end
+				
+				-- if des_app_tns2 == "------" then
+					-- if des_tns_sel[2] ~= "------" then
+						-- des_app_tns2 = des_tns_sel[2]
+						-- act_page2 = 1
+						-- des_app_tns_exec = 1
+					-- end
+				-- else
+					-- des_app_tns2 = "------"
+					-- act_page2 = 1
+					-- des_app_tns_exec = 1
+				-- end
 			end
 			rte_add_dep_arr()
+			
+			
+			
+			-- if des_app2 == "------" then
+				-- if des_app_sel[2] ~= "------" then
+					-- des_app2 = des_app_sel[2]
+					-- if des_star2 == "------" then
+						-- create_star_list()
+					-- end
+					-- des_app_tns2 = "------"
+					-- act_page2 = 1
+					-- des_app_exec = 1
+					-- create_app_tns_list()
+				-- end
+			-- else
+				-- if des_app_tns2 == "------" then
+					-- if des_tns_sel[2] ~= "------" then
+						-- des_app_tns2 = des_tns_sel[2]
+						-- act_page2 = 1
+						-- des_app_tns_exec = 1
+					-- end
+				-- else
+					-- des_app_tns2 = "------"
+					-- act_page2 = 1
+					-- des_app_tns_exec = 1
+				-- end
+			-- end
+			-- rte_add_dep_arr()
 		elseif page_dep_arr2 == 1 then
 			-- Destination ARR
 			if des_icao ~= "****" and des_icao ~= ref_icao and exec_load_fpln == 0 then
@@ -37321,33 +37624,40 @@ function B738_fmc2_3R_CMDhandler(phase, duration)
 					des_app_exec = 1
 					create_app_tns_list()
 				end
+				rte_add_dep_arr()
 			else
-				if des_app_tns2 == "------" then
-					if des_tns_sel[3] ~= "------" then
-						des_app_tns2 = des_tns_sel[3]
+				if des_app_rw_only == 0 then
+					if des_app_tns2 == "------" then
+						if des_tns_sel[3] ~= "------" then
+							des_app_tns2 = des_tns_sel[3]
+							act_page2 = 1
+							des_app_tns_exec = 1
+						end
+					else
+						des_app_tns2 = "------"
 						act_page2 = 1
 						des_app_tns_exec = 1
 					end
-					if des_app_tns_list_num == 0 then
-						if simDR_glideslope_status == 0 then
-							if B738DR_fms_ils_disable == 0 then
-								B738DR_fms_ils_disable = 1
-							else
-								B738DR_fms_ils_disable = 0
-							end
-						end
-					end
+					rte_add_dep_arr()
 				else
-					if simDR_glideslope_status == 0 then
-						if B738DR_fms_ils_disable == 0 then
-							B738DR_fms_ils_disable = 1
+					-- rwy extension distance RX...
+					n = tonumber(entry2)
+					if n == nil then
+						add_fmc_msg(INVALID_INPUT, 1)
+					else
+						if n >= 1 and n <= 25 then
+							rw_ext_dist = string.format("%4.1f", entry2)
+							entry2 = ""
+							des_app2_old = "------"
+							des_app_exec = 1
+							rte_add_dep_arr()
 						else
-							B738DR_fms_ils_disable = 0
+							add_fmc_msg(INVALID_INPUT, 1)
 						end
 					end
 				end
 			end
-			rte_add_dep_arr()
+			--rte_add_dep_arr()
 		elseif page_rte_init2 == 1 then
 			if act_page2 == 1 then
 				--save route
@@ -37926,16 +38236,42 @@ function B738_fmc2_4R_CMDhandler(phase, duration)
 					des_app_exec = 1
 					create_app_tns_list()
 				end
+				rte_add_dep_arr()
 			else
-				if des_app_tns2 == "------" then
-					if des_tns_sel[4] ~= "------" then
-						des_app_tns2 = des_tns_sel[4]
-						act_page2 = 1
-						des_app_tns_exec = 1
+				if des_app_rw_only == 0 then
+					if des_app_tns2 == "------" then
+						if des_tns_sel[4] ~= "------" then
+							des_app_tns2 = des_tns_sel[4]
+							act_page2 = 1
+							des_app_tns_exec = 1
+						end
+					end
+					rte_add_dep_arr()
+				else
+					-- rwy extension fpa RX...
+					n = tonumber(entry2)
+					if entry2 == ">DELETE" then
+						rw_ext_fpa = "-.--"
+						entry2 = ""
+						des_app2_old = "------"
+						des_app_exec = 1
+						rte_add_dep_arr()
+					elseif n == nil then
+						add_fmc_msg(INVALID_INPUT, 1)
+					else
+						if n >= 2.0 and n <= 5.5 then
+							rw_ext_fpa = string.format("%4.2f", entry2)
+							entry2 = ""
+							des_app2_old = "------"
+							des_app_exec = 1
+							rte_add_dep_arr()
+						else
+							add_fmc_msg(INVALID_INPUT, 1)
+						end
 					end
 				end
 			end
-			rte_add_dep_arr()
+			--rte_add_dep_arr()
 		elseif page_rte_init2 == 1 then
 			if act_page2 > 1 then
 				local item = 0
@@ -43027,6 +43363,9 @@ function B738_fmc_dep99(exec_light_in)
 			left_line[1] = ref_sid2 .. " " .. sel_act
 			max_page_sid = 1
 		end
+		if sid_list_num == 0 then
+			left_line[1] = "-NONE-"
+		end
 		
 		-- Create Transitions
 		if ref_sid2 ~= "------" then
@@ -43318,6 +43657,8 @@ function create_des_app_list()
 	des_app_list = {}
 	des_app_list_num = 0
 	
+	des_app_rw_only = 0
+	
 	if arr_data == 0 then	-- Des ICAO
 	
 		if data_des_app_n > 0 then
@@ -43414,9 +43755,9 @@ function create_des_app_list()
 					end
 				end
 			end
-			
 		else
 			if des_rnw_list_num > 0 then
+				des_app_rw_only = 1
 				for ii = 1, des_rnw_list_num do
 					des_app_list_num = des_app_list_num + 1
 					des_app_list[des_app_list_num] = {}
@@ -43530,6 +43871,7 @@ function create_des_app_list()
 			
 		else
 			if ref_rnw_list_num2 > 0 then
+				des_app_rw_only = 1
 				for ii = 1, ref_rnw_list_num2 do
 					des_app_list_num = des_app_list_num + 1
 					des_app_list[des_app_list_num] = {}
@@ -43650,6 +43992,9 @@ function B738_fmc_arr99(exec_light_in)
 		else
 			left_line[1] = des_star2 .. " " .. sel_act
 			max_page_star = 1
+		end
+		if star_list_num == 0 then
+			left_line[1] = "-NONE-"
 		end
 		
 		-- Create STAR Transitions
@@ -43824,7 +44169,7 @@ function B738_fmc_arr99(exec_light_in)
 		end
 		
 		-- Create APP Transitions
-		if des_app2 ~= "------" then
+		if des_app2 ~= "------" and des_app_rw_only == 0 then
 			line2_x = line2_x .. "       TRANS"
 			
 			if des_app_tns_list_num == 0 then
@@ -43836,8 +44181,8 @@ function B738_fmc_arr99(exec_light_in)
 				--line2_x = line2_x .. "       TRANS"
 				right_line[2] = "-NONE-"
 			else
-				jj = math.floor(des_app_tns_list_num / 4)
-				kk = des_app_tns_list_num % 4
+				jj = math.floor(des_app_tns_list_num / 3)
+				kk = des_app_tns_list_num % 3
 				if kk > 0 then
 					max_page_tns = jj + 1
 				else
@@ -43845,12 +44190,14 @@ function B738_fmc_arr99(exec_light_in)
 				end
 				
 				if des_app_tns2 == "------" then
-					des_tns_sel[1] = "------"
-					kk = (act_page - 1) * 4
+					--des_tns_sel[1] = "------"
+					kk = (act_page - 1) * 3
 					
 					des_tns_sel[1] = "------"
+					des_tns_sel[2] = "------"
 					
-					for ii = 2, 5 do
+					--for ii = 2, 5 do
+					for ii = 3, 5 do
 						jj = kk + ii - 1
 						if jj > des_app_tns_list_num then
 							right_line[ii] = ""
@@ -43861,7 +44208,7 @@ function B738_fmc_arr99(exec_light_in)
 						end
 					end
 				else
-					right_line[2] = sel_act .. des_app_tns2
+					right_line[3] = sel_act .. des_app_tns2
 					max_page_tns = 1
 				end
 			end
@@ -43870,26 +44217,49 @@ function B738_fmc_arr99(exec_light_in)
 		end
 		
 		if des_app2 ~= "------" then
-			if set_ils == 0 then
-				set_ils = 1
-				if string.sub(des_app2, 1, 1) == "I" then
-					B738DR_fms_ils_disable = 0
+			if des_app_rw_only == 0 then
+				if set_ils == 0 then
+					set_ils = 1
+					if string.sub(des_app2, 1, 1) == "I" then
+						B738DR_fms_ils_disable = 0
+					else
+						B738DR_fms_ils_disable = 1
+					end
+				end
+				line2_x = "                    G/S "
+				if B738DR_fms_ils_disable == 0 then
+					right_line[2] = "  /   >"
+					line2_g = "                 ON     "
+					line2_s = "                    OFF "
 				else
+					right_line[2] = "  /   >"
+					line2_g = "                    OFF "
+					line2_s = "                 ON     "
+				end
+			else
+				-- runway extension
+				if set_ils == 0 then
+					set_ils = 1
 					B738DR_fms_ils_disable = 1
 				end
+				line3_x = "                 RWY EXT"
+				right_line[3] = rw_ext_dist .. "  "
+				line3_s = "                      NM"
+				line4_x = "                     FPA"
+				right_line[4] = rw_ext_fpa
 			end
-			if des_app_tns2 ~= "------" or des_app_tns_list_num == 0 then
-				line3_x = "                    G/S "
-				if B738DR_fms_ils_disable == 0 then
-					right_line[3] = "  /   >"
-					line3_g = "                 ON     "
-					line3_s = "                    OFF "
-				else
-					right_line[3] = "  /   >"
-					line3_g = "                    OFF "
-					line3_s = "                 ON     "
-				end
-			end
+			-- if des_app_tns2 ~= "------" or des_app_tns_list_num == 0 then
+				-- line3_x = "                    G/S "
+				-- if B738DR_fms_ils_disable == 0 then
+					-- right_line[3] = "  /   >"
+					-- line3_g = "                 ON     "
+					-- line3_s = "                    OFF "
+				-- else
+					-- right_line[3] = "  /   >"
+					-- line3_g = "                    OFF "
+					-- line3_s = "                 ON     "
+				-- end
+			-- end
 		else
 			B738DR_fms_ils_disable = 0
 			set_ils = 0
@@ -44434,7 +44804,8 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 		local jj = 0
 		local kk = 0
 		local ll = 0
-		--local lll = 0
+		
+		local gp_legs_not_active = 0
 		
 		local max_page_legs = 0
 		
@@ -44586,12 +44957,19 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 								left_line_x[ii] = left_line_x[ii] .. "---"
 							else
 								if simDR_fmc_dist < 10 then
-									left_line_x[ii] = left_line_x[ii] .. string.format("%3.1f",simDR_fmc_dist)
+									left_line_x[ii] = left_line_x[ii] .. string.format("%4.1f",simDR_fmc_dist)
 								else
-									left_line_x[ii] = left_line_x[ii] .. string.format("%3d",simDR_fmc_dist)
+									left_line_x[ii] = left_line_x[ii] .. string.format("%4d",simDR_fmc_dist)
 								end
 							end
 							left_line_x[ii] = left_line_x[ii] .. "NM"
+							-- GP
+							if string.sub(des_app2, 1, 1) == "I" and B738DR_fms_ils_disable == 0 then
+								gp_legs_not_active = 1
+							end
+							if legs_data2[jj][20] ~= 0 and string.sub(legs_data2[jj][1], 1, 2) == "RW" and gp_legs_not_active == 0 then
+								left_line_x[ii] = left_line_x[ii] .. " GP" .. string.format("%4.2f", -legs_data2[jj][20]) .. "`"
+							end
 							-- id
 							if legs_data2[jj][1] == "DISCONTINUITY" then
 								left_line_x[ii] = " THEN"
@@ -44810,11 +45188,18 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									-- distance
 									if legs_data2[jj][3] > 0 then
 										if legs_data2[jj][3] < 10 then
-											left_line_x[ii] = left_line_x[ii] .. string.format("%3.1f",legs_data2[jj][3])
+											left_line_x[ii] = left_line_x[ii] .. string.format("%4.1f",legs_data2[jj][3])
 										else
-											left_line_x[ii] = left_line_x[ii] .. string.format("%3d",legs_data2[jj][3])
+											left_line_x[ii] = left_line_x[ii] .. string.format("%4d",legs_data2[jj][3])
 										end
 										left_line_x[ii] = left_line_x[ii] .. "NM"
+									end
+									-- GP
+									if string.sub(des_app2, 1, 1) == "I" and B738DR_fms_ils_disable == 0 then
+										gp_legs_not_active = 1
+									end
+									if legs_data2[jj][20] ~= 0 and string.sub(legs_data2[jj][1], 1, 2) == "RW" and gp_legs_not_active == 0 then
+										left_line_x[ii] = left_line_x[ii] .. " GP" .. string.format("%4.2f", -legs_data2[jj][20]) .. "`"
 									end
 								else
 									left_line_x[ii] = " HOLD "
@@ -58364,7 +58749,8 @@ function wind_pth(wpt_brg, wind_over, wind_pred)
 		wc_speed = math.min(wc_speed, 200)
 		wc_speed = math.max(wc_speed, -200)
 		
-		result = B738_rescale(-200, 1.15, 200, 0.85, wc_speed)
+		--result = B738_rescale(-200, 1.20, 200, 0.80, wc_speed)
+		result = B738_rescale(-200, 1.05, 200, 0.95, wc_speed)
 	else
 		result = 1
 	end
@@ -71339,8 +71725,10 @@ temp_ils4 = ""
 	atis_send_time = "     "
 	receive_msg = 0
 	x_delay = 0
+	rw_ext_dist = "--.-"
+	rw_ext_fpa = "-.--"
 	
-	version = "v3.26i"
+	version = "v3.26j"
 
 end
 

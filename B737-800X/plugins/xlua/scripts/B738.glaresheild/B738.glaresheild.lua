@@ -458,6 +458,7 @@ ghust_spd = 0
 ghust_detect = 0
 ghust_detect2 = 0
 block_ghust = 0
+ghust_detect_block = 0
 --SPD_ratio2 = 0
 
 altitude_mode_old = 0
@@ -555,6 +556,8 @@ simDR_hsi_crs2					= find_dataref("sim/cockpit2/radios/actuators/hsi_obs_deg_mag
 simDR_brake						= find_dataref("sim/cockpit2/controls/parking_brake_ratio")
 simDR_autobrake_level			= find_dataref("sim/cockpit2/switches/auto_brake_level")
 simDR_airspeed_pilot			= find_dataref("sim/cockpit2/gauges/indicators/airspeed_kts_pilot")
+simDR_airspeed_mach_pilot		= find_dataref("sim/cockpit2/gauges/indicators/mach_pilot")
+simDR_airspeed_accel_pilot		= find_dataref("sim/cockpit2/gauges/indicators/airspeed_acceleration_kts_sec_pilot")
 simDR_altitude_pilot			= find_dataref("sim/cockpit2/gauges/indicators/altitude_ft_pilot")
 simDR_airspeed_copilot			= find_dataref("sim/cockpit2/gauges/indicators/airspeed_kts_copilot")
 simDR_altitude_copilot			= find_dataref("sim/cockpit2/gauges/indicators/altitude_ft_copilot")
@@ -6250,7 +6253,7 @@ function B738_PFD_flash2()
 		blink_rec_thr2_status = 1
 	end
 	
-	if B738DR_pfd_spd_mode == 0 then
+	if B738DR_pfd_spd_mode == 0 or B738DR_autopilot_autothr_arm_pos == 0 then
 		if is_timer_scheduled(rec_thr_timer) == true then
 			stop_timer(rec_thr_timer)
 		end
@@ -9361,16 +9364,26 @@ function B738_vnav6()
 						if vnav_alt_mode == 0 then
 						
 							if B738DR_vnav_desc_spd_disable == 0 then
-								-- if vnav_desc_spd == 0 then
-									-- if B738DR_vnav_alt_err > -100 and B738DR_vnav_alt_err < 125 then
-										-- if simDR_autopilot_altitude_mode ~= 5 and simDR_glideslope_status == 0 then
-											-- simCMD_autopilot_lvl_chg:once()
-											-- at_mode = 7
-											-- vnav_desc_spd = 1	-- change to VNAV SPD
-										-- end
-									-- end
-								-- else
-								if vnav_desc_spd ~= 0 then
+								if vnav_desc_spd == 0 then
+									if B738DR_thrust1_leveler == 0 and B738DR_thrust2_leveler == 0 then
+										if simDR_airspeed_is_mach == 0 then
+											delta_alt_dial = simDR_airspeed_pilot - vnav_speed_trg
+										else
+											delta_alt_dial = (simDR_airspeed_mach_pilot - vnav_speed_trg) * 150
+										end
+										if delta_alt_dial < 0 then
+											delta_alt_dial = -delta_alt_dial
+										end
+										if delta_alt_dial < 3 and B738DR_vnav_alt_err > -50 and B738DR_vnav_alt_err < 50 then
+											if simDR_autopilot_altitude_mode ~= 5 and simDR_autopilot_altitude_mode ~= 6 and simDR_glideslope_status == 0 then
+												simCMD_autopilot_lvl_chg:once()
+												at_mode = 7
+												vnav_desc_spd = 1	-- change to VNAV SPD
+											end
+										end
+									end
+								else
+								--if vnav_desc_spd ~= 0 then
 									if B738DR_ap_spd_interv_status == 0 then
 										if simDR_autopilot_altitude_mode ~= 6 then
 											if B738DR_vnav_alt_err < -350 or B738DR_vnav_alt_err > 350 then
@@ -9615,71 +9628,6 @@ function B738_vnav6()
 							vnav_speed_trg = B738DR_fmc_descent_speed_mach
 						end
 						
-						
-						
-						
-						
-						
-						-- -- if vnav_desc_spd == 0 then
-						
-							-- if simDR_airspeed_is_mach == 0 then
-								-- if B738DR_rest_wpt_spd > 0 then
-									-- if B738DR_mcp_speed_dial < 100 then
-										-- vnav_speed_trg = B738DR_rest_wpt_spd
-									-- else
-										-- if simDR_airspeed_dial ~= B738DR_rest_wpt_spd and simDR_dme_dist < decel_dist then
-											-- --vnav_speed_trg = B738DR_rest_wpt_spd
-											-- vnav_speed_trg = math.min(B738DR_rest_wpt_spd, spd_250_10000, B738DR_fmc_descent_speed)
-										-- end
-										-- if offset > B738DR_rest_wpt_spd_idx then
-											-- --vnav_speed_trg = B738DR_rest_wpt_spd
-											-- vnav_speed_trg = math.min(B738DR_rest_wpt_spd, spd_250_10000, B738DR_fmc_descent_speed)
-										-- end
-									-- end
-									-- if B738DR_pfd_flaps_up == 340 then
-										-- if B738DR_fmc_descent_speed < flaps_speed and flaps_speed < 340 then
-											-- vnav_speed_trg = flaps_speed
-										-- else
-											-- --vnav_speed_trg = B738DR_fmc_descent_speed
-											-- vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000)
-										-- end
-									-- else
-										-- if vnav_speed_trg < B738DR_pfd_flaps_up then
-											-- vnav_speed_trg = B738DR_pfd_flaps_up
-											-- if flaps_speed > B738DR_pfd_flaps_up then
-												-- flaps_speed = B738DR_pfd_flaps_up
-											-- end
-										-- end
-									-- end
-									-- -- if vnav_speed_trg < B738DR_pfd_flaps_up then
-										-- -- vnav_speed_trg = B738DR_pfd_flaps_up
-										-- -- if flaps_speed > B738DR_pfd_flaps_up then
-											-- -- flaps_speed = B738DR_pfd_flaps_up
-										-- -- end
-									-- -- end
-									-- vnav_speed_trg = math.min(vnav_speed_trg, spd_250_10000, flaps_speed)
-								-- else
-									-- if B738DR_calc_wpt_spd == 0 then
-										-- vnav_speed_trg = math.min(spd_250_10000, flaps_speed)
-									-- else
-										-- vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, flaps_speed)
-									-- end
-								-- end
-								-- if B738DR_fms_approach_speed > 0 then
-									-- vnav_speed_trg = math.max(vnav_speed_trg, (B738DR_fms_approach_speed + 5))
-								-- end
-							-- else
-								-- vnav_speed_trg = B738DR_fmc_descent_speed_mach
-							-- end
-						
-						-- else
-							-- if simDR_airspeed_is_mach == 0 then
-								-- vnav_speed_trg = B738DR_fmc_descent_speed
-							-- else
-								-- vnav_speed_trg = B738DR_fmc_descent_speed_mach
-							-- end
-						-- end
-
 					end
 				end
 				
@@ -14219,8 +14167,12 @@ function control_N1(N1_lim1, N1_lim2)
 	
 end
 
-function rst_ghust_detect()
+function rst_ghust_detect2()
 	ghust_detect2 = 0
+end
+
+function rst_ghust_detect()
+	ghust_detect_block = 0
 end
 
 function rst_block_ghust()
@@ -14268,18 +14220,29 @@ function control_SPD4()
 			if (actual_err > 8 or actual_err < -8) and (spd_ratio < -0.8 or spd_ratio > 0.8) then
 				ghust_detect = 0
 			end
+			if is_timer_scheduled(rst_ghust_detect) == true then
+				stop_timer(rst_ghust_detect)
+			end
+			run_after_time(rst_ghust_detect, 6)
+			ghust_detect_block = 1
 		else
-			if (actual_err > 5 or actual_err < -5) and (spd_ratio < -0.8 or spd_ratio > 0.8) then
-				ghust_detect = 0
+			if ghust_detect_block == 0 then
+				if (actual_err > 3 or actual_err < -3) and (spd_ratio < -0.8 or spd_ratio > 0.8) then
+					ghust_detect = 0
+				end
+			else
+				if (actual_err > 5 or actual_err < -5) and (spd_ratio < -0.8 or spd_ratio > 0.8) then
+					ghust_detect = 0
+				end
 			end
 		end
 	end
 	
 	if SPD_delta > 0.45 then
-		if is_timer_scheduled(rst_ghust_detect) == true then
-			stop_timer(rst_ghust_detect)
+		if is_timer_scheduled(rst_ghust_detect2) == true then
+			stop_timer(rst_ghust_detect2)
 		end
-		run_after_time(rst_ghust_detect, 5)
+		run_after_time(rst_ghust_detect2, 5)
 		ghust_detect2 = 1
 	end
 	
@@ -14412,6 +14375,7 @@ function B738_N1_thrust_manage4()
 				ghust_detect2 = 0
 				ghust_spd = 10
 				block_ghust = 0
+				ghust_detect_block = 0
 				-- SPD_err_old = 0
 				-- SPD_p = 0
 				-- SPD_i = 0
@@ -17293,15 +17257,13 @@ function B738_spd_ratio()
 			spd_ratio_num = 1
 		end
 		
-		spd_ratio = (simDR_airspeed_pilot - spd_ratio_old) / time_spd_ratio
-		
-		--spd_ratio = spd_ratio_sum / spd_ratio_num
-		spd_ratio_old = simDR_airspeed_pilot
-		--spd_ratio_sum = 0
+		-- spd_ratio = (simDR_airspeed_pilot - spd_ratio_old) / time_spd_ratio
+		-- spd_ratio_old = simDR_airspeed_pilot
 		
 		gnd_spd_ratio = ((simDR_ground_spd * 1.94384449244) - gnd_spd_ratio_old) / time_spd_ratio
 		gnd_spd_ratio_old = simDR_ground_spd * 1.94384449244
 		
+		spd_ratio = simDR_airspeed_accel_pilot
 		
 		hdg_ratio = (simDR_ahars_mag_hdg - hdg_ratio_old + 360) % 360
 		if hdg_ratio > 180 then

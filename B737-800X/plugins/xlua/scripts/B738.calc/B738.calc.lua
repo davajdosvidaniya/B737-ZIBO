@@ -1895,7 +1895,7 @@ function B738_engine_rpm2()
 	elseif idle_mode == 1 then	-- flight mode
 		-- mixture1 = 0.80 * B738DR_mixture_ratio1
 		-- mixture2 = 0.80 * B738DR_mixture_ratio2
-		elev = math.min(35000, elev)
+		elev = math.min(25000, elev)
 		elev = math.max(10000, elev)
 		elev = B738_rescale(10000, 0.80, 25000, 1.00, elev)
 		mixture1 = elev * B738DR_mixture_ratio1

@@ -77,13 +77,18 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26j:
+------
+- add runway extension (RWY EXT)
+- fixed small bugs
+
 3.26i:
 ------
 - add option ND DISTANCE RINGS -> NO/YES
 - changed range for display APTs on ND
 - add idle path for VNAV descent (basic path yet)
 - add commands for flaps ("laminar/B738/push_button/flaps_0", "laminar/B738/push_button/flaps_1", ....)
-- fixed bugs (hold entryp pattern, FMC descent page, rain windshield effect, ND graphics...)
+- fixed bugs (hold entry pattern, FMC descent page, rain windshield effect, ND graphics...)
 
 3.26h:
 ------
