@@ -195,8 +195,8 @@ ap_roll_mode_old = 0
 approach_status_old = 0
 glideslope_status_old = 0
 takeoff_n1 = 0
-ap_goaround = 0
-fd_goaround = 0
+-- ap_goaround = 0
+-- fd_goaround = 0
 cmd_first = 0
 --simDR_ap_vvi_dial_cur = 0
 simDR_ap_altitude_dial_ft_old = 0
@@ -1163,6 +1163,8 @@ B738DR_altitude_mode					= create_dataref("laminar/B738/autopilot/altitude_mode"
 B738DR_altitude_mode2					= create_dataref("laminar/B738/autopilot/altitude_mode2", "number")
 B738DR_heading_mode						= create_dataref("laminar/B738/autopilot/heading_mode", "number")
 B738DR_speed_mode						= create_dataref("laminar/B738/autopilot/speed_mode", "number")
+ap_goaround 							= create_dataref("laminar/B738/autopilot/ap_goaround", "number")
+fd_goaround 							= create_dataref("laminar/B738/autopilot/fd_goaround", "number")
 
 B738DR_ap_disconnect					= create_dataref("laminar/B738/annunciator/ap_disconnect", "number")
 B738DR_at_disconnect					= create_dataref("laminar/B738/annunciator/at_disconnect", "number")
@@ -4947,7 +4949,7 @@ function B738_to_ga_CMDhandler(phase, duration)
 		end
 		
 		--AP GoAround mode
-		if B738DR_autopilot_autothr_arm_pos == 1 then
+		--if B738DR_autopilot_autothr_arm_pos == 1 then
 			if ap_goaround == 1 then
 				ap_goaround = 2			-- second push
 			end
@@ -4966,7 +4968,8 @@ function B738_to_ga_CMDhandler(phase, duration)
 					end
 					if ap_ga == 1 then
 						ap_goaround = 1		-- first push
-						at_mode = 4			-- AP GA
+						--at_mode = 4			-- AP GA
+						ap_ga2_activate()
 						if simDR_approach_status > 0 then
 							simCMD_autopilot_app:once()
 						end
@@ -4991,7 +4994,8 @@ function B738_to_ga_CMDhandler(phase, duration)
 						autopilot_cmd_b_status = 0
 						ap_roll_mode = 0
 						ap_pitch_mode = 0
-						at_mode = 8
+						--at_mode = 8
+						ap_ga1_acivate()
 					end
 				end
 			end
@@ -5024,7 +5028,8 @@ function B738_to_ga_CMDhandler(phase, duration)
 					end
 					if fd_ga == 1 then
 						fd_goaround = 1		-- first push
-						at_mode = 5			-- FD GA
+						--at_mode = 5			-- FD GA
+						fd_ga_activate()
 						-- disconnect A/P
 						simCMD_disconnect:once()
 						simDR_flight_dir_mode = 1
@@ -5036,7 +5041,7 @@ function B738_to_ga_CMDhandler(phase, duration)
 					fd_goaround  = 2
 				end
 			end
-		end
+		--end
 	end
 end
 
@@ -5070,7 +5075,7 @@ function B738_to_ga2_CMDhandler(phase, duration)
 		end
 		
 		--AP GoAround mode
-		if B738DR_autopilot_autothr_arm_pos == 1 then
+		--if B738DR_autopilot_autothr_arm_pos == 1 then
 			if ap_goaround == 1 then
 				ap_goaround = 2			-- second push
 			end
@@ -5089,7 +5094,8 @@ function B738_to_ga2_CMDhandler(phase, duration)
 					end
 					if ap_ga == 1 then
 						ap_goaround = 1		-- first push
-						at_mode = 4			-- AP GA
+						--at_mode = 4			-- AP GA
+						ap_ga2_activate()
 						if simDR_approach_status > 0 then
 							simCMD_autopilot_app:once()
 						end
@@ -5114,7 +5120,8 @@ function B738_to_ga2_CMDhandler(phase, duration)
 						autopilot_cmd_b_status = 0
 						ap_roll_mode = 0
 						ap_pitch_mode = 0
-						at_mode = 8
+						--at_mode = 8
+						ap_ga1_acivate()
 					end
 				end
 			end
@@ -5138,13 +5145,14 @@ function B738_to_ga2_CMDhandler(phase, duration)
 					end
 					if fd_ga == 1 then
 						fd_goaround = 1		-- first push
-						at_mode = 5			-- FD GA
+						--at_mode = 5			-- FD GA
+						fd_ga_activate()
 					end
 				elseif fd_goaround == 1 then
 					fd_goaround  = 2
 				end
 			end
-		end
+		--end
 	end
 end
 
@@ -7104,7 +7112,8 @@ function autopilot_system_lights2()
 	end
 	
 	--PITCH modes
-	if at_mode_eng ~= 3 and at_mode_eng ~= 4 and at_mode_eng ~= 5 and at_mode_eng ~= 8 then		-- TOGA
+	--if at_mode_eng ~= 3 and at_mode_eng ~= 4 and at_mode_eng ~= 5 and at_mode_eng ~= 8 then		-- TOGA
+	if at_mode_eng ~= 3 and ap_goaround == 0 and fd_goaround == 0 then		--not TO/GA mode
 		if ap_pitch_mode == 0 and ap_pitch_mode_eng == 0 then
 			B738DR_pfd_alt_mode = 0
 			if B738DR_pfd_alt_mode_arm ~= PFD_ALT_GS_ARM and B738DR_pfd_alt_mode_arm ~= PFD_ALT_GP_ARM then
@@ -12032,8 +12041,8 @@ function B738_at_logic()
 		B738DR_autopilot_thr_hld_pfd = 0
 		B738DR_autopilot_ga_pfd = 0
 		at_throttle_hold = 0	-- mode throttle HLD off
-		ap_goaround = 0
-		fd_goaround = 0
+		--ap_goaround = 0
+		--fd_goaround = 0
 		to_after_80kts = 0
 		simDR_fdir_pitch_ovr = 0
 		fd_go_disable = 0
@@ -12109,71 +12118,60 @@ function B738_at_logic()
 	-- AP GoAround mode
 	elseif at_mode == 4 and at_mode_eng ~= 4 then
 		at_mode_eng = 4
-		at_throttle_hold = 0	-- mode throttle HLD off
-		fd_goaround = 0
-		to_after_80kts = 0
-		simDR_fdir_pitch_ovr = 0
-		B738DR_autoland_status = 0
-		B738DR_flare_status = 0
-		B738DR_rollout_status = 0
-		B738DR_retard_status = 0
-		vorloc_only = 0
-		-- if B738DR_autopilot_side == 0 then
-			-- autopilot_cmd_b_status = 0			-- CMD B light off
-		-- else
-			-- autopilot_cmd_a_status = 0			-- CMD A light off
+		-- at_throttle_hold = 0	-- mode throttle HLD off
+		-- fd_goaround = 0
+		-- to_after_80kts = 0
+		-- simDR_fdir_pitch_ovr = 0
+		-- B738DR_autoland_status = 0
+		-- B738DR_flare_status = 0
+		-- B738DR_rollout_status = 0
+		-- B738DR_retard_status = 0
+		-- vorloc_only = 0
+		-- B738DR_autopilot_n1_status = 0
+		-- ap_pitch_mode = 0
+		-- ap_pitch_mode_eng = 0
+		-- B738DR_pfd_spd_mode = PFD_SPD_GA
+		-- B738DR_pfd_alt_mode = PFD_ALT_TO_GA
+		-- if simDR_autopilot_altitude_mode ~= 4 then
+			-- simCMD_autopilot_vs:once()			-- VS on
+			-- vert_spd_corr()
 		-- end
-		B738DR_autopilot_n1_status = 0
-		ap_pitch_mode = 0
-		ap_pitch_mode_eng = 0
-		B738DR_pfd_spd_mode = PFD_SPD_GA
-		B738DR_pfd_alt_mode = PFD_ALT_TO_GA
-		--simDR_autothrottle_enable = 1
-		if simDR_autopilot_altitude_mode ~= 4 then
-			simCMD_autopilot_vs:once()			-- VS on
-			--simDR_ap_vvi_dial = roundDownToIncrement(simDR_ap_vvi_dial, 100 )
-			vert_spd_corr()
-		end
-		simDR_ap_vvi_dial = 1300
-		simDR_ap_capt_heading = simDR_heading_pilot
-		if simDR_autopilot_heading_mode == 0 then
-			simCMD_autopilot_hdg:once()			-- HDG on
-		end
-		fd_cur = simDR_fdir_pitch
-		simDR_fdir_pitch_ovr = 1
-		if ap_roll_mode ~= 1  and ap_roll_mode ~= 10 and ap_roll_mode ~= 4 then
-			ap_roll_mode = 1
-		end
-		ap_pitch_mode_old = ap_pitch_mode_eng
-		ap_roll_mode_old = ap_roll_mode_eng
-		fd_go_disable = 0
-			-- FD GoAround mode
+		-- simDR_ap_vvi_dial = 1300
+		-- simDR_ap_capt_heading = simDR_heading_pilot
+		-- if simDR_autopilot_heading_mode == 0 then
+			-- simCMD_autopilot_hdg:once()			-- HDG on
+		-- end
+		-- fd_cur = simDR_fdir_pitch
+		-- simDR_fdir_pitch_ovr = 1
+		-- if ap_roll_mode ~= 1  and ap_roll_mode ~= 10 and ap_roll_mode ~= 4 then
+			-- ap_roll_mode = 1
+		-- end
+		-- ap_pitch_mode_old = ap_pitch_mode_eng
+		-- ap_roll_mode_old = ap_roll_mode_eng
+		-- fd_go_disable = 0
+	
+	-- FD GoAround mode
 	elseif at_mode == 5 and at_mode_eng ~= 5 then
 		at_mode_eng = 5
-		at_throttle_hold = 0	-- mode throttle HLD off
-		--ap_roll_mode = 0
-		--ap_roll_mode_eng = 0
-		ap_pitch_mode = 0
-		ap_pitch_mode_eng = 0
-		ap_goaround = 0
-		to_after_80kts = 0
-		airspeed_dial = simDR_airspeed_dial
-		B738DR_retard_status = 0
-		B738DR_autopilot_n1_pfd = 0
-		B738DR_autopilot_n1_status = 0
-		--simDR_autothrottle_enable = 1
-		--simDR_airspeed_dial = airspeed_dial
-		B738DR_pfd_spd_mode = PFD_SPD_GA
-		B738DR_pfd_alt_mode = PFD_ALT_TO_GA
-		fd_cur = simDR_fdir_pitch
-		simDR_fdir_pitch_ovr = 1
-		if ap_roll_mode ~= 1  and ap_roll_mode ~= 10 and ap_roll_mode ~= 4 then
-			ap_roll_mode = 1
-		end
-		ap_pitch_mode_old = ap_pitch_mode_eng
-		ap_roll_mode_old = ap_roll_mode_eng
-		fd_go_disable = 0
-
+		-- at_throttle_hold = 0	-- mode throttle HLD off
+		-- ap_pitch_mode = 0
+		-- ap_pitch_mode_eng = 0
+		-- ap_goaround = 0
+		-- to_after_80kts = 0
+		-- airspeed_dial = simDR_airspeed_dial
+		-- B738DR_retard_status = 0
+		-- B738DR_autopilot_n1_pfd = 0
+		-- B738DR_autopilot_n1_status = 0
+		-- B738DR_pfd_spd_mode = PFD_SPD_GA
+		-- B738DR_pfd_alt_mode = PFD_ALT_TO_GA
+		-- fd_cur = simDR_fdir_pitch
+		-- simDR_fdir_pitch_ovr = 1
+		-- if ap_roll_mode ~= 1  and ap_roll_mode ~= 10 and ap_roll_mode ~= 4 then
+			-- ap_roll_mode = 1
+		-- end
+		-- ap_pitch_mode_old = ap_pitch_mode_eng
+		-- ap_roll_mode_old = ap_roll_mode_eng
+		-- fd_go_disable = 0
 	
 	-- LVL CHG mode
 	elseif at_mode == 6 and at_mode_eng ~= 6 then
@@ -12205,29 +12203,29 @@ function B738_at_logic()
 	-- AP GoAround mode after touchdown
 	elseif at_mode == 8 and at_mode_eng ~= 8 then
 		at_mode_eng = 8
-		at_throttle_hold = 0	-- mode throttle HLD off
-		fd_goaround = 0
-		to_after_80kts = 0
---		ap_roll_mode = 0
-		ap_pitch_mode = 0
-		ap_pitch_mode_eng = 0
-		simDR_fdir_pitch_ovr = 0
-		B738DR_autoland_status = 0
-		B738DR_flare_status = 0
-		B738DR_rollout_status = 0
-		B738DR_retard_status = 0
-		vorloc_only = 0
-		B738DR_autopilot_n1_status = 0
-		B738DR_pfd_spd_mode = PFD_SPD_GA
-		B738DR_pfd_alt_mode = PFD_ALT_TO_GA
-		simDR_autothrottle_enable = 0
-		fd_cur = simDR_fdir_pitch
-		simDR_fdir_pitch_ovr = 1
-		ap_goaround = 2
-		if ap_roll_mode ~= 1  and ap_roll_mode ~= 10 and ap_roll_mode ~= 4 then
-			ap_roll_mode = 1
-		end
-		fd_go_disable = 0
+		-- at_throttle_hold = 0	-- mode throttle HLD off
+		-- fd_goaround = 0
+		-- to_after_80kts = 0
+		-- ap_pitch_mode = 0
+		-- ap_pitch_mode_eng = 0
+		-- simDR_fdir_pitch_ovr = 0
+		-- B738DR_autoland_status = 0
+		-- B738DR_flare_status = 0
+		-- B738DR_rollout_status = 0
+		-- B738DR_retard_status = 0
+		-- vorloc_only = 0
+		-- B738DR_autopilot_n1_status = 0
+		-- B738DR_pfd_spd_mode = PFD_SPD_GA
+		-- B738DR_pfd_alt_mode = PFD_ALT_TO_GA
+		-- simDR_autothrottle_enable = 0
+		-- fd_cur = simDR_fdir_pitch
+		-- simDR_fdir_pitch_ovr = 1
+		-- --ap_goaround = 2
+		-- ap_goaround = 3
+		-- if ap_roll_mode ~= 1  and ap_roll_mode ~= 10 and ap_roll_mode ~= 4 then
+			-- ap_roll_mode = 1
+		-- end
+		-- fd_go_disable = 0
 		
 	-- SPD speed with N1 limit
 	elseif at_mode == 9 and at_mode_eng ~= 9 then
@@ -12245,52 +12243,102 @@ function B738_at_logic()
 	end
 	B738DR_speed_mode = at_mode
 	
-	-- local airspeed_accel = simDR_airspeed_accel
-	-- local mcp_speed_delta = simDR_airspeed_pilot - simDR_airspeed_dial_kts
-	-- local wind_gust_detect = 0
-	-- local speed_ratio = B738DR_speed_ratio
-	
-	-- if at_mode_eng == 2 or at_mode_eng == 9 then
-		-- if B738DR_autopilot_autothr_arm_pos == 1 then
-			-- if measure == 1 then
-				-- measure = 0
-				-- if airspeed_accel < 0 then
-					-- airspeed_accel = -airspeed_accel
-				-- end
-				-- if mcp_speed_delta < 0 then
-					-- mcp_speed_delta = -mcp_speed_delta
-				-- end
-				-- if speed_ratio < 0 then
-					-- speed_ratio = -speed_ratio
-				-- end
-				-- -- if simDR_autothrottle_enable == 0 and speed_ratio > 0.15 and airspeed_dial_kts_old == simDR_airspeed_dial_kts 
-				-- -- and mcp_speed_delta < 5 then
-				-- if simDR_autothrottle_enable == 0 and airspeed_dial_kts_old == simDR_airspeed_dial_kts and mcp_speed_delta < 5 then
-					-- wind_gust_detect = 1
-				-- end
-				-- if wind_gust_detect == 0 then
-					-- if mcp_speed_delta > 1 or airspeed_accel > 0.12 then
-						-- simDR_autothrottle_enable = 1	-- speed on
-					-- else
-						-- simDR_autothrottle_enable = 0
-					-- end
-				-- end
-				-- airspeed_dial_kts_old = simDR_airspeed_dial_kts
-			-- end
-		-- end
-	-- else
-		-- measure = 0
-		-- airspeed_dial_kts_old = 0
-	-- end
-	
-	-- if at_mode_eng == 2 or at_mode_eng == 9 then
-		-- if B738DR_autopilot_autothr_arm_pos == 1 then
-			-- if simDR_autothrottle_enable == 0 then
-				-- simDR_autothrottle_enable = 1	-- speed on
-			-- end
-		-- end
-	-- end
+end
 
+function ap_ga1_acivate()
+	
+	if B738DR_autopilot_autothr_arm_pos == 1 then
+		at_mode = 8
+		B738DR_pfd_spd_mode = PFD_SPD_GA
+	end
+	at_throttle_hold = 0	-- mode throttle HLD off
+	fd_goaround = 0
+	to_after_80kts = 0
+	ap_pitch_mode = 0
+	ap_pitch_mode_eng = 0
+	simDR_fdir_pitch_ovr = 0
+	B738DR_autoland_status = 0
+	B738DR_flare_status = 0
+	B738DR_rollout_status = 0
+	B738DR_retard_status = 0
+	vorloc_only = 0
+	B738DR_autopilot_n1_status = 0
+	B738DR_pfd_alt_mode = PFD_ALT_TO_GA
+	simDR_autothrottle_enable = 0
+	fd_cur = simDR_fdir_pitch
+	simDR_fdir_pitch_ovr = 1
+	--ap_goaround = 2
+	ap_goaround = 3
+	if ap_roll_mode ~= 1  and ap_roll_mode ~= 10 and ap_roll_mode ~= 4 then
+		ap_roll_mode = 1
+	end
+	fd_go_disable = 0
+	
+end
+
+function ap_ga2_activate()
+	
+	if B738DR_autopilot_autothr_arm_pos == 1 then
+		at_mode = 4
+		B738DR_pfd_spd_mode = PFD_SPD_GA
+	end
+	at_throttle_hold = 0	-- mode throttle HLD off
+	fd_goaround = 0
+	to_after_80kts = 0
+	simDR_fdir_pitch_ovr = 0
+	B738DR_autoland_status = 0
+	B738DR_flare_status = 0
+	B738DR_rollout_status = 0
+	B738DR_retard_status = 0
+	vorloc_only = 0
+	ap_pitch_mode = 0
+	ap_pitch_mode_eng = 0
+	B738DR_autopilot_n1_status = 0
+	B738DR_pfd_alt_mode = PFD_ALT_TO_GA
+	if simDR_autopilot_altitude_mode ~= 4 then
+		simCMD_autopilot_vs:once()			-- VS on
+		vert_spd_corr()
+	end
+	simDR_ap_vvi_dial = 1300
+	simDR_ap_capt_heading = simDR_heading_pilot
+	if simDR_autopilot_heading_mode == 0 then
+		simCMD_autopilot_hdg:once()			-- HDG on
+	end
+	fd_cur = simDR_fdir_pitch
+	simDR_fdir_pitch_ovr = 1
+	if ap_roll_mode ~= 1  and ap_roll_mode ~= 10 and ap_roll_mode ~= 4 then
+		ap_roll_mode = 1
+	end
+	ap_pitch_mode_old = ap_pitch_mode_eng
+	ap_roll_mode_old = ap_roll_mode_eng
+	fd_go_disable = 0
+end
+
+function fd_ga_activate()
+	
+	if B738DR_autopilot_autothr_arm_pos == 1 then
+		at_mode = 5
+		B738DR_pfd_spd_mode = PFD_SPD_GA
+	end
+	at_throttle_hold = 0	-- mode throttle HLD off
+	ap_pitch_mode = 0
+	ap_pitch_mode_eng = 0
+	ap_goaround = 0
+	to_after_80kts = 0
+	airspeed_dial = simDR_airspeed_dial
+	B738DR_retard_status = 0
+	B738DR_autopilot_n1_pfd = 0
+	B738DR_autopilot_n1_status = 0
+	B738DR_pfd_alt_mode = PFD_ALT_TO_GA
+	fd_cur = simDR_fdir_pitch
+	simDR_fdir_pitch_ovr = 1
+	if ap_roll_mode ~= 1  and ap_roll_mode ~= 10 and ap_roll_mode ~= 4 then
+		ap_roll_mode = 1
+	end
+	ap_pitch_mode_old = ap_pitch_mode_eng
+	ap_roll_mode_old = ap_roll_mode_eng
+	fd_go_disable = 0
+	
 end
 
 
@@ -12583,7 +12631,8 @@ function B738_ap_goaround()
 	local airspeed_dial = 0
 	
 	-- A/P GoAround
-	if at_mode == 4 and at_mode_eng == 4 then
+	--if at_mode == 4 and at_mode_eng == 4 then
+	if ap_goaround > 0 and ap_goaround < 3 then
 		
 		if simDR_radio_height_pilot_ft < 400 then
 			if ap_on == 0
@@ -12595,27 +12644,10 @@ function B738_ap_goaround()
 				simDR_fdir_pitch_ovr = 0
 				B738DR_autopilot_to_ga_pfd = 0		-- PFD pitch> TO/GA
 			end
-		-- else
-			-- if ap_roll_mode ~= 0 or ap_pitch_mode ~= 0 
-			-- or B738DR_autopilot_alt_acq_pfd == 1 then
-				-- at_mode = 2
-				-- B738DR_autopilot_to_ga_pfd = 0		-- PFD pitch> TO/GA
-				-- ap_roll_mode_eng = 10
-				-- ap_pitch_mode_eng = 10
-				-- ap_goaround = 0
-				-- simDR_fdir_pitch_ovr = 0
-				-- if cmd_first == 0 then
-					-- autopilot_cmd_b_status = 0
-				-- else
-					-- autopilot_cmd_a_status = 0
-				-- end
-			-- end
 		end
-		--if ap_pitch_mode_old ~= ap_pitch_mode then
-		--entry = entry .. tonumber(ap_pitch_mode) .. "/"
+		
 		if ap_pitch_mode ~= 0 then
 			at_mode = 2
-			--B738DR_autopilot_to_ga_pfd = 0		-- PFD pitch> TO/GA
 			ap_pitch_mode_eng = 10
 			ap_goaround = 0
 			simDR_fdir_pitch_ovr = 0
@@ -12636,30 +12668,8 @@ function B738_ap_goaround()
 				autopilot_cmd_a_status = 0
 			end
 		end
-		-- if simDR_radio_height_pilot_ft > 2000 then
-			-- if simDR_glideslope_status < 2 or simDR_flaps_ratio < 0 then
-				-- -- at_mode = 0
-				-- -- ap_roll_mode_eng = 10
-				-- -- ap_pitch_mode_eng = 10
-				-- -- ap_goaround = 0
-				-- -- simDR_fdir_pitch_ovr = 0
-				-- -- B738DR_autopilot_to_ga_pfd = 0		-- PFD pitch> TO/GA
-				-- simDR_flight_dir_mode = 1
-				-- autopilot_cmd_a_status = 0
-				-- autopilot_cmd_b_status = 0
-			-- end
-		-- end
 		
 		if ap_goaround == 1 then		-- first push
-			-- speed: maximal current flaps speed, hdg: current track, vsi: 1000-2000fpm
-			-- if B738DR_pfd_flaps_bug < 250 then
-				-- flap_speed = B738DR_pfd_flaps_bug - 10
-				-- if flap_speed == 0 then
-					-- flap_speed = 180
-				-- end
-			-- else
-				-- flap_speed = 250
-			-- end
 			if flaps == 0 then
 				flaps_speed = 230
 			elseif flaps <= 0.25 then		-- flaps 1,2
@@ -12708,34 +12718,15 @@ function B738_ap_goaround()
 				
 			end
 			--simDR_autothrottle_enable = 1
+			if B738DR_autopilot_autothr_arm_pos == 1 then
+				if at_mode_eng ~= 4 then
+					at_mode = 4
+					B738DR_pfd_spd_mode = PFD_SPD_GA
+				end
+				eng1_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
+				eng2_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
+			end
 			
-			eng1_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
-			eng2_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
-
-			
---			if simDR_vvi_fpm_pilot > 800 and simDR_yoke_pitch > 0.1 then
---				simDR_yoke_pitch = 0
---			end
-			-- if simDR_autopilot_altitude_mode == 6 then
-				-- B738DR_autopilot_to_ga_pfd = 0		-- PFD pitch> TO/GA
-				-- if simDR_ap_altitude_dial_ft == B738DR_fmc_approach_alt then
-					-- B738DR_autopilot_alt_acq_pfd = 1	-- PFD pitch> ALT ACQ
-					-- ap_pitch_mode = 6
-					-- ap_pitch_mode_eng = 6
-				-- else
-					-- ap_pitch_mode = 3
-					-- ap_pitch_mode_eng = 3
-				-- end
-				-- ap_roll_mode_eng = 10
-				-- at_mode = 2
-				-- ap_goaround = 0
-				-- if cmd_first == 0 then
-					-- autopilot_cmd_b_status = 0
-				-- else
-					-- autopilot_cmd_a_status = 0
-				-- end
-			-- end
-		
 		elseif ap_goaround == 2 then	-- second push
 			if flaps == 0 then
 				flaps_speed = 230
@@ -12774,72 +12765,79 @@ function B738_ap_goaround()
 			simDR_fdir_pitch_ovr = 0
 			simDR_autothrottle_enable = 0
 			----simDR_throttle_override = 1
-			eng1_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
-			eng2_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
+			
+			if B738DR_autopilot_autothr_arm_pos == 1 then
+				if at_mode_eng ~= 4 then
+					at_mode = 4
+					B738DR_pfd_spd_mode = PFD_SPD_GA
+				end
+				eng1_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
+				eng2_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
+			end
+			
 			--B738DR_autopilot_n1_status = 1
 --			--simDR_throttle_all = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
 			if simDR_autopilot_altitude_mode ~= 5 then
 				airspeed_dial = simDR_airspeed_dial
 				simCMD_autopilot_lvl_chg:once()		--LVL CHG on
 				simDR_airspeed_dial = airspeed_dial
-			-- elseif simDR_autopilot_altitude_mode == 6 then
-				-- B738DR_autopilot_to_ga_pfd = 1		-- PFD pitch> TO/GA off
-				-- if simDR_ap_altitude_dial_ft == B738DR_fmc_approach_alt then
-				
-					-- B738DR_autopilot_alt_acq_pfd = 1	-- PFD pitch> ALT ACQ
-					-- ap_pitch_mode = 6
-					-- ap_pitch_mode_eng = 6
-				-- else
-					-- ap_pitch_mode = 3
-					-- ap_pitch_mode_eng = 3
-				-- end
-				-- ap_roll_mode = 0
-				-- at_mode = 2
-				-- ap_goaround = 0
-				-- if cmd_first == 0 then
-					-- autopilot_cmd_b_status = 0
-				-- else
-					-- autopilot_cmd_a_status = 0
-				-- end
 			end
 		end
 		
 	-- A/P GoAround after touchdown
-	elseif at_mode == 8 and at_mode_eng == 8 then
+	--elseif at_mode == 8 and at_mode_eng == 8 then
+	elseif ap_goaround == 3 then
 		--if fd_on == 0 or ap_on == 0 then
 		if B738DR_fd_on == 0 or ap_on == 0 then
-				at_mode = 0
-				ap_goaround = 0
-				----simDR_throttle_override = 0
-			else
-				fd_target = 15
-				fd_cur = B738_set_anim_value(fd_cur, fd_target, -20, 20, 0.5)
-				simDR_fdir_pitch = fd_cur
-				----simDR_throttle_override = 1
+			at_mode = 0
+			ap_goaround = 0
+			simDR_fdir_pitch_ovr = 0
+		else
+			fd_target = 15
+			fd_cur = B738_set_anim_value(fd_cur, fd_target, -20, 20, 0.5)
+			simDR_fdir_pitch = fd_cur
+			
+			if B738DR_autopilot_autothr_arm_pos == 1 then
+				if at_mode_eng ~= 8 then
+					at_mode = 8
+					B738DR_pfd_spd_mode = PFD_SPD_GA
+				end
 				eng1_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
 				eng2_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
-				--B738DR_autopilot_n1_status = 1
-	--			--simDR_throttle_all = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
-				if simDR_autopilot_altitude_mode ~= 5 then
-					airspeed_dial = simDR_airspeed_dial
-					simCMD_autopilot_lvl_chg:once()		--LVL CHG on
-					simDR_airspeed_dial = airspeed_dial
-				end
 			end
-			--if B738DR_autopilot_alt_acq_pfd == 1 then
-			if ap_pitch_mode_eng == 6 or ap_pitch_mode_eng == 3 then
-				--B738DR_autopilot_to_ga_pfd = 0		-- PFD pitch> TO/GA
-				ap_goaround = 0
-				simDR_fdir_pitch_ovr = 0
-				if cmd_first == 0 then
-					autopilot_cmd_b_status = 0
-				else
-					autopilot_cmd_a_status = 0
-				end
+			
+			--B738DR_autopilot_n1_status = 1
+--			--simDR_throttle_all = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
+			if simDR_autopilot_altitude_mode ~= 5 then
+				airspeed_dial = simDR_airspeed_dial
+				simCMD_autopilot_lvl_chg:once()		--LVL CHG on
+				simDR_airspeed_dial = airspeed_dial
 			end
+		end
+		--if B738DR_autopilot_alt_acq_pfd == 1 then
+		if ap_pitch_mode_eng == 6 or ap_pitch_mode_eng == 3 then
+			--B738DR_autopilot_to_ga_pfd = 0		-- PFD pitch> TO/GA
+			ap_goaround = 0
+			simDR_fdir_pitch_ovr = 0
+			if cmd_first == 0 then
+				autopilot_cmd_b_status = 0
+			else
+				autopilot_cmd_a_status = 0
+			end
+		elseif ap_pitch_mode ~= 0 then
+			at_mode = 0
+			ap_goaround = 0
+			simDR_fdir_pitch_ovr = 0
+			if cmd_first == 0 then
+				autopilot_cmd_b_status = 0
+			else
+				autopilot_cmd_a_status = 0
+			end
+		end
 	
 	-- F/D GoAround
-	elseif at_mode == 5 and at_mode_eng == 5 then
+	--elseif at_mode == 5 and at_mode_eng == 5 then
+	elseif fd_goaround > 0 then
 		
 		if simDR_radio_height_pilot_ft < 400 then
 			if B738DR_fd_on == 0 then		-- terminate FD GoAround mode
@@ -12931,17 +12929,22 @@ function B738_ap_goaround()
 						
 			simDR_airspeed_dial = flaps_speed
 			
-			if simDR_vvi_fpm_pilot < 500 and fd_go_disable == 0 then
-				simDR_autothrottle_enable = 0
-				eng1_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
-				eng2_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
-			else
-				fd_go_disable = 1
-				-- simDR_autothrottle_enable = 1
-				eng1_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
-				eng2_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
+			if B738DR_autopilot_autothr_arm_pos == 1 then
+				if at_mode_eng ~= 5 then
+					at_mode = 5
+					B738DR_pfd_spd_mode = PFD_SPD_GA
+				end
+				if simDR_vvi_fpm_pilot < 500 and fd_go_disable == 0 then
+					--simDR_autothrottle_enable = 0
+					eng1_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
+					eng2_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
+				else
+					fd_go_disable = 1
+					-- simDR_autothrottle_enable = 1
+					eng1_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
+					eng2_N1_thrust_trg = N1_goaround_thrust * 0.9		-- N1 GOAROUND THRUST
+				end
 			end
-			
 			
 			if simDR_vvi_fpm_pilot < 1200 then
 				fd_target = 15
@@ -12993,8 +12996,16 @@ function B738_ap_goaround()
 			simDR_airspeed_dial = flaps_speed
 			simDR_autothrottle_enable = 0
 			----simDR_throttle_override = 1
-			eng1_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
-			eng2_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
+			
+			if B738DR_autopilot_autothr_arm_pos == 1 then
+				if at_mode_eng ~= 5 then
+					at_mode = 5
+					B738DR_pfd_spd_mode = PFD_SPD_GA
+				end
+				eng1_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
+				eng2_N1_thrust_trg = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
+			end
+			
 			--B738DR_autopilot_n1_status = 1
 --			--simDR_throttle_all = N1_goaround_thrust		-- N1 FULL GOAROUND THRUST
 			if simDR_autopilot_altitude_mode ~= 5 then
@@ -14217,7 +14228,8 @@ function control_SPD4()
 		end
 	else
 		if SPD_delta > 0.45 then
-			if (actual_err > 8 or actual_err < -8) and (spd_ratio < -0.8 or spd_ratio > 0.8) then
+			--if (actual_err > 8 or actual_err < -8) and (spd_ratio < -0.8 or spd_ratio > 0.8) then
+			if (actual_err > 8 or actual_err < -8) and (spd_ratio < -0.5 or spd_ratio > 0.5) then
 				ghust_detect = 0
 			end
 			if is_timer_scheduled(rst_ghust_detect) == true then
@@ -14227,11 +14239,12 @@ function control_SPD4()
 			ghust_detect_block = 1
 		else
 			if ghust_detect_block == 0 then
-				if (actual_err > 3 or actual_err < -3) and (spd_ratio < -0.8 or spd_ratio > 0.8) then
+				if (actual_err > 3 or actual_err < -3) and (spd_ratio < -0.5 or spd_ratio > 0.5) then
 					ghust_detect = 0
 				end
 			else
-				if (actual_err > 5 or actual_err < -5) and (spd_ratio < -0.8 or spd_ratio > 0.8) then
+				--if (actual_err > 5 or actual_err < -5) and (spd_ratio < -0.8 or spd_ratio > 0.8) then
+				if (actual_err > 5 or actual_err < -5) and (spd_ratio < -0.5 or spd_ratio > 0.5) then
 					ghust_detect = 0
 				end
 			end

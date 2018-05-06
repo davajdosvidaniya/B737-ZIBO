@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26k:
+------
+- fixed Go-around mode
+- fixed small bugs (GP on legs page, restrict alt/spd for RX waypoint, entry for descent speed, transition list...)
+
 3.26j:
 ------
 - add runway extension (RWY EXT)

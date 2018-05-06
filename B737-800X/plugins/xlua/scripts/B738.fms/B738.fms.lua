@@ -1229,6 +1229,7 @@ ff_sample = 0
 
 	last_miss_app_idx = 0
 	
+	gp_available = 0
 	-- MOD variable
 	vnav_update_mod = 0
 	last_sid_idx_mod = 0
@@ -1787,6 +1788,9 @@ B738DR_vol_computer 		= find_dataref("laminar/b738/fmodpack/fmod_vol_computer")
 B738DR_vol_FAC 				= find_dataref("laminar/b738/fmodpack/fmod_vol_FAC")
 B738DR_vol_weather 			= find_dataref("laminar/b738/fmodpack/fmod_vol_weather")
 
+ap_goaround 				= find_dataref("laminar/B738/autopilot/ap_goaround")
+fd_goaround 				= find_dataref("laminar/B738/autopilot/fd_goaround")
+
 --*************************************************************************************--
 --** 				               FIND CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -1832,6 +1836,7 @@ B738CMD_vol_computer		= find_command("laminar/b738/fmodpack/fmod_vol_computer")
 
 B738CMD_vol_FAC				= find_command("laminar/b738/fmodpack/fmod_vol_FAC")
 B738CMD_vol_weather 		= find_command("laminar/b378/fmodpack/fmod_vol_weather")
+
 --*************************************************************************************--
 --** 				                X-PLANE DATAREFS            			    	 **--
 --*************************************************************************************--
@@ -14231,7 +14236,12 @@ function rte_add_rw_ext(rx_lat, rx_lon, rx_brg, rx_alt)
 	legs_data2b[legs_num2b][3] = 0		-- distance
 	legs_data2b[legs_num2b][4] = 0		-- speed
 	legs_data2b[legs_num2b][5] = 0		-- altitude fpa
-	legs_data2b[legs_num2b][5] = math.floor(rx_alt + ((nd_dis * (math.tan(math.rad(nd_fpa)))) * 6076.11549))	-- in ft
+	--legs_data2b[legs_num2b][5] = math.floor(rx_alt + ((nd_dis * (math.tan(math.rad(nd_fpa)))) * 6076.11549))	-- in ft
+	legs_data2b[legs_num2b][5] = rx_alt + ((nd_dis * (math.tan(math.rad(nd_fpa)))) * 6076.11549)	-- in ft
+	legs_data2b[legs_num2b][5] = roundDownToIncrement(legs_data2b[legs_num2b][5], 10)
+	if legs_data2b[legs_num2b][5] < rx_alt then
+		legs_data2b[legs_num2b][5] = rx_alt
+	end
 	legs_data2b[legs_num2b][6] = 0	-- altitude type
 	legs_data2b[legs_num2b][7] = calc_lat	-- latitude
 	legs_data2b[legs_num2b][8] = calc_lon	-- longitude
@@ -17195,6 +17205,7 @@ function B738_find_rnav()
 	B738DR_missed_app_act = 0
 	rnav_alt = 0
 	rnav_vpa = 0
+	gp_available = 0
 	
 	if legs_num > 0 then
 		for ii = 1, legs_num + 1 do
@@ -17217,7 +17228,7 @@ function B738_find_rnav()
 						rnav_vpa = legs_data[rnav_idx_first][20]
 						rnav_idx_last = rnav_idx_first
 						jj = rnav_idx_last + 1
-						while jj < legs_num do
+						while jj <= legs_num do
 							if legs_data[jj][20] < 0 then	--vpa < 0
 								rnav_idx_last = jj
 								rnav_alt = legs_data[rnav_idx_last][5]
@@ -17287,6 +17298,17 @@ function B738_find_rnav()
 		end
 	end
 	
+	local nd_fpa = tonumber(rw_ext_fpa)
+	if nd_fpa == nil then
+		nd_fpa = 3.00
+	end
+	if rnav_idx_last > 0 and rnav_idx_last <= legs_num then
+		if string.sub(legs_data[rnav_idx_last][1], 1, 2) == "RW" then
+			gp_available = 1
+			rnav_vpa = -nd_fpa
+		end
+	end
+
 	--B738DR_fms_legs = fms_line
 	vnav_update = 1
 
@@ -20635,30 +20657,28 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 				if entry == ">DELETE" then
 					entry = ""
 				else
-					if strlen > 2 and  strlen < 6 and string.sub(entry, 1, 2) == "/." then		-- only mach
-						n = tonumber(string.sub(entry, 2, strlen))
+					if strlen == 4 and string.sub(entry, 1, 1) == "/" then		-- only kts
+						n = tonumber(string.sub(entry, 2, -1))
 						if n == nil then
 							add_fmc_msg(INVALID_INPUT, 1)
 						else
-							nn = tonumber(des_max_mach)
-							nnn = tonumber(des_min_mach)
+							nn = tonumber(des_max_kts)
+							nnn = tonumber(des_min_kts)
 							if nn == nil then
-								nn = 0.820		-- max
-							else
-								nn = nn / 1000
+								nn = 340
 							end
 							if nnn == nil then
-								nnn = 0.400		-- min
+								nnn = 100		-- min
 							end
 							if n < nnn or n > nn then
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
-								B738DR_fmc_descent_speed_mach = n
-								entry = ""
 								B738DR_descent_mode = 2
+								entry = ""
+								B738DR_fmc_descent_speed = n
 							end
 						end
-					elseif strlen > 1 and  strlen < 5 and string.sub(entry, 1, 1) == "." then		-- only mach
+					elseif strlen > 1 and strlen < 5 and string.sub(entry, 1, 1) == "." then		-- only mach
 						n = tonumber(entry)
 						if n == nil then
 							add_fmc_msg(INVALID_INPUT, 1)
@@ -20702,9 +20722,9 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 								B738DR_fmc_descent_speed = n
 							end
 						end
-					elseif strlen > 5 then		-- kts/mach xxx/.xxx
-						if string.sub(entry, 4, 5) == "/." then
-							n = tonumber(string.sub(entry, 1, 3))
+					elseif strlen > 5 then		-- mach/kts .xxx/xxx, .xx/xxx, .x/xxx
+						if string.sub(entry, -4, -4) == "/" then
+							n = tonumber(string.sub(entry, -3, -1))
 							if n == nil then
 							else
 								nn = tonumber(des_max_kts)
@@ -20719,7 +20739,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									n2 = n
-									n = tonumber(string.sub(entry, 5, -1))
+									n = tonumber(string.sub(entry, 1, -5))
 									if n == nil then
 										add_fmc_msg(INVALID_INPUT, 1)
 									else
@@ -25110,6 +25130,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 						end
 					end
 				end
+				rte_add_dep_arr()
 			else
 				if simDR_glideslope_status == 0 then
 					if B738DR_fms_ils_disable == 0 then
@@ -25155,7 +25176,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 					-- des_app_tns_exec = 1
 				-- end
 			end
-			rte_add_dep_arr()
+			--rte_add_dep_arr()
 		elseif page_dep_arr == 1 then
 			-- Destination ARR
 			if des_icao ~= "****" and des_icao ~= ref_icao and exec_load_fpln == 0 then
@@ -32647,30 +32668,28 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 				if entry2 == ">DELETE" then
 					entry2 = ""
 				else
-					if strlen > 2 and  strlen < 6 and string.sub(entry2, 1, 2) == "/." then		-- only mach
-						n = tonumber(string.sub(entry2, 2, strlen))
+					if strlen == 4 and string.sub(entry2, 1, 1) == "/" then		-- only kts
+						n = tonumber(string.sub(entry2, 2, -1))
 						if n == nil then
 							add_fmc_msg(INVALID_INPUT, 1)
 						else
-							nn = tonumber(des_max_mach)
-							nnn = tonumber(des_min_mach)
+							nn = tonumber(des_max_kts)
+							nnn = tonumber(des_min_kts)
 							if nn == nil then
-								nn = 0.820		-- max
-							else
-								nn = nn / 1000
+								nn = 340
 							end
 							if nnn == nil then
-								nnn = 0.400		-- min
+								nnn = 100		-- min
 							end
 							if n < nnn or n > nn then
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
-								B738DR_fmc_descent_speed_mach = n
-								entry2 = ""
 								B738DR_descent_mode = 2
+								entry2 = ""
+								B738DR_fmc_descent_speed = n
 							end
 						end
-					elseif strlen > 1 and  strlen < 5 and string.sub(entry2, 1, 1) == "." then		-- only mach
+					elseif strlen > 1 and strlen < 5 and string.sub(entry2, 1, 1) == "." then		-- only mach
 						n = tonumber(entry2)
 						if n == nil then
 							add_fmc_msg(INVALID_INPUT, 1)
@@ -32714,9 +32733,9 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 								B738DR_fmc_descent_speed = n
 							end
 						end
-					elseif strlen > 5 then		-- kts/mach xxx/.xxx
-						if string.sub(entry2, 4, 5) == "/." then
-							n = tonumber(string.sub(entry2, 1, 3))
+					elseif strlen > 5 then		-- mach/kts .xxx/xxx, .xx/xxx, .x/xxx
+						if string.sub(entry2, -4, -4) == "/" then
+							n = tonumber(string.sub(entry2, -3, -1))
 							if n == nil then
 							else
 								nn = tonumber(des_max_kts)
@@ -32731,7 +32750,7 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 									add_fmc_msg(INVALID_INPUT, 1)
 								else
 									n2 = n
-									n = tonumber(string.sub(entry2, 5, -1))
+									n = tonumber(string.sub(entry2, 1, -5))
 									if n == nil then
 										add_fmc_msg(INVALID_INPUT, 1)
 									else
@@ -37122,6 +37141,7 @@ function B738_fmc2_2R_CMDhandler(phase, duration)
 						end
 					end
 				end
+				rte_add_dep_arr()
 			else
 				if simDR_glideslope_status == 0 then
 					if B738DR_fms_ils_disable == 0 then
@@ -37130,72 +37150,9 @@ function B738_fmc2_2R_CMDhandler(phase, duration)
 						B738DR_fms_ils_disable = 0
 					end
 				end
-				-- if des_app_tns2 == "------" then
-					-- if des_tns_sel[2] ~= "------" then
-						-- des_app_tns2 = des_tns_sel[2]
-						-- act_page = 1
-						-- des_app_tns_exec = 1
-					-- end
-					-- if des_app_tns_list_num == 0 then
-						-- if simDR_glideslope_status == 0 then
-							-- if B738DR_fms_ils_disable == 0 then
-								-- B738DR_fms_ils_disable = 1
-							-- else
-								-- B738DR_fms_ils_disable = 0
-							-- end
-						-- end
-					-- end
-				-- else
-					-- if simDR_glideslope_status == 0 then
-						-- if B738DR_fms_ils_disable == 0 then
-							-- B738DR_fms_ils_disable = 1
-						-- else
-							-- B738DR_fms_ils_disable = 0
-						-- end
-					-- end
-				-- end
-				
-				-- if des_app_tns2 == "------" then
-					-- if des_tns_sel[2] ~= "------" then
-						-- des_app_tns2 = des_tns_sel[2]
-						-- act_page2 = 1
-						-- des_app_tns_exec = 1
-					-- end
-				-- else
-					-- des_app_tns2 = "------"
-					-- act_page2 = 1
-					-- des_app_tns_exec = 1
-				-- end
 			end
-			rte_add_dep_arr()
+			--rte_add_dep_arr()
 			
-			
-			
-			-- if des_app2 == "------" then
-				-- if des_app_sel[2] ~= "------" then
-					-- des_app2 = des_app_sel[2]
-					-- if des_star2 == "------" then
-						-- create_star_list()
-					-- end
-					-- des_app_tns2 = "------"
-					-- act_page2 = 1
-					-- des_app_exec = 1
-					-- create_app_tns_list()
-				-- end
-			-- else
-				-- if des_app_tns2 == "------" then
-					-- if des_tns_sel[2] ~= "------" then
-						-- des_app_tns2 = des_tns_sel[2]
-						-- act_page2 = 1
-						-- des_app_tns_exec = 1
-					-- end
-				-- else
-					-- des_app_tns2 = "------"
-					-- act_page2 = 1
-					-- des_app_tns_exec = 1
-				-- end
-			-- end
-			-- rte_add_dep_arr()
 		elseif page_dep_arr2 == 1 then
 			-- Destination ARR
 			if des_icao ~= "****" and des_icao ~= ref_icao and exec_load_fpln == 0 then
@@ -44181,8 +44138,8 @@ function B738_fmc_arr99(exec_light_in)
 				--line2_x = line2_x .. "       TRANS"
 				right_line[2] = "-NONE-"
 			else
-				jj = math.floor(des_app_tns_list_num / 3)
-				kk = des_app_tns_list_num % 3
+				jj = math.floor(des_app_tns_list_num / 3)	--2
+				kk = des_app_tns_list_num % 3	--2
 				if kk > 0 then
 					max_page_tns = jj + 1
 				else
@@ -44191,14 +44148,14 @@ function B738_fmc_arr99(exec_light_in)
 				
 				if des_app_tns2 == "------" then
 					--des_tns_sel[1] = "------"
-					kk = (act_page - 1) * 3
+					kk = (act_page - 1) * 3		--2
 					
 					des_tns_sel[1] = "------"
 					des_tns_sel[2] = "------"
 					
 					--for ii = 2, 5 do
 					for ii = 3, 5 do
-						jj = kk + ii - 1
+						jj = kk + ii - 2	-- - 1
 						if jj > des_app_tns_list_num then
 							right_line[ii] = ""
 							des_tns_sel[ii] = "------"
@@ -44967,6 +44924,9 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 							if string.sub(des_app2, 1, 1) == "I" and B738DR_fms_ils_disable == 0 then
 								gp_legs_not_active = 1
 							end
+							if gp_available == 0 then
+								gp_legs_not_active = 1
+							end
 							if legs_data2[jj][20] ~= 0 and string.sub(legs_data2[jj][1], 1, 2) == "RW" and gp_legs_not_active == 0 then
 								left_line_x[ii] = left_line_x[ii] .. " GP" .. string.format("%4.2f", -legs_data2[jj][20]) .. "`"
 							end
@@ -45196,6 +45156,9 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									end
 									-- GP
 									if string.sub(des_app2, 1, 1) == "I" and B738DR_fms_ils_disable == 0 then
+										gp_legs_not_active = 1
+									end
+									if gp_available == 0 then
 										gp_legs_not_active = 1
 									end
 									if legs_data2[jj][20] ~= 0 and string.sub(legs_data2[jj][1], 1, 2) == "RW" and gp_legs_not_active == 0 then
@@ -50767,9 +50730,23 @@ function B738_flight_phase3()
 			-- flight phase Descent
 			if B738DR_flight_phase == 5 then
 				if B738DR_missed_app_act == 0 then
-					if offset >= first_app_idx or simDR_altitude_pilot < (des_icao_alt + 2000) then
+					if offset >= first_app_idx and offset > 0 and first_app_idx > 0 then
 						B738DR_flight_phase = 6
-						--switch_fmc_page(4)
+					end
+					if simDR_altitude_pilot < (des_icao_alt + 2000) or simDR_radio_height_pilot_ft < 2000 then
+						B738DR_flight_phase = 6
+					end
+				end
+			end
+			
+			-- flight phase cruise
+			if B738DR_flight_phase == 3 then
+				if B738DR_missed_app_act == 0 then
+					if offset >= first_app_idx and offset > 0 and first_app_idx > 0 then
+						B738DR_flight_phase = 6
+					end
+					if simDR_altitude_pilot < (des_icao_alt + 2000) or simDR_radio_height_pilot_ft < 2000 then
+						B738DR_flight_phase = 6
 					end
 				end
 			end
@@ -50780,7 +50757,8 @@ function B738_flight_phase3()
 					B738DR_flight_phase = 7
 				end
 				--if push TO/GA
-				if B738DR_speed_mode == 4 or B738DR_speed_mode == 5 or B738DR_speed_mode == 8 or B738DR_speed_mode == 1 then
+				--if B738DR_speed_mode == 4 or B738DR_speed_mode == 5 or B738DR_speed_mode == 8 or B738DR_speed_mode == 1 then
+				if fd_goaround > 0 or ap_goaround > 0 or B738DR_speed_mode == 1 then
 					B738DR_flight_phase = 7
 				end
 				--if EXEC direct to wpt in the missed approach
@@ -50799,7 +50777,8 @@ function B738_flight_phase3()
 			
 			-- flight phase Go-Around armed
 			if B738DR_flight_phase == 7 then
-				if B738DR_speed_mode == 4 or B738DR_speed_mode == 5 or B738DR_speed_mode == 8 then --or B738DR_speed_mode == 1 then
+				--if B738DR_speed_mode == 4 or B738DR_speed_mode == 5 or B738DR_speed_mode == 8 then
+				if fd_goaround > 0 or ap_goaround > 0 then
 					--goaround_enable = 1
 					--descent_enable = 0
 					B738DR_flight_phase = 8
@@ -59686,9 +59665,9 @@ function B738_vnav_calc()
 								end
 								
 									----------------------------------
-									if B738DR_fms_test == 4 and ed_fix_num == B738DR_fms_test3 then
-										dump_leg_mod()
-									end
+									-- if B738DR_fms_test == 4 and ed_fix_num == B738DR_fms_test3 then
+										-- dump_leg_mod()
+									-- end
 									----------------------------------
 								-----------------------------------
 								-- correct vnav path FROM restrict
@@ -59735,10 +59714,10 @@ function B738_vnav_calc()
 										end
 									
 									----------------------------------
-									if B738DR_fms_test == 5 and ed_fix_num == B738DR_fms_test3 then
-										dump_leg_mod()
-										--B738DR_fms_test = 0
-									end
+									-- if B738DR_fms_test == 5 and ed_fix_num == B738DR_fms_test3 then
+										-- dump_leg_mod()
+										-- --B738DR_fms_test = 0
+									-- end
 									----------------------------------
 									
 									--end
@@ -67359,14 +67338,16 @@ function B738_vnav_pth3()
 		rnav_disable = 1
 	end
 	if B738DR_flight_phase == 8 then
-		if B738DR_speed_mode == 4 or B738DR_speed_mode == 5 or B738DR_speed_mode == 8 then
+		--if B738DR_speed_mode == 4 or B738DR_speed_mode == 5 or B738DR_speed_mode == 8 then
+		if fd_goaround > 0 or ap_goaround > 0 then
 			td_enable = 1
 			rnav_disable = 1
 		end
 	end
-	if B738DR_fms_ils_disable == 0 or rnav_disable == 1 then
+	if B738DR_fms_ils_disable == 0 or rnav_disable == 1 or gp_available == 0 then
 		gp_disable = 1
 	end
+	
 	if td_idx == 0 then
 		--td_enable = 1
 		td_enable = 0
@@ -67652,7 +67633,7 @@ function B738_vnav_pth3()
 					
 					nd_dis = nd_calc_dist2(nd_lat, nd_lon, nd_lat2, nd_lon2)
 						
-					if nd_dis < 28 then
+					if nd_dis < 24 then
 						-- calc GP path error
 						B738DR_gp_alt_err = rnav_alt + ((nd_dis * (math.tan(math.rad(rnav_vpa_temp)))) * 6076.11549)	-- GP 3 deg (in ft)
 						B738DR_gp_alt_err = B738DR_gp_alt_err - simDR_altitude_pilot
@@ -71727,8 +71708,9 @@ temp_ils4 = ""
 	x_delay = 0
 	rw_ext_dist = "--.-"
 	rw_ext_fpa = "-.--"
+	gp_available = 0
 	
-	version = "v3.26j"
+	version = "v3.26k"
 
 end
 
