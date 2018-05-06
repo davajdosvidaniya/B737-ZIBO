@@ -14221,7 +14221,8 @@ function control_SPD4()
 			end
 		else
 			if actual_err < 3.5 and actual_err > -3.5 then
-				if spd_ratio > -0.4 and spd_ratio < 0.4 then
+				--if spd_ratio > -0.4 and spd_ratio < 0.4 then
+				if spd_ratio > -0.2 and spd_ratio < 0.2 then
 					ghust_detect = 1
 				end
 			end
@@ -14301,7 +14302,7 @@ function control_SPD4()
 	if block_ghust == 1 then
 		limit = 18
 	elseif ghust_detect == 1 then
-		limit = 1
+		limit = 1.5	--1
 	elseif ghust_detect2 == 1 then
 		limit = 5
 	end

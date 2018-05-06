@@ -77,6 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26l:
+------
+- improved graphics (switches)
+- bigger detent area for speedbrake lever
+- fixed small bugs
+
 3.26k:
 ------
 - fixed Go-around mode

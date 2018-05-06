@@ -1582,32 +1582,43 @@ function B738_speedbrake_lever_DRhandler()
 	
 	if B738_speedbrake_stop == 1 then
 		if B738DR_speedbrake_lever < 0.15 then
-			if B738DR_speedbrake_lever < 0.07 then
+			--if B738DR_speedbrake_lever < 0.07 then
+			if B738DR_speedbrake_lever < 0.05 then
 				simDR_speedbrake_ratio = 0.0
-			elseif B738DR_speedbrake_lever < 0.11 and B738DR_speedbrake_lever > 0.06 then
+			--elseif B738DR_speedbrake_lever < 0.11 and B738DR_speedbrake_lever > 0.06 then
+			elseif B738DR_speedbrake_lever < 0.13 and B738DR_speedbrake_lever > 0.04 then
 				B738DR_speedbrake_lever = 0.0889
 		    	simDR_speedbrake_ratio = -0.5
-		    elseif B738DR_speedbrake_lever > 0.11 then
+		    --elseif B738DR_speedbrake_lever > 0.11 then
+			elseif B738DR_speedbrake_lever > 0.13 then
 		    	simDR_speedbrake_ratio = 0.0
 			end
-		elseif B738DR_speedbrake_lever > 0.15 then
+		--elseif B738DR_speedbrake_lever > 0.15 then
+		elseif B738DR_speedbrake_lever > 0.19 then
 			B738DR_speedbrake_lever = math.min(0.667, B738DR_speedbrake_lever)
-			local spdbrake_lever_stopped = B738_rescale(0.15, 0, 0.667, 0.9899999, B738DR_speedbrake_lever)
+			--local spdbrake_lever_stopped = B738_rescale(0.15, 0, 0.667, 0.9899999, B738DR_speedbrake_lever)
+			local spdbrake_lever_stopped = B738_rescale(0.19, 0, 0.667, 0.9899999, B738DR_speedbrake_lever)
 		
 			simDR_speedbrake_ratio = spdbrake_lever_stopped
 		end
 	elseif B738_speedbrake_stop == 0 then
-		if B738DR_speedbrake_lever < 0.15 then
-			if B738DR_speedbrake_lever < 0.07 then
+		--if B738DR_speedbrake_lever < 0.15 then
+		if B738DR_speedbrake_lever < 0.19 then
+			--if B738DR_speedbrake_lever < 0.07 then
+			if B738DR_speedbrake_lever < 0.05 then
 				simDR_speedbrake_ratio = 0.0
-			elseif B738DR_speedbrake_lever < 0.11 and B738DR_speedbrake_lever > 0.07 then
+			--elseif B738DR_speedbrake_lever < 0.11 and B738DR_speedbrake_lever > 0.07 then
+			elseif B738DR_speedbrake_lever < 0.13 and B738DR_speedbrake_lever > 0.04 then
 				B738DR_speedbrake_lever = 0.0889
 		    	simDR_speedbrake_ratio = -0.5
-		    elseif B738DR_speedbrake_lever > 0.11 then
+		    --elseif B738DR_speedbrake_lever > 0.11 then
+			elseif B738DR_speedbrake_lever > 0.13 then
 		    	simDR_speedbrake_ratio = 0.0
 			end
-		elseif B738DR_speedbrake_lever > 0.15 and B738DR_speedbrake_lever <= 0.667 then
-			local spdbrake_lever_open = B738_rescale(0.15, 0, 0.667, 0.9899999, B738DR_speedbrake_lever)
+		--elseif B738DR_speedbrake_lever > 0.15 and B738DR_speedbrake_lever <= 0.667 then
+		elseif B738DR_speedbrake_lever > 0.19 and B738DR_speedbrake_lever <= 0.667 then
+			--local spdbrake_lever_open = B738_rescale(0.15, 0, 0.667, 0.9899999, B738DR_speedbrake_lever)
+			local spdbrake_lever_open = B738_rescale(0.19, 0, 0.667, 0.9899999, B738DR_speedbrake_lever)
 
 			simDR_speedbrake_ratio = spdbrake_lever_open
 
