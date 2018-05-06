@@ -460,6 +460,9 @@ ghust_detect2 = 0
 block_ghust = 0
 ghust_detect_block = 0
 --SPD_ratio2 = 0
+wind_hdg_old = 0
+wind_spd_old = 0
+wind_hdg_rel_old = 0
 
 altitude_mode_old = 0
 
@@ -11998,7 +12001,7 @@ end
 
 function B738_at_logic()
 	
-	local airspeed_dial = 0
+	--local airspeed_dial = 0
 	local ap_thrust = 0.0
 	
 	-- AT MODES: 0-off, 1-N1, 2-MCP SPD, 3-Takeoff, 4-A/P GA, 5-F/D GA, 6-LVL CHG speed, 7-VNAV speed, 8-A/P GA after touchdown, 9 - MCP SPD with N1 limit
@@ -12325,7 +12328,7 @@ function fd_ga_activate()
 	ap_pitch_mode_eng = 0
 	ap_goaround = 0
 	to_after_80kts = 0
-	airspeed_dial = simDR_airspeed_dial
+	--airspeed_dial = simDR_airspeed_dial
 	B738DR_retard_status = 0
 	B738DR_autopilot_n1_pfd = 0
 	B738DR_autopilot_n1_status = 0
@@ -14182,9 +14185,9 @@ function rst_ghust_detect2()
 	ghust_detect2 = 0
 end
 
-function rst_ghust_detect()
-	ghust_detect_block = 0
-end
+-- function rst_ghust_detect()
+	-- ghust_detect = 0
+-- end
 
 function rst_block_ghust()
 	block_ghust = 0
@@ -14200,94 +14203,89 @@ function control_SPD4()
 	
 	local actual_err = B738DR_mcp_speed_dial_kts - simDR_airspeed_pilot
 	
-	local SPD_delta = spd_ratio - gnd_spd_ratio
+	--local SPD_delta = spd_ratio - gnd_spd_ratio
+	local SPD_delta = spd_ratio_old
 	if SPD_delta < 0 then
 		SPD_delta = -SPD_delta
 	end
 	
-	if ghust_detect == 0 then
-		-- if actual_err < 3.5 and actual_err > -3.5 then
-			-- if SPD_delta > 0.45 then
+	-- if ghust_detect == 0 then
+		-- -- if actual_err < 3.5 and actual_err > -3.5 then
+			-- -- if SPD_delta > 0.45 then
+				-- -- ghust_detect = 1
+			-- -- end
+			-- -- if spd_ratio > -0.4 and spd_ratio < 0.4 then
+				-- -- ghust_detect = 1
+			-- -- end
+		-- -- end
+		
+		-- if SPD_delta > 0.95 then	--0.45
+			-- if actual_err < 6 and actual_err > -6 then
+				-- if is_timer_scheduled(rst_ghust_detect) == true then
+					-- stop_timer(rst_ghust_detect)
+				-- end
 				-- ghust_detect = 1
 			-- end
-			-- if spd_ratio > -0.4 and spd_ratio < 0.4 then
-				-- ghust_detect = 1
+		-- -- else
+			-- -- if actual_err < 3.5 and actual_err > -3.5 then
+				-- -- --if spd_ratio > -0.4 and spd_ratio < 0.4 then
+				-- -- if spd_ratio > -0.2 and spd_ratio < 0.2 then
+					-- -- ghust_detect = 1
+				-- -- end
+			-- -- end
+		-- end
+	-- else
+		-- if SPD_delta > 0.95 then	--0.45
+			-- --if (actual_err > 8 or actual_err < -8) and (spd_ratio < -0.8 or spd_ratio > 0.8) then
+			-- if (actual_err > 8 or actual_err < -8) and (spd_ratio < -0.5 or spd_ratio > 0.5) then
+				-- ghust_detect = 0
+			-- end
+		-- else
+			-- if is_timer_scheduled(rst_ghust_detect) == false then
+				-- run_after_time(rst_ghust_detect, 10)
 			-- end
 		-- end
-		
-		if SPD_delta > 0.45 then
-			if actual_err < 6 and actual_err > -6 then
-				ghust_detect = 1
-			end
-		else
-			if actual_err < 3.5 and actual_err > -3.5 then
-				--if spd_ratio > -0.4 and spd_ratio < 0.4 then
-				if spd_ratio > -0.2 and spd_ratio < 0.2 then
-					ghust_detect = 1
-				end
-			end
-		end
-	else
-		if SPD_delta > 0.45 then
-			--if (actual_err > 8 or actual_err < -8) and (spd_ratio < -0.8 or spd_ratio > 0.8) then
-			if (actual_err > 8 or actual_err < -8) and (spd_ratio < -0.5 or spd_ratio > 0.5) then
-				ghust_detect = 0
-			end
-			if is_timer_scheduled(rst_ghust_detect) == true then
-				stop_timer(rst_ghust_detect)
-			end
-			run_after_time(rst_ghust_detect, 6)
-			ghust_detect_block = 1
-		else
-			if ghust_detect_block == 0 then
-				if (actual_err > 3 or actual_err < -3) and (spd_ratio < -0.5 or spd_ratio > 0.5) then
-					ghust_detect = 0
-				end
-			else
-				--if (actual_err > 5 or actual_err < -5) and (spd_ratio < -0.8 or spd_ratio > 0.8) then
-				if (actual_err > 5 or actual_err < -5) and (spd_ratio < -0.5 or spd_ratio > 0.5) then
-					ghust_detect = 0
-				end
-			end
-		end
-	end
+	-- end
 	
-	if SPD_delta > 0.45 then
-		if is_timer_scheduled(rst_ghust_detect2) == true then
-			stop_timer(rst_ghust_detect2)
-		end
-		run_after_time(rst_ghust_detect2, 5)
-		ghust_detect2 = 1
-	end
+	-- -- if SPD_delta > 0.65 then	--0.45
+		-- -- if is_timer_scheduled(rst_ghust_detect2) == true then
+			-- -- stop_timer(rst_ghust_detect2)
+		-- -- end
+		-- -- run_after_time(rst_ghust_detect2, 5)
+		-- -- ghust_detect2 = 1
+	-- -- end
 	
-	if actual_err > 20 or actual_err < -20 then
-		ghust_detect = 0
-		ghust_detect2 = 0
-	end
+	-- if actual_err > 20 or actual_err < -20 then
+		-- ghust_detect = 0
+		-- -- ghust_detect2 = 0
+	-- end
 	
 	local SPD_act = simDR_airspeed_pilot --+ (spd_ratio * B738DR_bias) -- wind_comp
 	local SPD_err = B738DR_mcp_speed_dial_kts - SPD_act
 	
 	if SPD_err < 0 then
 		SPD_corr = -SPD_err
-		--SPD_corr = math.min(30, SPD_corr)
-		SPD_corr = math.min(20, SPD_corr)
+		SPD_corr = math.min(14, SPD_corr)
 		SPD_corr = math.max(0, SPD_corr)
-		SPD_corr = -B738_rescale(0, 0, 580, 40, SPD_corr)
+		--SPD_corr = -B738_rescale(0, 0, 580, 40, SPD_corr)
+		--SPD_corr = -B738_rescale(0, 0, 20, 1.38, SPD_corr)
+		SPD_corr = -B738_rescale(0, 0, 14, 1.4, SPD_corr)
 	else
 		SPD_corr = SPD_err
-		--SPD_corr = math.min(30, SPD_corr)
-		SPD_corr = math.min(20, SPD_corr)
+		SPD_corr = math.min(14, SPD_corr)
 		SPD_corr = math.max(0, SPD_corr)
-		SPD_corr = B738_rescale(0, 0, 580, 40, SPD_corr)
+		--SPD_corr = B738_rescale(0, 0, 580, 40, SPD_corr)
+		--SPD_corr = B738_rescale(0, 0, 20, 1.38, SPD_corr)	--1.38
+		SPD_corr = B738_rescale(0, 0, 14, 1.4, SPD_corr)
 	end
 	
-	B738DR_pid_out = ghust_spd
+	--B738DR_pid_out = ghust_spd
+	--B738DR_pid_p = SPD_delta
 	
 	SPD_corr = SPD_corr - spd_ratio
-	SPD_corr = SPD_corr * SIM_PERIOD * 16
+	SPD_corr = SPD_corr * SIM_PERIOD * 10 --12	--16
 	
-	local limit = 15	--10	--20
+	local limit = 18	--15	--10	--20
 	
 	if simDR_autopilot_altitude_mode ~= altitude_mode_old then
 		if altitude_mode_old ~= 0 and B738DR_autoland_status == 0 then
@@ -14299,14 +14297,15 @@ function control_SPD4()
 		end
 	end
 	
+	--block_ghust = 1
 	if block_ghust == 1 then
 		limit = 18
-	elseif ghust_detect == 1 then
+	elseif ghust_detect == 1 and actual_err > -5 and actual_err < 5 then
 		limit = 1.5	--1
-	elseif ghust_detect2 == 1 then
-		limit = 5
+	-- elseif ghust_detect2 == 1 then
+		-- limit = 5
 	end
-	
+	B738DR_pid_out = limit
 	--B738DR_test_test = limit
 	
 	ghust_spd = B738_set_anim_value(ghust_spd, limit, 0.0, 20, 0.5)		--20
@@ -16284,6 +16283,10 @@ function B738_efis_baro()
 
 end
 
+function rst_ghust_detect()
+	ghust_detect = 0
+end
+
 -- Speed ratio, Vertical speed ratio
 function speed_ratio_timer()
 
@@ -16330,6 +16333,41 @@ function speed_ratio_timer()
 	B738DR_eng2_N1_ratio = eng2_N1 - eng2_N1_old
 	eng2_N1_old = eng2_N1
 	
+	local wind_hdg_ratio = simDR_wind_hdg - wind_hdg_old
+	if wind_hdg_ratio < 0 then
+		wind_hdg_ratio = -wind_hdg_ratio
+	end
+	wind_hdg_ratio = wind_hdg_ratio % 360
+	if wind_hdg_ratio > 180 then
+		wind_hdg_ratio = wind_hdg_ratio - 360
+	end
+	local wind_hdg_rel_ratio = wind_hdg_ratio - wind_hdg_rel_old
+	if wind_hdg_rel_ratio < 0 then
+		wind_hdg_rel_ratio = -wind_hdg_rel_ratio
+	end
+	
+	wind_hdg_old = simDR_wind_hdg
+	wind_hdg_rel_old = wind_hdg_ratio
+	
+	local wind_spd_ratio = simDR_wind_spd - wind_spd_old
+	if wind_spd_ratio < 0 then
+		wind_spd_ratio = -wind_spd_ratio
+	end
+	wind_spd_old = simDR_wind_spd
+	
+	if wind_hdg_rel_ratio > 5 or wind_spd_ratio > 2.1 then
+		ghust_detect = 1
+		if is_timer_scheduled(rst_ghust_detect) == true then
+			stop_timer(rst_ghust_detect)
+		end
+		run_after_time(rst_ghust_detect, 10)
+	else
+		if is_timer_scheduled(rst_ghust_detect) == false then
+			ghust_detect = 0
+		end
+	end
+	B738DR_pid_i = wind_hdg_ratio
+	B738DR_pid_d = wind_spd_ratio
 	measure = 1
 	
 end
@@ -17277,7 +17315,9 @@ function B738_spd_ratio()
 		gnd_spd_ratio = ((simDR_ground_spd * 1.94384449244) - gnd_spd_ratio_old) / time_spd_ratio
 		gnd_spd_ratio_old = simDR_ground_spd * 1.94384449244
 		
+		spd_ratio_old = simDR_airspeed_accel_pilot - spd_ratio
 		spd_ratio = simDR_airspeed_accel_pilot
+		spd_ratio_old = spd_ratio
 		
 		hdg_ratio = (simDR_ahars_mag_hdg - hdg_ratio_old + 360) % 360
 		if hdg_ratio > 180 then

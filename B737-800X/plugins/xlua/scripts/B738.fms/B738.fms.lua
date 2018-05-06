@@ -29333,6 +29333,14 @@ function B738_autopilot_alt_interv_CMDhandler(phase, duration)
 					crz_alt_num2 = 0
 					crz_alt_old = "     "
 				end
+				if B738DR_flight_phase > 4 and B738DR_flight_phase < 8 and B738DR_mcp_alt_dial < (simDR_altitude_pilot - 300) then
+					vnav_alt_mode = 0
+					B738DR_fms_descent_now = 3
+					if simDR_autopilot_altitude_mode ~= 4 then
+						simDR_ap_vvi_dial = -1000
+						simCMD_autopilot_vs_sel:once()
+					end
+				end
 				if B738DR_flight_phase == 2 and B738DR_mcp_alt_dial < (simDR_altitude_pilot - 300) then
 					vnav_alt_mode = 0
 					B738DR_fms_descent_now = 2
@@ -29341,14 +29349,6 @@ function B738_autopilot_alt_interv_CMDhandler(phase, duration)
 						simCMD_autopilot_vs_sel:once()
 					end
 					B738DR_flight_phase = 5
-				end
-				if B738DR_flight_phase > 4 and B738DR_flight_phase < 8 and B738DR_mcp_alt_dial < (simDR_altitude_pilot - 300) then
-					vnav_alt_mode = 0
-					B738DR_fms_descent_now = 3
-					if simDR_autopilot_altitude_mode ~= 4 then
-						simDR_ap_vvi_dial = -1000
-						simCMD_autopilot_vs_sel:once()
-					end
 				end
 			end
 			
@@ -71710,7 +71710,7 @@ temp_ils4 = ""
 	rw_ext_fpa = "-.--"
 	gp_available = 0
 	
-	version = "v3.26l"
+	version = "v3.26m"
 
 end
 

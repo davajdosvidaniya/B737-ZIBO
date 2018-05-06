@@ -77,6 +77,9 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26m:
+- fixed bugs (A/T, Descent now,...)
+
 3.26l:
 ------
 - improved graphics (switches)
