@@ -10626,6 +10626,10 @@ function B738_calc_rte()
 					legs_data[calc_rte_act][2] = legs_data[calc_rte_act-1][2]		-- brg
 					legs_data[calc_rte_act][18] = 0
 					legs_data[calc_rte_act][3] = 0		-- distance
+				elseif legs_data[calc_rte_act][1] == "PPOS" then
+					legs_data[calc_rte_act][2] = 0
+					legs_data[calc_rte_act][18] = 0
+					legs_data[calc_rte_act][3] = 0		-- distance
 				else
 					find_txt = legs_data[calc_rte_act][1]
 					if string.len(find_txt) == 0 then
@@ -10764,6 +10768,10 @@ function B738_calc_rte2()
 						legs_data2[calc_rte_act2][7] = legs_data2[calc_rte_act2-1][7]
 						legs_data2[calc_rte_act2][8] = legs_data2[calc_rte_act2-1][8]
 						legs_data2[calc_rte_act2][2] = legs_data2[calc_rte_act2-1][2]		-- brg
+						legs_data2[calc_rte_act2][18] = 0
+						legs_data2[calc_rte_act2][3] = 0		-- distance
+					elseif legs_data2[calc_rte_act2][1] == "PPOS" then
+						legs_data2[calc_rte_act2][2] = 0
 						legs_data2[calc_rte_act2][18] = 0
 						legs_data2[calc_rte_act2][3] = 0		-- distance
 					else
@@ -18134,49 +18142,157 @@ end
 	-- des_app2_old = "------"
 	-- des_app_tns2_old = "------"
 
+-- function B738_mod_change_old()
+	
+	-- local ii = 0
+	-- local jj = 0
+	-- local kk = 0
+	-- local mod_idx = 0
+	-- local mod_idx2 = 0
+	-- local found_mod_idx = 0
+	-- local add_new_enable = 0
+	
+	-- if simDR_radio_height_pilot_ft > 50 then
+		-- if offset ~= last_offset then
+			-- if legs_delete ~= 0 then
+				-- if mod_offset == 0 then
+					-- mod_offset = last_offset
+				-- end
+			-- else
+				-- mod_offset = 0
+			-- end
+		-- end
+		-- if offset <= legs_num and offset <= legs_num2 and offset > 0 then
+			-- if mod_offset ~= 0 and rte_add_sid_act == 0 and rte_add_star_act == 0 and rte_add_app_act == 0 then
+				-- if legs_data[offset][1] == legs_data2[offset][1] and legs_data[offset][7] == legs_data2[offset][7]
+				-- and legs_data[offset][8] == legs_data2[offset][8] then
+					-- mod_idx = offset	-- + 1
+					-- mod_idx2 = offset
+				-- else
+					-- if offset + 1 > legs_num + 1 then
+						-- mod_idx = mod_offset + 1
+						-- mod_idx2 = offset + 1
+					-- else
+						-- if legs_data[offset+1][1] == legs_data2[offset][1] and legs_data[offset+1][7] == legs_data2[offset][7]
+						-- and legs_data[offset+1][8] == legs_data2[offset][8] then
+							-- mod_idx = offset 	--+ 1
+							-- mod_idx2 = offset
+						-- else
+							-- mod_idx = mod_offset + 1
+							-- mod_idx2 = offset + 1
+						-- end
+					-- end
+				-- end
+				-- if mod_idx <= legs_num2 + 1 and mod_idx > 0 then
+					-- -- copy to legs_data2b
+					-- kk = 0
+					-- legs_data2b = {}
+					-- for ii = mod_idx, legs_num2 + 1 do
+						-- kk = kk + 1
+						-- legs_data2b[kk] = {}
+						-- for jj = 1, MAX_LEGS_DATA do
+							-- legs_data2b[kk][jj] = legs_data2[ii][jj]
+						-- end
+					-- end
+					-- legs_num2b = kk - 1
+					
+					-- -- copy legs to legs2
+					-- if offset <= legs_num2 then
+						-- if legs_data2[offset][17] > 99 then
+							-- add_new_enable = 1
+						-- end
+					-- end
+					-- copy_to_legsdata2()
+					
+					-- -- copy mod changes
+					-- kk = mod_idx2 - 1	--offset
+					-- for ii = 1, legs_num2b + 1 do
+						-- kk = kk + 1
+						-- legs_data2[kk] = {}
+						-- for jj = 1, MAX_LEGS_DATA do
+							-- legs_data2[kk][jj] = legs_data2b[ii][jj]
+						-- end
+					-- end
+					-- legs_num2 = kk - 1
+					
+					-- if add_new_enable == 1 and offset <= legs_num2 then
+						-- legs_data2[offset][17] = legs_data2[offset][17] + 100
+					-- end
+					
+				-- end
+				-- mod_offset = 0
+			-- end
+		-- end
+	-- else
+		-- mod_offset = 0
+	-- end
+	-- --B738DR_fms_test = mod_offset
+-- end
+
 function B738_mod_change()
 	
+	local mod_idx = 0
+	local mod_idx2 = 0
 	local ii = 0
 	local jj = 0
 	local kk = 0
-	local mod_idx = 0
-	local mod_idx2 = 0
-	local found_mod_idx = 0
-	local add_new_enable = 0
+	local offset_mod_active = 0
 	
-	if simDR_radio_height_pilot_ft > 50 then
-		if offset ~= last_offset then
-			if legs_delete ~= 0 then
-				if mod_offset == 0 then
-					mod_offset = last_offset
-				end
-			else
-				mod_offset = 0
-			end
-		end
-		if offset <= legs_num and offset <= legs_num2 and offset > 0 then
-			if mod_offset ~= 0 and rte_add_sid_act == 0 and rte_add_star_act == 0 and rte_add_app_act == 0 then
-				if legs_data[offset][1] == legs_data2[offset][1] and legs_data[offset][7] == legs_data2[offset][7]
-				and legs_data[offset][8] == legs_data2[offset][8] then
-					mod_idx = offset	-- + 1
-					mod_idx2 = offset
-				else
-					if offset + 1 > legs_num + 1 then
-						mod_idx = mod_offset + 1
-						mod_idx2 = offset + 1
-					else
-						if legs_data[offset+1][1] == legs_data2[offset][1] and legs_data[offset+1][7] == legs_data2[offset][7]
-						and legs_data[offset+1][8] == legs_data2[offset][8] then
-							mod_idx = offset 	--+ 1
-							mod_idx2 = offset
-						else
-							mod_idx = mod_offset + 1
-							mod_idx2 = offset + 1
-						end
+	if offset ~= last_offset then
+		if legs_delete ~= 0 or hold_exec ~= 0 then
+			
+			if offset <= legs_num + 1 and offset <= legs_num2 + 1 and offset > 1 and legs_num2 > 0 then
+				
+				mod_idx = offset
+				mod_idx2 = offset
+				
+				if offset > 1 then
+					if legs_data2[offset-1][1] == "PPOS" or legs_intdir == 1 then
+						offset_mod_active = 1
 					end
 				end
-				if mod_idx <= legs_num2 + 1 and mod_idx > 0 then
-					-- copy to legs_data2b
+				
+				if offset_mod_active == 0 then
+					if legs_delete == 0 then
+						offset_mod_active = 4
+					else
+						if legs_data[offset][1] == legs_data2[offset][1] and legs_data[offset][7] == legs_data2[offset][7]
+						and legs_data[offset][8] == legs_data2[offset][8] then
+							--mod_idx = offset
+							mod_idx2 = offset - 1
+						end
+					end
+				else
+					if legs_data2[offset-1][1] == "PPOS" then
+						-- hold PPOS
+						if legs_data2[offset][1] == "DISCONTINUITY" then
+							mod_idx = offset - 1
+							mod_idx2 = offset - 1
+							if offset + 1 <= legs_num2 + 1 then
+								offset_mod_active = 3	-- HOLD PPOS with disco
+							else
+								offset_mod_active = 4
+							end
+						else
+							--mod_idx = offset
+							mod_idx = offset - 1
+							mod_idx2 = offset - 1
+							offset_mod_active = 2	-- HOLD PPOS without disco
+						end
+					else
+						if legs_delete == 0 then
+							offset_mod_active = 4
+						else
+							mod_idx = offset - 1
+							mod_idx2 = offset - 1
+							offset_mod_active = 1	-- direct
+						end
+					end
+					
+				end
+				
+				if offset_mod_active < 4 then
+					-- copy to legs_data2b to buffer
 					kk = 0
 					legs_data2b = {}
 					for ii = mod_idx, legs_num2 + 1 do
@@ -18186,19 +18302,21 @@ function B738_mod_change()
 							legs_data2b[kk][jj] = legs_data2[ii][jj]
 						end
 					end
-					legs_num2b = kk - 1
+					legs_num2b = kk
 					
-					-- copy legs to legs2
-					if offset <= legs_num2 then
-						if legs_data2[offset][17] > 99 then
-							add_new_enable = 1
+					kk = 0
+					-- copy to legs_data2 from legs_data
+					legs_data2 = {}
+					for ii = 1, mod_idx2 do
+						kk = kk + 1
+						legs_data2[kk] = {}
+						for jj = 1, MAX_LEGS_DATA do
+							legs_data2[kk][jj] = legs_data[ii][jj]
 						end
 					end
-					copy_to_legsdata2()
 					
-					-- copy mod changes
-					kk = mod_idx2 - 1	--offset
-					for ii = 1, legs_num2b + 1 do
+					-- copy buffer to legs_data2
+					for ii = 1, legs_num2b do
 						kk = kk + 1
 						legs_data2[kk] = {}
 						for jj = 1, MAX_LEGS_DATA do
@@ -18207,20 +18325,76 @@ function B738_mod_change()
 					end
 					legs_num2 = kk - 1
 					
-					if add_new_enable == 1 and offset <= legs_num2 then
-						legs_data2[offset][17] = legs_data2[offset][17] + 100
+					if offset_mod_active == 2 then
+						if legs_data[offset-1][1] == legs_data2[offset+1][1] and legs_data[offset-1][7] == legs_data2[offset+1][7]
+						and legs_data[offset-1][8] == legs_data2[offset+1][8] then
+							-- copy to buffer
+							kk = 0
+							legs_data2b = {}
+							for ii = offset + 2, legs_num2 + 1 do
+								kk = kk + 1
+								legs_data2b[kk] = {}
+								for jj = 1, MAX_LEGS_DATA do
+									legs_data2b[kk][jj] = legs_data2[ii][jj]
+								end
+							end
+							legs_num2b = kk
+							-- copy buffer to legs_data2
+							kk = offset
+							for ii = 1, legs_num2b do
+								kk = kk + 1
+								legs_data2[kk] = {}
+								for jj = 1, MAX_LEGS_DATA do
+									legs_data2[kk][jj] = legs_data2b[ii][jj]
+								end
+							end
+							legs_num2 = kk - 1
+						end
+					elseif offset_mod_active == 3 then
+						if legs_data[offset-1][1] == legs_data2[offset+2][1] and legs_data[offset-1][7] == legs_data2[offset+2][7]
+						and legs_data[offset-1][8] == legs_data2[offset+2][8] then
+							-- copy to buffer
+							kk = 0
+							legs_data2b = {}
+							for ii = offset + 3, legs_num2 + 1 do
+								kk = kk + 1
+								legs_data2b[kk] = {}
+								for jj = 1, MAX_LEGS_DATA do
+									legs_data2b[kk][jj] = legs_data2[ii][jj]
+								end
+							end
+							legs_num2b = kk
+							-- copy buffer to legs_data2
+							kk = offset + 1
+							for ii = 1, legs_num2b do
+								kk = kk + 1
+								legs_data2[kk] = {}
+								for jj = 1, MAX_LEGS_DATA do
+									legs_data2[kk][jj] = legs_data2b[ii][jj]
+								end
+							end
+							legs_num2 = kk - 1
+						end
 					end
 					
+					if legs_intdir == 1 then
+						legs_intdir_idx = offset
+					end
+						
+					calc_rte_enable2 = 1
 				end
-				mod_offset = 0
 			end
 		end
-	else
-		mod_offset = 0
 	end
-	--B738DR_fms_test = mod_offset
+	if hold_exec ~= 0 then
+		if offset <= legs_num + 1 and offset <= legs_num2 + 1 and offset > 0 and legs_num2 > 0 then
+			if legs_data2[offset][1] == "PPOS" then
+				legs_data2[offset][7] = simDR_latitude
+				legs_data2[offset][8] = simDR_longitude
+			end
+		end
+	end
 end
-
 
 function nav_data_find(nav_data_inp)
 	
@@ -26231,7 +26405,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 					rte_add_dep_arr()
 				else
 					-- rwy extension fpa RX...
-					n = tonumber(entry)
+					local n = tonumber(entry)
 					if entry == ">DELETE" then
 						rw_ext_fpa = "-.--"
 						entry = ""
@@ -27255,6 +27429,12 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 					end
 				end
 			else
+				local n = 0
+				local kk = 0
+				local ii = 0
+				local jj = 0
+				local lock_hold_ppos = 0
+				
 				if exec_load_fpln == 1 then
 					exec_load_fpln = 2
 					-- ACTIVATE Flight plan
@@ -27280,16 +27460,118 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 							--act_page = 1
 						else
 							if in_flight_mode == 1 then
-								-- HOLD at PPOS
-								item_sel = 0
-								item_sel_act = 0
-								item_sel_via = 0
-								new_hold_wpt = "PPOS"
-								entry = ""
-								hold_exec = 1
-								page_hold = 1
-								page_legs = 0
-								act_page = 1
+								n = 0
+								if hold_data_num2 > 0 then
+									for kk = 1, hold_data_num2 do
+										if hold_data2[kk] >= offset then
+											n = kk
+											break
+										end
+									end
+									if n > 0 then
+										if legs_data2[hold_data2[n]][1] == "PPOS" then
+											lock_hold_ppos = 1
+										end
+									end
+								end
+								if lock_hold_ppos == 0 then
+									-- HOLD at PPOS
+									item_sel = 0
+									item_sel_act = 0
+									item_sel_via = 0
+									--new_hold_wpt = "PPOS"
+									entry = ""
+									hold_exec = 1
+									page_hold = 1
+									page_legs = 0
+									act_page = 1
+									--new_hold = 1
+									--create new hold
+									-- copy legs_data2 to buffer [offset .. end]
+									kk = 0
+									legs_data2b = {}
+									for ii = offset, legs_num2 + 1 do
+										kk = kk + 1
+										legs_data2b[kk] = {}
+										for jj = 1, MAX_LEGS_DATA do
+											legs_data2b[kk][jj] = legs_data2[ii][jj]
+										end
+									end
+									legs_num2b = kk
+									
+									-- entry HOLD PPOS
+									n = offset
+									legs_data2[n] = {}
+									legs_data2[n][1] = "PPOS"
+									legs_data2[n][2] = 0
+									legs_data2[n][3] = 0
+									legs_data2[n][4] = simDR_airspeed_pilot
+									legs_data2[n][5] = 0	-- altitude restrict
+									legs_data2[n][6] = 0	-- altitude restrict type
+									legs_data2[n][7] = 0		-- latitude
+									legs_data2[n][8] = 0		-- longitude
+									legs_data2[n][9] = ""			-- via id
+									legs_data2[n][10] = 0		-- calc speed
+									legs_data2[n][11] = 0		-- calc altitude
+									legs_data2[n][12] = 0		-- calc altitude vnav pth
+									legs_data2[n][13] = 0
+									legs_data2[n][14] = 0		-- rest alt
+									legs_data2[n][15] = 0		-- last fuel
+									legs_data2[n][16] = ""
+									legs_data2[n][17] = 200		-- spd flag 0-default restrict, 1-custom restrict
+									legs_data2[n][18] = 0		-- alt flag 0-default restrict, 1-custom restrict
+									legs_data2[n][19] = 0		-- 0-none, 1-SID, 2-STAR, 3-APP
+									legs_data2[n][20] = 0	-- vpa
+									legs_data2[n][21] = 1		-- HOLD right default
+									legs_data2[n][22] = ""
+									legs_data2[n][23] = 0
+									legs_data2[n][24] = 0
+									legs_data2[n][25] = 0
+									legs_data2[n][26] = 0
+									legs_data2[n][27] = ""
+									legs_data2[n][28] = ""
+									legs_data2[n][29] = string.format("%03d", simDR_mag_hdg * 10)		-- ""
+									legs_data2[n][30] = ""
+									legs_data2[n][31] = "HM"
+									legs_data2[n][32] = 0
+									legs_data2[n][33] = ""
+									legs_data2[n][34] = ""
+									legs_data2[n][35] = ""
+									legs_data2[n][36] = 0	--4
+									legs_data2[n][37] = 0
+									legs_data2[n][38] = ""
+									legs_data2[n][39] = ""
+									legs_data2[n][40] = 0
+									legs_data2[n][41] = 0
+									-- add disco
+									n = n + 1
+									legs_data2[n] = {}
+									rte_add_disco(n)
+									-- paste legs_data2 from buffer
+									for ii = 1, legs_num2b do
+										n = n + 1
+										legs_data2[n] = {}
+										for jj = 1, MAX_LEGS_DATA do
+											legs_data2[n][jj] = legs_data2b[ii][jj]
+										end
+									end
+									legs_num2 = n - 1
+									
+									-- create hold data
+									new_hold_idx = 0
+									hold_data_num2 = 0
+									hold_data2 = {}
+									for ii = 1, legs_num2 do
+										if legs_data2[ii][31] == "HA" or legs_data2[ii][31] == "HF" or legs_data2[ii][31] == "HM" then
+											hold_data_num2 = hold_data_num2 + 1
+											hold_data2[hold_data_num2] = ii
+											--if legs_data2[ii][17] == 100 then
+												--new_hold_idx = hold_data_num2
+											--end
+										end
+									end
+									--dump_fpln2()
+								end
 							end
 						end
 					end
@@ -28793,6 +29075,105 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 										hold_offset = qq
 										break
 									end
+								end
+								if legs_data[offset][1] == "PPOS" then
+									legs_data[offset][7] = simDR_latitude
+									legs_data[offset][8] = simDR_longitude
+									legs_data2[offset][7] = simDR_latitude
+									legs_data2[offset][8] = simDR_longitude
+									
+									-- PPOS HOLD activated
+									
+									local nd_x = 0
+									local relative_brg = 0
+									
+									hold_circuit = 0
+									simDR_fmc_trk = tonumber(legs_data[offset][29]) / 10
+									
+									-------------------------------------------------------------
+									-- calculated Holding waypoints
+									hold_crs1 = tonumber(legs_data[offset][29]) / 10
+									hold_crs2 = (hold_crs1 + 180) % 360
+									
+									hold_radius = 1.7	-- 1.5 NM -> about 3 deg/sec at 250kts
+									hold_lenght = calc_hold_dist(offset)
+									--hold_radius = calc_hold_rad(legs_data[offset][5])
+									--hold_radius = 2.2
+									
+									if legs_data[offset][21] == 0 then
+										-- left
+										nd_x = (hold_crs1 + 270) % 360
+										calc_brg_dist(legs_data[offset][7], legs_data[offset][8], math.rad(nd_x), hold_radius)
+										hold_lat1 = calc_lat
+										hold_lon1 = calc_lon
+										calc_brg_dist(hold_lat1, hold_lon1, math.rad(hold_crs2), hold_lenght)
+										hold_lat2 = calc_lat
+										hold_lon2 = calc_lon
+										calc_brg_dist(hold_lat2, hold_lon2, math.rad(nd_x), hold_radius)
+										hold_opposite_lat = calc_lat
+										hold_opposite_lon = calc_lon
+									else
+										-- right
+										nd_x = (hold_crs1 + 90) % 360
+										calc_brg_dist(legs_data[offset][7], legs_data[offset][8], math.rad(nd_x), hold_radius)
+										hold_lat1 = calc_lat
+										hold_lon1 = calc_lon
+										calc_brg_dist(hold_lat1, hold_lon1, math.rad(hold_crs2), hold_lenght)
+										hold_lat2 = calc_lat
+										hold_lon2 = calc_lon
+										calc_brg_dist(hold_lat2, hold_lon2, math.rad(nd_x), hold_radius)
+										hold_opposite_lat = calc_lat
+										hold_opposite_lon = calc_lon
+									end
+									
+									-------------------------------------------------------------
+									
+									-- entry HOLD pattern
+									relative_brg = (simDR_ahars_mag_hdg - simDR_fmc_trk + 360) % 360
+									if relative_brg > 180 then
+										relative_brg = relative_brg - 360
+									end
+									
+									if relative_brg >= 110 then
+										-- Tear-drop
+										-- simDR_fmc_trk = ((tonumber(legs_data[offset][29]) / 10) + 120) % 360
+										-- if legs_data[offset][21] == 0 then
+											-- simDR_fmc_trk = (simDR_fmc_trk + 90) % 360
+										-- end
+										B738DR_hold_phase = 4
+									elseif relative_brg <= -70 then
+										-- Parallel
+										-- simDR_fmc_trk = ((tonumber(legs_data[offset][29]) / 10) + 180) % 360
+										B738DR_hold_phase = 5
+									else
+										-- Direct
+										--B738DR_hold_phase = 0
+										B738DR_hold_phase = 1
+										hold_term = 0
+									end
+									
+									hold_time_set = 90	-- default time
+									hold_dist_set = 0
+									if string.len(legs_data[offset][30]) == 4 then
+										if string.sub(legs_data[offset][30], 1, 1) == "T" then
+											hold_time_set = tonumber(string.sub(legs_data[offset][30], 2, -1)) / 1 * 6	-- in secs
+											if hold_time_set == 0 then
+												hold_time_set = 90
+											end
+										else
+											hold_dist_set = tonumber(legs_data[offset][30])
+											if hold_dist_set == nil then
+												hold_dist_set = 0
+											else
+												hold_dist_set = hold_dist_set / 10
+											end
+										end
+									end
+									
+									simDR_fmc_trk_turn = -1
+									hold_timer = 0
+									nav_mode = 3
+									legs_intdir_act = 0
 								end
 							end
 						--end
@@ -30612,6 +30993,9 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 			local ii = 0
 			local jj = 0
 			local fix_idx = 0
+      local fix_x_lat = 0
+      local fix_x_lon = 0
+      
 			if entry2 == ">DELETE" then
 				if fix_data_num == act_page2 then
 					fix_data_num = fix_data_num - 1
@@ -45965,12 +46349,14 @@ function B738_fmc_hold(exec_light_in)
 			hold_page_offset = act_page + hold_offset - 1
 			
 			hold_offset_idx = hold_data2[hold_page_offset]
+			
 			local hold_fix = legs_data2[hold_offset_idx][1]
 			local hold_quad = "-"
 			local hold_radial = "---"
 			local hold_inbd = "---"
-			x_temp = tonumber(legs_data2[hold_offset_idx][29]) / 10
+			x_temp = tonumber(legs_data2[hold_offset_idx][29])
 			if x_temp ~= nil then
+				x_temp = x_temp / 10
 				hold_inbd = string.format("%03d", x_temp)
 			end
 			local hold_turn = legs_data2[hold_offset_idx][21]
@@ -46015,7 +46401,7 @@ function B738_fmc_hold(exec_light_in)
 				
 			
 			local hold_active = 0
-			if legs_num > 1 and hold_offset_idx == offset then
+			if legs_num > 1 and hold_offset_idx == offset and exec_light_in == 0 then
 				hold_active = 1
 			end
 			if hold_active == 0 then
@@ -46058,7 +46444,6 @@ function B738_fmc_hold(exec_light_in)
 				line2_s   = "                       Z"
 				
 				line3_x   = " INBD CRS/DIR   EFC TIME"
-				--line3_l   = "---`/R TURN        ---- "
 				line3_l = hold_inbd .. "`/"
 				if hold_turn == -1 then
 					line3_l = line3_l .. "      "
@@ -57180,7 +57565,7 @@ function B738_displ_wpt2()
 										hold_obj = hold_obj + 1
 									--end
 								else
-									if wpt_2d_idx[ii] <= legs_num then
+									if wpt_2d_idx[ii] <= legs_num and wpt_2d_idx[ii] > offset then
 										if legs_data[wpt_2d_idx[ii]+1][31] == "HA" or legs_data[wpt_2d_idx[ii]+1][31] == "HF" or legs_data[wpt_2d_idx[ii]+1][31] == "HM" then
 										
 											if B738DR_missed_app_act == 0 and (wpt_2d_idx[ii]+1) >= first_miss_app_idx and (wpt_2d_idx[ii]+1) <= last_miss_app_idx then
@@ -57844,7 +58229,7 @@ function B738_displ_wpt2()
 										hold_obj_fo = hold_obj_fo + 1
 									--end
 								else
-									if wpt_2d_idx[ii] <= legs_num then
+									if wpt_2d_idx[ii] <= legs_num and wpt_2d_idx[ii] > offset then
 										if legs_data[wpt_2d_idx[ii]+1][31] == "HA" or legs_data[wpt_2d_idx[ii]+1][31] == "HF" or legs_data[wpt_2d_idx[ii]+1][31] == "HM" then
 										
 											if B738DR_missed_app_act == 0 and (wpt_2d_idx[ii]+1) >= first_miss_app_idx and (wpt_2d_idx[ii]+1) <= last_miss_app_idx then
@@ -71710,7 +72095,7 @@ temp_ils4 = ""
 	rw_ext_fpa = "-.--"
 	gp_available = 0
 	
-	version = "v3.26m"
+	version = "v3.26n"
 
 end
 

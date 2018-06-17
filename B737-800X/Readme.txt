@@ -77,6 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26n:
+------
+- add PPOS HOLD
+- improved textures and reflections by AudioBirdXP (gauges glass, windshield, screen dirt, switches, yoke)
+
+
 3.26m:
 - fixed bugs (A/T, Descent now,...)
 
