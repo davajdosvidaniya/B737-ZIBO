@@ -1403,6 +1403,7 @@ ff_sample = 0
 	rw_ext_dist = "--.-"
 	rw_ext_fpa = "-.--"
 	change_desc_to_path = 0
+	fms_recalc = 0
 	
 --*************************************************************************************--
 --** 				             FIND X-PLANE DATAREFS            			    	 **--
@@ -5857,6 +5858,7 @@ function fpln_del_leg(idx_copy, idx_first)
 		rte_copy(idx_copy)
 		rte_paste(idx_first)
 		legs_delete = 1
+		fms_recalc = 1
 		calc_rte_enable2 = 1
 		--dump_leg()
 	end
@@ -6041,6 +6043,7 @@ function fpln_add_leg_dir2(idx_copy, idx_paste, idx_via)
 	dir_disco = 0
 	rte_paste(legs_num2 + 1)
 	legs_delete = 1
+	fms_recalc = 1
 	calc_rte_enable2 = 1
 end
 
@@ -6110,6 +6113,7 @@ function fpln_add_leg_dir(idx_copy, idx_paste, idx_via, wpt_idx)
 	
 	rte_paste(legs_num2 + 1)
 	legs_delete = 1
+	fms_recalc = 1
 	calc_rte_enable2 = 1
 end
 
@@ -12001,6 +12005,7 @@ function rte_add_wpt(aaa, entry_in, mode_in)
 				rte_paste(ii)
 				--if legs_num > 1 then
 					legs_delete = 1
+					fms_recalc = 1
 				--end
 				calc_rte_enable2 = 1
 			
@@ -12242,6 +12247,7 @@ function rte_add_wpt3(aaa, id_nav, id_brg, id_dist, entry_in, mode_in)
 					ii = legs_num2 + 1
 					rte_paste(ii)
 					legs_delete = 1
+					fms_recalc = 1
 					calc_rte_enable2 = 1
 				else
 					add_fmc_msg(INVALID_INPUT, 1)
@@ -12485,6 +12491,7 @@ function rte_add_wpt_cust(aaa, id_cust, lat_cust, lon_cust, entry_in, mode_in)
 				ii = legs_num2 + 1
 				rte_paste(ii)
 				legs_delete = 1
+				fms_recalc = 1
 				calc_rte_enable2 = 1
 		
 		if mode_in == 0 then
@@ -12544,6 +12551,7 @@ function rte_edit_hold(aaa)
 	legs_data2[aaa][31] = "HM"	-- HOLD manual termination
 	
 	legs_delete = 1
+	fms_recalc = 1
 	calc_rte_enable2 = 1
 	
 end
@@ -18285,7 +18293,7 @@ function rte_add_dep_arr()
 	des_app_tns_exec = 0
 	calc_rte_enable2 = 1
 	legs_delete = 1
-	
+	fms_recalc = 1
 	
 end
 
@@ -18548,6 +18556,19 @@ function B738_mod_change()
 		end
 	end
 	B738DR_legs_mod_active = legs_delete
+	
+	if fms_recalc == 1 then
+		if is_timer_scheduled(rst_fms_recalc) == true then
+			stop_timer(rst_fms_recalc)
+		end
+		run_after_time(rst_fms_recalc, 7)
+		fms_recalc = 2
+	elseif fms_recalc == 3 then
+		if vnav_update_mod == 0 then
+			fms_recalc = 0
+		end
+	end
+	
 	
 end
 
@@ -18864,6 +18885,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				rte_add_wpt2(item)
 				--if legs_num > 1 then
 					legs_delete = 1
+					fms_recalc = 1
 				--end
 			end
 		elseif page_sel_wpt2 == 1 then
@@ -18886,6 +18908,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt4(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_ref_sel == 1 then
 			
@@ -19161,6 +19184,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							calc_rte_enable2 = 1
 						end
 						legs_delete = 1
+						fms_recalc = 1
 						entry = ""
 					end
 					item_sel = 0
@@ -19299,6 +19323,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 							item_sel = 0
 							item_sel_act = 0
 							legs_delete = 1
+							fms_recalc = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
@@ -19358,6 +19383,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						item_sel = 0
 						item_sel_act = 0
 						legs_delete = 1
+						fms_recalc = 1
 					end
 					item_sel = 0
 					item_sel_act = 0
@@ -20400,6 +20426,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt2(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_sel_wpt2 == 1 then
 			
@@ -20421,6 +20448,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt4(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_ref_sel == 1 then
 			
@@ -20615,6 +20643,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						calc_rte_enable2 = 1
 					end
 					legs_delete = 1
+					fms_recalc = 1
 					entry = ""
 				elseif string.len(entry) > 1 and string.len(entry) < 6 and item_sel == 0 then
 					if offset_act == 3 then
@@ -20700,6 +20729,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 							item_sel = 0
 							item_sel_act = 0
 							legs_delete = 1
+							fms_recalc = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
@@ -20726,6 +20756,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 						item_sel = 0
 						item_sel_act = 0
 						legs_delete = 1
+						fms_recalc = 1
 					end
 					item_sel = 0
 					item_sel_act = 0
@@ -21571,6 +21602,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt2(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_sel_wpt2 == 1 then
 			
@@ -21592,6 +21624,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt4(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_ref_sel == 1 then
 			
@@ -21980,6 +22013,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						calc_rte_enable2 = 1
 					end
 					legs_delete = 1
+					fms_recalc = 1
 					entry = ""
 				elseif string.len(entry) > 1 and string.len(entry) < 6 and item_sel == 0 then
 					if offset_act == 3 then
@@ -22065,6 +22099,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							item_sel = 0
 							item_sel_act = 0
 							legs_delete = 1
+							fms_recalc = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
@@ -22091,6 +22126,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 						item_sel = 0
 						item_sel_act = 0
 						legs_delete = 1
+						fms_recalc = 1
 					end
 					item_sel = 0
 					item_sel_act = 0
@@ -22610,6 +22646,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt2(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_sel_wpt2 == 1 then
 			
@@ -22631,6 +22668,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt4(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_ref_sel == 1 then
 			
@@ -22933,6 +22971,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						calc_rte_enable2 = 1
 					end
 					legs_delete = 1
+					fms_recalc = 1
 					entry = ""
 				elseif string.len(entry) > 1 and string.len(entry) < 6 and item_sel == 0 then
 					if offset_act == 3 then
@@ -23018,6 +23057,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 							item_sel = 0
 							item_sel_act = 0
 							legs_delete = 1
+							fms_recalc = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
@@ -23044,6 +23084,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 						item_sel = 0
 						item_sel_act = 0
 						legs_delete = 1
+						fms_recalc = 1
 					end
 					item_sel = 0
 					item_sel_act = 0
@@ -23527,6 +23568,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt2(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		
 		elseif page_sel_wpt2 == 1 then
@@ -23549,6 +23591,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt4(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_ref_sel == 1 then
 			
@@ -23819,6 +23862,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 					end
 					calc_rte_enable2 = 1
 					legs_delete = 1
+					fms_recalc = 1
 					entry = ""
 				elseif string.len(entry) > 1 and string.len(entry) < 6 and item_sel == 0 then
 					if offset_act == 3 then
@@ -23908,6 +23952,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 							item_sel_via = 0
 							item_sel_act = 0
 							legs_delete = 1
+							fms_recalc = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 							item_sel = 0
@@ -23938,6 +23983,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 						item_sel_act = 0
 						item_sel_via = 0
 						legs_delete = 1
+						fms_recalc = 1
 					end
 				end
 			end
@@ -24928,6 +24974,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 						create_fpln()
 						calc_rte_enable2 = 1
 						legs_delete = 1
+						fms_recalc = 1
 						item_sel_via = 0
 						entry = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
@@ -24955,6 +25002,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 				set_spd_alt_rest(item)
 				if entry ~= INVALID_INPUT then
 					legs_delete = 1
+					fms_recalc = 1
 				end
 		elseif page_hold == 1 then
 			local strlen = string.len(entry)
@@ -25146,6 +25194,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 				set_spd_alt_rest(B738DR_rest_wpt_alt_idx)
 				if entry ~= INVALID_INPUT then
 					legs_delete = 1
+					fms_recalc = 1
 				end
 			end
 		elseif page_menu == 1 then
@@ -25363,6 +25412,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 					legs_data2[item][39] = ""
 					entry = ""
 					legs_delete = 1
+					fms_recalc = 1
 				else
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
@@ -25407,6 +25457,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 										end
 										entry = ""
 										legs_delete = 1
+										fms_recalc = 1
 									end
 								end
 							end
@@ -25570,6 +25621,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 						create_fpln()
 						calc_rte_enable2 = 1
 						legs_delete = 1
+						fms_recalc = 1
 						item_sel_via = 0
 						entry = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
@@ -25591,6 +25643,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 				set_spd_alt_rest(item)
 				if entry ~= INVALID_INPUT then
 					legs_delete = 1
+					fms_recalc = 1
 				end
 		elseif page_takeoff == 1 then
 			-- entry VR
@@ -25859,6 +25912,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 					legs_data2[item][39] = ""
 					entry = ""
 					legs_delete = 1
+					fms_recalc = 1
 				else
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
@@ -25903,6 +25957,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 										end
 										entry = ""
 										legs_delete = 1
+										fms_recalc = 1
 									end
 								end
 							end
@@ -26026,6 +26081,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 						create_fpln()
 						calc_rte_enable2 = 1
 						legs_delete = 1
+						fms_recalc = 1
 						item_sel_via = 0
 						entry = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
@@ -26046,6 +26102,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 				set_spd_alt_rest(item)
 				if entry ~= INVALID_INPUT then
 					legs_delete = 1
+					fms_recalc = 1
 				end
 					
 		elseif page_takeoff == 1 then
@@ -26479,6 +26536,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 					legs_data2[item][39] = ""
 					entry = ""
 					legs_delete = 1
+					fms_recalc = 1
 				else
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
@@ -26523,6 +26581,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 										end
 										entry = ""
 										legs_delete = 1
+										fms_recalc = 1
 									end
 								end
 							end
@@ -26636,6 +26695,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 						create_fpln()
 						calc_rte_enable2 = 1
 						legs_delete = 1
+						fms_recalc = 1
 						item_sel_via = 0
 						entry = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
@@ -26656,6 +26716,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 				set_spd_alt_rest(item)
 				if entry ~= INVALID_INPUT then
 					legs_delete = 1
+					fms_recalc = 1
 				end
 			
 			
@@ -27048,6 +27109,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 					legs_data2[item][39] = ""
 					entry = ""
 					legs_delete = 1
+					fms_recalc = 1
 				else
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
@@ -27092,6 +27154,7 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 										end
 										entry = ""
 										legs_delete = 1
+										fms_recalc = 1
 									end
 								end
 							end
@@ -27179,6 +27242,7 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 						create_fpln()
 						calc_rte_enable2 = 1
 						legs_delete = 1
+						fms_recalc = 1
 						item_sel_via = 0
 						entry = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
@@ -27199,6 +27263,7 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 				set_spd_alt_rest(item)
 				if entry ~= INVALID_INPUT then
 					legs_delete = 1
+					fms_recalc = 1
 				end
 		elseif page_takeoff == 2 then
 			-- entry THR REDUCTION ALT AGL
@@ -27440,6 +27505,7 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 					legs_data2[item][39] = ""
 					entry = ""
 					legs_delete = 1
+					fms_recalc = 1
 				else
 					if strlen > 4 and strlen < 8 and string.sub(entry, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry, 1, 3))
@@ -27484,6 +27550,7 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 										end
 										entry = ""
 										legs_delete = 1
+										fms_recalc = 1
 									end
 								end
 							end
@@ -30025,6 +30092,7 @@ function B738_autopilot_alt_interv_CMDhandler(phase, duration)
 								-- break
 							-- end
 							if delete_enabled == 1 then
+								fms_recalc = 1
 								break
 							end
 						end
@@ -30093,6 +30161,7 @@ function B738_autopilot_alt_interv_CMDhandler(phase, duration)
 								-- break
 							-- end
 							if delete_enabled == 1 then
+								fms_recalc = 1
 								break
 							end
 						end
@@ -31188,6 +31257,7 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 				rte_add_wpt2(item)
 				--if legs_num > 1 then
 					legs_delete = 1
+					fms_recalc = 1
 				--end
 			end
 		elseif page_sel_wpt2_2 == 1 then
@@ -31210,6 +31280,7 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt4(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_ref_sel2 == 1 then
 			
@@ -31485,6 +31556,7 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 							calc_rte_enable2 = 1
 						end
 						legs_delete = 1
+						fms_recalc = 1
 						entry2 = ""
 					end
 					item_sel2 = 0
@@ -31623,6 +31695,7 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 							item_sel2 = 0
 							item_sel_act2 = 0
 							legs_delete = 1
+							fms_recalc = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
@@ -31682,6 +31755,7 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 						item_sel2 = 0
 						item_sel_act2 = 0
 						legs_delete = 1
+						fms_recalc = 1
 					end
 					item_sel2 = 0
 					item_sel_act2 = 0
@@ -32714,6 +32788,7 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt2(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_sel_wpt2_2 == 1 then
 			
@@ -32735,6 +32810,7 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt4(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_ref_sel2 == 1 then
 			
@@ -32929,6 +33005,7 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 						calc_rte_enable2 = 1
 					end
 					legs_delete = 1
+					fms_recalc = 1
 					entry2 = ""
 				elseif string.len(entry2) > 1 and string.len(entry2) < 6 and item_sel2 == 0 then
 					if offset_act == 3 then
@@ -33014,6 +33091,7 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 							item_sel2 = 0
 							item_sel_act2 = 0
 							legs_delete = 1
+							fms_recalc = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
@@ -33040,6 +33118,7 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 						item_sel2 = 0
 						item_sel_act2 = 0
 						legs_delete = 1
+						fms_recalc = 1
 					end
 					item_sel2 = 0
 					item_sel_act2 = 0
@@ -33885,6 +33964,7 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt2(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_sel_wpt2_2 == 1 then
 			
@@ -33906,6 +33986,7 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt4(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_ref_sel2 == 1 then
 			
@@ -34294,6 +34375,7 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 						calc_rte_enable2 = 1
 					end
 					legs_delete = 1
+					fms_recalc = 1
 					entry2 = ""
 				elseif string.len(entry2) > 1 and string.len(entry2) < 6 and item_sel2 == 0 then
 					if offset_act == 3 then
@@ -34379,6 +34461,7 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 							item_sel2 = 0
 							item_sel_act2 = 0
 							legs_delete = 1
+							fms_recalc = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
@@ -34405,6 +34488,7 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 						item_sel2 = 0
 						item_sel_act2 = 0
 						legs_delete = 1
+						fms_recalc = 1
 					end
 					item_sel2 = 0
 					item_sel_act2 = 0
@@ -34924,6 +35008,7 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt2(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_sel_wpt2_2 == 1 then
 			
@@ -34945,6 +35030,7 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt4(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_ref_sel2 == 1 then
 			
@@ -35247,6 +35333,7 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 						calc_rte_enable2 = 1
 					end
 					legs_delete = 1
+					fms_recalc = 1
 					entry2 = ""
 				elseif string.len(entry2) > 1 and string.len(entry2) < 6 and item_sel2 == 0 then
 					if offset_act == 3 then
@@ -35332,6 +35419,7 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 							item_sel2 = 0
 							item_sel_act2 = 0
 							legs_delete = 1
+							fms_recalc = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 						end
@@ -35358,6 +35446,7 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 						item_sel2 = 0
 						item_sel_act2 = 0
 						legs_delete = 1
+						fms_recalc = 1
 					end
 					item_sel2 = 0
 					item_sel_act2 = 0
@@ -35841,6 +35930,7 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt2(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		
 		elseif page_sel_wpt2_2 == 1 then
@@ -35863,6 +35953,7 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 				-- select item
 				rte_add_wpt4(item)
 				legs_delete = 1
+				fms_recalc = 1
 			end
 		elseif page_ref_sel2 == 1 then
 			
@@ -36133,6 +36224,7 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 					end
 					calc_rte_enable2 = 1
 					legs_delete = 1
+					fms_recalc = 1
 					entry2 = ""
 				elseif string.len(entry2) > 1 and string.len(entry2) < 6 and item_sel2 == 0 then
 					if offset_act == 3 then
@@ -36222,6 +36314,7 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 							item_sel_act2 = 0
 							item_sel_via2 = 0
 							legs_delete = 1
+							fms_recalc = 1
 						else
 							add_fmc_msg(INVALID_INPUT, 1)
 							item_sel2 = 0
@@ -36252,6 +36345,7 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 						item_sel_act2 = 0
 						item_sel_via2 = 0
 						legs_delete = 1
+						fms_recalc = 1
 					end
 				end
 			end
@@ -37242,6 +37336,7 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 						create_fpln()
 						calc_rte_enable2 = 1
 						legs_delete = 1
+						fms_recalc = 1
 						item_sel_via2 = 0
 						entry2 = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
@@ -37269,6 +37364,7 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 				set_spd_alt_rest2(item)
 				if entry2 ~= INVALID_INPUT then
 					legs_delete = 1
+					fms_recalc = 1
 				end
 		elseif page_hold2 == 1 then
 			local strlen = string.len(entry2)
@@ -37460,6 +37556,7 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 				set_spd_alt_rest2(B738DR_rest_wpt_alt_idx)
 				if entry2 ~= INVALID_INPUT then
 					legs_delete = 1
+					fms_recalc = 1
 				end
 			end
 		elseif page_menu2 == 1 then
@@ -37677,6 +37774,7 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 					legs_data2[item][39] = ""
 					entry2 = ""
 					legs_delete = 1
+					fms_recalc = 1
 				else
 					if strlen > 4 and strlen < 8 and string.sub(entry2, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry2, 1, 3))
@@ -37721,6 +37819,7 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 										end
 										entry2 = ""
 										legs_delete = 1
+										fms_recalc = 1
 									end
 								end
 							end
@@ -37849,6 +37948,7 @@ function B738_fmc2_2R_CMDhandler(phase, duration)
 						create_fpln()
 						calc_rte_enable2 = 1
 						legs_delete = 1
+						fms_recalc = 1
 						item_sel_via2 = 0
 						entry2 = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
@@ -37870,6 +37970,7 @@ function B738_fmc2_2R_CMDhandler(phase, duration)
 				set_spd_alt_rest2(item)
 				if entry2 ~= INVALID_INPUT then
 					legs_delete = 1
+					fms_recalc = 1
 				end
 		elseif page_takeoff2 == 1 then
 			-- entry2 VR
@@ -38138,6 +38239,7 @@ function B738_fmc2_2R_CMDhandler(phase, duration)
 					legs_data2[item][39] = ""
 					entry2 = ""
 					legs_delete = 1
+					fms_recalc = 1
 				else
 					if strlen > 4 and strlen < 8 and string.sub(entry2, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry2, 1, 3))
@@ -38182,6 +38284,7 @@ function B738_fmc2_2R_CMDhandler(phase, duration)
 										end
 										entry2 = ""
 										legs_delete = 1
+										fms_recalc = 1
 									end
 								end
 							end
@@ -38304,6 +38407,7 @@ function B738_fmc2_3R_CMDhandler(phase, duration)
 						create_fpln()
 						calc_rte_enable2 = 1
 						legs_delete = 1
+						fms_recalc = 1
 						item_sel_via2 = 0
 						entry2 = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
@@ -38324,6 +38428,7 @@ function B738_fmc2_3R_CMDhandler(phase, duration)
 				set_spd_alt_rest2(item)
 				if entry2 ~= INVALID_INPUT then
 					legs_delete = 1
+					fms_recalc = 1
 				end
 					
 		elseif page_takeoff2 == 1 then
@@ -38757,6 +38862,7 @@ function B738_fmc2_3R_CMDhandler(phase, duration)
 					legs_data2[item][39] = ""
 					entry2 = ""
 					legs_delete = 1
+					fms_recalc = 1
 				else
 					if strlen > 4 and strlen < 8 and string.sub(entry2, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry2, 1, 3))
@@ -38801,6 +38907,7 @@ function B738_fmc2_3R_CMDhandler(phase, duration)
 										end
 										entry2 = ""
 										legs_delete = 1
+										fms_recalc = 1
 									end
 								end
 							end
@@ -38914,6 +39021,7 @@ function B738_fmc2_4R_CMDhandler(phase, duration)
 						create_fpln()
 						calc_rte_enable2 = 1
 						legs_delete = 1
+						fms_recalc = 1
 						item_sel_via2 = 0
 						entry2 = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
@@ -38934,6 +39042,7 @@ function B738_fmc2_4R_CMDhandler(phase, duration)
 				set_spd_alt_rest2(item)
 				if entry2 ~= INVALID_INPUT then
 					legs_delete = 1
+					fms_recalc = 1
 				end
 			
 			
@@ -39326,6 +39435,7 @@ function B738_fmc2_4R_CMDhandler(phase, duration)
 					legs_data2[item][39] = ""
 					entry2 = ""
 					legs_delete = 1
+					fms_recalc = 1
 				else
 					if strlen > 4 and strlen < 8 and string.sub(entry2, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry2, 1, 3))
@@ -39370,6 +39480,7 @@ function B738_fmc2_4R_CMDhandler(phase, duration)
 										end
 										entry2 = ""
 										legs_delete = 1
+										fms_recalc = 1
 									end
 								end
 							end
@@ -39457,6 +39568,7 @@ function B738_fmc2_5R_CMDhandler(phase, duration)
 						create_fpln()
 						calc_rte_enable2 = 1
 						legs_delete = 1
+						fms_recalc = 1
 						item_sel_via2 = 0
 						entry2 = ""
 					elseif item <= fpln_num2 then --and fpln_num2 > 1 then
@@ -39477,6 +39589,7 @@ function B738_fmc2_5R_CMDhandler(phase, duration)
 				set_spd_alt_rest2(item)
 				if entry2 ~= INVALID_INPUT then
 					legs_delete = 1
+					fms_recalc = 1
 				end
 		elseif page_takeoff2 == 2 then
 			-- entry2 THR REDUCTION ALT AGL
@@ -39718,6 +39831,7 @@ function B738_fmc2_5R_CMDhandler(phase, duration)
 					legs_data2[item][39] = ""
 					entry2 = ""
 					legs_delete = 1
+					fms_recalc = 1
 				else
 					if strlen > 4 and strlen < 8 and string.sub(entry2, 4, 4) == "/" then
 						local n = tonumber(string.sub(entry2, 1, 3))
@@ -39762,6 +39876,7 @@ function B738_fmc2_5R_CMDhandler(phase, duration)
 										end
 										entry2 = ""
 										legs_delete = 1
+										fms_recalc = 1
 									end
 								end
 							end
@@ -45115,8 +45230,7 @@ function B738_fmc_arr99(exec_light_in)
 		
 		-- Create APP Transitions
 		if des_app2 ~= "------" and des_app_rw_only == 0 then
-			--line2_x = line2_x .. "       TRANS"
-			right_line_x[2] = "TRANS"
+			--right_line_x[3] = "TRANS"
 			
 			if des_app_tns_list_num == 0 then
 				des_tns_sel[1] = "------"
@@ -45124,8 +45238,7 @@ function B738_fmc_arr99(exec_light_in)
 				des_tns_sel[3] = "------"
 				des_tns_sel[4] = "------"
 				des_tns_sel[5] = "------"
-				--line2_x = line2_x .. "       TRANS"
-				right_line[2] = "-NONE-"
+				--right_line[3] = "-NONE-"
 			else
 				jj = math.floor(des_app_tns_list_num / 3)	--2
 				kk = des_app_tns_list_num % 3	--2
@@ -45172,7 +45285,7 @@ function B738_fmc_arr99(exec_light_in)
 						B738DR_fms_ils_disable = 1
 					end
 				end
-				line2_x = "                    G/S "
+				right_line_x[2] = "G/S "
 				if B738DR_fms_ils_disable == 0 then
 					right_line[2] = "  /   >"
 					line2_g = "                 ON     "
@@ -46018,11 +46131,15 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 								line_s[ii] = "                 "
 								line_m[ii] = "    "
 							else
-								if legs_data2[jj][10] < 1 then
-									temp_string = string.format("%5.3f",legs_data2[jj][10])
-									temp_string = string.sub(temp_string, -4, -1)
+								if fms_recalc == 0 then
+									if legs_data2[jj][10] < 1 then
+										temp_string = string.format("%5.3f",legs_data2[jj][10])
+										temp_string = string.sub(temp_string, -4, -1)
+									else
+										temp_string = string.format("%4d",legs_data2[jj][10])
+									end
 								else
-									temp_string = string.format("%4d",legs_data2[jj][10])
+									temp_string = "----"
 								end
 								line_s[ii] = "             " .. temp_string
 								right_line[ii] = "    "
@@ -46045,9 +46162,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 								right_line[ii] = right_line[ii] .. "/----- "
 								line_m[ii] = line_m[ii] .. "       "
 							else
-								-- if calc_rte_enable2 ~= 0 then	--and legs_delete == 1 then
-									-- temp_string = " -----"
-								-- else
+								if fms_recalc == 0 then
 									if legs_data2[jj][11] > B738DR_trans_alt and jj <= td_idx then
 										temp_string = string.format("%05d",legs_data2[jj][11])
 										temp_string = " FL" .. string.sub(temp_string, 1, 3)
@@ -46057,7 +46172,9 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									else
 										temp_string = " " .. string.format("%5d",legs_data2[jj][11])
 									end
-								-- end
+								else
+									temp_string = " -----"
+								end
 								line_s[ii] = line_s[ii] .. temp_string
 								right_line[ii] = right_line[ii] .. "/      "
 								line_m[ii] = line_m[ii] .. "       "
@@ -46157,7 +46274,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									end
 								elseif legs_data2[jj][5] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
-									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+									temp_string = " FL" .. string.sub(temp_string, 1, 3)
 									line_m[ii] = line_m[ii] .. temp_string
 									if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
 										line_m[ii] = line_m[ii] .. "A"
@@ -46169,24 +46286,24 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 								else
 									if jj <= td_idx then
 										if legs_data2[jj][6] == 43 then
-											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											temp_string = " " .. string.format("%5d",legs_data2[jj][5])
 											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. "A"
 										elseif legs_data2[jj][6] == 45 then
-											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											temp_string = " " .. string.format("%5d",legs_data2[jj][5])
 											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. "B"
 										elseif legs_data2[jj][6] == 41 then
-											temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
+											temp_string = " " .. string.format("%5d",legs_data2[jj][41])
 											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. "B"
 										else	-- 32 blank 
-											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											temp_string = " " .. string.format("%5d",legs_data2[jj][5])
 											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. " "
 										end
 									else
-										temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+										temp_string = " " .. string.format("%5d",legs_data2[jj][5])
 										line_m[ii] = line_m[ii] .. temp_string
 										if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
 											line_m[ii] = line_m[ii] .. "A"
@@ -46307,11 +46424,15 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 								line_s[ii] = "                 "
 								line_m[ii] = "    "
 							else
-								if legs_data2[jj][10] < 1 then
-									temp_string = string.format("%5.3f",legs_data2[jj][10])
-									temp_string = string.sub(temp_string, -4, -1)
+								if fms_recalc == 0 then
+									if legs_data2[jj][10] < 1 then
+										temp_string = string.format("%5.3f",legs_data2[jj][10])
+										temp_string = string.sub(temp_string, -4, -1)
+									else
+										temp_string = string.format("%4d",legs_data2[jj][10])
+									end
 								else
-									temp_string = string.format("%4d",legs_data2[jj][10])
+									temp_string = "----"
 								end
 								line_s[ii] = "             " .. temp_string
 								right_line[ii] = "    "
@@ -46334,9 +46455,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 								right_line[ii] = right_line[ii] .. "/----- "
 								line_m[ii] = line_m[ii] .. "       "
 							else
-								-- if calc_rte_enable2 ~= 0 then	--and legs_delete == 1 then
-									-- temp_string = " -----"
-								-- else
+								if fms_recalc == 0 then
 									if legs_data2[jj][11] > B738DR_trans_alt and jj <= td_idx then
 										temp_string = string.format("%05d",legs_data2[jj][11])
 										temp_string = " FL" .. string.sub(temp_string, 1, 3)
@@ -46346,7 +46465,9 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									else
 										temp_string = " " .. string.format("%5d",legs_data2[jj][11])
 									end
-								-- end
+								else
+									temp_string = " -----"
+								end
 								line_s[ii] = line_s[ii] .. temp_string
 								right_line[ii] = right_line[ii] .. "/      "
 								line_m[ii] = line_m[ii] .. "       "
@@ -46448,7 +46569,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									end
 								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
-									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+									temp_string = " FL" .. string.sub(temp_string, 1, 3)
 									line_m[ii] = line_m[ii] .. temp_string
 									if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
 										line_m[ii] = line_m[ii] .. "A"
@@ -46462,24 +46583,24 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 								else
 									if jj <= td_idx then
 										if legs_data2[jj][6] == 43 then
-											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											temp_string = " " .. string.format("%5d",legs_data2[jj][5])
 											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. "A"
 										elseif legs_data2[jj][6] == 45 then
-											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											temp_string = " " .. string.format("%5d",legs_data2[jj][5])
 											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. "B"
 										elseif legs_data2[jj][6] == 41 then
-											temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
+											temp_string = " " .. string.format("%5d",legs_data2[jj][41])
 											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. "B"
 										else	-- 32 blank 
-											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											temp_string = " " .. string.format("%5d",legs_data2[jj][5])
 											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. " "
 										end
 									else
-										temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+										temp_string = " " .. string.format("%5d",legs_data2[jj][5])
 										line_m[ii] = line_m[ii] .. temp_string
 										if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
 											line_m[ii] = line_m[ii] .. "A"
@@ -61626,11 +61747,14 @@ function B738_vnav_calc()
 	end
 	
 	vnav_update = 0
+	if fms_recalc == 2 and legs_delete == 0 then
+		fms_recalc = 3
+	end
 	
 	end
 	
 	if is_timer_scheduled(vnav_timer) == false then
-		run_after_time(vnav_timer, 5)	-- 5 seconds
+		run_after_time(vnav_timer, 2.5)	-- 5 seconds
 	end
 	
 	
@@ -63019,11 +63143,14 @@ function B738_vnav_calc_mod()
 	-- end
 	
 	vnav_update_mod = 0
+	if fms_recalc == 2 then
+		fms_recalc = 3
+	end
 	
 	end
 	
 	if is_timer_scheduled(vnav_timer_mod) == false then
-		run_after_time(vnav_timer_mod, 1)	-- 1 seconds
+		run_after_time(vnav_timer_mod, 2.5)	-- 1 seconds
 	end
 
 end
@@ -73262,8 +73389,9 @@ temp_ils4 = ""
 	change_desc_to_path = 0
 	B738DR_dest_runway_alt = -1
 	B738DR_legs_mod_active = 0
+	fms_recalc = 0
 	
-	version = "v3.26s"
+	version = "v3.26t"
 
 end
 
@@ -73442,6 +73570,9 @@ function B738_ff_approx()
 	
 end
 
+function rst_fms_recalc()
+	fms_recalc = 0
+end
 
 function B738_gw_approach()
 	
@@ -73836,6 +73967,7 @@ function after_physics()
 		
 		B738DR_fms_legs_num2 = legs_num2
 		
+		--B738DR_fms_test3 = fms_recalc
 		--angle()
 		--B738DR_fms_test3 = rte_add_app_act
 		--B738DR_fms_test = tc_lat

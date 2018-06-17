@@ -77,6 +77,10 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26t:
+------
+- fixed graphics bugs
+
 3.26s:
 ------
 - Runway extension - corrected list of runways by selected STAR (and vice versa)
