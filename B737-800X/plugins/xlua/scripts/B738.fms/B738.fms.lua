@@ -3164,6 +3164,9 @@ gp_alt_err_ratio			= create_dataref("laminar/B738/fms/gp_alt_err_ratio", "number
 
 cross_wind					= create_dataref("laminar/B738/fms/cross_wind", "number")
 
+B738DR_dest_runway_alt		= create_dataref("laminar/B738/fms/dest_runway_alt", "number")
+B738DR_legs_mod_active		= create_dataref("laminar/B738/fms/legs_mod_active", "number")
+
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
 --*************************************************************************************--
@@ -3242,6 +3245,7 @@ B738DR_fms_descent_now		= create_dataref("laminar/B738/FMS/descent_now", "number
 
 B738DR_vnav_disconnect		= create_dataref("laminar/B738/fms/vnav_disconnect", "number", B738DR_vnav_disconnect_DRhandler)
 B738DR_lnav_disconnect		= create_dataref("laminar/B738/fms/lnav_disconnect", "number", B738DR_lnav_disconnect_DRhandler)
+
 
 simDR_pos_x		= find_dataref("sim/flightmodel/position/local_x")
 simDR_pos_y		= find_dataref("sim/flightmodel/position/local_y")
@@ -10613,6 +10617,7 @@ function B738_calc_rte()
 		if legs_num == 0 then
 			calc_rte_enable = 0
 		end
+		B738DR_dest_runway_alt = -1
 	elseif calc_rte_enable == 2 then
 		calc_rte_act = calc_rte_act + 1
 		ii = legs_num + 1
@@ -10685,6 +10690,18 @@ function B738_calc_rte()
 				end
 			end
 			
+			-- destination altitude runway
+			find_txt = legs_data[calc_rte_act][1]
+			if string.len(find_txt) == 0 then
+				find_txt = "ZZZZZZZZ"
+			end
+			if string.sub(find_txt, 1, 2) == "RW" then
+				if legs_data[calc_rte_act][19] == 7 or legs_data[calc_rte_act][19] == 8 
+				or legs_data[calc_rte_act][19] == 2 or legs_data[calc_rte_act][19] == 4 then
+					B738DR_dest_runway_alt = legs_data[calc_rte_act][5]
+				end
+			end
+			
 			-- calc distance
 			legs_data[calc_rte_act][3] = nd_calc_dist2(legs_data[calc_rte_act][7], legs_data[calc_rte_act][8], legs_data[calc_rte_act-1][7], legs_data[calc_rte_act-1][8])
 			if legs_data[calc_rte_act][31] == "FM" or legs_data[calc_rte_act][31] == "VM" then
@@ -10735,6 +10752,9 @@ function B738_calc_rte()
 			B738_find_rnav()
 			calc_rte_enable = 0
 			--dataref_legs()
+			if des_app2 ~= "------" and B738DR_dest_runway_alt == -1 then
+				B738DR_dest_runway_alt = des_icao_alt
+			end
 	end
 	--B738DR_fms_test3 = calc_rte_act
 
@@ -18527,6 +18547,8 @@ function B738_mod_change()
 			end
 		end
 	end
+	B738DR_legs_mod_active = legs_delete
+	
 end
 
 function nav_data_find(nav_data_inp)
@@ -29856,22 +29878,22 @@ function B738_autopilot_alt_interv_CMDhandler(phase, duration)
 						end
 					end
 				else
-					-- climb
-					if B738DR_flight_phase < 2 then
-						if B738DR_mcp_alt_dial > crz_alt_num then
-							crz_alt_num = B738DR_mcp_alt_dial
-							B738DR_fmc_cruise_alt = crz_alt_num
-							n = crz_alt_num
-							if n >= B738DR_trans_alt then
-								n = n / 100
-								crz_alt = "FL" .. string.format("%03d", n)
-							else
-								crz_alt = string.format("%5d", n)
-							end
-						end
-						crz_alt_num2 = 0
-						crz_alt_old = "     "
-					end
+					-- -- climb
+					-- if B738DR_flight_phase < 2 then
+						-- if B738DR_mcp_alt_dial > crz_alt_num then
+							-- crz_alt_num = B738DR_mcp_alt_dial
+							-- B738DR_fmc_cruise_alt = crz_alt_num
+							-- n = crz_alt_num
+							-- if n >= B738DR_trans_alt then
+								-- n = n / 100
+								-- crz_alt = "FL" .. string.format("%03d", n)
+							-- else
+								-- crz_alt = string.format("%5d", n)
+							-- end
+						-- end
+						-- crz_alt_num2 = 0
+						-- crz_alt_old = "     "
+					-- end
 				end
 			else
 				if B738DR_flight_phase < 2 and B738DR_mcp_alt_dial > (simDR_altitude_pilot + 300) then
@@ -29912,24 +29934,42 @@ function B738_autopilot_alt_interv_CMDhandler(phase, duration)
 				end
 			end
 			
-			-- once/twice ALT INTV
-			if del_all_rest_intv == 0 then
-				del_all_rest_intv = 1
-				if is_timer_scheduled(del_alt_intv) == false then
-					run_after_time(del_alt_intv, 5)	-- 5 seconds
+			-- -- once/twice ALT INTV
+			-- if del_all_rest_intv == 0 then
+				-- del_all_rest_intv = 1
+				-- if is_timer_scheduled(del_alt_intv) == false then
+					-- run_after_time(del_alt_intv, 5)	-- 5 seconds
+				-- end
+			-- else
+				-- del_all_rest_intv = 3
+				-- if is_timer_scheduled(del_alt_intv) == true then
+					-- stop_timer(del_alt_intv)
+				-- end
+			-- end
+		end
+			
+			if B738DR_flight_phase < 2 then
+				if B738DR_mcp_alt_dial > crz_alt_num then
+					crz_alt_num = B738DR_mcp_alt_dial
+					B738DR_fmc_cruise_alt = crz_alt_num
+					n = crz_alt_num
+					if n >= B738DR_trans_alt then
+						n = n / 100
+						crz_alt = "FL" .. string.format("%03d", n)
+					else
+						crz_alt = string.format("%5d", n)
+					end
 				end
-			else
-				del_all_rest_intv = 3
-				if is_timer_scheduled(del_alt_intv) == true then
-					stop_timer(del_alt_intv)
-				end
+				crz_alt_num2 = 0
+				crz_alt_old = "     "
 			end
 			
 			if B738DR_flight_phase < 2 then
-				if B738DR_mcp_alt_dial <= crz_alt_num and B738DR_mcp_alt_dial > (simDR_altitude_pilot + 300) then
+				--if B738DR_mcp_alt_dial <= crz_alt_num and B738DR_mcp_alt_dial > (simDR_altitude_pilot + 300) then
 				-- delete alt restricts to MCP alt
 					end_idx = tc_idx - 1
-					if end_idx > offset then
+					--if end_idx > offset then
+					if end_idx >= offset and end_idx > 0 and end_idx <= legs_num then
 						for n = offset, end_idx do
 							-- find alt restrict
 							if legs_restr_alt_n > 0 then	-- if exist alt restricts
@@ -29941,7 +29981,7 @@ function B738_autopilot_alt_interv_CMDhandler(phase, duration)
 									delete_enabled = 0
 									if legs_restr_alt[nn][2] == n and legs_restr_alt[nn][5] <= B738DR_mcp_alt_dial and legs_restr_alt[nn][4] == 41 then	-- Between
 										delete_enabled = 1
-									elseif legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] < B738DR_mcp_alt_dial then	-- alt restrict found
+									elseif legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] <= B738DR_mcp_alt_dial then	-- alt restrict found
 										delete_enabled = 1
 									elseif legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] == B738DR_mcp_alt_dial and legs_restr_alt[nn][4] == 45 then	-- Below alt restrict found
 										delete_enabled = 1
@@ -29963,27 +30003,40 @@ function B738_autopilot_alt_interv_CMDhandler(phase, duration)
 										if temp_spd_rest > 0 then
 											legs_data[n][4] = temp_spd_rest
 										end
-										-- once ALT INTV
-										if del_all_rest_intv == 1 then
-											del_all_rest_intv = 2
-											break
+										if legs_delete == 0 and n <= legs_num2 then
+											legs_data2[n][5] = 0
+											legs_data2[n][6] = 0
+											legs_data2[n][41] = 0
+											if temp_spd_rest > 0 then
+												legs_data2[n][4] = temp_spd_rest
+											end
 										end
+										break
+										-- -- once ALT INTV
+										-- if del_all_rest_intv == 1 then
+											-- del_all_rest_intv = 2
+											-- break
+										-- end
 									end
 								end
 							end
-							-- once ALT INTV
-							if del_all_rest_intv == 2 then
+							-- -- once ALT INTV
+							-- if del_all_rest_intv == 2 then
+								-- break
+							-- end
+							if delete_enabled == 1 then
 								break
 							end
 						end
 					end
-				end
+				--end
 			elseif B738DR_flight_phase > 4 and B738DR_flight_phase < 8 then
 			--elseif desc_enable == 1 then
-				if B738DR_mcp_alt_dial < (simDR_altitude_pilot - 300) then
+				--if B738DR_mcp_alt_dial < (simDR_altitude_pilot - 300) then
 				-- delete alt restricts to MCP alt
 					end_idx = legs_num
-					if end_idx > offset then
+					--if end_idx > offset then
+					if end_idx >= offset then
 						for n = offset, end_idx do
 							-- find alt restrict
 							if legs_restr_alt_n > 0 then	-- if exist alt restricts
@@ -29995,7 +30048,7 @@ function B738_autopilot_alt_interv_CMDhandler(phase, duration)
 									delete_enabled = 0
 									if legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] >= B738DR_mcp_alt_dial and legs_restr_alt[nn][4] == 41 then	-- Between
 										delete_enabled = 1
-									elseif legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] > B738DR_mcp_alt_dial then	-- alt restrict found
+									elseif legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] >= B738DR_mcp_alt_dial then	-- alt restrict found
 										delete_enabled = 1
 									elseif legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] == B738DR_mcp_alt_dial and legs_restr_alt[nn][4] == 43 then	-- A alt restrict found
 										delete_enabled = 1
@@ -30018,27 +30071,39 @@ function B738_autopilot_alt_interv_CMDhandler(phase, duration)
 										if temp_spd_rest > 0 then
 											legs_data[n][4] = temp_spd_rest
 										end
-										-- once ALT INTV
-										if del_all_rest_intv == 1 then
-											del_all_rest_intv = 2
-											break
+										if legs_delete == 0 and n <= legs_num2 then
+											legs_data2[n][5] = 0
+											legs_data2[n][6] = 0
+											legs_data2[n][41] = 0
+											if temp_spd_rest > 0 then
+												legs_data2[n][4] = temp_spd_rest
+											end
 										end
+										break
+										-- -- once ALT INTV
+										-- if del_all_rest_intv == 1 then
+											-- del_all_rest_intv = 2
+											-- break
+										-- end
 									end
 								end
 							end
-							-- once ALT INTV
-							if del_all_rest_intv == 2 then
+							-- -- once ALT INTV
+							-- if del_all_rest_intv == 2 then
+								-- break
+							-- end
+							if delete_enabled == 1 then
 								break
 							end
 						end
 					end
-				end
+				--end
 			end
-			if del_all_rest_intv == 3 then
-				del_all_rest_intv = 0
-			end
+			-- if del_all_rest_intv == 3 then
+				-- del_all_rest_intv = 0
+			-- end
 		
-		end
+		--end
 		
 	elseif phase == 2 then
 		B738DR_autopilot_alt_interv_pos = 0
@@ -44223,10 +44288,28 @@ function create_star_list()
 			-- Create list of STARs
 			for ii = 1, data_des_star_n do
 				if des_app2 == "------" or des_app_rw_only == 1 then
-					star_list_num = star_list_num + 1
-					star_list[star_list_num] = {}
-					star_list[star_list_num][1] = data_des_star[ii][1]
-					star_list[star_list_num][2] = data_des_star[ii][2]
+					if des_app2 == "------" then
+						star_list_num = star_list_num + 1
+						star_list[star_list_num] = {}
+						star_list[star_list_num][1] = data_des_star[ii][1]
+						star_list[star_list_num][2] = data_des_star[ii][2]
+					else
+					-- STARs by RW
+						rnw_temp = des_app2
+						if string.sub(data_des_star[ii][2],-1,-1) == "B" then
+							temp_str1 = string.sub(data_des_star[ii][2],1,-2)
+							temp_str2 = string.sub(rnw_temp,1,-2)
+						else
+							temp_str1 = "A"
+							temp_str2 = "B"
+						end
+						if rnw_temp == data_des_star[ii][2] or data_des_star[ii][2] == "ALL" or temp_str1 == temp_str2 then
+							star_list_num = star_list_num + 1
+							star_list[star_list_num] = {}
+							star_list[star_list_num][1] = data_des_star[ii][1]
+							star_list[star_list_num][2] = data_des_star[ii][2]
+						end
+					end
 				else
 				-- STARs by APP
 					rnw_temp = ""
@@ -44295,10 +44378,28 @@ function create_star_list()
 			-- Create list of STARs
 			for ii = 1, star_num do
 				if des_app2 == "------" or des_app_rw_only == 1 then
-					star_list_num = star_list_num + 1
-					star_list[star_list_num] = {}
-					star_list[star_list_num][1] = ref_data_star[ii][1]
-					star_list[star_list_num][2] = ref_data_star[ii][2]
+					if des_app2 == "------" then
+						star_list_num = star_list_num + 1
+						star_list[star_list_num] = {}
+						star_list[star_list_num][1] = ref_data_star[ii][1]
+						star_list[star_list_num][2] = ref_data_star[ii][2]
+					else
+					-- STARs by RW
+						rnw_temp = des_app2
+						if string.sub(ref_data_star[ii][2],-1,-1) == "B" then
+							temp_str1 = string.sub(ref_data_star[ii][2],1,-2)
+							temp_str2 = string.sub(rnw_temp,1,-2)
+						else
+							temp_str1 = "A"
+							temp_str2 = "B"
+						end
+						if rnw_temp == ref_data_star[ii][2] or ref_data_star[ii][2] == "ALL" or temp_str1 == temp_str2 then
+							star_list_num = star_list_num + 1
+							star_list[star_list_num] = {}
+							star_list[star_list_num][1] = ref_data_star[ii][1]
+							star_list[star_list_num][2] = ref_data_star[ii][2]
+						end
+					end
 				else
 				-- STARs by APP
 					rnw_temp = ""
@@ -44507,8 +44608,9 @@ function create_des_app_list()
 				end
 			end
 		end
-		-- else
-			if des_rnw_list_num > 0 then
+			
+		if des_rnw_list_num > 0 then
+			if des_star2 == "------" then
 				for ii = 1, des_rnw_list_num do
 					des_app_list_num = des_app_list_num + 1
 					des_app_list[des_app_list_num] = {}
@@ -44521,9 +44623,39 @@ function create_des_app_list()
 					end
 					des_app_list[des_app_list_num][3] = tonumber(temp_str1)
 				end
+			else
+			-- APPs by STAR
+				for ii = 1, des_rnw_list_num do
+					rnw_temp2 = ""
+					rnw_temp = "RW" .. des_rnw_list[ii][2]
+					for jj = 1, data_des_star_n do
+						if data_des_star[jj][1] == des_star2 then
+							rnw_temp2 = data_des_star[jj][2]
+							if string.sub(rnw_temp2,-1,-1) == "B" then
+								temp_str1 = string.sub(rnw_temp2,1,-2)
+								temp_str2 = string.sub(rnw_temp,1,-2)
+							else
+								temp_str1 = "A"
+								temp_str2 = "B"
+							end
+							if rnw_temp == rnw_temp2 or rnw_temp2 == "ALL" or temp_str1 == temp_str2 then
+								des_app_list_num = des_app_list_num + 1
+								des_app_list[des_app_list_num] = {}
+								des_app_list[des_app_list_num][1] = rnw_temp
+								des_app_list[des_app_list_num][2] = rnw_temp
+								if string.len(des_rnw_list[ii][2]) > 2 then
+									temp_str1 = string.sub(des_rnw_list[ii][2], 1, -2)
+								else
+									temp_str1 = des_rnw_list[ii][2]
+								end
+								des_app_list[des_app_list_num][3] = tonumber(temp_str1)
+							end
+						end
+					end
+				end
 			end
-		-- end
-
+		end
+		
 	elseif arr_data == 1 then	-- Ref ICAO
 		if ref_data_app_n > 0 then
 			-- Create list of APPs
@@ -44621,8 +44753,9 @@ function create_des_app_list()
 			end
 			
 		end
-		-- else
-			if ref_rnw_list_num2 > 0 then
+		
+		if ref_rnw_list_num2 > 0 then
+			if des_star2 == "------" then
 				for ii = 1, ref_rnw_list_num2 do
 					des_app_list_num = des_app_list_num + 1
 					des_app_list[des_app_list_num] = {}
@@ -44635,8 +44768,38 @@ function create_des_app_list()
 					end
 					des_app_list[des_app_list_num][3] = tonumber(temp_str1)
 				end
+			else
+			-- APPs by STAR
+				for ii = 1, ref_rnw_list_num2 do
+					rnw_temp2 = ""
+					rnw_temp = "RW" .. ref_rnw_list2[ii][2]
+					for jj = 1, data_des_star_n do
+						if data_des_star[jj][1] == des_star2 then
+							rnw_temp2 = data_des_star[jj][2]
+							if string.sub(rnw_temp2,-1,-1) == "B" then
+								temp_str1 = string.sub(rnw_temp2,1,-2)
+								temp_str2 = string.sub(rnw_temp,1,-2)
+							else
+								temp_str1 = "A"
+								temp_str2 = "B"
+							end
+							if rnw_temp == rnw_temp2 or rnw_temp2 == "ALL" or temp_str1 == temp_str2 then
+								des_app_list_num = des_app_list_num + 1
+								des_app_list[des_app_list_num] = {}
+								des_app_list[des_app_list_num][1] = rnw_temp
+								des_app_list[des_app_list_num][2] = rnw_temp
+								if string.len(ref_rnw_list2[ii][2]) > 2 then
+									temp_str1 = string.sub(ref_rnw_list2[ii][2], 1, -2)
+								else
+									temp_str1 = ref_rnw_list2[ii][2]
+								end
+								des_app_list[des_app_list_num][3] = tonumber(temp_str1)
+							end
+						end
+					end
+				end
 			end
-		-- end
+		end
 	
 	end
 
@@ -45882,15 +46045,19 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 								right_line[ii] = right_line[ii] .. "/----- "
 								line_m[ii] = line_m[ii] .. "       "
 							else
-								if legs_data2[jj][11] > B738DR_trans_alt and jj <= td_idx then
-									temp_string = string.format("%05d",legs_data2[jj][11])
-									temp_string = " FL" .. string.sub(temp_string, 1, 3)
-								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
-									temp_string = string.format("%05d",legs_data2[jj][11])
-									temp_string = " FL" .. string.sub(temp_string, 1, 3)
-								else
-									temp_string = " " .. string.format("%5d",legs_data2[jj][11])
-								end
+								-- if calc_rte_enable2 ~= 0 then	--and legs_delete == 1 then
+									-- temp_string = " -----"
+								-- else
+									if legs_data2[jj][11] > B738DR_trans_alt and jj <= td_idx then
+										temp_string = string.format("%05d",legs_data2[jj][11])
+										temp_string = " FL" .. string.sub(temp_string, 1, 3)
+									elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+										temp_string = string.format("%05d",legs_data2[jj][11])
+										temp_string = " FL" .. string.sub(temp_string, 1, 3)
+									else
+										temp_string = " " .. string.format("%5d",legs_data2[jj][11])
+									end
+								-- end
 								line_s[ii] = line_s[ii] .. temp_string
 								right_line[ii] = right_line[ii] .. "/      "
 								line_m[ii] = line_m[ii] .. "       "
@@ -46167,15 +46334,19 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 								right_line[ii] = right_line[ii] .. "/----- "
 								line_m[ii] = line_m[ii] .. "       "
 							else
-								if legs_data2[jj][11] > B738DR_trans_alt and jj <= td_idx then
-									temp_string = string.format("%05d",legs_data2[jj][11])
-									temp_string = " FL" .. string.sub(temp_string, 1, 3)
-								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
-									temp_string = string.format("%05d",legs_data2[jj][11])
-									temp_string = " FL" .. string.sub(temp_string, 1, 3)
-								else
-									temp_string = " " .. string.format("%5d",legs_data2[jj][11])
-								end
+								-- if calc_rte_enable2 ~= 0 then	--and legs_delete == 1 then
+									-- temp_string = " -----"
+								-- else
+									if legs_data2[jj][11] > B738DR_trans_alt and jj <= td_idx then
+										temp_string = string.format("%05d",legs_data2[jj][11])
+										temp_string = " FL" .. string.sub(temp_string, 1, 3)
+									elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+										temp_string = string.format("%05d",legs_data2[jj][11])
+										temp_string = " FL" .. string.sub(temp_string, 1, 3)
+									else
+										temp_string = " " .. string.format("%5d",legs_data2[jj][11])
+									end
+								-- end
 								line_s[ii] = line_s[ii] .. temp_string
 								right_line[ii] = right_line[ii] .. "/      "
 								line_m[ii] = line_m[ii] .. "       "
@@ -73089,8 +73260,10 @@ temp_ils4 = ""
 	rw_ext_fpa = "-.--"
 	gp_available = 0
 	change_desc_to_path = 0
+	B738DR_dest_runway_alt = -1
+	B738DR_legs_mod_active = 0
 	
-	version = "v3.26r"
+	version = "v3.26s"
 
 end
 

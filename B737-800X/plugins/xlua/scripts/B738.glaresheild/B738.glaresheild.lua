@@ -14263,6 +14263,7 @@ end
 function control_SPD4()
 	
 	local SPD_corr = 0
+	local SPD_corr2 = 0
 	
 	-- local wind_acf = simDR_wind_spd * math.cos(math.rad(Angle180(simDR_wind_hdg))-math.rad(simDR_position_mag_psi))
 	-- local wind_comp = (wind_acf - wind_acf_old) / pid_time_x
@@ -14343,25 +14344,37 @@ function control_SPD4()
 	
 	if SPD_err < 0 then
 		SPD_corr = -SPD_err
-		SPD_corr = math.min(14, SPD_corr)
+		SPD_corr = math.min(17, SPD_corr)	--14
 		SPD_corr = math.max(0, SPD_corr)
+		SPD_corr2 = math.min(2, SPD_corr)
 		--SPD_corr = -B738_rescale(0, 0, 580, 40, SPD_corr)
 		--SPD_corr = -B738_rescale(0, 0, 20, 1.38, SPD_corr)
-		SPD_corr = -B738_rescale(0, 0, 14, 1.4, SPD_corr)
+		--SPD_corr = -B738_rescale(0, 0, 14, 1.4, SPD_corr)
+		SPD_corr = -B738_rescale(0, 0, 17, 1.4, SPD_corr)
 	else
 		SPD_corr = SPD_err
-		SPD_corr = math.min(14, SPD_corr)
+		SPD_corr = math.min(17, SPD_corr)	--14
 		SPD_corr = math.max(0, SPD_corr)
+		SPD_corr2 = math.min(2, SPD_corr)
 		--SPD_corr = B738_rescale(0, 0, 580, 40, SPD_corr)
 		--SPD_corr = B738_rescale(0, 0, 20, 1.38, SPD_corr)	--1.38
-		SPD_corr = B738_rescale(0, 0, 14, 1.4, SPD_corr)
+		--SPD_corr = B738_rescale(0, 0, 14, 1.4, SPD_corr)
+		SPD_corr = B738_rescale(0, 0, 17, 1.4, SPD_corr)
 	end
 	
 	--B738DR_pid_out = ghust_spd
 	--B738DR_pid_p = SPD_delta
 	
 	SPD_corr = SPD_corr - spd_ratio
-	SPD_corr = SPD_corr * SIM_PERIOD * 10 --12	--16
+	--SPD_corr = SPD_corr * SIM_PERIOD * 7	--10 --12	--16
+	
+	SPD_corr2 = B738_rescale(0, 2, 2, 7, SPD_corr2)
+	SPD_corr = SPD_corr * SIM_PERIOD * SPD_corr2
+	-- if SPD_err > -1 and SPD_err < 1 then
+		-- SPD_corr = SPD_corr * SIM_PERIOD * 2	--4	--10 --12	--16
+	-- else
+		-- SPD_corr = SPD_corr * SIM_PERIOD * 7	--10 --12	--16
+	-- end
 	
 	local limit = 18	--15	--10	--20
 	

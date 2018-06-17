@@ -77,10 +77,18 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26s:
+------
+- Runway extension - corrected list of runways by selected STAR (and vice versa)
+- fixed ALT INTV feature
+- A/T - tuned and improved code
+- add support for FMOD 1804 by AudioBirdXP
+- add support for next update TerrainRadar plugin
+
 3.26r:
 ------
 - add code for auto correct imported default xplane airport data
-- add Runway extension feature for any airport
+- add Runway extension feature for any runway of destination airport
 - fixed bugs (windshield reflection, VNAV auto descent,...)
 Important: Delete those files located in folder "objects": 738cockpit_glass_2.dds, 738cockpit_glass_2_LIT.dds, 738cockpit_displays.dds, 738cockpit_switches.dds.
 Note: Delete files "B738X_apt.dat" and "B738X_rnw.dat" for auto rebuild database.

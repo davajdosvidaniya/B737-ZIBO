@@ -81,6 +81,11 @@ B738DR_vol_FAC = create_dataref("laminar/b738/fmodpack/fmod_vol_FAC", "number")
 
 B738DR_vol_weather = create_dataref("laminar/b738/fmodpack/fmod_vol_weather", "number")
 
+--obsolete but kept to maintain compatibility with Zibo's FMC menu
+B738DR_enable_crew					= create_dataref("laminar/b738/fmodpack/fmod_crew_on", "number")
+
+
+
 ---------- FIND REFS -------------------------------------------------------------------------------
 
 
@@ -585,9 +590,6 @@ B738CMD_enable_pax_boarding 		= create_command("laminar/b738/fmodpack/pax_board"
 
 
 B738CMD_enable_gyro 				= create_command("laminar/b738/fmodpack/fmod_woodpecker_on", "Toggle classic gyro vibrator ON or OFF", B738_enable_gyro_CMDhandler)
-
---obsolete but kept to maintain compatibility with Zibo's FMC menu
-B738DR_enable_crew					= create_dataref("laminar/b738/fmodpack/fmod_crew_on", "number")
 
 -- new AXP 1711
 

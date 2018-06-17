@@ -287,7 +287,7 @@ flight_time = find_dataref("sim/time/total_flight_time_sec")
 -- seatbelt auto
 
 flap_pos = find_dataref("sim/flightmodel/controls/flaprqst")
-gearhandle_down = find_dataref("laminar/B738/controls/gear_handle_down")
+gearhandle_down = find_dataref("sim/cockpit2/controls/gear_handle_down")
 
 -- NEW 4-8-2017 AXP TCAS system
 
@@ -1355,11 +1355,11 @@ function bellhop()
 
 	if on_the_ground == 1 then
 
-		if gate_departure_initialized == 1 and departure_time == 5 then
+		if gate_departure_initialized == 1 and departure_time >= 5 then
 			cabindoor_closed = 1
 		end
 
-		if gate_arrival_initialized == 1 and arrival_time == 5 then
+		if gate_arrival_initialized == 1 and arrival_time >= 5 then
 			cabindoor_closed = 0
 		end
 
@@ -1370,8 +1370,24 @@ function bellhop()
 		if is_hotstart == 1  then
 			cabindoor_closed = 1
 		end 
-	end
 
+		if current_gs > 2 then
+			cabindoor_closed = 1
+		end
+
+		if is_taxi > 0 then
+			cabindoor_closed = 1
+		end 
+
+		if is_anticollision_on > 0 then
+			cabindoor_closed = 1
+		end
+
+		if fuel_cutoff1 == 1 or fuel_cutoff2 == 1 then
+			cabindoor_closed = 1
+		end
+
+	end
 end
 
 
