@@ -192,7 +192,7 @@ B738DR_irs_left1_show		= create_dataref("laminar/B738/irs_left1_show", "number")
 B738DR_irs_left2_show		= create_dataref("laminar/B738/irs_left2_show", "number")
 B738DR_irs_right1_show		= create_dataref("laminar/B738/irs_right1_show", "number")
 B738DR_irs_right2_show		= create_dataref("laminar/B738/irs_right2_show", "number")
-
+B738DR_irs_allign_show		= create_dataref("laminar/B738/irs_allign_show", "number")
 
 B738DR_irs_align_fail_1		= create_dataref("laminar/B738/annunciator/irs/align_fail_left", "number")
 B738DR_irs_align_fail_2		= create_dataref("laminar/B738/annunciator/irs/align_fail_right", "number")
@@ -581,10 +581,10 @@ function B738_random_irs_time()
 		if lat_irs <= 45 then
 			irs_time = B738_rescale(0, 0, 45, 12, lat_irs)
 		else
-			irs_time = B738_rescale(45, 12, 78, 18, lat_irs)
+			irs_time = B738_rescale(45, 12, 78, 17, lat_irs)
 		end
-		irs_time = math.max(irs_time, 6)
 		irs_time = roundUpToIncrement(irs_time, 1 )
+		irs_time = math.max(irs_time, 6)
 	end
 	
 end
@@ -613,7 +613,8 @@ function B738_irs_display_data()
 	local irs_mode = 0
 	local true_track = 0
 	local irs_fail = 0
-  local alignment_status = 0
+	local alignment_status = 0
+	local irs_allign_show = 0
 	
 	-- run test IRS DSPL SEL
 	if irs_dspl_test_enable == 1 
@@ -714,17 +715,26 @@ function B738_irs_display_data()
 					B738DR_irs_lon_deg_show = 0
 					B738DR_irs_lon_min_show = 0
 					B738DR_irs_decimals_show = 0
-					B738DR_irs_left2_show = 1
-					B738DR_irs_right2_show = 1
+					B738DR_irs_right2_show = 0
 					B738DR_irs_left2_show = 0
+					-- if alignment_remain > 0 then
+						-- if alignment_remain > 15 then
+							-- B738DR_irs_right2 = 15
+						-- else
+							-- B738DR_irs_right2 = alignment_remain
+						-- end
+					-- else
+						-- B738DR_irs_right2_show = 0
+					-- end
+					
+					
 					if alignment_remain > 0 then
+						irs_allign_show = 1
 						if alignment_remain > 15 then
-							B738DR_irs_right2 = 15
+							B738DR_irs_right1 = 15
 						else
-							B738DR_irs_right2 = alignment_remain
+							B738DR_irs_right1 = alignment_remain
 						end
-					else
-						B738DR_irs_right2_show = 0
 					end
 				else
 					B738DR_irs_left1 = 0
@@ -867,7 +877,9 @@ function B738_irs_display_data()
 			end
 		end
 	end
-
+	
+	B738DR_irs_allign_show = irs_allign_show
+	
 end
 
 

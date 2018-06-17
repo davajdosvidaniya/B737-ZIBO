@@ -1699,6 +1699,8 @@ B738DR_hide_glass 				= create_dataref("laminar/B738/effect/hide_glass", "number
 B738DR_tire_blown				= create_dataref("laminar/B738/effect/tire_blown", "number")
 B738DR_nd_rings					= create_dataref("laminar/B738/effect/nd_rings", "number")
 B738DR_hide_gauges_reflection	= create_dataref("laminar/B738/effect/gauges_reflection", "number")
+B738DR_flight_ctrl				= create_dataref("laminar/B738/effects/flight_control", "number")
+B738DR_brake_temp				= create_dataref("laminar/B738/effects/brake_temp", "number")
 
 B738DR_mcp_speed_dial		= find_dataref("laminar/B738/autopilot/mcp_speed_dial_kts_mach")
 
@@ -11715,7 +11717,16 @@ function copy_to_legsdata()
 				B738DR_fms_legs_lat[ii-1] = legs_data[ii][7]
 				B738DR_fms_legs_lon[ii-1] = legs_data[ii][8]
 				B738DR_fms_legs_alt_rest1[ii-1] = legs_data[ii][5]
-				if legs_data[ii][6] == 45 then	-- Below
+				if string.sub(legs_data[ii][1], 1, 2) == "RW" then
+					B738DR_fms_legs_alt_rest2[ii-1] = 0
+					if legs_data[ii][19] == 7 or legs_data[ii][19] == 8 
+					or legs_data[ii][19] == 2 or legs_data[ii][19] == 4 then
+						-- destination runway
+						B738DR_fms_legs_alt_rest_type[ii-1] = 4
+					else
+						B738DR_fms_legs_alt_rest_type[ii-1] = 0
+					end
+				elseif legs_data[ii][6] == 45 then	-- Below
 					B738DR_fms_legs_alt_rest_type[ii-1] = 1
 					B738DR_fms_legs_alt_rest2[ii-1] = 0
 				elseif legs_data[ii][6] == 43 then	-- Above
@@ -15662,6 +15673,8 @@ function B738_default_others_config()
 	B738DR_tire_blown = 1
 	B738DR_nd_rings = 1
 	B738DR_hide_gauges_reflection = 0
+	B738DR_flight_ctrl = 1
+	B738DR_brake_temp = 1
 	
 	simDR_pitch_nz = 0
 	simDR_roll_nz = 0
@@ -16304,6 +16317,30 @@ function B738_load_config()
 							end
 						end
 					end
+				elseif string.sub(fms_line, 1, 16) == "FLIGHT CONTROL =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							if temp_fmod == 1 then
+								B738DR_flight_ctrl = 1
+							else
+								B738DR_flight_ctrl = 0
+							end
+						end
+					end
+				elseif string.sub(fms_line, 1, 16) == "BRAKES TEMP    =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							if temp_fmod == 1 then
+								B738DR_brake_temp = 1
+							else
+								B738DR_brake_temp = 0
+							end
+						end
+					end
 				elseif string.sub(fms_line, 1, 16) == "PITCH 0 ZONE   =" then
 					temp_fmod = string.len(fms_line)
 					if temp_fmod > 16 then
@@ -16943,6 +16980,10 @@ function B738_save_config()
 		fms_line = "ND RINGS       = " .. string.format("%2d", B738DR_nd_rings) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "GAUGES REFLECT = " .. string.format("%2d", B738DR_hide_gauges_reflection) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "FLIGHT CONTROL = " .. string.format("%2d", B738DR_flight_ctrl) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "BRAKES TEMP    = " .. string.format("%2d", B738DR_brake_temp) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "PITCH 0 ZONE   = " .. string.format("%2d", simDR_pitch_nz * 100) .. "\n"
 		file_navdata:write(fms_line)
@@ -20344,6 +20385,12 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 				B738DR_hide_glass = 0
 			end
 		elseif page_xtras_others == 5 then
+			if B738DR_brake_temp == 0 then
+				B738DR_brake_temp = 1
+			else
+				B738DR_brake_temp = 0
+			end
+		elseif page_xtras_others == 6 then
 			if simDR_pitch_nz <= 0 then
 				simDR_pitch_nz = 0.30
 			else
@@ -21552,7 +21599,7 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 				-- atis_msg_status = 0
 				-- atis_send_time = "     "
 			end
-		elseif page_xtras_others == 5 then
+		elseif page_xtras_others == 6 then
 			if simDR_roll_nz <= 0 then
 				simDR_roll_nz = 0.30
 			else
@@ -22596,7 +22643,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 			else
 				add_fmc_msg(INVALID_INPUT, 1)
 			end
-		elseif page_xtras_others == 5 then
+		elseif page_xtras_others == 6 then
 			if simDR_yaw_nz <= 0 then
 				simDR_yaw_nz = 0.30
 			else
@@ -23784,6 +23831,12 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 				B738DR_kill_windshield = 2
 			else
 				B738DR_kill_windshield = 0
+			end
+		elseif page_xtras_others == 4 then
+			if B738DR_flight_ctrl == 0 then
+				B738DR_flight_ctrl = 1
+			else
+				B738DR_flight_ctrl = 0
 			end
 		elseif page_arr == 1 then
 			if des_star2 == "------" then
@@ -25473,7 +25526,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 					entry = string.sub(legs_data2[item][38], 1, 3) .. string.sub(legs_data2[item][38], -4, -1)
 				end
 			end
-		elseif page_xtras_others == 5 then
+		elseif page_xtras_others == 6 then
 			if simDR_pitch_nz < 0.30 then
 				simDR_pitch_nz = simDR_pitch_nz + 0.01
 			else
@@ -25888,7 +25941,7 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 			end
 		elseif page_xtras_fmod > 0 then
 			fmc_fmod_main(0,2)
-		elseif page_xtras_others == 5 then
+		elseif page_xtras_others == 6 then
 			if simDR_roll_nz < 0.30 then
 				simDR_roll_nz = simDR_roll_nz + 0.01
 			else
@@ -26512,7 +26565,7 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 					end
 				end
 			end
-		elseif page_xtras_others == 5 then
+		elseif page_xtras_others == 6 then
 			if simDR_yaw_nz < 0.30 then
 				simDR_yaw_nz = simDR_yaw_nz + 0.01
 			else
@@ -32706,6 +32759,12 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 				B738DR_hide_glass = 0
 			end
 		elseif page_xtras_others2 == 5 then
+			if B738DR_brake_temp == 0 then
+				B738DR_brake_temp = 1
+			else
+				B738DR_brake_temp = 0
+			end
+		elseif page_xtras_others2 == 6 then
 			if simDR_pitch_nz <= 0 then
 				simDR_pitch_nz = 0.30
 			else
@@ -33914,7 +33973,7 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 				-- atis_msg_status = 0
 				-- atis_send_time = "     "
 			end
-		elseif page_xtras_others2 == 5 then
+		elseif page_xtras_others2 == 6 then
 			if simDR_roll_nz <= 0 then
 				simDR_roll_nz = 0.30
 			else
@@ -34958,7 +35017,7 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 			else
 				add_fmc_msg(INVALID_INPUT, 1)
 			end
-		elseif page_xtras_others2 == 5 then
+		elseif page_xtras_others2 == 6 then
 			if simDR_yaw_nz <= 0 then
 				simDR_yaw_nz = 0.30
 			else
@@ -36146,6 +36205,12 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 				B738DR_kill_windshield = 2
 			else
 				B738DR_kill_windshield = 0
+			end
+		elseif page_xtras_others2 == 4 then
+			if B738DR_flight_ctrl == 0 then
+				B738DR_flight_ctrl = 1
+			else
+				B738DR_flight_ctrl = 0
 			end
 		elseif page_arr2 == 1 then
 			if des_star2 == "------" then
@@ -37835,7 +37900,7 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 					entry2 = string.sub(legs_data2[item][38], 1, 3) .. string.sub(legs_data2[item][38], -4, -1)
 				end
 			end
-		elseif page_xtras_others2 == 5 then
+		elseif page_xtras_others2 == 6 then
 			if simDR_pitch_nz < 0.30 then
 				simDR_pitch_nz = simDR_pitch_nz + 0.01
 			else
@@ -38215,7 +38280,7 @@ function B738_fmc2_2R_CMDhandler(phase, duration)
 			end
 		elseif page_xtras_fmod2 > 0 then
 			fmc_fmod_main(0,2)
-		elseif page_xtras_others2 == 5 then
+		elseif page_xtras_others2 == 6 then
 			if simDR_roll_nz < 0.30 then
 				simDR_roll_nz = simDR_roll_nz + 0.01
 			else
@@ -38838,7 +38903,7 @@ function B738_fmc2_3R_CMDhandler(phase, duration)
 					end
 				end
 			end
-		elseif page_xtras_others2 == 5 then
+		elseif page_xtras_others2 == 6 then
 			if simDR_yaw_nz < 0.30 then
 				simDR_yaw_nz = simDR_yaw_nz + 0.01
 			else
@@ -42854,10 +42919,10 @@ function B738_fmc_xtras_others()
 
 	if page_xtras_others == 1 then
 		act_page = 1
-		max_page = 5
+		max_page = 6
 		
 		line0_l = " OTHER CONFIG           "
-		line0_s = "                    1/5 "
+		line0_s = "                    1/6 "
 		line1_x = " ALIGN TIME             "
 		if B738DR_align_time == 0 then
 			line1_l = "<    /    /             "
@@ -42917,10 +42982,10 @@ function B738_fmc_xtras_others()
 		-- line6_s = "                        "
 	elseif page_xtras_others == 2 then
 		act_page = 2
-		max_page = 5
+		max_page = 6
 		
 		line0_l = " OTHER CONFIG           "
-		line0_s = "                    2/5 "
+		line0_s = "                    2/6 "
 		line1_x = " ENGINE NO RUNNING STATE"
 		if B738DR_engine_no_running_state == 0 then
 			line1_l = "<         /             "
@@ -42982,10 +43047,10 @@ function B738_fmc_xtras_others()
 		-- line6_s = "                        "
 	elseif page_xtras_others == 3 then
 		act_page = 3
-		max_page = 5
+		max_page = 6
 		
 		line0_l = " OTHER CONFIG           "
-		line0_s = "                    3/5 "
+		line0_s = "                    3/6 "
 		line1_x = " FLIGHTPLAN SAVE FORMAT "
 		if B738DR_fpln_format == 0 then
 			line1_l = "<   /                   "
@@ -43043,10 +43108,10 @@ function B738_fmc_xtras_others()
 		line6_l = "<DEFAULT           BACK>"
 	elseif page_xtras_others == 4 then
 		act_page = 4
-		max_page = 5
+		max_page = 6
 		
 		line0_l = " OTHER CONFIG           "
-		line0_s = "                    4/5 "
+		line0_s = "                    4/6 "
 		line1_x = " WINDSHIELD REFLECTION  "
 		if B738DR_hide_glass == 0 then
 			line1_l = "<   /                   "
@@ -43087,13 +43152,40 @@ function B738_fmc_xtras_others()
 			line4_g = " OFF                    "
 			line4_s = "     ON                 "
 		end
+		line5_x = " LDU FLIGHT CONTROL     "
+		if B738DR_flight_ctrl == 0 then
+			line5_l = "<   /                   "
+			line5_g = " OFF                    "
+			line5_s = "     ON                 "
+		else
+			line5_l = "<   /                   "
+			line5_g = "     ON                 "
+			line5_s = " OFF                    "
+		end
 		line6_l = "<DEFAULT           BACK>"
 	elseif page_xtras_others == 5 then
 		act_page = 5
-		max_page = 5
+		max_page = 6
 		
 		line0_l = " OTHER CONFIG           "
-		line0_s = "                    5/5 "
+		line0_s = "                    5/6 "
+		line1_x = " LDU FLIGHT CONTROL     "
+		if B738DR_brake_temp == 0 then
+			line1_l = "<   /                   "
+			line1_g = " OFF                    "
+			line1_s = "     ON                 "
+		else
+			line1_l = "<   /                   "
+			line1_g = "     ON                 "
+			line1_s = " OFF                    "
+		end
+		line6_l = "<DEFAULT           BACK>"
+	elseif page_xtras_others == 6 then
+		act_page = 6
+		max_page = 6
+		
+		line0_l = " OTHER CONFIG           "
+		line0_s = "                    6/6 "
 		line1_x = " PITCH NULL ZONE        "
 		line1_g = "      " .. string.format("%2d", simDR_pitch_nz * 100)
 		line1_l = "<           /0-30/     >"
@@ -61737,6 +61829,9 @@ function B738_vnav_calc()
 			end
 		end
 		msg_chk_alt_constr = 1
+	end
+	
+	if legs_num > 1 then
 		for n = 1, legs_num do
 			B738DR_fms_legs_alt_calc[n-1] = legs_data[n][11]
 		end
@@ -73391,7 +73486,7 @@ temp_ils4 = ""
 	B738DR_legs_mod_active = 0
 	fms_recalc = 0
 	
-	version = "v3.26t"
+	version = "v3.26u"
 
 end
 

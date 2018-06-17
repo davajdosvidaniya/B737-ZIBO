@@ -77,6 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26u:
+------
+- corrected systems and graphics (IRS allign time display, APU - start, door, annnunciate)
+- add option for lower DU (FMC Advanced): Brakes temperature, Flight controls
+- temporary fix for fuselage.obj
+
 3.26t:
 ------
 - fixed graphics bugs

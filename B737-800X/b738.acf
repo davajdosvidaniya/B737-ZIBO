@@ -158,7 +158,7 @@ P _gear/0/_lonE 0.0
 P _gear/0/_lonN 0.0
 P _gear/0/_lonR 111.0
 P _gear/0/_scon 112094.945312500
-P _gear/0/_stat_def 0.105244741
+P _gear/0/_stat_def 0.105244763
 P _gear/0/_steerdeg_hispeed 6.0
 P _gear/0/_steerdeg_lospeed 78.0
 P _gear/0/_strut_comp 0.0
@@ -192,7 +192,7 @@ P _gear/1/_lonE -4.0
 P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 112094.945312500
-P _gear/1/_stat_def 0.724415720
+P _gear/1/_stat_def 0.724415660
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -226,7 +226,7 @@ P _gear/2/_lonE -4.0
 P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 112094.945312500
-P _gear/2/_stat_def 0.724415720
+P _gear/2/_stat_def 0.724415660
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -42004,11 +42004,14 @@ GROUP EICAS x
 END_GROUP
 GROUP Lower DU x
   LOCKED
+  GROUP_OPEN
   GROUP Lower DU y
     LOCKED
+    GROUP_OPEN
     GROUP Lower DU - SYS
       SHOW_EQUAL 2.000000 laminar/B738/systems/lowerDU_page
       LOCKED
+      GROUP_OPEN
       gen_rotary EICAS page2
         POS 1786.000000 2.000000
         IMAGE EICAS/systems
@@ -42030,109 +42033,504 @@ GROUP Lower DU x
         CLICK_DX 0
         CLICK_DY 0
 
-      gen_pointer R AIL
-        POS 1956.000000 -124.500000
-        IMAGE EICAS/pointer_left
-        DATAREF sim/flightmodel2/wing/aileron1_deg[1]
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME -22.000000 0.000000 1.000000
-        KEY_FRAME 0.000000 41.500000 1.000000
-        KEY_FRAME 20.500000 83.000000
-        IS_DRAGGABLE 0
-        IS_VERTICAL 1
-        OFFSET 0.000000
+      GROUP FLIGHT CTRL
+        SHOW_EQUAL 1.000000 laminar/B738/effects/flight_control
+        HIDE
+        gen_rotary EICAS FLGHT CTRL
+          POS 1786.000000 2.000000
+          IMAGE EICAS/systems_flight_ctrl
+          DATAREF 
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 6.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
 
-      gen_pointer R FLT SPLR
-        POS 1900.000000 -82.500000
-        IMAGE EICAS/pointer_left
-        DATAREF sim/flightmodel2/wing/spoiler1_deg[1]
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 50.000000 41.000000
-        IS_DRAGGABLE 0
-        IS_VERTICAL 1
-        OFFSET 0.000000
+        gen_pointer R AIL
+          POS 1956.000000 -124.500000
+          IMAGE EICAS/pointer_left
+          DATAREF sim/flightmodel2/wing/aileron1_deg[1]
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME -22.000000 0.000000 1.000000
+          KEY_FRAME 0.000000 41.500000 1.000000
+          KEY_FRAME 20.500000 83.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
 
-      gen_pointer R ELEV
-        POS 1788.000000 -124.500000
-        IMAGE EICAS/pointer_left
-        DATAREF sim/flightmodel2/wing/elevator1_deg[1]
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME -20.000000 0.000000 1.000000
-        KEY_FRAME 0.000000 41.500000 1.000000
-        KEY_FRAME 20.000000 83.000000
-        IS_DRAGGABLE 0
-        IS_VERTICAL 1
-        OFFSET 0.000000
+        gen_pointer R FLT SPLR
+          POS 1900.000000 -82.500000
+          IMAGE EICAS/pointer_left
+          DATAREF sim/flightmodel2/wing/spoiler1_deg[1]
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 50.000000 41.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
 
-      gen_pointer L AIL
-        POS 1617.000000 -124.500000
-        IMAGE EICAS/pointer_right
-        DATAREF sim/flightmodel2/wing/aileron1_deg[0]
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME -22.000000 0.000000 1.000000
-        KEY_FRAME 0.000000 41.500000 1.000000
-        KEY_FRAME 20.500000 83.000000
-        IS_DRAGGABLE 0
-        IS_VERTICAL 1
-        OFFSET 0.000000
+        gen_pointer R ELEV
+          POS 1788.000000 -124.500000
+          IMAGE EICAS/pointer_left
+          DATAREF sim/flightmodel2/wing/elevator1_deg[1]
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME -20.000000 0.000000 1.000000
+          KEY_FRAME 0.000000 41.500000 1.000000
+          KEY_FRAME 20.000000 83.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
 
-      gen_pointer L FLT SPLR
-        POS 1671.000000 -82.500000
-        IMAGE EICAS/pointer_right
-        DATAREF sim/flightmodel2/wing/spoiler1_deg[0]
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 50.000000 41.000000
-        IS_DRAGGABLE 0
-        IS_VERTICAL 1
-        OFFSET 0.000000
+        gen_pointer L AIL
+          POS 1617.000000 -124.500000
+          IMAGE EICAS/pointer_right
+          DATAREF sim/flightmodel2/wing/aileron1_deg[0]
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME -22.000000 0.000000 1.000000
+          KEY_FRAME 0.000000 41.500000 1.000000
+          KEY_FRAME 20.500000 83.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
 
-      gen_pointer L ELEV
-        POS 1774.000000 -124.500000
-        IMAGE EICAS/pointer_right
-        DATAREF sim/flightmodel2/wing/elevator1_deg[0]
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME -20.000000 0.000000 1.000000
-        KEY_FRAME 0.000000 41.500000 1.000000
-        KEY_FRAME 20.000000 83.000000
-        IS_DRAGGABLE 0
-        IS_VERTICAL 1
-        OFFSET 0.000000
+        gen_pointer L FLT SPLR
+          POS 1671.000000 -82.500000
+          IMAGE EICAS/pointer_right
+          DATAREF sim/flightmodel2/wing/spoiler1_deg[0]
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 50.000000 41.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
 
-      gen_pointer RUDDER
-        POS 1735.000000 -182.500000
-        IMAGE EICAS/pointer_up
-        DATAREF sim/flightmodel2/wing/rudder1_deg[0]
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME -29.000000 0.000000 1.000000
-        KEY_FRAME 0.000000 48.500000 1.000000
-        KEY_FRAME 29.000000 97.000000
-        IS_DRAGGABLE 0
-        IS_VERTICAL 0
-        OFFSET 0.000000
+        gen_pointer L ELEV
+          POS 1774.000000 -124.500000
+          IMAGE EICAS/pointer_right
+          DATAREF sim/flightmodel2/wing/elevator1_deg[0]
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME -20.000000 0.000000 1.000000
+          KEY_FRAME 0.000000 41.500000 1.000000
+          KEY_FRAME 20.000000 83.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
 
+        gen_pointer RUDDER
+          POS 1735.000000 -182.500000
+          IMAGE EICAS/pointer_up
+          DATAREF sim/flightmodel2/wing/rudder1_deg[0]
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME -29.000000 0.000000 1.000000
+          KEY_FRAME 0.000000 48.500000 1.000000
+          KEY_FRAME 29.000000 97.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 0
+          OFFSET 0.000000
+
+      END_GROUP
+      GROUP BRAKE TEMP
+        SHOW_EQUAL 1.000000 laminar/B738/effects/brake_temp
+        HIDE
+        gen_rotary EICAS BRAKE TMP
+          POS 1786.000000 2.000000
+          IMAGE EICAS/systems_brake_temp
+          DATAREF 
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 1.000000 6.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+        gen_LED Brake R/Out dig wh
+          POS 1970.000000 24.000000
+          IMAGE TYPE/white_size20
+          DATAREF laminar/B738/systems/brake_temp_right_out[1]
+          SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_right_out
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 9.900000 9.900000
+          DIGITS 2
+          DECIMALS 1
+          PERIOD_WIDTH 10
+          LED_ROWS 0
+
+        gen_LED Brake R/Inn dig wh
+          POS 1839.000000 24.000000
+          IMAGE TYPE/white_size20
+          DATAREF laminar/B738/systems/brake_temp_right_in[1]
+          SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_right_in
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 9.900000 9.900000
+          DIGITS 2
+          DECIMALS 1
+          PERIOD_WIDTH 10
+          LED_ROWS 0
+
+        gen_LED Brake L/Inn dig wh
+          POS 1725.000000 24.000000
+          IMAGE TYPE/white_size20
+          DATAREF laminar/B738/systems/brake_temp_left_in[1]
+          SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_left_in
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 9.900000 9.900000
+          DIGITS 2
+          DECIMALS 1
+          PERIOD_WIDTH 10
+          LED_ROWS 0
+
+        gen_LED Brake L/Out dig wh
+          POS 1593.000000 24.000000
+          IMAGE TYPE/white_size20
+          DATAREF laminar/B738/systems/brake_temp_left_out[1]
+          SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_left_out
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 9.900000 9.900000
+          DIGITS 2
+          DECIMALS 1
+          PERIOD_WIDTH 10
+          LED_ROWS 0
+
+        gen_LED Brake R/Out dig am
+          POS 1970.000000 24.000000
+          IMAGE TYPE/amber_size20
+          DATAREF laminar/B738/systems/brake_temp_right_out[1]
+          SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_right_out
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 9.900000 9.900000
+          DIGITS 2
+          DECIMALS 1
+          PERIOD_WIDTH 10
+          LED_ROWS 0
+
+        gen_LED Brake R/Inn dig am
+          POS 1839.000000 24.000000
+          IMAGE TYPE/amber_size20
+          DATAREF laminar/B738/systems/brake_temp_right_in[1]
+          SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_right_in
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 9.900000 9.900000
+          DIGITS 2
+          DECIMALS 1
+          PERIOD_WIDTH 10
+          LED_ROWS 0
+
+        gen_LED Brake L/Out dig am
+          POS 1593.000000 24.000000
+          IMAGE TYPE/amber_size20
+          DATAREF laminar/B738/systems/brake_temp_left_out[1]
+          SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_left_out
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 9.900000 9.900000
+          DIGITS 2
+          DECIMALS 1
+          PERIOD_WIDTH 10
+          LED_ROWS 0
+
+        gen_LED Brake L/Inn dig am
+          POS 1725.000000 24.000000
+          IMAGE TYPE/amber_size20
+          DATAREF laminar/B738/systems/brake_temp_left_in[1]
+          SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_left_in
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 9.900000 9.900000
+          DIGITS 2
+          DECIMALS 1
+          PERIOD_WIDTH 10
+          LED_ROWS 0
+
+        gen_rotary Brake white L/Outer
+          POS 1626.000000 23.000000
+          IMAGE EICAS/brake_white
+          DATAREF laminar/B738/systems/brake_temp_left_out
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 -1.000000 1.000000
+          KEY_FRAME 2.490000 -1.000000 1.000000
+          KEY_FRAME 2.500000 0.000000 1.000000
+          KEY_FRAME 4.990000 0.000000 1.000000
+          KEY_FRAME 5.000000 -0.500000 1.000000
+          KEY_FRAME 9.990000 -1.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+        gen_rotary Brake white L/Inner
+          POS 1703.000000 23.000000
+          IMAGE EICAS/brake_white
+          DATAREF laminar/B738/systems/brake_temp_left_in
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 -1.000000 1.000000
+          KEY_FRAME 2.490000 -1.000000 1.000000
+          KEY_FRAME 2.500000 0.000000 1.000000
+          KEY_FRAME 4.990000 0.000000 1.000000
+          KEY_FRAME 5.000000 -1.000000 1.000000
+          KEY_FRAME 9.990000 -1.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+        gen_rotary Brake white R/Inner
+          POS 1871.000000 24.000000
+          IMAGE EICAS/brake_white
+          DATAREF laminar/B738/systems/brake_temp_right_in
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 -1.000000 1.000000
+          KEY_FRAME 2.490000 -1.000000 1.000000
+          KEY_FRAME 2.500000 0.000000 1.000000
+          KEY_FRAME 4.990000 0.000000 1.000000
+          KEY_FRAME 5.000000 -1.000000 1.000000
+          KEY_FRAME 9.990000 -1.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+        gen_rotary Brake white R/Outer
+          POS 1948.000000 24.000000
+          IMAGE EICAS/brake_white
+          DATAREF laminar/B738/systems/brake_temp_right_out
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 -1.000000 1.000000
+          KEY_FRAME 2.490000 -1.000000 1.000000
+          KEY_FRAME 2.500000 0.000000 1.000000
+          KEY_FRAME 4.990000 0.000000 1.000000
+          KEY_FRAME 5.000000 -1.000000 1.000000
+          KEY_FRAME 9.990000 -1.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+        gen_rotary Brake amber R/Outer
+          POS 1948.000000 24.000000
+          IMAGE EICAS/brake_amber
+          DATAREF laminar/B738/systems/brake_temp_right_out
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 -1.000000 1.000000
+          KEY_FRAME 4.990000 -1.000000 1.000000
+          KEY_FRAME 5.000000 0.000000 1.000000
+          KEY_FRAME 9.990000 0.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+        gen_rotary Brake amber R/Inner
+          POS 1871.000000 24.000000
+          IMAGE EICAS/brake_amber
+          DATAREF laminar/B738/systems/brake_temp_right_in
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 -1.000000 1.000000
+          KEY_FRAME 4.990000 -1.000000 1.000000
+          KEY_FRAME 5.000000 0.000000 1.000000
+          KEY_FRAME 9.990000 0.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+        gen_rotary Brake amber L/Inner
+          POS 1703.000000 26.000000
+          IMAGE EICAS/brake_amber
+          DATAREF laminar/B738/systems/brake_temp_left_in
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 -1.000000 1.000000
+          KEY_FRAME 4.990000 -1.000000 1.000000
+          KEY_FRAME 5.000000 0.000000 1.000000
+          KEY_FRAME 9.990000 0.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+        gen_rotary Brake amber L/Outer
+          POS 1626.000000 23.000000
+          IMAGE EICAS/brake_amber
+          DATAREF laminar/B738/systems/brake_temp_left_out
+          LOCKED
+          HIDE
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 5
+          BUS_SRC 3
+          KEY_FRAME 0.000000 -1.000000 1.000000
+          KEY_FRAME 4.990000 -1.000000 1.000000
+          KEY_FRAME 5.000000 0.000000 1.000000
+          KEY_FRAME 9.990000 0.000000
+          DIGITS 1
+          ROTARY_TYPE NO_CLICK
+          CLICK_RADIUS 10.000000
+          CLICK_RADIUS_DY 0.000000
+          OFFSET 0.000000
+          STEP1 1.000000
+          STEP2 1.000000
+          CURSOR DEFAULT
+          CLICK_DX 0
+          CLICK_DY 0
+
+      END_GROUP
       gen_LED HYDR PRESS 2
         POS 1859.000000 136.000000
         IMAGE TYPE/white_size23_stretched_vert
@@ -42193,335 +42591,17 @@ GROUP Lower DU x
         PERIOD_WIDTH 0
         LED_ROWS 0
 
-      gen_LED Brake R/Out dig wh
-        POS 1970.000000 24.000000
-        IMAGE TYPE/white_size20
-        DATAREF laminar/B738/systems/brake_temp_right_out[1]
-        SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_right_out
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 9.900000 9.900000
-        DIGITS 2
-        DECIMALS 1
-        PERIOD_WIDTH 10
-        LED_ROWS 0
-
-      gen_LED Brake R/Inn dig wh
-        POS 1839.000000 24.000000
-        IMAGE TYPE/white_size20
-        DATAREF laminar/B738/systems/brake_temp_right_in[1]
-        SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_right_in
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 9.900000 9.900000
-        DIGITS 2
-        DECIMALS 1
-        PERIOD_WIDTH 10
-        LED_ROWS 0
-
-      gen_LED Brake L/Inn dig wh
-        POS 1725.000000 24.000000
-        IMAGE TYPE/white_size20
-        DATAREF laminar/B738/systems/brake_temp_left_in[1]
-        SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_left_in
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 9.900000 9.900000
-        DIGITS 2
-        DECIMALS 1
-        PERIOD_WIDTH 10
-        LED_ROWS 0
-
-      gen_LED Brake L/Out dig wh
-        POS 1593.000000 24.000000
-        IMAGE TYPE/white_size20
-        DATAREF laminar/B738/systems/brake_temp_left_out[1]
-        SHOW_LESS 4.900000 laminar/B738/systems/brake_temp_left_out
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 9.900000 9.900000
-        DIGITS 2
-        DECIMALS 1
-        PERIOD_WIDTH 10
-        LED_ROWS 0
-
-      gen_LED Brake R/Out dig am
-        POS 1970.000000 24.000000
-        IMAGE TYPE/amber_size20
-        DATAREF laminar/B738/systems/brake_temp_right_out[1]
-        SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_right_out
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 9.900000 9.900000
-        DIGITS 2
-        DECIMALS 1
-        PERIOD_WIDTH 10
-        LED_ROWS 0
-
-      gen_LED Brake R/Inn dig am
-        POS 1839.000000 24.000000
-        IMAGE TYPE/amber_size20
-        DATAREF laminar/B738/systems/brake_temp_right_in[1]
-        SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_right_in
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 9.900000 9.900000
-        DIGITS 2
-        DECIMALS 1
-        PERIOD_WIDTH 10
-        LED_ROWS 0
-
-      gen_LED Brake L/Out dig am
-        POS 1593.000000 24.000000
-        IMAGE TYPE/amber_size20
-        DATAREF laminar/B738/systems/brake_temp_left_out[1]
-        SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_left_out
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 9.900000 9.900000
-        DIGITS 2
-        DECIMALS 1
-        PERIOD_WIDTH 10
-        LED_ROWS 0
-
-      gen_LED Brake L/Inn dig am
-        POS 1725.000000 24.000000
-        IMAGE TYPE/amber_size20
-        DATAREF laminar/B738/systems/brake_temp_left_in[1]
-        SHOW_GREATER 4.910000 laminar/B738/systems/brake_temp_left_in
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 9.900000 9.900000
-        DIGITS 2
-        DECIMALS 1
-        PERIOD_WIDTH 10
-        LED_ROWS 0
-
-      gen_rotary Brake white L/Outer
-        POS 1626.000000 23.000000
-        IMAGE EICAS/brake_white
-        DATAREF laminar/B738/systems/brake_temp_left_out
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 -1.000000 1.000000
-        KEY_FRAME 2.490000 -1.000000 1.000000
-        KEY_FRAME 2.500000 0.000000 1.000000
-        KEY_FRAME 4.990000 0.000000 1.000000
-        KEY_FRAME 5.000000 -0.500000 1.000000
-        KEY_FRAME 9.990000 -1.000000
-        DIGITS 1
-        ROTARY_TYPE NO_CLICK
-        CLICK_RADIUS 10.000000
-        CLICK_RADIUS_DY 0.000000
-        OFFSET 0.000000
-        STEP1 1.000000
-        STEP2 1.000000
-        CURSOR DEFAULT
-        CLICK_DX 0
-        CLICK_DY 0
-
-      gen_rotary Brake white L/Inner
-        POS 1703.000000 23.000000
-        IMAGE EICAS/brake_white
-        DATAREF laminar/B738/systems/brake_temp_left_in
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 -1.000000 1.000000
-        KEY_FRAME 2.490000 -1.000000 1.000000
-        KEY_FRAME 2.500000 0.000000 1.000000
-        KEY_FRAME 4.990000 0.000000 1.000000
-        KEY_FRAME 5.000000 -1.000000 1.000000
-        KEY_FRAME 9.990000 -1.000000
-        DIGITS 1
-        ROTARY_TYPE NO_CLICK
-        CLICK_RADIUS 10.000000
-        CLICK_RADIUS_DY 0.000000
-        OFFSET 0.000000
-        STEP1 1.000000
-        STEP2 1.000000
-        CURSOR DEFAULT
-        CLICK_DX 0
-        CLICK_DY 0
-
-      gen_rotary Brake white R/Inner
-        POS 1871.000000 24.000000
-        IMAGE EICAS/brake_white
-        DATAREF laminar/B738/systems/brake_temp_right_in
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 -1.000000 1.000000
-        KEY_FRAME 2.490000 -1.000000 1.000000
-        KEY_FRAME 2.500000 0.000000 1.000000
-        KEY_FRAME 4.990000 0.000000 1.000000
-        KEY_FRAME 5.000000 -1.000000 1.000000
-        KEY_FRAME 9.990000 -1.000000
-        DIGITS 1
-        ROTARY_TYPE NO_CLICK
-        CLICK_RADIUS 10.000000
-        CLICK_RADIUS_DY 0.000000
-        OFFSET 0.000000
-        STEP1 1.000000
-        STEP2 1.000000
-        CURSOR DEFAULT
-        CLICK_DX 0
-        CLICK_DY 0
-
-      gen_rotary Brake white R/Outer
-        POS 1948.000000 24.000000
-        IMAGE EICAS/brake_white
-        DATAREF laminar/B738/systems/brake_temp_right_out
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 -1.000000 1.000000
-        KEY_FRAME 2.490000 -1.000000 1.000000
-        KEY_FRAME 2.500000 0.000000 1.000000
-        KEY_FRAME 4.990000 0.000000 1.000000
-        KEY_FRAME 5.000000 -1.000000 1.000000
-        KEY_FRAME 9.990000 -1.000000
-        DIGITS 1
-        ROTARY_TYPE NO_CLICK
-        CLICK_RADIUS 10.000000
-        CLICK_RADIUS_DY 0.000000
-        OFFSET 0.000000
-        STEP1 1.000000
-        STEP2 1.000000
-        CURSOR DEFAULT
-        CLICK_DX 0
-        CLICK_DY 0
-
-      gen_rotary Brake amber R/Outer
-        POS 1948.000000 24.000000
-        IMAGE EICAS/brake_amber
-        DATAREF laminar/B738/systems/brake_temp_right_out
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 -1.000000 1.000000
-        KEY_FRAME 4.990000 -1.000000 1.000000
-        KEY_FRAME 5.000000 0.000000 1.000000
-        KEY_FRAME 9.990000 0.000000
-        DIGITS 1
-        ROTARY_TYPE NO_CLICK
-        CLICK_RADIUS 10.000000
-        CLICK_RADIUS_DY 0.000000
-        OFFSET 0.000000
-        STEP1 1.000000
-        STEP2 1.000000
-        CURSOR DEFAULT
-        CLICK_DX 0
-        CLICK_DY 0
-
-      gen_rotary Brake amber R/Inner
-        POS 1871.000000 24.000000
-        IMAGE EICAS/brake_amber
-        DATAREF laminar/B738/systems/brake_temp_right_in
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 -1.000000 1.000000
-        KEY_FRAME 4.990000 -1.000000 1.000000
-        KEY_FRAME 5.000000 0.000000 1.000000
-        KEY_FRAME 9.990000 0.000000
-        DIGITS 1
-        ROTARY_TYPE NO_CLICK
-        CLICK_RADIUS 10.000000
-        CLICK_RADIUS_DY 0.000000
-        OFFSET 0.000000
-        STEP1 1.000000
-        STEP2 1.000000
-        CURSOR DEFAULT
-        CLICK_DX 0
-        CLICK_DY 0
-
-      gen_rotary Brake amber L/Inner
-        POS 1703.000000 26.000000
-        IMAGE EICAS/brake_amber
-        DATAREF laminar/B738/systems/brake_temp_left_in
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 -1.000000 1.000000
-        KEY_FRAME 4.990000 -1.000000 1.000000
-        KEY_FRAME 5.000000 0.000000 1.000000
-        KEY_FRAME 9.990000 0.000000
-        DIGITS 1
-        ROTARY_TYPE NO_CLICK
-        CLICK_RADIUS 10.000000
-        CLICK_RADIUS_DY 0.000000
-        OFFSET 0.000000
-        STEP1 1.000000
-        STEP2 1.000000
-        CURSOR DEFAULT
-        CLICK_DX 0
-        CLICK_DY 0
-
-      gen_rotary Brake amber L/Outer
-        POS 1626.000000 23.000000
-        IMAGE EICAS/brake_amber
-        DATAREF laminar/B738/systems/brake_temp_left_out
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 5
-        BUS_SRC 3
-        KEY_FRAME 0.000000 -1.000000 1.000000
-        KEY_FRAME 4.990000 -1.000000 1.000000
-        KEY_FRAME 5.000000 0.000000 1.000000
-        KEY_FRAME 9.990000 0.000000
-        DIGITS 1
-        ROTARY_TYPE NO_CLICK
-        CLICK_RADIUS 10.000000
-        CLICK_RADIUS_DY 0.000000
-        OFFSET 0.000000
-        STEP1 1.000000
-        STEP2 1.000000
-        CURSOR DEFAULT
-        CLICK_DX 0
-        CLICK_DY 0
-
     END_GROUP
     GROUP Lower DU - ENG
       SHOW_EQUAL 1.000000 laminar/B738/systems/lowerDU_page
       LOCKED
+      HIDE
       gen_pie N2 pie #1
         POS 1709.500000 184.500000
         IMAGE EICAS/EICAS_pie
         DATAREF laminar/B738/engine/indicators/N2_percent_1[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42540,6 +42620,7 @@ GROUP Lower DU x
         IMAGE EICAS/EICAS_pie
         DATAREF laminar/B738/engine/indicators/N2_percent_2[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42558,6 +42639,7 @@ GROUP Lower DU x
         IMAGE EICAS/background_eicas2
         DATAREF 
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42579,6 +42661,7 @@ GROUP Lower DU x
         IMAGE EICAS/EICAS_needle
         DATAREF laminar/B738/engine/indicators/N2_percent_1[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42593,6 +42676,7 @@ GROUP Lower DU x
         IMAGE EICAS/EICAS_needle
         DATAREF laminar/B738/engine/indicators/N2_percent_2[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42608,6 +42692,7 @@ GROUP Lower DU x
         DATAREF sim/cockpit2/engine/indicators/oil_pressure_psi[0]
         SHOW_GREATER 0.010000 laminar/B738/engine/indicators/N2_percent_1[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42625,6 +42710,7 @@ GROUP Lower DU x
         DATAREF sim/cockpit2/engine/indicators/oil_pressure_psi[1]
         SHOW_GREATER 0.010000 laminar/B738/engine/indicators/N2_percent_2[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42641,6 +42727,7 @@ GROUP Lower DU x
         IMAGE EICAS/pointer_left
         DATAREF sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42657,6 +42744,7 @@ GROUP Lower DU x
         IMAGE EICAS/pointer_right
         DATAREF sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42674,6 +42762,7 @@ GROUP Lower DU x
         DATAREF sim/cockpit2/engine/indicators/oil_pressure_psi[0]
         SHOW_GREATER 60.000000 sim/cockpit2/engine/indicators/N2_percent[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42699,6 +42788,7 @@ GROUP Lower DU x
         DATAREF sim/cockpit2/engine/indicators/oil_pressure_psi[1]
         SHOW_GREATER 60.000000 sim/cockpit2/engine/indicators/N2_percent[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42724,6 +42814,7 @@ GROUP Lower DU x
         DATAREF sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
         SHOW_GREATER 0.000000 [0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42749,6 +42840,7 @@ GROUP Lower DU x
         DATAREF sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
         SHOW_GREATER 0.000000 [0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42774,6 +42866,7 @@ GROUP Lower DU x
         DATAREF sim/cockpit2/engine/indicators/oil_quantity_ratio[0]
         SHOW_GREATER 65.000000 [0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42797,6 +42890,7 @@ GROUP Lower DU x
         DATAREF sim/cockpit2/engine/indicators/oil_quantity_ratio[1]
         SHOW_GREATER 65.000000 [0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42819,6 +42913,7 @@ GROUP Lower DU x
         IMAGE EICAS/pointer_left
         DATAREF sim/cockpit2/engine/indicators/N1_percent[0]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42835,6 +42930,7 @@ GROUP Lower DU x
         IMAGE EICAS/pointer_right
         DATAREF sim/cockpit2/engine/indicators/N1_percent[1]
         LOCKED
+        HIDE
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 5
         BUS_SRC 3
@@ -42848,12 +42944,14 @@ GROUP Lower DU x
 
       GROUP digital
         LOCKED
+        HIDE
         GROUP_OPEN
         gen_LED N2_dig Engine 1
           POS 1739.000000 202.000000
           IMAGE TYPE/white_size23_stretched_vert
           DATAREF laminar/B738/engine/indicators/N2_percent_1[0]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -42869,6 +42967,7 @@ GROUP Lower DU x
           IMAGE TYPE/white_size23_stretched_vert
           DATAREF laminar/B738/engine/indicators/N2_percent_2[1]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -42882,6 +42981,7 @@ GROUP Lower DU x
         GROUP FF ENG 1
           SHOW_GREATER 5.700000 laminar/B738/engine/indicators/N2_percent_1
           LOCKED
+          HIDE
           gen_LED FF_dig Eng 1 kg
             POS 1699.000000 98.000000
             IMAGE TYPE/white_size23_stretched_vert_full0
@@ -42889,6 +42989,7 @@ GROUP Lower DU x
             SHOW_LESS 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[0]
             SHOW_EQUAL 1.000000 laminar/B738/FMS/fmc_units
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -42906,6 +43007,7 @@ GROUP Lower DU x
             SHOW_EQUAL 1.000000 laminar/B738/FMS/fmc_units
             SHOW_GREATER 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[0]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -42923,6 +43025,7 @@ GROUP Lower DU x
             SHOW_LESS 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[0]
             SHOW_EQUAL 0.000000 laminar/B738/FMS/fmc_units
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -42940,6 +43043,7 @@ GROUP Lower DU x
             SHOW_EQUAL 0.000000 laminar/B738/FMS/fmc_units
             SHOW_GREATER 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[0]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -42954,6 +43058,7 @@ GROUP Lower DU x
         GROUP FF ENG 2
           SHOW_GREATER 5.700000 laminar/B738/engine/indicators/N2_percent_2
           LOCKED
+          HIDE
           gen_LED FF_dig Eng 2 kg
             POS 1845.000000 98.000000
             IMAGE TYPE/white_size23_stretched_vert_full0
@@ -42961,6 +43066,7 @@ GROUP Lower DU x
             SHOW_LESS 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[1]
             SHOW_EQUAL 1.000000 laminar/B738/FMS/fmc_units
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -42978,6 +43084,7 @@ GROUP Lower DU x
             SHOW_EQUAL 1.000000 laminar/B738/FMS/fmc_units
             SHOW_GREATER 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[1]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -42995,6 +43102,7 @@ GROUP Lower DU x
             SHOW_LESS 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[1]
             SHOW_EQUAL 0.000000 laminar/B738/FMS/fmc_units
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -43012,6 +43120,7 @@ GROUP Lower DU x
             SHOW_EQUAL 0.000000 laminar/B738/FMS/fmc_units
             SHOW_GREATER 1.260000 sim/cockpit2/engine/indicators/fuel_flow_kg_sec[1]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -43026,11 +43135,13 @@ GROUP Lower DU x
       END_GROUP
       GROUP VIB
         LOCKED
+        HIDE
         gen_LED VIB
           POS 1712.000000 -179.000000
           IMAGE TYPE/white_size20
           DATAREF sim/cockpit2/engine/indicators/N1_percent[0]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -43048,6 +43159,7 @@ GROUP Lower DU x
           IMAGE TYPE/white_size20
           DATAREF sim/cockpit2/engine/indicators/N1_percent[1]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -43063,6 +43175,7 @@ GROUP Lower DU x
       END_GROUP
       GROUP OIL QUANT
         LOCKED
+        HIDE
         gen_LED OQ_dig Engine 1 w
           POS 1719.000000 -113.000000
           IMAGE TYPE/Oil/white_oil_quant
@@ -43070,6 +43183,7 @@ GROUP Lower DU x
           SHOW_LESS 0.000000 [0]
           SHOW_GREATER 0.190000 sim/cockpit2/engine/indicators/oil_quantity_ratio[0]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -43086,6 +43200,7 @@ GROUP Lower DU x
           DATAREF sim/cockpit2/engine/indicators/oil_quantity_ratio[1]
           SHOW_GREATER 0.190000 sim/cockpit2/engine/indicators/oil_quantity_ratio[1]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -43103,6 +43218,7 @@ GROUP Lower DU x
           SHOW_LESS 0.190000 sim/cockpit2/engine/indicators/oil_quantity_ratio[0]
           SHOW_GREATER 0.190000 [0]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -43120,6 +43236,7 @@ GROUP Lower DU x
           SHOW_LESS 0.190000 sim/cockpit2/engine/indicators/oil_quantity_ratio[1]
           SHOW_GREATER 0.190000 sim/cockpit2/engine/indicators/oil_quantity_ratio[1]
           LOCKED
+          HIDE
           LIGHT_MODE GLASS_AUTO
           LIGHT_RHEOSTAT 5
           BUS_SRC 3
@@ -43133,14 +43250,17 @@ GROUP Lower DU x
       END_GROUP
       GROUP OIL PRESS
         LOCKED
+        HIDE
         GROUP_OPEN
         GROUP ENGINE1
           SHOW_GREATER 7.100000 laminar/B738/engine/indicators/N2_percent_1[0]
           LOCKED
+          HIDE
           GROUP_OPEN
           GROUP New Group
             SHOW_GREATER 1.000000 laminar/B738/engine/eng1_oil_press
             LOCKED
+            HIDE
             GROUP_OPEN
             gen_LED OP_dig Engine 1
               POS 1716.000000 38.000000
@@ -43148,6 +43268,7 @@ GROUP Lower DU x
               DATAREF laminar/B738/engine/eng1_oil_press[0]
               SHOW_GREATER 0.010000 laminar/B738/engine/indicators/N2_percent_1[0]
               LOCKED
+              HIDE
               LIGHT_MODE GLASS_AUTO
               LIGHT_RHEOSTAT 5
               BUS_SRC 3
@@ -43161,6 +43282,7 @@ GROUP Lower DU x
             GROUP New Group
               SHOW_GREATER 19.000000 laminar/B738/engine/indicators/N1_percent_1
               LOCKED
+              HIDE
               GROUP_OPEN
               gen_LED OP_dig Engine 1 o
                 POS 1716.000000 38.000000
@@ -43169,6 +43291,7 @@ GROUP Lower DU x
                 SHOW_LESS 22.000000 laminar/B738/engine/eng1_oil_press[0]
                 SHOW_GREATER 13.000000 laminar/B738/engine/eng1_oil_press[0]
                 LOCKED
+                HIDE
                 LIGHT_MODE GLASS_AUTO
                 LIGHT_RHEOSTAT 5
                 BUS_SRC 3
@@ -43186,6 +43309,7 @@ GROUP Lower DU x
                 SHOW_LESS 13.000000 laminar/B738/engine/eng1_oil_press[0]
                 SHOW_GREATER 65.000000 [0]
                 LOCKED
+                HIDE
                 LIGHT_MODE GLASS_AUTO
                 LIGHT_RHEOSTAT 5
                 BUS_SRC 3
@@ -43202,10 +43326,12 @@ GROUP Lower DU x
         GROUP ENGINE2
           SHOW_GREATER 7.100000 laminar/B738/engine/indicators/N2_percent_2[1]
           LOCKED
+          HIDE
           GROUP_OPEN
           GROUP New Group
             SHOW_GREATER 1.000000 laminar/B738/engine/eng2_oil_press
             LOCKED
+            HIDE
             GROUP_OPEN
             gen_LED OP_dig Engine 2
               POS 1840.000000 38.000000
@@ -43213,6 +43339,7 @@ GROUP Lower DU x
               DATAREF laminar/B738/engine/eng2_oil_press[1]
               SHOW_GREATER 0.010000 laminar/B738/engine/indicators/N2_percent_2[1]
               LOCKED
+              HIDE
               LIGHT_MODE GLASS_AUTO
               LIGHT_RHEOSTAT 5
               BUS_SRC 3
@@ -43226,6 +43353,7 @@ GROUP Lower DU x
             GROUP New Group
               SHOW_GREATER 19.000000 laminar/B738/engine/indicators/N1_percent_2
               LOCKED
+              HIDE
               GROUP_OPEN
               gen_LED OP_dig Engine 2 o
                 POS 1840.000000 38.000000
@@ -43234,6 +43362,7 @@ GROUP Lower DU x
                 SHOW_LESS 22.000000 laminar/B738/engine/eng2_oil_press[1]
                 SHOW_GREATER 13.000000 laminar/B738/engine/eng2_oil_press[1]
                 LOCKED
+                HIDE
                 LIGHT_MODE GLASS_AUTO
                 LIGHT_RHEOSTAT 5
                 BUS_SRC 3
@@ -43251,6 +43380,7 @@ GROUP Lower DU x
                 SHOW_LESS 13.000000 laminar/B738/engine/eng2_oil_press[1]
                 SHOW_GREATER 65.000000 [1]
                 LOCKED
+                HIDE
                 LIGHT_MODE GLASS_AUTO
                 LIGHT_RHEOSTAT 5
                 BUS_SRC 3
@@ -43267,9 +43397,11 @@ GROUP Lower DU x
       END_GROUP
       GROUP OIL TEMP
         LOCKED
+        HIDE
         GROUP ENG 1
           SHOW_GREATER 8.900000 laminar/B738/engine/indicators/N2_percent_1
           LOCKED
+          HIDE
           GROUP_OPEN
           gen_LED OT_dig Engine 1
             POS 1714.000000 -60.000000
@@ -43277,6 +43409,7 @@ GROUP Lower DU x
             DATAREF sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
             SHOW_LESS 153.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -43294,6 +43427,7 @@ GROUP Lower DU x
             SHOW_LESS 165.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
             SHOW_GREATER 153.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -43311,6 +43445,7 @@ GROUP Lower DU x
             SHOW_LESS 165.000000 [0]
             SHOW_GREATER 165.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[0]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -43325,12 +43460,14 @@ GROUP Lower DU x
         GROUP ENG 2
           SHOW_GREATER 8.900000 laminar/B738/engine/indicators/N2_percent_2
           LOCKED
+          HIDE
           gen_LED OT_dig Engine 2
             POS 1838.000000 -60.000000
             IMAGE TYPE/Oil/white_size22_oil_temp
             DATAREF sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
             SHOW_LESS 153.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -43348,6 +43485,7 @@ GROUP Lower DU x
             SHOW_LESS 165.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
             SHOW_GREATER 153.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -43365,6 +43503,7 @@ GROUP Lower DU x
             SHOW_LESS 165.000000 [1]
             SHOW_GREATER 165.000000 sim/cockpit2/engine/indicators/oil_temperature_deg_C[1]
             LOCKED
+            HIDE
             LIGHT_MODE GLASS_AUTO
             LIGHT_RHEOSTAT 5
             BUS_SRC 3
@@ -45405,6 +45544,22 @@ GROUP LAT LON
     BUS_SRC 3
     KEY_FRAME 0.000000 0.000000 1.000000
     KEY_FRAME 999.000000 999.000000
+    DIGITS 6
+    DECIMALS 3
+    PERIOD_WIDTH 0
+    LED_ROWS 0
+
+  gen_LED IRS Allign time
+    POS 1897.000000 567.000000
+    IMAGE TYPE/IRS_Type2
+    DATAREF laminar/B738/irs_right1
+    SHOW_EQUAL 1.000000 laminar/B738/irs_allign_show
+    LOCKED
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 12
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 99.000000 99.000000
     DIGITS 6
     DECIMALS 3
     PERIOD_WIDTH 0
@@ -75794,7 +75949,6 @@ END_GROUP
 GROUP ND FO
   LOCKED
   HIDE
-  GROUP_OPEN
   GROUP WX FO
     SHOW_EQUAL 1.000000 laminar/B738/EFIS/fo/EFIS_wx_on
     LOCKED

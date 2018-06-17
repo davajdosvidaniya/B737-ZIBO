@@ -625,7 +625,6 @@ simDR_vdot_nav1_pilot			= find_dataref("sim/cockpit2/radios/indicators/hsi_vdef_
 --simDR_vdot_nav1_pilot			= 999
 
 --simDR_dme_dist				= find_dataref("sim/cockpit2/radios/indicators/gps_dme_distance_nm")
-simDR_dme_dist					= find_dataref("laminar/B738/fms/lnav_dist_next")
 
 
 
@@ -8881,7 +8880,7 @@ function B738_vnav6()
 							vnav_speed_trg = math.min(spd_250_10000, B738DR_rest_wpt_spd, B738DR_fmc_cruise_speed, flaps_speed)
 						else
 							--if simDR_airspeed_dial ~= B738DR_rest_wpt_spd and simDR_dme_dist < decel_dist then
-							if simDR_dme_dist < decel_dist then
+							if simDR_fmc_dist < decel_dist then
 								--vnav_speed_trg = B738DR_rest_wpt_spd
 								vnav_speed_trg = math.min(spd_250_10000, B738DR_rest_wpt_spd, B738DR_fmc_cruise_speed, flaps_speed)
 							else
@@ -9349,7 +9348,7 @@ function B738_vnav6()
 							if B738DR_mcp_speed_dial < 100 then
 								vnav_speed_trg = math.min(spd_250_10000, B738DR_rest_wpt_spd, B738DR_fmc_descent_speed)
 							else
-								if simDR_dme_dist < decel_dist then
+								if simDR_fmc_dist < decel_dist then
 									vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, B738DR_rest_wpt_spd)
 								else
 									vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000)
@@ -9656,7 +9655,7 @@ function B738_vnav6()
 								if B738DR_mcp_speed_dial < 100 then
 									vnav_speed_trg = math.min(spd_250_10000, B738DR_rest_wpt_spd, B738DR_fmc_descent_speed)
 								else
-									if simDR_dme_dist < decel_dist then
+									if simDR_fmc_dist < decel_dist then
 										vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, B738DR_rest_wpt_spd)
 									else
 										vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000)

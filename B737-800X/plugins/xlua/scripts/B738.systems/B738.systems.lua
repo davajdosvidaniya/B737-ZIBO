@@ -243,6 +243,7 @@ local decl = 0
 
 apu_temp = 0
 apu_temp_target = 0
+apu_door_target = 0
 brake_force = 0
 
 left_brake = 0
@@ -1144,6 +1145,7 @@ B738DR_apu_power_bus2		= create_dataref("laminar/B738/electrical/apu_power_bus2"
 B738DR_apu_low_oil			= create_dataref("laminar/B738/electrical/apu_low_oil", "number")
 B738DR_apu_temp				= create_dataref("laminar/B738/electrical/apu_temp", "number")
 B738DR_apu_bus_enable		= create_dataref("laminar/B738/electrical/apu_bus_enable", "number")
+B738DR_apu_door				= create_dataref("laminar/B738/electrical/apu_door", "number")
 
 simDR_flap_deg			= find_dataref("sim/flightmodel2/wing/flap1_deg[0]")
 --B738DR_slat1_deg		= create_dataref("laminar/B738/slat1_deploy_ratio", "number")
@@ -1856,6 +1858,8 @@ function B738_apu_starter_switch_neg_CMDhandler(phase, duration)
         if B738DR_apu_start_switch_position == 0 then			-- OFF
             B738DR_apu_start_switch_position = 1				-- ON
             simCMD_apu_on:once()
+			run_after_time(apu_low_oil, 5.5)				-- Delay 5.5 second
+			apu_door_target = 1
 			-- if simDR_apu_status < 40 then
 				-- B738DR_apu_low_oil = 1
 			-- end
@@ -5609,6 +5613,7 @@ end
 
 function apu_shutdown()
     simCMD_apu_off:once()
+	apu_door_target = 0
 end
 
 function apu_start_stop()
@@ -5666,6 +5671,7 @@ function B738_apu_system2()
 				apu_start_active = 0
 				simCMD_apu_off:once()
 			end
+			apu_door_target = 0
 			--B738DR_apu_low_oil = 0
 		end
 		B738DR_apu_bus_enable = 0
@@ -5677,9 +5683,11 @@ function B738_apu_system2()
 				apu_temp_lim = math.min(60, (apu_temp_oat + 30))
 				apu_temp_lim = math.max(0, (apu_temp_oat + 30))
 				apu_start_time = B738_rescale(0, 28, 60, 8, apu_temp_lim)
+				if B738DR_apu_low_oil ~= 0 then
+					apu_start_time = apu_start_time / 8
+				end
 				run_after_time(apu_start, apu_start_time)
-				--run_after_time(apu_start, 16)					-- Delay START 16 seconds
-				run_after_time(apu_low_oil, 5.5)				-- Delay 5.5 second
+				--run_after_time(apu_low_oil, 5.5)				-- Delay 5.5 second
 			end
 		else
 			apu_start_active = 3
@@ -5803,6 +5811,7 @@ function B738_apu_system2()
 		B738DR_apu_bus_enable = 0
 		if simDR_apu_run == 1 then
 			simCMD_apu_off:once()
+			apu_door_target = 0
 		end
 		-- if is_timer_scheduled(apu_cooling) == false then
 			-- run_after_time(apu_cooling, 5.5)					-- Delay START 5 seconds
@@ -5815,6 +5824,7 @@ function B738_apu_system2()
 			apu_shutdown_active = 0
 		--elseif apu_temp < 25 then
 			simCMD_apu_off:once()
+			apu_door_target = 0
 		end
 	end
 	
@@ -5840,6 +5850,8 @@ function B738_apu_system2()
 		B738DR_apu_power_bus1 = 0
 		B738DR_apu_power_bus2 = 0
 	end
+	
+	B738DR_apu_door = B738_set_anim_value(B738DR_apu_door, apu_door_target, 0.0, 1.0, 0.85)
 	
 	B738DR_apu_temp = apu_temp
 	--B738DR_apu_temp = DR_sys_test
@@ -11160,6 +11172,7 @@ B738_init_engineMGMT_fltStart()
 	brake_smoothly_status = 0
 	brake_smoothly_left = 0
 	brake_smoothly_right = 0
+	apu_door_target = 0
 	
 end
 
