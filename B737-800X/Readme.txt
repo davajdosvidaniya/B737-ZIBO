@@ -77,6 +77,14 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26r:
+------
+- add code for auto correct imported default xplane airport data
+- add Runway extension feature for any airport
+- fixed bugs (windshield reflection, VNAV auto descent,...)
+Important: Delete those files located in folder "objects": 738cockpit_glass_2.dds, 738cockpit_glass_2_LIT.dds, 738cockpit_displays.dds, 738cockpit_switches.dds.
+Note: Delete files "B738X_apt.dat" and "B738X_rnw.dat" for auto rebuild database.
+
 3.26q:
 ------
 - corrected systems (VNAV descent path logic, E/D,...)

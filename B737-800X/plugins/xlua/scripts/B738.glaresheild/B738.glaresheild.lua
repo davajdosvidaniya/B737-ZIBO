@@ -15328,14 +15328,13 @@ function B738_draw_arc()
 						B738DR_green_arc_show = 0
 					else
 						arc_dist2 = arc_dist * arc_zoom
+						if B738DR_capt_exp_map_mode == 0 then
+							arc_dist2 = arc_dist2 + 0.465294
+						end
 						if arc_dist2 < 0.005 or arc_dist2 > 1.0 then
 							B738DR_green_arc_show = 0
 						else
-							if B738DR_capt_exp_map_mode == 0 then
-								B738DR_green_arc = arc_dist2 + 0.465294
-							else
-								B738DR_green_arc = arc_dist2
-							end
+							B738DR_green_arc = arc_dist2
 							B738DR_green_arc_show = 1
 						end
 					end
@@ -15361,14 +15360,13 @@ function B738_draw_arc()
 						B738DR_green_arc_fo_show = 0
 					else
 						arc_dist2 = arc_dist * arc_zoom
+						if B738DR_fo_exp_map_mode == 0 then
+							arc_dist2 = arc_dist2 + 0.465294
+						end
 						if arc_dist2 < 0.005 or arc_dist2 > 1.0 then
 							B738DR_green_arc_fo_show = 0
 						else
-							if B738DR_fo_exp_map_mode == 0 then
-								B738DR_green_arc_fo = arc_dist2 + 0.465294
-							else
-								B738DR_green_arc_fo = arc_dist2
-							end
+							B738DR_green_arc_fo = arc_dist2
 							B738DR_green_arc_fo_show = 1
 						end
 					end
@@ -15411,14 +15409,13 @@ function B738_draw_arc()
 						B738DR_green_arc_show = 0
 					else
 						arc_dist2 = arc_dist * arc_zoom
+							if B738DR_capt_exp_map_mode == 0 then
+								arc_dist2 = arc_dist2 + 0.465294
+							end
 						if arc_dist2 < 0.005 or arc_dist2 > 1.0 then
 							B738DR_green_arc_show = 0
 						else
-							if B738DR_capt_exp_map_mode == 0 then
-								B738DR_green_arc = arc_dist2 + 0.465294
-							else
-								B738DR_green_arc = arc_dist2
-							end
+							B738DR_green_arc = arc_dist2
 							B738DR_green_arc_show = 1
 						end
 					end
@@ -15444,14 +15441,13 @@ function B738_draw_arc()
 						B738DR_green_arc_fo_show = 0
 					else
 						arc_dist2 = arc_dist * arc_zoom
+						if B738DR_fo_exp_map_mode == 0 then
+							arc_dist2 = arc_dist2 + 0.465294
+						end
 						if arc_dist2 < 0.005 or arc_dist2 > 1.0 then
 							B738DR_green_arc_fo_show = 0
 						else
-							if B738DR_fo_exp_map_mode == 0 then
-								B738DR_green_arc_fo = arc_dist2 + 0.465294
-							else
-								B738DR_green_arc_fo = arc_dist2
-							end
+							B738DR_green_arc_fo = arc_dist2
 							B738DR_green_arc_fo_show = 1
 						end
 					end
@@ -15495,14 +15491,13 @@ function B738_draw_arc()
 							B738DR_green_arc_show = 0
 						else
 							arc_dist2 = arc_dist * arc_zoom
+							if B738DR_capt_exp_map_mode == 0 then
+								arc_dist2 = arc_dist2 + 0.465294
+							end
 							if arc_dist2 < 0.005 or arc_dist2 > 1.0 then
 								B738DR_green_arc_show = 0
 							else
-								if B738DR_capt_exp_map_mode == 0 then
-									B738DR_green_arc = arc_dist2 + 0.465294
-								else
-									B738DR_green_arc = arc_dist2
-								end
+								B738DR_green_arc = arc_dist2
 								B738DR_green_arc_show = 1
 							end
 						end
@@ -15528,14 +15523,13 @@ function B738_draw_arc()
 							B738DR_green_arc_fo_show = 0
 						else
 							arc_dist2 = arc_dist * arc_zoom
+							if B738DR_fo_exp_map_mode == 0 then
+								arc_dist2 = arc_dist2 + 0.465294
+							end
 							if arc_dist2 < 0.005 or arc_dist2 > 1.0 then
 								B738DR_green_arc_fo_show = 0
 							else
-								if B738DR_fo_exp_map_mode == 0 then
-									B738DR_green_arc_fo = arc_dist2 + 0.465294
-								else
-									B738DR_green_arc_fo = arc_dist2
-								end
+								B738DR_green_arc_fo = arc_dist2
 								B738DR_green_arc_fo_show = 1
 							end
 						end
