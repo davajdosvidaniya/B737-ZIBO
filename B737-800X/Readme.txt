@@ -77,6 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26o:
+------
+- add support for next update TerrainRadar plugin by DrGluck
+- corrected some systems
+- fixed bugs (HOLD course, altitude block restrict, A/T,...)
+
 3.26n:
 ------
 - add PPOS HOLD

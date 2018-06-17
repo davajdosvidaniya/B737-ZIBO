@@ -1531,6 +1531,8 @@ simDR_cg					= find_dataref("sim/flightmodel/misc/cgz_ref_to_default")
 
 simDR_cowl_ice_0_on			= find_dataref("sim/cockpit2/ice/ice_inlet_heat_on_per_engine[0]")
 simDR_cowl_ice_1_on			= find_dataref("sim/cockpit2/ice/ice_inlet_heat_on_per_engine[1]")
+simDR_wing_l_heat_on		= find_dataref("sim/cockpit2/ice/ice_surfce_heat_left_on")
+simDR_wing_r_heat_on		= find_dataref("sim/cockpit2/ice/ice_surfce_heat_right_on")
 simDR_TAT					= find_dataref("sim/cockpit2/temperature/outside_air_LE_temp_degc")
 
 simDR_hide_yoke				= find_dataref("sim/graphics/view/hide_yoke")
@@ -10546,7 +10548,7 @@ function dec_lat_lon(dec_mode, dec_idx)
 			dec_calc_brg = crs1
 		else
 			dec_calc_brg = math.deg(dec_calc_brg)
-			crs1 = (dec_calc_brg - mag_variation_deg(dec_prev_lat, dec_prev_lon) + 360) % 360
+			--crs1 = (dec_calc_brg - mag_variation_deg(dec_prev_lat, dec_prev_lon) + 360) % 360
 			crs1 = crs1 * 10
 			if dec_mode == 0 then
 				legs_data[dec_idx][29] = string.format("%04d", crs1)
@@ -11671,9 +11673,9 @@ function copy_to_legsdata()
 				elseif legs_data[ii][6] == 43 then	-- Above
 					B738DR_fms_legs_alt_rest_type[ii-1] = 2
 					B738DR_fms_legs_alt_rest2[ii-1] = 0
-				-- elseif legs_data[ii][6] == 41 then	-- Between
-					-- B738DR_fms_legs_alt_rest_type[ii] = 3
-					-- B738DR_fms_legs_alt_rest2[ii] = 0
+				elseif legs_data[ii][6] == 41 then	-- Between
+					B738DR_fms_legs_alt_rest_type[ii-1] = 3
+					B738DR_fms_legs_alt_rest2[ii-1] = legs_data[ii][41]
 				else	-- At
 					B738DR_fms_legs_alt_rest_type[ii-1] = 0
 					B738DR_fms_legs_alt_rest2[ii-1] = 0
@@ -14533,13 +14535,44 @@ function read_ref_data(ddd_ref_icao)
 			rte_sid[rte_sid_num][20] = fms_word[5]	-- navaid_id_cifs
 			rte_sid[rte_sid_num][4] = fms_word[28]	-- restrict speed
 			rte_sid[rte_sid_num][5] = fms_word[24]	-- restrict altitude
-			rte_sid[rte_sid_num][23] = fms_word[25]	-- restrict altitude2
 			
-			if fms_word[23] == "B" then
-				rte_sid[rte_sid_num][6] = "-"	-- restrict altitude +,-,B
+			
+			-- at
+			if fms_word[23] == "G" or fms_word[23] == "I" or fms_word[23] == "X" then
+				rte_sid[rte_sid_num][5] = fms_word[24]	-- restrict altitude2
+				rte_sid[rte_sid_num][23] = fms_word[25]	-- restrict altitude1
+				rte_sid[rte_sid_num][6] = " "	-- restrict altitude +,-,B
+			elseif fms_word[23] == "X" then
+				rte_sid[rte_sid_num][5] = fms_word[25]	-- restrict altitude2
+				rte_sid[rte_sid_num][23] = fms_word[24]	-- restrict altitude1
+				rte_sid[rte_sid_num][6] = " "	-- restrict altitude +,-,B
+			-- at or above
+			elseif fms_word[23] == "C" then
+				rte_sid[rte_sid_num][5] = fms_word[25]	-- restrict altitude2
+				rte_sid[rte_sid_num][23] = fms_word[24]	-- restrict altitude1
+				rte_sid[rte_sid_num][6] = "+"	-- restrict altitude +,-,B
+			elseif fms_word[23] == "H" or fms_word[23] == "J" or fms_word[23] == "V" then
+				rte_sid[rte_sid_num][5] = fms_word[24]	-- restrict altitude2
+				rte_sid[rte_sid_num][23] = fms_word[25]	-- restrict altitude1
+				rte_sid[rte_sid_num][6] = "+"	-- restrict altitude +,-,B
+			elseif fms_word[23] == "B" then
+				rte_sid[rte_sid_num][5] = fms_word[25]	-- restrict altitude1
+				rte_sid[rte_sid_num][23] = fms_word[24]	-- restrict altitude2
+				rte_sid[rte_sid_num][6] = fms_word[23]	-- restrict altitude +,-,B
 			else
+				rte_sid[rte_sid_num][5] = fms_word[24]	-- restrict altitude1
+				rte_sid[rte_sid_num][23] = fms_word[25]	-- restrict altitude2
 				rte_sid[rte_sid_num][6] = fms_word[23]	-- restrict altitude +,-,B
 			end
+			
+			-- rte_sid[rte_sid_num][23] = fms_word[25]	-- restrict altitude2
+			
+			-- if fms_word[23] == "B" then
+				-- rte_sid[rte_sid_num][6] = "-"	-- restrict altitude +,-,B
+			-- else
+				-- rte_sid[rte_sid_num][6] = fms_word[23]	-- restrict altitude +,-,B
+			-- end
+			
 			rte_sid[rte_sid_num][7] = fms_word[19]	-- course
 			rte_sid[rte_sid_num][8] = fms_word[29]	-- vpa
 			rte_sid[rte_sid_num][10] = fms_word[22]	-- distance
@@ -14902,12 +14935,42 @@ function read_des_data(ddd_des_icao)
 			rte_star[rte_star_num][20] = fms_word[5]	-- navaid_id_cifs
 			rte_star[rte_star_num][4] = fms_word[28]	-- restrict speed
 			rte_star[rte_star_num][5] = fms_word[24]	-- restrict altitude
-			rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude2
-			if fms_word[23] == "B" then
-				rte_star[rte_star_num][6] = "-"	-- restrict altitude +,-,B
+			
+			-- at
+			if fms_word[23] == "G" or fms_word[23] == "I" or fms_word[23] == "X" then
+				rte_star[rte_star_num][5] = fms_word[24]	-- restrict altitude2
+				rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude1
+				rte_star[rte_star_num][6] = " "	-- restrict altitude +,-,B
+			elseif fms_word[23] == "X" then
+				rte_star[rte_star_num][5] = fms_word[25]	-- restrict altitude2
+				rte_star[rte_star_num][23] = fms_word[24]	-- restrict altitude1
+				rte_star[rte_star_num][6] = " "	-- restrict altitude +,-,B
+			-- at or above
+			elseif fms_word[23] == "C" then
+				rte_star[rte_star_num][5] = fms_word[25]	-- restrict altitude2
+				rte_star[rte_star_num][23] = fms_word[24]	-- restrict altitude1
+				rte_star[rte_star_num][6] = "+"	-- restrict altitude +,-,B
+			elseif fms_word[23] == "H" or fms_word[23] == "J" or fms_word[23] == "V" then
+				rte_star[rte_star_num][5] = fms_word[24]	-- restrict altitude2
+				rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude1
+				rte_star[rte_star_num][6] = "+"	-- restrict altitude +,-,B
+			elseif fms_word[23] == "B" then
+				rte_star[rte_star_num][5] = fms_word[25]	-- restrict altitude1
+				rte_star[rte_star_num][23] = fms_word[24]	-- restrict altitude2
+				rte_star[rte_star_num][6] = fms_word[23]	-- restrict altitude +,-,B
 			else
+				rte_star[rte_star_num][5] = fms_word[24]	-- restrict altitude1
+				rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude2
 				rte_star[rte_star_num][6] = fms_word[23]	-- restrict altitude +,-,B
 			end
+			
+			-- rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude2
+			-- if fms_word[23] == "B" then
+				-- rte_star[rte_star_num][6] = "-"	-- restrict altitude +,-,B
+			-- else
+				-- rte_star[rte_star_num][6] = fms_word[23]	-- restrict altitude +,-,B
+			-- end
+			
 			rte_star[rte_star_num][7] = fms_word[19]	-- course
 			rte_star[rte_star_num][8] = fms_word[29]	-- vpa
 			rte_star[rte_star_num][10] = fms_word[22]	-- distance
@@ -15012,23 +15075,52 @@ function read_des_data(ddd_des_icao)
 			end
 			rte_app[rte_app_num][20] = fms_word[5]	-- navaid_id_cifs
 			rte_app[rte_app_num][4] = fms_word[28]	-- restrict speed
-			if fms_word[23] == "G" or fms_word[23] == "I" then
+			
+			-- at
+			if fms_word[23] == "G" or fms_word[23] == "I" or fms_word[23] == "X" then
+				rte_app[rte_app_num][5] = fms_word[24]	-- restrict altitude2
+				rte_app[rte_app_num][23] = fms_word[25]	-- restrict altitude1
+				rte_app[rte_app_num][6] = " "	-- restrict altitude +,-,B
+			elseif fms_word[23] == "X" then
 				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
 				rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
 				rte_app[rte_app_num][6] = " "	-- restrict altitude +,-,B
-			elseif fms_word[23] == "H" or fms_word[23] == "J" then
+			-- at or above
+			elseif fms_word[23] == "C" then
 				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
 				rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
 				rte_app[rte_app_num][6] = "+"	-- restrict altitude +,-,B
+			elseif fms_word[23] == "H" or fms_word[23] == "J" or fms_word[23] == "V" then
+				rte_app[rte_app_num][5] = fms_word[24]	-- restrict altitude2
+				rte_app[rte_app_num][23] = fms_word[25]	-- restrict altitude1
+				rte_app[rte_app_num][6] = "+"	-- restrict altitude +,-,B
 			elseif fms_word[23] == "B" then
-				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
-				rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
-				rte_app[rte_app_num][6] = "-"	-- restrict altitude +,-,B
+				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude1
+				rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude2
+				rte_app[rte_app_num][6] = fms_word[23]	-- restrict altitude +,-,B
 			else
 				rte_app[rte_app_num][5] = fms_word[24]	-- restrict altitude1
 				rte_app[rte_app_num][23] = fms_word[25]	-- restrict altitude2
 				rte_app[rte_app_num][6] = fms_word[23]	-- restrict altitude +,-,B
 			end
+			
+			-- if fms_word[23] == "G" or fms_word[23] == "I" then
+				-- rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
+				-- rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
+				-- rte_app[rte_app_num][6] = " "	-- restrict altitude +,-,B
+			-- elseif fms_word[23] == "H" or fms_word[23] == "J" then
+				-- rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
+				-- rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
+				-- rte_app[rte_app_num][6] = "+"	-- restrict altitude +,-,B
+			-- elseif fms_word[23] == "B" then
+				-- rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
+				-- rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
+				-- rte_app[rte_app_num][6] = "-"	-- restrict altitude +,-,B
+			-- else
+				-- rte_app[rte_app_num][5] = fms_word[24]	-- restrict altitude1
+				-- rte_app[rte_app_num][23] = fms_word[25]	-- restrict altitude2
+				-- rte_app[rte_app_num][6] = fms_word[23]	-- restrict altitude +,-,B
+			-- end
 			rte_app[rte_app_num][7] = fms_word[19]	-- course
 			rte_app[rte_app_num][8] = fms_word[29]	-- vpa
 			rte_app[rte_app_num][10] = fms_word[22]	-- distance
@@ -19010,7 +19102,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					end
 					item_sel = 0
 					item_sel_act = 0
-				elseif string.len(entry) > 1 and string.len(entry) < 6 and item_sel == 0 then
+				elseif string.len(entry) > 1 and string.len(entry) < 6 and item_sel == 0 and item > 1 then
 					if offset_act == 3 then
 						if legs_data2[item][19] ~= 6 then
 							-- add waypoint
@@ -19040,11 +19132,11 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					end
 					item_sel = 0
 					item_sel_act = 0
-				elseif jj ~= nil then
+				elseif jj ~= nil and item > 1 then
 					rte_add_wpt3(item, string.sub(entry, 1, jj-4), string.sub(entry, jj-3, jj-1), string.sub(entry, jj+1, -1), entry, 0)
 					item_sel = 0
 					item_sel_act = 0
-				elseif wpt_lat_lon(entry) == true and item_sel == 0 then
+				elseif wpt_lat_lon(entry) == true and item_sel == 0 and item > 1 then
 						legs_data2[item][31] = "TF"
 						rte_add_wpt_cust(item, "WPT01", transf_lat, transf_lon, entry, 0)
 						if act_page == 1 then
@@ -19103,7 +19195,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 					end
 				else
 					if offset_act == 3 then
-						if legs_data2[item][19] ~= 6 then
+						if legs_data2[item][19] ~= 6 and item > 1 then
 							-- entry item
 							if item_sel > item then
 								if legs_data2[item-1][17] < 99 then
@@ -19149,7 +19241,7 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 						end
 					else
 						-- entry item
-						if item_sel > item then
+						if item_sel > item and item > 1 then
 							if legs_data2[item-1][17] < 99 then
 								legs_data2[item-1][17] = legs_data2[item-1][17] + 100
 							end
@@ -19175,13 +19267,13 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 								nd_hdg = (nd_hdg + 360) % 360
 								legs_intdir_crs_mod = (nd_hdg + simDR_mag_variation) % 360
 							end
-						elseif item_sel < item then
+						elseif item_sel < item and item > 1 then
 							item_sel = item_sel + 1
 							item = item + 1
 							rte_copy(item)
 							rte_paste(item_sel)
 							calc_rte_enable2 = 1
-						elseif item_sel == item and act_page == 1 then --and lnav_engaged == 0 and act_page == 1 then
+						elseif item_sel == item and act_page == 1 and item > 1 then --and lnav_engaged == 0 and act_page == 1 then
 							legs_intdir = 1
 							legs_intdir_idx = item
 							-- compute >legs_intdir_crs
@@ -27506,8 +27598,13 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 									legs_data2[n][2] = 0
 									legs_data2[n][3] = 0
 									legs_data2[n][4] = simDR_airspeed_pilot
-									legs_data2[n][5] = 0	-- altitude restrict
-									legs_data2[n][6] = 0	-- altitude restrict type
+									if B738DR_rest_wpt_alt == 0 then
+										legs_data2[n][5] = 0	-- altitude restrict
+										legs_data2[n][6] = 0	-- altitude restrict type
+									else
+										legs_data2[n][5] = B738DR_rest_wpt_alt	-- altitude restrict
+										legs_data2[n][6] = 0	--B738DR_rest_wpt_alt_t	-- altitude restrict type
+									end
 									legs_data2[n][7] = 0		-- latitude
 									legs_data2[n][8] = 0		-- longitude
 									legs_data2[n][9] = ""			-- via id
@@ -29760,10 +29857,11 @@ function B738_autopilot_alt_interv_CMDhandler(phase, duration)
 										break
 									end
 									delete_enabled = 0
-									if legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] < B738DR_mcp_alt_dial then	-- alt restrict found
+									if legs_restr_alt[nn][2] == n and legs_restr_alt[nn][5] <= B738DR_mcp_alt_dial and legs_restr_alt[nn][4] == 41 then	-- Between
 										delete_enabled = 1
-									end
-									if legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] == B738DR_mcp_alt_dial and legs_restr_alt[nn][4] == 45 then	-- B alt restrict found
+									elseif legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] < B738DR_mcp_alt_dial then	-- alt restrict found
+										delete_enabled = 1
+									elseif legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] == B738DR_mcp_alt_dial and legs_restr_alt[nn][4] == 45 then	-- Below alt restrict found
 										delete_enabled = 1
 									end
 									if delete_enabled == 1 then
@@ -29812,10 +29910,11 @@ function B738_autopilot_alt_interv_CMDhandler(phase, duration)
 										break
 									end
 									delete_enabled = 0
-									if legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] > B738DR_mcp_alt_dial then	-- alt restrict found
+									if legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] >= B738DR_mcp_alt_dial and legs_restr_alt[nn][4] == 41 then	-- Between
 										delete_enabled = 1
-									end
-									if legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] == B738DR_mcp_alt_dial and legs_restr_alt[nn][4] == 43 then	-- A alt restrict found
+									elseif legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] > B738DR_mcp_alt_dial then	-- alt restrict found
+										delete_enabled = 1
+									elseif legs_restr_alt[nn][2] == n and legs_restr_alt[nn][3] == B738DR_mcp_alt_dial and legs_restr_alt[nn][4] == 43 then	-- A alt restrict found
 										delete_enabled = 1
 									end
 									if delete_enabled == 1 then
@@ -37982,7 +38081,7 @@ function B738_fmc2_3R_CMDhandler(phase, duration)
 					rte_add_dep_arr()
 				else
 					-- rwy extension distance RX...
-					n = tonumber(entry2)
+					local n = tonumber(entry2)
 					if n == nil then
 						add_fmc_msg(INVALID_INPUT, 1)
 					else
@@ -38590,7 +38689,7 @@ function B738_fmc2_4R_CMDhandler(phase, duration)
 					rte_add_dep_arr()
 				else
 					-- rwy extension fpa RX...
-					n = tonumber(entry2)
+					local n = tonumber(entry2)
 					if entry2 == ">DELETE" then
 						rw_ext_fpa = "-.--"
 						entry2 = ""
@@ -39613,6 +39712,14 @@ function B738_fmc2_6R_CMDhandler(phase, duration)
 					end
 				end
 			else
+				
+				
+				local n = 0
+				local kk = 0
+				local ii = 0
+				local jj = 0
+				local lock_hold_ppos = 0
+				
 				if exec_load_fpln == 1 then
 					exec_load_fpln = 2
 					-- ACTIVATE Flight plan
@@ -39631,23 +39738,128 @@ function B738_fmc2_6R_CMDhandler(phase, duration)
 						page_legs_step2 = math.floor((legs_step2 - offset) / 5) + 1
 						act_page2 = page_legs_step2
 					else
-						if new_hold2 == 0 then
+						if new_hold == 0 then
 							-- RTE DATA
 							page_rte_legs2 = 1
 							page_legs2 = 0
-							--act_page2 = 1
+							--act_page = 1
 						else
 							if in_flight_mode == 1 then
-								-- HOLD at PPOS
-								item_sel2 = 0
-								item_sel_act2 = 0
-								item_sel_via2 = 0
-								new_hold_wpt = "PPOS"
-								entry2 = ""
-								hold_exec = 1
-								page_hold2 = 1
-								page_legs2 = 0
-								act_page2 = 1
+								n = 0
+								if hold_data_num2 > 0 then
+									for kk = 1, hold_data_num2 do
+										if hold_data2[kk] >= offset then
+											n = kk
+											break
+										end
+									end
+									if n > 0 then
+										if legs_data2[hold_data2[n]][1] == "PPOS" then
+											lock_hold_ppos = 1
+										end
+									end
+								end
+								if lock_hold_ppos == 0 then
+									-- HOLD at PPOS
+									item_sel2 = 0
+									item_sel_act2 = 0
+									item_sel_via2 = 0
+									entry2 = ""
+									hold_exec = 1
+									page_hold2 = 1
+									page_legs2 = 0
+									act_page2 = 1
+									--new_hold = 1
+									--create new hold
+									-- copy legs_data2 to buffer [offset .. end]
+									kk = 0
+									legs_data2b = {}
+									for ii = offset, legs_num2 + 1 do
+										kk = kk + 1
+										legs_data2b[kk] = {}
+										for jj = 1, MAX_LEGS_DATA do
+											legs_data2b[kk][jj] = legs_data2[ii][jj]
+										end
+									end
+									legs_num2b = kk
+									
+									-- entry HOLD PPOS
+									n = offset
+									legs_data2[n] = {}
+									legs_data2[n][1] = "PPOS"
+									legs_data2[n][2] = 0
+									legs_data2[n][3] = 0
+									legs_data2[n][4] = simDR_airspeed_pilot
+									if B738DR_rest_wpt_alt == 0 then
+										legs_data2[n][5] = 0	-- altitude restrict
+										legs_data2[n][6] = 0	-- altitude restrict type
+									else
+										legs_data2[n][5] = B738DR_rest_wpt_alt	-- altitude restrict
+										legs_data2[n][6] = 0	--B738DR_rest_wpt_alt_t	-- altitude restrict type
+									end
+									legs_data2[n][7] = 0		-- latitude
+									legs_data2[n][8] = 0		-- longitude
+									legs_data2[n][9] = ""			-- via id
+									legs_data2[n][10] = 0		-- calc speed
+									legs_data2[n][11] = 0		-- calc altitude
+									legs_data2[n][12] = 0		-- calc altitude vnav pth
+									legs_data2[n][13] = 0
+									legs_data2[n][14] = 0		-- rest alt
+									legs_data2[n][15] = 0		-- last fuel
+									legs_data2[n][16] = ""
+									legs_data2[n][17] = 200		-- spd flag 0-default restrict, 1-custom restrict
+									legs_data2[n][18] = 0		-- alt flag 0-default restrict, 1-custom restrict
+									legs_data2[n][19] = 0		-- 0-none, 1-SID, 2-STAR, 3-APP
+									legs_data2[n][20] = 0	-- vpa
+									legs_data2[n][21] = 1		-- HOLD right default
+									legs_data2[n][22] = ""
+									legs_data2[n][23] = 0
+									legs_data2[n][24] = 0
+									legs_data2[n][25] = 0
+									legs_data2[n][26] = 0
+									legs_data2[n][27] = ""
+									legs_data2[n][28] = ""
+									legs_data2[n][29] = string.format("%03d", simDR_mag_hdg * 10)		-- ""
+									legs_data2[n][30] = ""
+									legs_data2[n][31] = "HM"
+									legs_data2[n][32] = 0
+									legs_data2[n][33] = ""
+									legs_data2[n][34] = ""
+									legs_data2[n][35] = ""
+									legs_data2[n][36] = 0	--4
+									legs_data2[n][37] = 0
+									legs_data2[n][38] = ""
+									legs_data2[n][39] = ""
+									legs_data2[n][40] = 0
+									legs_data2[n][41] = 0
+									-- add disco
+									n = n + 1
+									legs_data2[n] = {}
+									rte_add_disco(n)
+									-- paste legs_data2 from buffer
+									for ii = 1, legs_num2b do
+										n = n + 1
+										legs_data2[n] = {}
+										for jj = 1, MAX_LEGS_DATA do
+											legs_data2[n][jj] = legs_data2b[ii][jj]
+										end
+									end
+									legs_num2 = n - 1
+									
+									-- create hold data
+									new_hold_idx = 0
+									hold_data_num2 = 0
+									hold_data2 = {}
+									for ii = 1, legs_num2 do
+										if legs_data2[ii][31] == "HA" or legs_data2[ii][31] == "HF" or legs_data2[ii][31] == "HM" then
+											hold_data_num2 = hold_data_num2 + 1
+											hold_data2[hold_data_num2] = ii
+											--if legs_data2[ii][17] == 100 then
+												--new_hold_idx = hold_data_num2
+											--end
+										end
+									end
+								end
 							end
 						end
 					end
@@ -39671,11 +39883,76 @@ function B738_fmc2_6R_CMDhandler(phase, duration)
 							-- RTA DATA
 							page_rte_legs2 = 1
 							page_legs2 = 0
-							--act_page2 = 1
+							--act_page = 1
 						end
 					end
 				end
 			end
+				
+				
+				-- if exec_load_fpln == 1 then
+					-- exec_load_fpln = 2
+					-- -- ACTIVATE Flight plan
+					-- rte_exec = 1
+				-- elseif legs_num > 1 then
+					-- if B738DR_fo_map_mode == 3 then
+						
+						-- -- STEP
+						-- legs_step2 = legs_step2 + 1
+						-- if legs_step2 > legs_num2 or legs_step2 < offset then
+							-- legs_step2 = offset
+						-- end
+						-- if legs_step2 > legs_num2 then
+							-- legs_step2 = legs_num2
+						-- end
+						-- page_legs_step2 = math.floor((legs_step2 - offset) / 5) + 1
+						-- act_page2 = page_legs_step2
+					-- else
+						-- if new_hold2 == 0 then
+							-- -- RTE DATA
+							-- page_rte_legs2 = 1
+							-- page_legs2 = 0
+							-- --act_page2 = 1
+						-- else
+							-- if in_flight_mode == 1 then
+								-- -- HOLD at PPOS
+								-- item_sel2 = 0
+								-- item_sel_act2 = 0
+								-- item_sel_via2 = 0
+								-- new_hold_wpt = "PPOS"
+								-- entry2 = ""
+								-- hold_exec = 1
+								-- page_hold2 = 1
+								-- page_legs2 = 0
+								-- act_page2 = 1
+							-- end
+						-- end
+					-- end
+				-- else
+					-- if legs_num == 1 and legs_num2 > 1 then
+						-- -- ACTIVATE Flight plan
+						-- rte_exec = 1
+					-- else
+						-- if B738DR_fo_map_mode == 3 then
+							-- legs_step2 = legs_step2 + 1
+							-- if legs_step2 > legs_num2 or legs_step2 < offset then
+								-- legs_step2 = offset
+							-- end
+							-- if legs_step2 > legs_num2 then
+								-- legs_step2 = legs_num2
+							-- end
+							-- page_legs_step2 = math.floor((legs_step2 - offset) / 5) + 1
+							-- act_page2 = page_legs_step2
+							
+						-- else
+							-- -- RTA DATA
+							-- page_rte_legs2 = 1
+							-- page_legs2 = 0
+							-- --act_page2 = 1
+						-- end
+					-- end
+				-- end
+			-- end
 		elseif page_hold2 == 1 then
 			if hold_offset_idx == offset and hold_term == 0 then
 				hold_exec = 1
@@ -45431,42 +45708,96 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 						else
 							if jj ~= B738DR_rest_wpt_alt_idx then
 								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
-									temp_string = string.format("%05d",legs_data2[jj][5])
+									if legs_data2[jj][6] == 41 then
+										temp_string = string.format("%05d",legs_data2[jj][41])
+									else
+										temp_string = string.format("%05d",legs_data2[jj][5])
+									end
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+									right_line[ii] = right_line[ii] .. temp_string
+									if legs_data2[jj][6] == 43 then
+										right_line[ii] = right_line[ii] .. "A"
+									elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
+										right_line[ii] = right_line[ii] .. "B"
+									else	-- 32 blank 
+										right_line[ii] = right_line[ii] .. " "
+									end
 								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+									right_line[ii] = right_line[ii] .. temp_string
+									if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
+										right_line[ii] = right_line[ii] .. "A"
+									elseif legs_data2[jj][6] == 45 then
+										right_line[ii] = right_line[ii] .. "B"
+									else	-- 32 blank 
+										right_line[ii] = right_line[ii] .. " "
+									end
 								else
 									temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+									right_line[ii] = right_line[ii] .. temp_string
+									if legs_data2[jj][6] == 43 then
+										right_line[ii] = right_line[ii] .. "A"
+									elseif legs_data2[jj][6] == 45 then
+										right_line[ii] = right_line[ii] .. "B"
+									else	-- 32 blank 
+										right_line[ii] = right_line[ii] .. " "
+									end
 								end
-								right_line[ii] = right_line[ii] .. temp_string
-								if legs_data2[jj][6] == 43 then
-									right_line[ii] = right_line[ii] .. "A"
-								elseif legs_data2[jj][6] == 45 then
-									right_line[ii] = right_line[ii] .. "B"
-								else	-- 32 blank 
-									right_line[ii] = right_line[ii] .. " "
-								end
+								-- right_line[ii] = right_line[ii] .. temp_string
+								-- if legs_data2[jj][6] == 43 then
+									-- right_line[ii] = right_line[ii] .. "A"
+								-- elseif legs_data2[jj][6] == 45 then
+									-- right_line[ii] = right_line[ii] .. "B"
+								-- else	-- 32 blank 
+									-- right_line[ii] = right_line[ii] .. " "
+								-- end
 								line_m[ii] = line_m[ii] .. "       "
 							else
 								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
-									temp_string = string.format("%05d",legs_data2[jj][5])
+									if legs_data2[jj][6] == 41 then
+										temp_string = string.format("%05d",legs_data2[jj][41])
+									else
+										temp_string = string.format("%05d",legs_data2[jj][5])
+									end
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
+									line_m[ii] = line_m[ii] .. temp_string
+									if legs_data2[jj][6] == 43 then
+										line_m[ii] = line_m[ii] .. "A"
+									elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
+										line_m[ii] = line_m[ii] .. "B"
+									else	-- 32 blank 
+										line_m[ii] = line_m[ii] .. " "
+									end
 								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+									if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
+										line_m[ii] = line_m[ii] .. "A"
+									elseif legs_data2[jj][6] == 45 then
+										line_m[ii] = line_m[ii] .. "B"
+									else	-- 32 blank 
+										line_m[ii] = line_m[ii] .. " "
+									end
 								else
 									temp_string = " " .. string.format("%5d",legs_data2[jj][5])
+									if legs_data2[jj][6] == 43 then
+										line_m[ii] = line_m[ii] .. "A"
+									elseif legs_data2[jj][6] == 45 then
+										line_m[ii] = line_m[ii] .. "B"
+									else	-- 32 blank 
+										line_m[ii] = line_m[ii] .. " "
+									end
 								end
 								right_line[ii] = right_line[ii] .. "/      "
-								line_m[ii] = line_m[ii] .. temp_string
-								if legs_data2[jj][6] == 43 then
-									line_m[ii] = line_m[ii] .. "A"
-								elseif legs_data2[jj][6] == 45 then
-									line_m[ii] = line_m[ii] .. "B"
-								else	-- 32 blank 
-									line_m[ii] = line_m[ii] .. " "
-								end
+								-- line_m[ii] = line_m[ii] .. temp_string
+								-- if legs_data2[jj][6] == 43 then
+									-- line_m[ii] = line_m[ii] .. "A"
+								-- elseif legs_data2[jj][6] == 45 then
+									-- line_m[ii] = line_m[ii] .. "B"
+								-- else	-- 32 blank 
+									-- line_m[ii] = line_m[ii] .. " "
+								-- end
 							end
 						end
 						
@@ -45609,42 +45940,100 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 						else
 							if jj ~= B738DR_rest_wpt_alt_idx then
 								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
-									temp_string = string.format("%05d",legs_data2[jj][5])
+									if legs_data2[jj][6] == 41 then
+										temp_string = string.format("%05d",legs_data2[jj][41])
+									else
+										temp_string = string.format("%05d",legs_data2[jj][5])
+									end
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+									right_line[ii] = right_line[ii] .. temp_string
+									if legs_data2[jj][6] == 43 then
+										right_line[ii] = right_line[ii] .. "A"
+									elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
+										right_line[ii] = right_line[ii] .. "B"
+									else	-- 32 blank 
+										right_line[ii] = right_line[ii] .. " "
+									end
 								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+									right_line[ii] = right_line[ii] .. temp_string
+									if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
+										right_line[ii] = right_line[ii] .. "A"
+									elseif legs_data2[jj][6] == 45 then
+										right_line[ii] = right_line[ii] .. "B"
+									else	-- 32 blank 
+										right_line[ii] = right_line[ii] .. " "
+									end
+									-- temp_string = string.format("%05d",legs_data2[jj][5])
+									-- temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 								else
 									temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+									right_line[ii] = right_line[ii] .. temp_string
+									if legs_data2[jj][6] == 43 then
+										right_line[ii] = right_line[ii] .. "A"
+									elseif legs_data2[jj][6] == 45 then
+										right_line[ii] = right_line[ii] .. "B"
+									else	-- 32 blank 
+										right_line[ii] = right_line[ii] .. " "
+									end
 								end
-								right_line[ii] = right_line[ii] .. temp_string
-								if legs_data2[jj][6] == 43 then
-									right_line[ii] = right_line[ii] .. "A"
-								elseif legs_data2[jj][6] == 45 then
-									right_line[ii] = right_line[ii] .. "B"
-								else	-- 32 blank 
-									right_line[ii] = right_line[ii] .. " "
-								end
+								-- right_line[ii] = right_line[ii] .. temp_string
+								-- if legs_data2[jj][6] == 43 then
+									-- right_line[ii] = right_line[ii] .. "A"
+								-- elseif legs_data2[jj][6] == 45 then
+									-- right_line[ii] = right_line[ii] .. "B"
+								-- else	-- 32 blank 
+									-- right_line[ii] = right_line[ii] .. " "
+								-- end
 								line_m[ii] = line_m[ii] .. "       "
 							else
 								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
-									temp_string = string.format("%05d",legs_data2[jj][5])
+									if legs_data2[jj][6] == 41 then
+										temp_string = string.format("%05d",legs_data2[jj][41])
+									else
+										temp_string = string.format("%05d",legs_data2[jj][5])
+									end
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
+									if legs_data2[jj][6] == 43 then
+										line_m[ii] = line_m[ii] .. "A"
+									elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
+										line_m[ii] = line_m[ii] .. "B"
+									else	-- 32 blank 
+										line_m[ii] = line_m[ii] .. " "
+									end
 								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+									if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
+										line_m[ii] = line_m[ii] .. "A"
+									elseif legs_data2[jj][6] == 45 then
+										line_m[ii] = line_m[ii] .. "B"
+									else	-- 32 blank 
+										line_m[ii] = line_m[ii] .. " "
+									end
+									-- temp_string = string.format("%05d",legs_data2[jj][5])
+									-- temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 								else
 									temp_string = " " .. string.format("%5d",legs_data2[jj][5])
+									line_m[ii] = line_m[ii] .. temp_string
+									if legs_data2[jj][6] == 43 then
+										line_m[ii] = line_m[ii] .. "A"
+									elseif legs_data2[jj][6] == 45 then
+										line_m[ii] = line_m[ii] .. "B"
+									else	-- 32 blank 
+										line_m[ii] = line_m[ii] .. " "
+									end
 								end
 								right_line[ii] = right_line[ii] .. "/      "
-								line_m[ii] = line_m[ii] .. temp_string
-								if legs_data2[jj][6] == 43 then
-									line_m[ii] = line_m[ii] .. "A"
-								elseif legs_data2[jj][6] == 45 then
-									line_m[ii] = line_m[ii] .. "B"
-								else	-- 32 blank 
-									line_m[ii] = line_m[ii] .. " "
-								end
+								-- line_m[ii] = line_m[ii] .. temp_string
+								-- if legs_data2[jj][6] == 43 then
+									-- line_m[ii] = line_m[ii] .. "A"
+								-- elseif legs_data2[jj][6] == 45 then
+									-- line_m[ii] = line_m[ii] .. "B"
+								-- else	-- 32 blank 
+									-- line_m[ii] = line_m[ii] .. " "
+								-- end
 							end
 						end
 							
@@ -51115,7 +51504,10 @@ function B738_flight_phase3()
 			-- flight phase Descent
 			if B738DR_flight_phase == 5 then
 				if B738DR_missed_app_act == 0 then
-					if offset >= first_app_idx and offset > 0 and first_app_idx > 0 then
+					if offset > first_app_idx and offset > 0 and first_app_idx > 0 then
+						B738DR_flight_phase = 6
+					end
+					if offset == first_app_idx and offset > 0 and first_app_idx > 0 and simDR_fmc_dist < 2 then
 						B738DR_flight_phase = 6
 					end
 					if simDR_altitude_pilot < (des_icao_alt + 2000) or simDR_radio_height_pilot_ft < 2000 then
@@ -51127,7 +51519,10 @@ function B738_flight_phase3()
 			-- flight phase cruise
 			if B738DR_flight_phase == 3 then
 				if B738DR_missed_app_act == 0 then
-					if offset >= first_app_idx and offset > 0 and first_app_idx > 0 then
+					if offset > first_app_idx and offset > 0 and first_app_idx > 0 then
+						B738DR_flight_phase = 6
+					end
+					if offset == first_app_idx and offset > 0 and first_app_idx > 0 and simDR_fmc_dist < 2 then
 						B738DR_flight_phase = 6
 					end
 					if simDR_altitude_pilot < (des_icao_alt + 2000) or simDR_radio_height_pilot_ft < 2000 then
@@ -51702,7 +52097,7 @@ function B738_fmc_msg()
 		
 		-- TAI ABOVE 10 C
 		if simDR_TAT > 10 then
-			if simDR_cowl_ice_0_on == 1 or simDR_cowl_ice_1_on == 1 then
+			if simDR_cowl_ice_0_on == 1 or simDR_cowl_ice_1_on == 1 or simDR_wing_l_heat_on == 1 or simDR_wing_r_heat_on == 1 then
 				if msg_tai_above_10 == 0 then
 					msg_tai_above_10 = 1
 					add_fmc_msg(TAI_ON_ABOVE_10C, 1)
@@ -51892,6 +52287,48 @@ function B738_fmc_msg()
 	--B738DR_fmc_message2 = fmc2_msg_light		-- FMC2
 
 
+end
+
+
+function B738_fmc_clr_msg()
+	
+	local ii = 0
+	
+	if fmc_message_num > 0 then
+		for ii = 1, fmc_message_num do
+			if fmc_message[ii] == RESET_MCP_ALT then
+				if td_idx ~= 0 and B738DR_altitude_mode == 5 then	-- VNAV on and cruise phase
+					if crz_alt_num > 0 and simDR_ap_altitude_dial_ft < crz_alt_num then
+						delete_fmc_msg(ii)
+					end
+				end
+			elseif fmc_message[ii] == DRAG_REQUIRED then
+				if B738DR_flight_phase > 4 and B738DR_flight_phase < 8 and B738DR_autopilot_vnav_status == 1 then
+					if B738DR_speed_ratio < -0.2 and simDR_airspeed_pilot < B738DR_mcp_speed_dial + 2 then
+						delete_fmc_msg(ii)
+					end
+				end
+			elseif fmc_message[ii] == ABOVE_MAX_CERT_ALT then
+				if simDR_altitude_pilot < 41000 then
+					delete_fmc_msg(ii)
+				end
+			end
+		end
+	end
+	
+end
+
+function delete_fmc_msg(del_idx)
+	
+	local jj = 0
+	
+	if del_idx < fmc_message_num then
+		for jj = del_idx + 1, fmc_message_num do
+			fmc_message[jj-1] = fmc_message[jj-1]
+			fmc_message_warn[jj-1] = fmc_message_warn[jj-1]
+		end
+	end
+	fmc_message_num = fmc_message_num - 1
 end
 
 function rnp_timer()
@@ -56094,7 +56531,9 @@ function disp_type(object, legs_idx, data_status, clr_obj)
 			txt_white_id = ""
 			txt_white_alt = ""
 			txt_white_eta = ""
-			txt_cyan_id = legs_data[legs_idx][1]
+			if legs_data[legs_idx][1] ~= "PPOS" then
+				txt_cyan_id = legs_data[legs_idx][1]
+			end
 			txt_cyan_alt = ""
 			txt_cyan_eta = ""
 			if legs_data[legs_idx][13] <= 0 then
@@ -56130,6 +56569,22 @@ function disp_type(object, legs_idx, data_status, clr_obj)
 					txt_cyan_alt = txt_cyan_alt .. "A"
 				elseif tmp_wpt_type == 45 then	-- Below
 					txt_cyan_alt = txt_cyan_alt .. "B"
+				elseif tmp_wpt_type == 41 then	-- Between
+					txt_cyan_alt = txt_cyan_alt .. "B"
+					if B738DR_flight_phase < 5 then
+						tmp_wpt_alt = legs_data[legs_idx][41]
+						if tmp_wpt_alt > B738DR_trans_alt then
+							txt_cyan_alt = txt_cyan_alt .. "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+						else
+							txt_cyan_alt = txt_cyan_alt .. tostring(tmp_wpt_alt)
+						end
+					else
+						if tmp_wpt_alt > B738DR_trans_lvl then
+							txt_cyan_alt = txt_cyan_alt .. "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+						else
+							txt_cyan_alt = txt_cyan_alt .. tostring(tmp_wpt_alt)
+						end
+					end
 				end
 				if data_status == 1 then
 					txt_cyan_eta = tmp_wpt_eta
@@ -56149,7 +56604,9 @@ function disp_type(object, legs_idx, data_status, clr_obj)
 			txt_cyan_id = ""
 			txt_cyan_alt = ""
 			txt_cyan_eta = ""
-			txt_white_id = legs_data[legs_idx][1]
+			if legs_data[legs_idx][1] ~= "PPOS" then
+				txt_white_id = legs_data[legs_idx][1]
+			end
 			txt_white_alt = ""
 			txt_white_eta = ""
 			if legs_data[legs_idx][13] <= 0 then
@@ -56187,6 +56644,22 @@ function disp_type(object, legs_idx, data_status, clr_obj)
 					txt_white_alt = txt_white_alt .. "A"
 				elseif tmp_wpt_type == 45 then	-- Below
 					txt_white_alt = txt_white_alt .. "B"
+				elseif tmp_wpt_type == 41 then	-- Between
+					txt_white_alt = txt_white_alt .. "B"
+					if B738DR_flight_phase < 5 then
+						tmp_wpt_alt = legs_data[legs_idx][41]
+						if tmp_wpt_alt > B738DR_trans_alt then
+							txt_white_alt = txt_white_alt .. "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+						else
+							txt_white_alt = txt_white_alt .. tostring(tmp_wpt_alt)
+						end
+					else
+						if tmp_wpt_alt > B738DR_trans_lvl then
+							txt_white_alt = txt_white_alt .. "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+						else
+							txt_white_alt = txt_white_alt .. tostring(tmp_wpt_alt)
+						end
+					end
 				end
 				if data_status == 1 then
 					txt_white_eta = tmp_wpt_eta
@@ -56412,14 +56885,18 @@ function disp_type_m(object, legs_idx, clr_obj)
 	if clr_obj == 0 then
 		if legs_data2[legs_idx][17] < 200 then
 			if legs_num == 1 then
-				txt_white_id = legs_data2[legs_idx][1]
+				if legs_data2[legs_idx][1] ~= "PPOS" then
+					txt_white_id = legs_data2[legs_idx][1]
+				end
 				wpt_type = 1
 			else
 				txt_white_id = ""
 				wpt_type = 0
 			end
 		else
-			txt_white_id = legs_data2[legs_idx][1]
+			if legs_data2[legs_idx][1] ~= "PPOS" then
+				txt_white_id = legs_data2[legs_idx][1]
+			end
 			wpt_type = 1
 		end
 		
@@ -56632,7 +57109,9 @@ function disp_type_fo(object, legs_idx, data_status, clr_obj)
 			txt_white_id = ""
 			txt_white_alt = ""
 			txt_white_eta = ""
-			txt_cyan_id = legs_data[legs_idx][1]
+			if legs_data[legs_idx][1] ~= "PPOS" then
+				txt_cyan_id = legs_data[legs_idx][1]
+			end
 			txt_cyan_alt = ""
 			txt_cyan_eta = ""
 			if legs_data[legs_idx][13] <= 0 then
@@ -56668,6 +57147,22 @@ function disp_type_fo(object, legs_idx, data_status, clr_obj)
 					txt_cyan_alt = txt_cyan_alt .. "A"
 				elseif tmp_wpt_type == 45 then	-- Below
 					txt_cyan_alt = txt_cyan_alt .. "B"
+				elseif tmp_wpt_type == 41 then	-- Between
+					txt_cyan_alt = txt_cyan_alt .. "B"
+					if B738DR_flight_phase < 5 then
+						tmp_wpt_alt = legs_data[legs_idx][41]
+						if tmp_wpt_alt > B738DR_trans_alt then
+							txt_cyan_alt = txt_cyan_alt .. "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+						else
+							txt_cyan_alt = txt_cyan_alt .. tostring(tmp_wpt_alt)
+						end
+					else
+						if tmp_wpt_alt > B738DR_trans_lvl then
+							txt_cyan_alt = txt_cyan_alt .. "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+						else
+							txt_cyan_alt = txt_cyan_alt .. tostring(tmp_wpt_alt)
+						end
+					end
 				end
 				if data_status == 1 then
 					txt_cyan_eta = tmp_wpt_eta
@@ -56687,7 +57182,9 @@ function disp_type_fo(object, legs_idx, data_status, clr_obj)
 			txt_cyan_id = ""
 			txt_cyan_alt = ""
 			txt_cyan_eta = ""
-			txt_white_id = legs_data[legs_idx][1]
+			if legs_data[legs_idx][1] ~= "PPOS" then
+				txt_white_id = legs_data[legs_idx][1]
+			end
 			txt_white_alt = ""
 			txt_white_eta = ""
 			if legs_data[legs_idx][13] <= 0 then
@@ -56725,6 +57222,22 @@ function disp_type_fo(object, legs_idx, data_status, clr_obj)
 					txt_white_alt = txt_white_alt .. "A"
 				elseif tmp_wpt_type == 45 then	-- Below
 					txt_white_alt = txt_white_alt .. "B"
+				elseif tmp_wpt_type == 41 then	-- Between
+					txt_white_alt = txt_white_alt .. "B"
+					if B738DR_flight_phase < 5 then
+						tmp_wpt_alt = legs_data[legs_idx][41]
+						if tmp_wpt_alt > B738DR_trans_alt then
+							txt_white_alt = txt_white_alt .. "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+						else
+							txt_white_alt = txt_white_alt .. tostring(tmp_wpt_alt)
+						end
+					else
+						if tmp_wpt_alt > B738DR_trans_lvl then
+							txt_white_alt = txt_white_alt .. "FL" .. string.format("%03d", (tmp_wpt_alt/100))
+						else
+							txt_white_alt = txt_white_alt .. tostring(tmp_wpt_alt)
+						end
+					end
 				end
 				if data_status == 1 then
 					txt_white_eta = tmp_wpt_eta
@@ -56951,14 +57464,18 @@ function disp_type_m_fo(object, legs_idx, clr_obj)
 	if clr_obj == 0 then
 		if legs_data2[legs_idx][17] < 200 then
 			if legs_num == 1 then
-				txt_white_id = legs_data2[legs_idx][1]
+				if legs_data2[legs_idx][1] ~= "PPOS" then
+					txt_white_id = legs_data2[legs_idx][1]
+				end
 				wpt_type = 1
 			else
 				txt_white_id = ""
 				wpt_type = 0
 			end
 		else
-			txt_white_id = legs_data2[legs_idx][1]
+			if legs_data2[legs_idx][1] ~= "PPOS" then
+				txt_white_id = legs_data2[legs_idx][1]
+			end
 			wpt_type = 1
 		end
 		
@@ -57549,7 +58066,7 @@ function B738_displ_wpt2()
 									(legs_data[wpt_2d_idx[ii]][31] == "HA" or legs_data[wpt_2d_idx[ii]][31] == "HF" or legs_data[wpt_2d_idx[ii]][31] == "HM") then
 										B738DR_hold_x[hold_obj] = wpt_2d_x[ii]
 										B738DR_hold_y[hold_obj] = wpt_2d_y[ii]
-										B738DR_hold_crs[hold_obj] = ((tonumber(legs_data[wpt_2d_idx[ii]][29]) / 10) - mag_hdg + 360) % 360
+										B738DR_hold_crs[hold_obj] = ((tonumber(legs_data[wpt_2d_idx[ii]][29]) / 10) - mag_hdg - simDR_mag_variation + 360) % 360
 										if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 											B738DR_hold_type[hold_obj] = legs_data[wpt_2d_idx[ii]][21] + 1
 											B738DR_hold_dist[hold_obj] = calc_hold_dist(wpt_2d_idx[ii])
@@ -57576,7 +58093,7 @@ function B738_displ_wpt2()
 											
 											B738DR_hold_x[hold_obj] = wpt_2d_x[ii]
 											B738DR_hold_y[hold_obj] = wpt_2d_y[ii]
-											B738DR_hold_crs[hold_obj] = ((tonumber(legs_data[wpt_2d_idx[ii]+1][29]) / 10) - mag_hdg + 360) % 360
+											B738DR_hold_crs[hold_obj] = ((tonumber(legs_data[wpt_2d_idx[ii]+1][29]) / 10) - mag_hdg - simDR_mag_variation + 360) % 360
 											if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 												B738DR_hold_type[hold_obj] = legs_data[wpt_2d_idx[ii]+1][21] + 1 + rte_dist
 												B738DR_hold_dist[hold_obj] = calc_hold_dist(wpt_2d_idx[ii]+1)
@@ -57746,7 +58263,7 @@ function B738_displ_wpt2()
 										
 											B738DR_hold_x[hold_obj] = wpt_2d_x_m[ii]
 											B738DR_hold_y[hold_obj] = wpt_2d_y_m[ii]
-											B738DR_hold_crs[hold_obj] = ((tonumber(legs_data2[wpt_2d_idx_m[ii]][29]) / 10) - mag_hdg + 360) % 360
+											B738DR_hold_crs[hold_obj] = ((tonumber(legs_data2[wpt_2d_idx_m[ii]][29]) / 10) - mag_hdg - simDR_mag_variation + 360) % 360
 											if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 												B738DR_hold_type[hold_obj] = legs_data2[wpt_2d_idx_m[ii]][21] + 21
 												B738DR_hold_dist[hold_obj] = calc_hold_dist2(wpt_2d_idx_m[ii])
@@ -58213,7 +58730,7 @@ function B738_displ_wpt2()
 									(legs_data[wpt_2d_idx[ii]][31] == "HA" or legs_data[wpt_2d_idx[ii]][31] == "HF" or legs_data[wpt_2d_idx[ii]][31] == "HM") then
 										B738DR_hold_fo_x[hold_obj_fo] = wpt_2d_x[ii]
 										B738DR_hold_fo_y[hold_obj_fo] = wpt_2d_y[ii]
-										B738DR_hold_fo_crs[hold_obj_fo] = ((tonumber(legs_data[wpt_2d_idx[ii]][29]) / 10) - mag_hdg + 360) % 360
+										B738DR_hold_fo_crs[hold_obj_fo] = ((tonumber(legs_data[wpt_2d_idx[ii]][29]) / 10) - mag_hdg - simDR_mag_variation + 360) % 360
 										if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 											B738DR_hold_fo_type[hold_obj_fo] = legs_data[wpt_2d_idx[ii]][21] + 1
 											B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(wpt_2d_idx[ii])
@@ -58240,7 +58757,7 @@ function B738_displ_wpt2()
 											
 											B738DR_hold_fo_x[hold_obj_fo] = wpt_2d_x[ii]
 											B738DR_hold_fo_y[hold_obj_fo] = wpt_2d_y[ii]
-											B738DR_hold_fo_crs[hold_obj_fo] = ((tonumber(legs_data[wpt_2d_idx[ii]+1][29]) / 10) - mag_hdg + 360) % 360
+											B738DR_hold_fo_crs[hold_obj_fo] = ((tonumber(legs_data[wpt_2d_idx[ii]+1][29]) / 10) - mag_hdg - simDR_mag_variation + 360) % 360
 											if B738DR_efis_map_range_fo == 0 then	-- 5 NM
 												B738DR_hold_fo_type[hold_obj_fo] = legs_data[wpt_2d_idx[ii]+1][21] + 1 + rte_dist
 												B738DR_hold_fo_dist[hold_obj_fo] = calc_hold_dist(wpt_2d_idx[ii]+1)
@@ -58414,7 +58931,7 @@ function B738_displ_wpt2()
 										
 											B738DR_hold_fo_x[hold_obj] = wpt_2d_x_m[ii]
 											B738DR_hold_fo_y[hold_obj] = wpt_2d_y_m[ii]
-											B738DR_hold_fo_crs[hold_obj] = ((tonumber(legs_data2[wpt_2d_idx_m[ii]][29]) / 10) - mag_hdg + 360) % 360
+											B738DR_hold_fo_crs[hold_obj] = ((tonumber(legs_data2[wpt_2d_idx_m[ii]][29]) / 10) - mag_hdg - simDR_mag_variation + 360) % 360
 											if B738DR_efis_map_range_capt == 0 then	-- 5 NM
 												B738DR_hold_fo_type[hold_obj] = legs_data2[wpt_2d_idx_m[ii]][21] + 21
 												B738DR_hold_fo_dist[hold_obj] = calc_hold_dist2(wpt_2d_idx_m[ii])
@@ -59013,7 +59530,10 @@ function find_clb_rest_alt(rest_from, rest_to)
 	if rest_from <= rest_to then
 		for ii = rest_from, rest_to do
 			if legs_data[ii][19] == 1 or legs_data[ii][19] == 3 then
-				if legs_data[ii][5] > 0 and legs_data[ii][6] ~= 43 then
+				if legs_data[ii][41] > 0 and legs_data[ii][6] == 41 then
+					finded_rest_idx = ii
+					break
+				elseif legs_data[ii][5] > 0 and legs_data[ii][6] ~= 43 then
 					finded_rest_idx = ii
 					break
 				end
@@ -59022,7 +59542,10 @@ function find_clb_rest_alt(rest_from, rest_to)
 	else
 		for ii = rest_from, rest_to, -1 do
 			if legs_data[ii][19] == 1 or legs_data[ii][19] == 3 then
-				if legs_data[ii][5] > 0 and legs_data[ii][6] ~= 43 then
+				if legs_data[ii][41] > 0 and legs_data[ii][6] == 41 then
+					finded_rest_idx = ii
+					break
+				elseif legs_data[ii][5] > 0 and legs_data[ii][6] ~= 43 then
 					finded_rest_idx = ii
 					break
 				end
@@ -59069,7 +59592,10 @@ function find_clb_rest_alt_mod(rest_from, rest_to)
 	if rest_from <= rest_to then
 		for ii = rest_from, rest_to do
 			if legs_data2[ii][19] == 1 or legs_data2[ii][19] == 3 then
-				if legs_data2[ii][5] > 0 and legs_data2[ii][6] ~= 43 then
+				if legs_data2[ii][41] > 0 and legs_data2[ii][6] == 41 then
+					finded_rest_idx = ii
+					break
+				elseif legs_data2[ii][5] > 0 and legs_data2[ii][6] ~= 43 then
 					finded_rest_idx = ii
 					break
 				end
@@ -59078,7 +59604,10 @@ function find_clb_rest_alt_mod(rest_from, rest_to)
 	else
 		for ii = rest_from, rest_to, -1 do
 			if legs_data2[ii][19] == 1 or legs_data2[ii][19] == 3 then
-				if legs_data2[ii][5] > 0 and legs_data2[ii][6] ~= 43 then
+				if legs_data2[ii][41] > 0 and legs_data2[ii][6] == 41 then
+					finded_rest_idx = ii
+					break
+				elseif legs_data2[ii][5] > 0 and legs_data2[ii][6] ~= 43 then
 					finded_rest_idx = ii
 					break
 				end
@@ -59289,7 +59818,11 @@ function B738_vnav_calc()
 				if rest_idx_alt == 0 then
 					rest_alt = 45000
 				else
-					rest_alt = legs_data[rest_idx_alt][5]
+					if legs_data[rest_idx_alt][6] == 41 then
+						rest_alt = legs_data[rest_idx_alt][41]
+					else
+						rest_alt = legs_data[rest_idx_alt][5]
+					end
 				end
 			end
 			
@@ -59474,7 +60007,11 @@ function B738_vnav_calc()
 						if rest_idx_alt == 0 then
 							rest_alt = 45000
 						else
-							rest_alt = legs_data[rest_idx_alt][5]
+							if legs_data[rest_idx_alt][6] == 41 then
+								rest_alt = legs_data[rest_idx_alt][41]
+							else
+								rest_alt = legs_data[rest_idx_alt][5]
+							end
 						end
 					end
 				else
@@ -59658,7 +60195,7 @@ function B738_vnav_calc()
 							ignored = 0
 							
 							-- fixed restrict altitude
-							if legs_restr_alt[ii][4] == 45 or legs_restr_alt[ii][4] == 43 then	--or legs_restr_alt[ii][4] == 41 then
+							if legs_restr_alt[ii][4] == 45 or legs_restr_alt[ii][4] == 43 or legs_restr_alt[ii][4] == 41 then
 								ignored = 1
 							else
 								--if idx_temp >= td_idx then
@@ -59896,17 +60433,16 @@ function B738_vnav_calc()
 										ignored = 1
 									end
 								end
-							-- elseif legs_restr_alt[ii][4] == 41 then 	-- Between
-								-- if legs_data[idx_temp][11] == 0 then
-									-- if crz_alt_num >= legs_restr_alt[ii][3] then
-														-- legs_restr_alt[ii][5]
-										-- ignored = 1
-									-- end
-								-- else
-									-- if legs_data[idx_temp][11] >= legs_restr_alt[ii][3] then
-										-- ignored = 1
-									-- end
-								-- end
+							elseif legs_restr_alt[ii][4] == 41 then 	-- Between
+								if legs_data[idx_temp][11] == 0 then
+									if crz_alt_num >= legs_restr_alt[ii][3] and crz_alt_num <= legs_restr_alt[ii][5] then
+										ignored = 1
+									end
+								else
+									if legs_data[idx_temp][11] >= legs_restr_alt[ii][3] and legs_data[idx_temp][11] <= legs_restr_alt[ii][5] then
+										ignored = 1
+									end
+								end
 							else
 								ignored = 1
 							end
@@ -59918,7 +60454,23 @@ function B738_vnav_calc()
 								ed_fix_num = ed_fix_num + 1
 								ed_fix_found2[ed_fix_num] = ed_fix_found
 								
-								ed_fix_alt = legs_restr_alt[ii][3]
+								if legs_restr_alt[ii][4] == 41 then 	-- Between
+									if legs_data[idx_temp][11] == 0 then
+										if crz_alt_num < legs_restr_alt[ii][3] then
+											ed_fix_alt = crz_alt_num
+										else
+											ed_fix_alt = legs_restr_alt[ii][5]
+										end
+									else
+										if legs_data[idx_temp][11] < legs_restr_alt[ii][3] then
+											ed_fix_alt = legs_restr_alt[ii][3]
+										else
+											ed_fix_alt = legs_restr_alt[ii][5]
+										end
+									end
+								else
+									ed_fix_alt = legs_restr_alt[ii][3]
+								end
 								ed_fix_alt2[ed_fix_num] = ed_fix_alt
 								
 								
@@ -59952,7 +60504,8 @@ function B738_vnav_calc()
 									end
 									nd_x = nd_x * 1852	-- in metres
 									--nd_lat = ed_fix_alt2[(ed_fix_num-1)] - ed_fix_alt -- delta alt
-									nd_lat = legs_data[first_restrict][5] - ed_fix_alt -- delta alt
+									--nd_lat = legs_data[first_restrict][5] - ed_fix_alt -- delta alt
+									nd_lat = legs_data[first_restrict][11] - ed_fix_alt -- delta alt
 									nd_lat = nd_lat * 0.3048	-- in metres
 									nd_y = 0
 									if nd_x > 0 and nd_lat > 0 then
@@ -59988,8 +60541,11 @@ function B738_vnav_calc()
 										end
 									end
 									if first_restrict > 0 then
-										if calc_wpt_alt > legs_data[first_restrict][5] then
-											calc_wpt_alt = legs_data[first_restrict][5]
+										-- if calc_wpt_alt > legs_data[first_restrict][5] then
+											-- calc_wpt_alt = legs_data[first_restrict][5]
+										-- end
+										if calc_wpt_alt > legs_data[first_restrict][11] then
+											calc_wpt_alt = legs_data[first_restrict][11]
 										end
 									end
 									if calc_wpt_alt > crz_alt_num then
@@ -60070,7 +60626,8 @@ function B738_vnav_calc()
 										end
 										nd_x = nd_x * 1852	-- in metres
 										--nd_lat = ed_fix_alt2[(ed_fix_num-1)] - ed_fix_alt -- delta alt
-										nd_lat = ed_fix_alt - legs_data[first_restrict][5]-- delta alt
+										--nd_lat = ed_fix_alt - legs_data[first_restrict][5]-- delta alt
+										nd_lat = ed_fix_alt - legs_data[first_restrict][11]-- delta alt
 										nd_lat = nd_lat * 0.3048	-- in metres
 										nd_y = 0
 										if nd_x > 0 and nd_lat > 0 then
@@ -60082,7 +60639,8 @@ function B738_vnav_calc()
 										--last_wpt_idx = 0
 										for kk = n, ed_fix_found + 1, -1 do
 											if kk == n then
-												calc_wpt_alt = legs_data[kk][5]
+												--calc_wpt_alt = legs_data[kk][5]
+												calc_wpt_alt = legs_data[kk][11]
 											else
 												calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(-legs_data[n][20])))) * 6076.11549) -- ft
 											end
@@ -60099,9 +60657,9 @@ function B738_vnav_calc()
 										end
 									
 									----------------------------------
-									-- if B738DR_fms_test == 5 and ed_fix_num == B738DR_fms_test3 then
+									-- if B738DR_fms_test == 5 then
 										-- dump_leg_mod()
-										-- --B738DR_fms_test = 0
+										-- B738DR_fms_test = 0
 									-- end
 									----------------------------------
 									
@@ -60114,7 +60672,11 @@ function B738_vnav_calc()
 						end
 					end
 					
-					
+					if B738DR_fms_test == 5 then
+						dump_leg_mod()
+						B738DR_fms_test = 0
+					end
+						
 					
 					-- order E/D restrict data
 					if ed_fix_num > 1 then
@@ -60528,6 +61090,14 @@ function B738_vnav_calc()
 							simCMD_nosmoking_toggle:once()
 							fms_msg_sound = 1
 						end
+					elseif legs_data[n][6] == 41 then -- between
+						if legs_data[n][11] < legs_data[n][5] or legs_data[n][11] > legs_data[n][41] then
+							fmc_message_num = fmc_message_num + 1
+							fmc_message[fmc_message_num] = ALT_CONSTRAINT .. legs_data[n][1]
+							fmc_message_warn[fmc_message_num] = 1
+							simCMD_nosmoking_toggle:once()
+							fms_msg_sound = 1
+						end
 					else
 						if legs_data[n][11] ~= legs_data[n][5] then
 							fmc_message_num = fmc_message_num + 1
@@ -60768,7 +61338,11 @@ function B738_vnav_calc_mod()
 				if rest_idx_alt == 0 then
 					rest_alt = 45000
 				else
-					rest_alt = legs_data2[rest_idx_alt][5]
+					if legs_data2[rest_idx_alt][6] == 41 then
+						rest_alt = legs_data2[rest_idx_alt][41]
+					else
+						rest_alt = legs_data2[rest_idx_alt][5]
+					end
 				end
 			end
 			
@@ -60950,7 +61524,11 @@ function B738_vnav_calc_mod()
 						if rest_idx_alt == 0 then
 							rest_alt = 45000
 						else
-							rest_alt = legs_data2[rest_idx_alt][5]
+							if legs_data2[rest_idx_alt][6] == 41 then
+								rest_alt = legs_data2[rest_idx_alt][41]
+							else
+								rest_alt = legs_data2[rest_idx_alt][5]
+							end
 						end
 					end
 				else
@@ -61109,7 +61687,7 @@ function B738_vnav_calc_mod()
 							ignored = 0
 							
 							-- fixed restrict altitude
-							if legs_restr_alt_mod[ii][4] == 45 or legs_restr_alt_mod[ii][4] == 43 then
+							if legs_restr_alt_mod[ii][4] == 45 or legs_restr_alt_mod[ii][4] == 43 or legs_restr_alt_mod[ii][4] == 41 then
 								ignored = 1
 							else
 								--if idx_temp >= td_idx_mod then
@@ -61312,6 +61890,16 @@ function B738_vnav_calc_mod()
 										ignored = 1
 									end
 								end
+							elseif legs_restr_alt_mod[ii][4] == 41 then 	-- Between
+								if legs_data2[idx_temp][11] == 0 then
+									if crz_alt_num >= legs_restr_alt_mod[ii][3] and crz_alt_num <= legs_restr_alt_mod[ii][5] then
+										ignored = 1
+									end
+								else
+									if legs_data2[idx_temp][11] >= legs_restr_alt_mod[ii][3] and legs_data2[idx_temp][11] <= legs_restr_alt_mod[ii][5] then
+										ignored = 1
+									end
+								end
 							else
 								ignored = 1
 							end
@@ -61323,7 +61911,24 @@ function B738_vnav_calc_mod()
 								ed_fix_num_mod = ed_fix_num_mod + 1
 								ed_fix_found2_mod[ed_fix_num_mod] = ed_fix_found_mod
 								
-								ed_fix_alt_mod = legs_restr_alt_mod[ii][3]
+								if legs_restr_alt_mod[ii][4] == 41 then 	-- Between
+									if legs_data2[idx_temp][11] == 0 then
+										if crz_alt_num < legs_restr_alt_mod[ii][3] then
+											ed_fix_alt_mod = crz_alt_num
+										else
+											ed_fix_alt_mod = legs_restr_alt_mod[ii][5]
+										end
+									else
+										if legs_data2[idx_temp][11] < legs_restr_alt_mod[ii][3] then
+											ed_fix_alt_mod = legs_restr_alt_mod[ii][3]
+										else
+											ed_fix_alt_mod = legs_restr_alt_mod[ii][5]
+										end
+									end
+								else
+									ed_fix_alt_mod = legs_restr_alt_mod[ii][3]
+								end
+								--ed_fix_alt_mod = legs_restr_alt_mod[ii][3]
 								
 								ed_fix_alt2_mod[ed_fix_num_mod] = ed_fix_alt_mod
 								
@@ -61356,7 +61961,8 @@ function B738_vnav_calc_mod()
 										nd_x = nd_x + legs_data2[kk][3]
 									end
 									nd_x = nd_x * 1852	-- in metres
-									nd_lat = legs_data2[first_restrict][5] - ed_fix_alt_mod -- delta alt
+									--nd_lat = legs_data2[first_restrict][5] - ed_fix_alt_mod -- delta alt
+									nd_lat = legs_data2[first_restrict][11] - ed_fix_alt_mod -- delta alt
 									nd_lat = nd_lat * 0.3048	-- in metres
 									nd_y = 0
 									if nd_x > 0 and nd_lat > 0 then
@@ -61391,9 +61997,12 @@ function B738_vnav_calc_mod()
 										end
 									end
 									if first_restrict > 0 then
-										if calc_wpt_alt > legs_data2[first_restrict][5] then
-											calc_wpt_alt = legs_data2[first_restrict][5]
+										if calc_wpt_alt > legs_data2[first_restrict][11] then
+											calc_wpt_alt = legs_data2[first_restrict][11]
 										end
+										-- if calc_wpt_alt > legs_data2[first_restrict][5] then
+											-- calc_wpt_alt = legs_data2[first_restrict][5]
+										-- end
 									end
 									if calc_wpt_alt > crz_alt_num then
 										calc_wpt_alt = crz_alt_num
@@ -61441,7 +62050,8 @@ function B738_vnav_calc_mod()
 											nd_x = nd_x + legs_data2[kk][3]
 										end
 										nd_x = nd_x * 1852	-- in metres
-										nd_lat = ed_fix_alt_mod - legs_data2[first_restrict][5]-- delta alt
+										--nd_lat = ed_fix_alt_mod - legs_data2[first_restrict][5]-- delta alt
+										nd_lat = ed_fix_alt_mod - legs_data2[first_restrict][11]-- delta alt
 										nd_lat = nd_lat * 0.3048	-- in metres
 										nd_y = 0
 										if nd_x > 0 and nd_lat > 0 then
@@ -61451,7 +62061,8 @@ function B738_vnav_calc_mod()
 										
 										for kk = n, ed_fix_found_mod + 1, -1 do
 											if kk == n then
-												calc_wpt_alt = legs_data2[kk][5]
+												--calc_wpt_alt = legs_data2[kk][5]
+												calc_wpt_alt = legs_data2[kk][11]
 											else
 												--calc_wpt_alt = calc_wpt_alt + ((legs_data[kk+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
 												calc_wpt_alt = calc_wpt_alt + ((legs_data2[kk+1][3] * (math.tan(math.rad(-legs_data2[n][20])))) * 6076.11549) -- ft
@@ -61861,6 +62472,14 @@ function B738_vnav_calc_mod()
 						end
 					elseif legs_data2[n][6] == 43 then -- above
 						if legs_data2[n][11] < legs_data2[n][5] then
+							fmc_message_num = fmc_message_num + 1
+							fmc_message[fmc_message_num] = ALT_CONSTRAINT .. legs_data2[n][1]
+							fmc_message_warn[fmc_message_num] = 1
+							simCMD_nosmoking_toggle:once()
+							fms_msg_sound = 1
+						end
+					elseif legs_data2[n][6] == 41 then -- between
+						if legs_data2[n][11] < legs_data2[n][5] or legs_data2[n][11] > legs_data2[n][41] then
 							fmc_message_num = fmc_message_num + 1
 							fmc_message[fmc_message_num] = ALT_CONSTRAINT .. legs_data2[n][1]
 							fmc_message_warn[fmc_message_num] = 1
@@ -66889,6 +67508,7 @@ function B738_restrict_data()
 		end
 		
 		-- restrict alt
+		local alt_rest_temp = 0
 		B738DR_rest_wpt_alt_id = ""
 		B738DR_rest_wpt_alt = 0
 		B738DR_rest_wpt_alt_t = 0
@@ -66916,7 +67536,13 @@ function B738_restrict_data()
 					if td_idx_temp > 0 then
 						if legs_restr_alt[ii][2] >= offset and legs_restr_alt[ii][2] <= td_idx_temp then
 							temp_alt = simDR_altitude_pilot - 300
-							if temp_alt < legs_restr_alt[ii][3] then
+							if legs_restr_alt[ii][4] == 41 then	-- between
+								alt_rest_temp = legs_restr_alt[ii][5]
+							else
+								alt_rest_temp = legs_restr_alt[ii][3]
+							end
+							--if temp_alt < legs_restr_alt[ii][3] then
+							if temp_alt < alt_rest_temp then
 								if legs_restr_alt[ii][4] == 43 and ii < legs_restr_alt_n then
 									if legs_restr_alt[ii+1][2] <= td_idx_temp and legs_restr_alt[ii][3] == legs_restr_alt[ii+1][3] then
 										B738DR_rest_wpt_alt_id = legs_restr_alt[ii+1][1]
@@ -66934,7 +67560,7 @@ function B738_restrict_data()
 								elseif legs_restr_alt[ii][4] == 41 then	-- between
 									B738DR_rest_wpt_alt_id = legs_restr_alt[ii][1]
 									B738DR_rest_wpt_alt = legs_restr_alt[ii][5]
-									B738DR_rest_wpt_alt_t = legs_restr_alt[ii][4]
+									B738DR_rest_wpt_alt_t = 45	--legs_restr_alt[ii][4]
 									B738DR_rest_wpt_alt_idx = legs_restr_alt[ii][2]
 									break
 								else
@@ -66948,7 +67574,13 @@ function B738_restrict_data()
 						end
 						if legs_restr_alt[ii][2] >= offset and B738DR_missed_app_act > 0 then
 							temp_alt = simDR_altitude_pilot - 300
-							if temp_alt < legs_restr_alt[ii][3] then
+							if legs_restr_alt[ii][4] == 41 then	-- between
+								alt_rest_temp = legs_restr_alt[ii][5]
+							else
+								alt_rest_temp = legs_restr_alt[ii][3]
+							end
+							--if temp_alt < legs_restr_alt[ii][3] then
+							if temp_alt < alt_rest_temp then
 								if legs_restr_alt[ii][4] == 43 and ii < legs_restr_alt_n then
 									if legs_restr_alt[ii+1][2] <= td_idx_temp and legs_restr_alt[ii][3] == legs_restr_alt[ii+1][3] then
 										B738DR_rest_wpt_alt_id = legs_restr_alt[ii+1][1]
@@ -66963,6 +67595,12 @@ function B738_restrict_data()
 										B738DR_rest_wpt_alt_idx = legs_restr_alt[ii][2]
 										break
 									end
+								elseif legs_restr_alt[ii][4] == 41 then	-- between
+									B738DR_rest_wpt_alt_id = legs_restr_alt[ii][1]
+									B738DR_rest_wpt_alt = legs_restr_alt[ii][5]
+									B738DR_rest_wpt_alt_t = 45	--legs_restr_alt[ii][4]
+									B738DR_rest_wpt_alt_idx = legs_restr_alt[ii][2]
+									break
 								else
 									B738DR_rest_wpt_alt_id = legs_restr_alt[ii][1]
 									B738DR_rest_wpt_alt = legs_restr_alt[ii][3]
@@ -66984,7 +67622,11 @@ function B738_restrict_data()
 						if temp_alt > legs_restr_alt[ii][3] then
 							B738DR_rest_wpt_alt_id = legs_restr_alt[ii][1]
 							B738DR_rest_wpt_alt = legs_restr_alt[ii][3]
-							B738DR_rest_wpt_alt_t = legs_restr_alt[ii][4]
+							if legs_restr_alt[ii][4] == 41 then	-- between
+								B738DR_rest_wpt_alt_t = 43
+							else
+								B738DR_rest_wpt_alt_t = legs_restr_alt[ii][4]
+							end
 							B738DR_rest_wpt_alt_idx = legs_restr_alt[ii][2]
 							break
 						end
@@ -70317,6 +70959,7 @@ function B738_fmc_calc()
 					legs_restr_alt_mod[legs_restr_alt_n_mod][2] = n					-- idx
 					legs_restr_alt_mod[legs_restr_alt_n_mod][3] = legs_data2[n][5]	-- alt restrict
 					legs_restr_alt_mod[legs_restr_alt_n_mod][4] = legs_data2[n][6]	-- alt restrict A,B,-
+					legs_restr_alt_mod[legs_restr_alt_n_mod][5] = legs_data2[n][41]
 				end
 			end
 		end
@@ -72095,7 +72738,7 @@ temp_ils4 = ""
 	rw_ext_fpa = "-.--"
 	gp_available = 0
 	
-	version = "v3.26n"
+	version = "v3.26o"
 
 end
 
@@ -72586,6 +73229,7 @@ function after_physics()
 		
 		B738DR_fms_test1 = 28
 		B738_fmc_msg()
+		B738_fmc_clr_msg()
 		B738DR_fms_test1 = 29
 		B738DR_checklist()
 		B738DR_fms_test1 = 30

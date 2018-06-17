@@ -888,6 +888,7 @@ B738DR_baro_in_hpa			= find_dataref("laminar/B738/fms/baro_in_hpa")
 B738DR_min_baro_radio		= find_dataref("laminar/B738/fms/min_baro_radio")
 
 B738DR_fms_approach_speed	= find_dataref("laminar/B738/FMS/approach_speed")
+B738DR_approach_flaps_set	= find_dataref("laminar/B738/FMS/approach_flaps_set")
 simDR_fmc_dist				= find_dataref("laminar/B738/fms/lnav_dist_next")
 B738DR_rnp					= find_dataref("laminar/B738/fms/rnp")
 B738DR_fmc_bank_angle		= find_dataref("laminar/B738/fms/bank_angle")
@@ -913,6 +914,21 @@ B738DR_nd_rings					= find_dataref("laminar/B738/effect/nd_rings")
 --*************************************************************************************--
 
 
+function B738DR_baro_sel_in_hg_pilot_hdlr()
+	if B738DR_baro_sel_in_hg_pilot > 40 then
+		B738DR_baro_sel_in_hg_pilot = 40
+	elseif B738DR_baro_sel_in_hg_pilot < 0 then
+		B738DR_baro_sel_in_hg_pilot = 0
+	end
+end
+
+function B738DR_baro_sel_in_hg_copilot_hdlr()
+	if B738DR_baro_sel_in_hg_copilot > 40 then
+		B738DR_baro_sel_in_hg_copilot = 40
+	elseif B738DR_baro_sel_in_hg_copilot < 0 then
+		B738DR_baro_sel_in_hg_copilot = 0
+	end
+end
 
 --*************************************************************************************--
 --** 				        CREATE READ-ONLY CUSTOM DATAREFS               	         **--
@@ -946,7 +962,7 @@ B738DR_efis_wxr_on		= create_dataref("laminar/B738/EFIS/EFIS_wx_on", "number")
 
 ---
 B738DR_baro_set_std_pilot		= create_dataref("laminar/B738/EFIS/baro_set_std_pilot", "number")
-B738DR_baro_sel_in_hg_pilot		= create_dataref("laminar/B738/EFIS/baro_sel_in_hg_pilot", "number")
+B738DR_baro_sel_in_hg_pilot		= create_dataref("laminar/B738/EFIS/baro_sel_in_hg_pilot", "number", B738DR_baro_sel_in_hg_pilot_hdlr)
 B738DR_baro_sel_pilot_show		= create_dataref("laminar/B738/EFIS/baro_sel_pilot_show", "number")
 B738DR_baro_box_pilot_show		= create_dataref("laminar/B738/EFIS/baro_box_pilot_show", "number")
 B738DR_baro_std_box_pilot_show	= create_dataref("laminar/B738/EFIS/baro_std_box_pilot_show", "number")
@@ -991,7 +1007,7 @@ B738DR_efis_fo_fix_on		= create_dataref("laminar/B738/EFIS/fo/EFIS_fix_on", "num
 B738DR_efis_fo_wxr_on		= create_dataref("laminar/B738/EFIS/fo/EFIS_wx_on", "number")
 ---
 B738DR_baro_set_std_copilot			= create_dataref("laminar/B738/EFIS/baro_set_std_copilot", "number")
-B738DR_baro_sel_in_hg_copilot		= create_dataref("laminar/B738/EFIS/baro_sel_in_hg_copilot", "number")
+B738DR_baro_sel_in_hg_copilot		= create_dataref("laminar/B738/EFIS/baro_sel_in_hg_copilot", "number", B738DR_baro_sel_in_hg_copilot_hdlr)
 B738DR_baro_sel_copilot_show		= create_dataref("laminar/B738/EFIS/baro_sel_copilot_show", "number")
 B738DR_baro_box_copilot_show		= create_dataref("laminar/B738/EFIS/baro_box_copilot_show", "number")
 B738DR_baro_std_box_copilot_show	= create_dataref("laminar/B738/EFIS/baro_std_box_copilot_show", "number")
@@ -4396,10 +4412,12 @@ function B738_autopilot_cmd_a_press_CMDhandler(phase, duration)
 								ap_pitch_mode = 2	-- LVL CHG
 								--at_mode = 6		-- N1
 								B738DR_lvl_chg_mode = 1
-								if B738DR_fms_v2_15 == 0 then
-									simDR_airspeed_dial = 180
-								else
-									simDR_airspeed_dial = B738DR_fms_v2_15
+								if simDR_radio_height_pilot_ft <= B738DR_accel_alt then
+									if B738DR_fms_v2_15 == 0 then
+										simDR_airspeed_dial = 180
+									else
+										simDR_airspeed_dial = B738DR_fms_v2_15
+									end
 								end
 							else
 								--if ap_vnav_status == 2 then
@@ -4541,10 +4559,12 @@ function B738_autopilot_cmd_b_press_CMDhandler(phase, duration)
 								ap_pitch_mode = 2	-- LVL CHG
 								--at_mode = 6		-- N1
 								B738DR_lvl_chg_mode = 1
-								if B738DR_fms_v2_15 == 0 then
-									simDR_airspeed_dial = 180
-								else
-									simDR_airspeed_dial = B738DR_fms_v2_15
+								if simDR_radio_height_pilot_ft <= B738DR_accel_alt then
+									if B738DR_fms_v2_15 == 0 then
+										simDR_airspeed_dial = 180
+									else
+										simDR_airspeed_dial = B738DR_fms_v2_15
+									end
 								end
 							else
 								--if ap_vnav_status == 2 then
@@ -9340,8 +9360,8 @@ function B738_vnav6()
 						else
 							vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, flaps_speed)
 						end
-						if B738DR_fms_approach_speed > 0 then
-							vnav_speed_trg = math.max(vnav_speed_trg, (B738DR_fms_approach_speed + B738DR_fms_approach_wind_corr))
+						if B738DR_fms_approach_speed > 0 and B738DR_approach_flaps_set == 1 then
+							vnav_speed_trg = math.min(vnav_speed_trg, (B738DR_fms_approach_speed + B738DR_fms_approach_wind_corr))
 						end
 					else
 						vnav_speed_trg = B738DR_fmc_descent_speed_mach
@@ -9633,8 +9653,8 @@ function B738_vnav6()
 							else
 								vnav_speed_trg = math.min(B738DR_fmc_descent_speed, spd_250_10000, flaps_speed)
 							end
-							if B738DR_fms_approach_speed > 0 then
-								vnav_speed_trg = math.max(vnav_speed_trg, (B738DR_fms_approach_speed + B738DR_fms_approach_wind_corr))
+							if B738DR_fms_approach_speed > 0 and B738DR_approach_flaps_set == 1 then
+								vnav_speed_trg = math.min(vnav_speed_trg, (B738DR_fms_approach_speed + B738DR_fms_approach_wind_corr))
 							end
 						else
 							vnav_speed_trg = B738DR_fmc_descent_speed_mach
