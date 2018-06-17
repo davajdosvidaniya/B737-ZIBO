@@ -3416,10 +3416,10 @@ local takeoff_config_warn = 0
 
 -- GENS OFF BUS
 
-	-- B738DR_gen_off_bus1 = B738DR_gen1_available * brightness_level
-	-- B738DR_gen_off_bus2 = B738DR_gen2_available * brightness_level
-	B738DR_gen_off_bus1 = B738DR_gen1_available * simDR_gen_off_bus1 * simDR_engine1_on * brightness_level
-	B738DR_gen_off_bus2 = B738DR_gen2_available * simDR_gen_off_bus2 * simDR_engine2_on * brightness_level
+	B738DR_gen_off_bus1 = simDR_gen_off_bus1 * brightness_level
+	B738DR_gen_off_bus2 = simDR_gen_off_bus2 * brightness_level
+	--B738DR_gen_off_bus1 = B738DR_gen1_available * simDR_gen_off_bus1 * simDR_engine1_on * brightness_level
+	--B738DR_gen_off_bus2 = B738DR_gen2_available * simDR_gen_off_bus2 * simDR_engine2_on * brightness_level
 
 -- SOURCE OFF
 

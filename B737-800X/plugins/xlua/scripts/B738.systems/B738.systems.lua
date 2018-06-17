@@ -6080,7 +6080,7 @@ function B738_brake_cooling(temp, temp_outside)
 	local out_temp_100 = temp_outside / 100
 	local temp_100 = 0
 	local delta_temp = 0
-	local qr_speed = simDR_airspeed_pilot	--simDR_ground_speed
+	local qr_speed = simDR_ground_speed * 1.9438	--simDR_airspeed_pilot	--simDR_ground_speed
 	local out_temp_k = 0
 	local out_temp_k2 = 1
 	
@@ -8098,8 +8098,26 @@ function B738_nose_steer()
 		end
 		
 		if B738DR_toe_brakes_ovr == 0 then
-			simDR_steer_ovr = 0
+			--simDR_steer_ovr = 0
 			simDR_toe_brakes_ovr = 0
+			if B738DR_nosewheel < 3 then
+				B738DR_nosewheel_steer_ratio = B738_rescale(-78, -1, 78, 1, simDR_steer_cmd)
+				simDR_steer_ovr = 0
+			else
+				simDR_steer_ovr = 1
+				steer_limit = B738_rescale(0, 78, 51, 6, gs_limit2)
+				nose_steer_deg_trg = B738_rescale(-1, -steer_limit, 1, steer_limit, B738DR_nosewheel_steer_ratio)
+				
+				if simDR_ground_speed > 23 then
+					if nose_steer_deg_trg < -6 then
+						nose_steer_deg_trg = -6
+					end
+					if nose_steer_deg_trg > 6 then
+						nose_steer_deg_trg = 6
+					end
+				end
+				simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, 0.11)
+			end
 		else
 			-- if brake_smoothly_status == 0 then
 				-- left_brake = 0
@@ -9464,7 +9482,7 @@ function B738_man_land_gear()
 	and simDR_on_ground_2 == 0 then
 		if B738DR_hyd_A_status > 0 then
 			if landing_gear_target == 0 then
-				if simDR_airspeed_pilot < 250 then
+				if simDR_airspeed_pilot < 250 or simDR_airspeed_copilot < 250 then
 					if B738DR_gear_handle_pos ~= 0.5 then
 						--landing_gear_act = B738_set_anim_time(landing_gear_act, landing_gear_target, 0.0, 1.0, 0, 14.0)
 						landing_gear0_act = B738_set_anim_time(landing_gear0_act, landing_gear_target, 0.0, 1.0, 0, LANDGEAR_NOSE_UP_TIME)
@@ -9474,7 +9492,7 @@ function B738_man_land_gear()
 					simDR_gear_handle_status = 0
 				end
 			else
-				if simDR_airspeed_pilot < 280 then
+				if simDR_airspeed_pilot < 280 or simDR_airspeed_copilot < 280 then
 					if B738DR_gear_handle_pos ~= 0.5 or B738DR_landgear_pos > 0.9 then
 						--landing_gear_act = B738_set_anim_time(landing_gear_act, landing_gear_target, 0.0, 1.0, 1, 17.0)
 						landing_gear0_act = B738_set_anim_time(landing_gear0_act, landing_gear_target, 0.0, 1.0, 1, LANDGEAR_NOSE_DN_TIME)
@@ -9485,7 +9503,7 @@ function B738_man_land_gear()
 				end
 			end
 		else
-			if simDR_airspeed_pilot < 280 and B738DR_landgear_pos > 0.9 then
+			if (simDR_airspeed_pilot < 280 or simDR_airspeed_copilot < 280) and B738DR_landgear_pos > 0.9 then
 				--landing_gear_act = B738_set_anim_time(landing_gear_act, landing_gear_target, 0.0, 1.0, 1, 19.0)		-- manual gear extend 19 secs
 				landing_gear0_act = B738_set_anim_time(landing_gear0_act, 1, 0.0, 1.0, 1, LANDGEAR_NOSE_MAN_TIME)
 				landing_gear1_act = B738_set_anim_time(landing_gear1_act, 1, 0.0, 1.0, 1, LANDGEAR_LEFT_MAN_TIME)

@@ -77,11 +77,20 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26p:
+------
+- corrected some systems
+- add option GAUGES REFLECTION on/off
+- converted some textures to dds
+- fixed bugs (altitude restrict on Legs page, nosewheel...)
+- tested in xplane 11.20r4 (final)
+
 3.26o:
 ------
 - add support for next update TerrainRadar plugin by DrGluck
 - corrected some systems
 - fixed bugs (HOLD course, altitude block restrict, A/T,...)
+- fixed windshield reflection (missing file)
 
 3.26n:
 ------

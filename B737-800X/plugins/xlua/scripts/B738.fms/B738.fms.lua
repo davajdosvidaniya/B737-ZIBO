@@ -1696,6 +1696,7 @@ B738DR_kill_windshield			= find_dataref("laminar/B738/perf/kill_windshield")
 B738DR_hide_glass 				= create_dataref("laminar/B738/effect/hide_glass", "number")
 B738DR_tire_blown				= create_dataref("laminar/B738/effect/tire_blown", "number")
 B738DR_nd_rings					= create_dataref("laminar/B738/effect/nd_rings", "number")
+B738DR_hide_gauges_reflection	= create_dataref("laminar/B738/effect/gauges_reflection", "number")
 
 B738DR_mcp_speed_dial		= find_dataref("laminar/B738/autopilot/mcp_speed_dial_kts_mach")
 
@@ -1746,6 +1747,9 @@ B738DR_alt_hold_mem 		= find_dataref("laminar/autopilot/alt_hold_mem")
 B738DR_capt_vsd_map_mode	= find_dataref("laminar/B738/EFIS_control/capt/vsd_map")
 B738DR_fo_vsd_map_mode		= find_dataref("laminar/B738/EFIS_control/fo/vsd_map")
 
+AP_airspeed 				= find_dataref("laminar/B738/autopilot/airspeed")
+AP_airspeed_mach 			= find_dataref("laminar/B738/autopilot/airspeed_mach")
+AP_altitude 				= find_dataref("laminar/B738/autopilot/altitude")
 
 -- FMOD by AudioBird XP
 B738DR_enable_pax_boarding	= find_dataref("laminar/b738/fmodpack/fmod_pax_boarding_on")
@@ -15607,6 +15611,7 @@ function B738_default_others_config()
 	B738DR_hide_glass = 0
 	B738DR_tire_blown = 1
 	B738DR_nd_rings = 1
+	B738DR_hide_gauges_reflection = 0
 	
 	simDR_pitch_nz = 0
 	simDR_roll_nz = 0
@@ -16234,6 +16239,18 @@ function B738_load_config()
 								B738DR_nd_rings = 1
 							else
 								B738DR_nd_rings = 0
+							end
+						end
+					end
+				elseif string.sub(fms_line, 1, 16) == "GAUGES REFLECT =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							if temp_fmod == 1 then
+								B738DR_hide_gauges_reflection = 1
+							else
+								B738DR_hide_gauges_reflection = 0
 							end
 						end
 					end
@@ -16874,6 +16891,8 @@ function B738_save_config()
 		fms_line = "TIRE BLOWN     = " .. string.format("%2d", B738DR_tire_blown) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "ND RINGS       = " .. string.format("%2d", B738DR_nd_rings) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "GAUGES REFLECT = " .. string.format("%2d", B738DR_hide_gauges_reflection) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "PITCH 0 ZONE   = " .. string.format("%2d", simDR_pitch_nz * 100) .. "\n"
 		file_navdata:write(fms_line)
@@ -22715,6 +22734,12 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 			else
 				B738DR_min_baro_radio = 0
 			end
+		elseif page_xtras_others == 4 then
+			if B738DR_hide_gauges_reflection == 0 then
+				B738DR_hide_gauges_reflection = 1
+			else
+				B738DR_hide_gauges_reflection = 0
+			end
 		elseif page_arr == 1 then
 			if des_star2 == "------" then
 				if des_star_sel[4] ~= "------" then
@@ -27597,7 +27622,7 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 									legs_data2[n][1] = "PPOS"
 									legs_data2[n][2] = 0
 									legs_data2[n][3] = 0
-									legs_data2[n][4] = simDR_airspeed_pilot
+									legs_data2[n][4] = AP_airspeed
 									if B738DR_rest_wpt_alt == 0 then
 										legs_data2[n][5] = 0	-- altitude restrict
 										legs_data2[n][6] = 0	-- altitude restrict type
@@ -34943,6 +34968,12 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 			else
 				B738DR_min_baro_radio = 0
 			end
+		elseif page_xtras_others2 == 4 then
+			if B738DR_hide_gauges_reflection == 0 then
+				B738DR_hide_gauges_reflection = 1
+			else
+				B738DR_hide_gauges_reflection = 0
+			end
 		elseif page_arr2 == 1 then
 			if des_star2 == "------" then
 				if des_star_sel[4] ~= "------" then
@@ -39789,7 +39820,7 @@ function B738_fmc2_6R_CMDhandler(phase, duration)
 									legs_data2[n][1] = "PPOS"
 									legs_data2[n][2] = 0
 									legs_data2[n][3] = 0
-									legs_data2[n][4] = simDR_airspeed_pilot
+									legs_data2[n][4] = AP_airspeed
 									if B738DR_rest_wpt_alt == 0 then
 										legs_data2[n][5] = 0	-- altitude restrict
 										legs_data2[n][6] = 0	-- altitude restrict type
@@ -42772,6 +42803,16 @@ function B738_fmc_xtras_others()
 			line3_g = "    YES                 "
 			line3_s = " NO                     "
 		end
+		line4_x = " GAUGES REFLECTION      "
+		if B738DR_hide_gauges_reflection == 0 then
+			line4_l = "<   /                   "
+			line4_g = "     ON                 "
+			line4_s = " OFF                    "
+		else
+			line4_l = "<   /                   "
+			line4_g = " OFF                    "
+			line4_s = "     ON                 "
+		end
 		line6_l = "<DEFAULT           BACK>"
 	elseif page_xtras_others == 5 then
 		act_page = 5
@@ -45708,7 +45749,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 						else
 							if jj ~= B738DR_rest_wpt_alt_idx then
 								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
-									if legs_data2[jj][6] == 41 then
+									if legs_data2[jj][6] == 41 then	--between
 										temp_string = string.format("%05d",legs_data2[jj][41])
 									else
 										temp_string = string.format("%05d",legs_data2[jj][5])
@@ -45722,7 +45763,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									else	-- 32 blank 
 										right_line[ii] = right_line[ii] .. " "
 									end
-								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+								elseif legs_data2[jj][5] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 									right_line[ii] = right_line[ii] .. temp_string
@@ -45734,15 +45775,36 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 										right_line[ii] = right_line[ii] .. " "
 									end
 								else
-									temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
-									right_line[ii] = right_line[ii] .. temp_string
-									if legs_data2[jj][6] == 43 then
-										right_line[ii] = right_line[ii] .. "A"
-									elseif legs_data2[jj][6] == 45 then
-										right_line[ii] = right_line[ii] .. "B"
-									else	-- 32 blank 
-										right_line[ii] = right_line[ii] .. " "
+									if jj <= td_idx then
+										temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
+										right_line[ii] = right_line[ii] .. temp_string
+										if legs_data2[jj][6] == 43 then
+											right_line[ii] = right_line[ii] .. "A"
+										elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
+											right_line[ii] = right_line[ii] .. "B"
+										else	-- 32 blank 
+											right_line[ii] = right_line[ii] .. " "
+										end
+									else
+										temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+										right_line[ii] = right_line[ii] .. temp_string
+										if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
+											right_line[ii] = right_line[ii] .. "A"
+										elseif legs_data2[jj][6] == 45 then
+											right_line[ii] = right_line[ii] .. "B"
+										else	-- 32 blank 
+											right_line[ii] = right_line[ii] .. " "
+										end
 									end
+									--temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+									-- right_line[ii] = right_line[ii] .. temp_string
+									-- if legs_data2[jj][6] == 43 then
+										-- right_line[ii] = right_line[ii] .. "A"
+									-- elseif legs_data2[jj][6] == 45 then
+										-- right_line[ii] = right_line[ii] .. "B"
+									-- else	-- 32 blank 
+										-- right_line[ii] = right_line[ii] .. " "
+									-- end
 								end
 								-- right_line[ii] = right_line[ii] .. temp_string
 								-- if legs_data2[jj][6] == 43 then
@@ -45755,7 +45817,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 								line_m[ii] = line_m[ii] .. "       "
 							else
 								if legs_data2[jj][5] > B738DR_trans_alt and jj <= td_idx then
-									if legs_data2[jj][6] == 41 then
+									if legs_data2[jj][6] == 41 then	-- between
 										temp_string = string.format("%05d",legs_data2[jj][41])
 									else
 										temp_string = string.format("%05d",legs_data2[jj][5])
@@ -45769,9 +45831,10 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									else	-- 32 blank 
 										line_m[ii] = line_m[ii] .. " "
 									end
-								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+								elseif legs_data2[jj][5] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+									line_m[ii] = line_m[ii] .. temp_string
 									if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
 										line_m[ii] = line_m[ii] .. "A"
 									elseif legs_data2[jj][6] == 45 then
@@ -45780,14 +45843,35 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 										line_m[ii] = line_m[ii] .. " "
 									end
 								else
-									temp_string = " " .. string.format("%5d",legs_data2[jj][5])
-									if legs_data2[jj][6] == 43 then
-										line_m[ii] = line_m[ii] .. "A"
-									elseif legs_data2[jj][6] == 45 then
-										line_m[ii] = line_m[ii] .. "B"
-									else	-- 32 blank 
-										line_m[ii] = line_m[ii] .. " "
+									if jj <= td_idx then
+										temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
+										line_m[ii] = line_m[ii] .. temp_string
+										if legs_data2[jj][6] == 43 then
+											line_m[ii] = line_m[ii] .. "A"
+										elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
+											line_m[ii] = line_m[ii] .. "B"
+										else	-- 32 blank 
+											line_m[ii] = line_m[ii] .. " "
+										end
+									else
+										temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+										line_m[ii] = line_m[ii] .. temp_string
+										if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
+											line_m[ii] = line_m[ii] .. "A"
+										elseif legs_data2[jj][6] == 45 then
+											line_m[ii] = line_m[ii] .. "B"
+										else	-- 32 blank 
+											line_m[ii] = line_m[ii] .. " "
+										end
 									end
+									-- temp_string = " " .. string.format("%5d",legs_data2[jj][5])
+									-- if legs_data2[jj][6] == 43 then
+										-- line_m[ii] = line_m[ii] .. "A"
+									-- elseif legs_data2[jj][6] == 45 then
+										-- line_m[ii] = line_m[ii] .. "B"
+									-- else	-- 32 blank 
+										-- line_m[ii] = line_m[ii] .. " "
+									-- end
 								end
 								right_line[ii] = right_line[ii] .. "/      "
 								-- line_m[ii] = line_m[ii] .. temp_string
@@ -45954,7 +46038,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									else	-- 32 blank 
 										right_line[ii] = right_line[ii] .. " "
 									end
-								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+								elseif legs_data2[jj][5] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 									right_line[ii] = right_line[ii] .. temp_string
@@ -45968,15 +46052,36 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									-- temp_string = string.format("%05d",legs_data2[jj][5])
 									-- temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 								else
-									temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
-									right_line[ii] = right_line[ii] .. temp_string
-									if legs_data2[jj][6] == 43 then
-										right_line[ii] = right_line[ii] .. "A"
-									elseif legs_data2[jj][6] == 45 then
-										right_line[ii] = right_line[ii] .. "B"
-									else	-- 32 blank 
-										right_line[ii] = right_line[ii] .. " "
+									if jj <= td_idx then
+										temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
+										right_line[ii] = right_line[ii] .. temp_string
+										if legs_data2[jj][6] == 43 then
+											right_line[ii] = right_line[ii] .. "A"
+										elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
+											right_line[ii] = right_line[ii] .. "B"
+										else	-- 32 blank 
+											right_line[ii] = right_line[ii] .. " "
+										end
+									else
+										temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+										right_line[ii] = right_line[ii] .. temp_string
+										if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
+											right_line[ii] = right_line[ii] .. "A"
+										elseif legs_data2[jj][6] == 45 then
+											right_line[ii] = right_line[ii] .. "B"
+										else	-- 32 blank 
+											right_line[ii] = right_line[ii] .. " "
+										end
 									end
+									-- temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+									-- right_line[ii] = right_line[ii] .. temp_string
+									-- if legs_data2[jj][6] == 43 then
+										-- right_line[ii] = right_line[ii] .. "A"
+									-- elseif legs_data2[jj][6] == 45 then
+										-- right_line[ii] = right_line[ii] .. "B"
+									-- else	-- 32 blank 
+										-- right_line[ii] = right_line[ii] .. " "
+									-- end
 								end
 								-- right_line[ii] = right_line[ii] .. temp_string
 								-- if legs_data2[jj][6] == 43 then
@@ -45995,6 +46100,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 										temp_string = string.format("%05d",legs_data2[jj][5])
 									end
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
+									line_m[ii] = line_m[ii] .. temp_string
 									if legs_data2[jj][6] == 43 then
 										line_m[ii] = line_m[ii] .. "A"
 									elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
@@ -46005,6 +46111,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
+									line_m[ii] = line_m[ii] .. temp_string
 									if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
 										line_m[ii] = line_m[ii] .. "A"
 									elseif legs_data2[jj][6] == 45 then
@@ -46015,15 +46122,36 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									-- temp_string = string.format("%05d",legs_data2[jj][5])
 									-- temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 								else
-									temp_string = " " .. string.format("%5d",legs_data2[jj][5])
-									line_m[ii] = line_m[ii] .. temp_string
-									if legs_data2[jj][6] == 43 then
-										line_m[ii] = line_m[ii] .. "A"
-									elseif legs_data2[jj][6] == 45 then
-										line_m[ii] = line_m[ii] .. "B"
-									else	-- 32 blank 
-										line_m[ii] = line_m[ii] .. " "
+									if jj <= td_idx then
+										temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
+										line_m[ii] = line_m[ii] .. temp_string
+										if legs_data2[jj][6] == 43 then
+											line_m[ii] = line_m[ii] .. "A"
+										elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
+											line_m[ii] = line_m[ii] .. "B"
+										else	-- 32 blank 
+											line_m[ii] = line_m[ii] .. " "
+										end
+									else
+										temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+										line_m[ii] = line_m[ii] .. temp_string
+										if legs_data2[jj][6] == 43 or legs_data2[jj][6] == 41 then
+											line_m[ii] = line_m[ii] .. "A"
+										elseif legs_data2[jj][6] == 45 then
+											line_m[ii] = line_m[ii] .. "B"
+										else	-- 32 blank 
+											line_m[ii] = line_m[ii] .. " "
+										end
 									end
+									-- temp_string = " " .. string.format("%5d",legs_data2[jj][5])
+									-- line_m[ii] = line_m[ii] .. temp_string
+									-- if legs_data2[jj][6] == 43 then
+										-- line_m[ii] = line_m[ii] .. "A"
+									-- elseif legs_data2[jj][6] == 45 then
+										-- line_m[ii] = line_m[ii] .. "B"
+									-- else	-- 32 blank 
+										-- line_m[ii] = line_m[ii] .. " "
+									-- end
 								end
 								right_line[ii] = right_line[ii] .. "/      "
 								-- line_m[ii] = line_m[ii] .. temp_string
@@ -51356,7 +51484,7 @@ function B738_flight_phase3()
 		or simDR_on_ground_2 == 1 then
 			
 			-- reset FMC
-			if reset_fmc_act == 1 and simDR_airspeed_pilot < 50 and B738DR_flight_phase > 0 then
+			if reset_fmc_act == 1 and AP_airspeed < 50 and B738DR_flight_phase > 0 then
 				--reset_fmc_act = 0
 				B738_init2()
 				legs_num = 0
@@ -51369,7 +51497,7 @@ function B738_flight_phase3()
 			
 			-- flight phase TAKEOFF
 			if is_timer_scheduled(on_ground_25sec) == false 
-			and takeoff_enable == 0 and simDR_airspeed_pilot < 70 then
+			and takeoff_enable == 0 and AP_airspeed < 70 then
 				run_after_time(on_ground_25sec, 25)	-- 25 seconds on the ground
 			end
 			if takeoff_enable == 1 then
@@ -52001,9 +52129,9 @@ function B738_fmc_msg()
 		if B738DR_flight_phase > 4 and B738DR_flight_phase < 8 and B738DR_autopilot_vnav_status == 1 then
 			
 			airspeed = airspeed + 2
-			if B738DR_speed_ratio > -0.2 and msg_drag_req == 0 and simDR_airspeed_pilot > airspeed then
+			if B738DR_speed_ratio > -0.2 and msg_drag_req == 0 and AP_airspeed > airspeed then
 				airspeed = airspeed + 10
-				if simDR_airspeed_pilot > airspeed then
+				if AP_airspeed > airspeed then
 					if drag_timeout == 0 and throttle_idle == 1 then
 						drag_timeout = 1
 						if is_timer_scheduled(drag_timer) == false then
@@ -52020,7 +52148,7 @@ function B738_fmc_msg()
 					stop_timer(drag_timer)
 					drag_timeout = 0
 				end
-				if simDR_airspeed_pilot <= airspeed and drag_timeout == 2 then
+				if AP_airspeed <= airspeed and drag_timeout == 2 then
 					msg_drag_req = 0
 					drag_timeout = 0
 				end
@@ -52304,7 +52432,7 @@ function B738_fmc_clr_msg()
 				end
 			elseif fmc_message[ii] == DRAG_REQUIRED then
 				if B738DR_flight_phase > 4 and B738DR_flight_phase < 8 and B738DR_autopilot_vnav_status == 1 then
-					if B738DR_speed_ratio < -0.2 and simDR_airspeed_pilot < B738DR_mcp_speed_dial + 2 then
+					if B738DR_speed_ratio < -0.2 and AP_airspeed < B738DR_mcp_speed_dial + 2 then
 						delete_fmc_msg(ii)
 					end
 				end
@@ -59798,8 +59926,8 @@ function B738_vnav_calc()
 				calc_wpt_spd = 205
 				calc_wpt_alt = ref_icao_alt
 			else
-				calc_wpt_spd = simDR_airspeed_pilot
-				calc_wpt_alt = simDR_altitude_pilot
+				calc_wpt_spd = AP_airspeed
+				calc_wpt_alt = AP_altitude
 			end
 			
 			-- find restricts spd and alt
@@ -61318,8 +61446,8 @@ function B738_vnav_calc_mod()
 				calc_wpt_spd = 205
 				calc_wpt_alt = ref_icao_alt
 			else
-				calc_wpt_spd = simDR_airspeed_pilot
-				calc_wpt_alt = simDR_altitude_pilot
+				calc_wpt_spd = AP_airspeed
+				calc_wpt_alt = AP_altitude
 			end
 			
 			-- find restricts spd and alt
@@ -69023,7 +69151,7 @@ function B738_fmc_calc()
 	local n = 0
 	local dist_corr = 0
 	local speed_corr = 0
-	local speed = simDR_airspeed_pilot
+	local speed = AP_airspeed	--simDR_airspeed_pilot
 	local mag_hdg = simDR_ahars_mag_hdg - simDR_mag_variation
 	local offset_from = 0
 	local time_zulu = 0
@@ -70741,20 +70869,20 @@ function B738_fmc_calc()
 			if n >= offset then
 				
 				if n == 1 then
-					if simDR_airspeed_pilot < 160 then
+					if AP_airspeed < 160 then
 						speed_temp1  = 160
 					else
-						speed_temp1 = simDR_airspeed_pilot * (1 + (simDR_altitude_pilot / 1000 * 0.02))
+						speed_temp1 = AP_airspeed * (1 + (simDR_altitude_pilot / 1000 * 0.02))
 					end
 					speed_temp2 = speed_temp1
 					dist_temp = simDR_fmc_dist
 				elseif n == offset then
-					if  simDR_airspeed_pilot < 160 then
+					if  AP_airspeed < 160 then
 						speed_temp1 = 160
 					else
-						speed_temp1 = simDR_airspeed_pilot * (1 + (simDR_altitude_pilot / 1000 * 0.02))
+						speed_temp1 = AP_airspeed * (1 + (simDR_altitude_pilot / 1000 * 0.02))
 					end
-					speed_temp2 = simDR_airspeed_pilot * (1 + (legs_data[n][11] / 1000 * 0.02))
+					speed_temp2 = AP_airspeed * (1 + (legs_data[n][11] / 1000 * 0.02))
 					dist_temp = simDR_fmc_dist
 				else
 					if legs_data[n][10] == B738DR_fmc_descent_speed_mach then
@@ -72738,7 +72866,7 @@ temp_ils4 = ""
 	rw_ext_fpa = "-.--"
 	gp_available = 0
 	
-	version = "v3.26o"
+	version = "v3.26p"
 
 end
 
