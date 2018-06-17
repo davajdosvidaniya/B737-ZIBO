@@ -1402,6 +1402,7 @@ ff_sample = 0
 	des_app_rw_only = 0
 	rw_ext_dist = "--.-"
 	rw_ext_fpa = "-.--"
+	change_desc_to_path = 0
 	
 --*************************************************************************************--
 --** 				             FIND X-PLANE DATAREFS            			    	 **--
@@ -2625,6 +2626,7 @@ dist_dest				= create_dataref("laminar/B738/FMS/dist_dest", "number")
 time_dest				= create_dataref("laminar/B738/FMS/time_dest", "string")
 
 B738DR_vnav_desc_spd_disable = create_dataref("laminar/B738/fms/vnav_desc_spd_disable", "number")
+B738DR_act_wpt_gp			 = create_dataref("laminar/B738/fms/act_wpt_gp", "number")
 
 B738DR_fmc_message 		= create_dataref("laminar/B738/fmc/fmc_message", "number")
 B738DR_fmc_message_warn = create_dataref("laminar/B738/fmc/fmc_message_warn", "number")
@@ -27434,6 +27436,10 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 --				atis_msg_status = 0
 				atis_send_time = "     "
 			end
+		elseif page_descent == 1 then
+			if change_desc_to_path == 0 then
+				change_desc_to_path = 1
+			end
 		end
 		
 	elseif phase == 2 then
@@ -39631,6 +39637,10 @@ function B738_fmc2_5R_CMDhandler(phase, duration)
 				-- atis_msg_status = 0
 				atis_send_time = "     "
 			end
+		elseif page_descent2 == 1 then
+			if change_desc_to_path == 0 then
+				change_desc_to_path = 1
+			end
 		end
 		
 	elseif phase == 2 then
@@ -45464,7 +45474,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 		local kk = 0
 		local ll = 0
 		
-		local gp_legs_not_active = 0
+		--local gp_legs_not_active = 0
 		
 		local max_page_legs = 0
 		
@@ -45623,13 +45633,13 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 							end
 							left_line_x[ii] = left_line_x[ii] .. "NM"
 							-- GP
-							if string.sub(des_app2, 1, 1) == "I" and B738DR_fms_ils_disable == 0 then
-								gp_legs_not_active = 1
-							end
-							if gp_available == 0 then
-								gp_legs_not_active = 1
-							end
-							if legs_data2[jj][20] ~= 0 and string.sub(legs_data2[jj][1], 1, 2) == "RW" and gp_legs_not_active == 0 then
+							-- if string.sub(des_app2, 1, 1) == "I" and B738DR_fms_ils_disable == 0 then
+								-- gp_legs_not_active = 1
+							-- end
+							-- if gp_available == 0 then
+								-- gp_legs_not_active = 1
+							-- end
+							if legs_data2[jj][20] ~= 0 then	-- and string.sub(legs_data2[jj][1], 1, 2) == "RW" then	--and gp_legs_not_active == 0 then
 								left_line_x[ii] = left_line_x[ii] .. " GP" .. string.format("%4.2f", -legs_data2[jj][20]) .. "`"
 							end
 							-- id
@@ -45776,13 +45786,21 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									end
 								else
 									if jj <= td_idx then
-										temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
-										right_line[ii] = right_line[ii] .. temp_string
 										if legs_data2[jj][6] == 43 then
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											right_line[ii] = right_line[ii] .. temp_string
 											right_line[ii] = right_line[ii] .. "A"
-										elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
+										elseif legs_data2[jj][6] == 45 then
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											right_line[ii] = right_line[ii] .. temp_string
+											right_line[ii] = right_line[ii] .. "B"
+										elseif legs_data2[jj][6] == 41 then
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
+											right_line[ii] = right_line[ii] .. temp_string
 											right_line[ii] = right_line[ii] .. "B"
 										else	-- 32 blank 
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											right_line[ii] = right_line[ii] .. temp_string
 											right_line[ii] = right_line[ii] .. " "
 										end
 									else
@@ -45844,13 +45862,21 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									end
 								else
 									if jj <= td_idx then
-										temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
-										line_m[ii] = line_m[ii] .. temp_string
 										if legs_data2[jj][6] == 43 then
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. "A"
-										elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
+										elseif legs_data2[jj][6] == 45 then
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											line_m[ii] = line_m[ii] .. temp_string
+											line_m[ii] = line_m[ii] .. "B"
+										elseif legs_data2[jj][6] == 41 then
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
+											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. "B"
 										else	-- 32 blank 
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. " "
 										end
 									else
@@ -45954,13 +45980,13 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 										left_line_x[ii] = left_line_x[ii] .. "NM"
 									end
 									-- GP
-									if string.sub(des_app2, 1, 1) == "I" and B738DR_fms_ils_disable == 0 then
-										gp_legs_not_active = 1
-									end
-									if gp_available == 0 then
-										gp_legs_not_active = 1
-									end
-									if legs_data2[jj][20] ~= 0 and string.sub(legs_data2[jj][1], 1, 2) == "RW" and gp_legs_not_active == 0 then
+									-- if string.sub(des_app2, 1, 1) == "I" and B738DR_fms_ils_disable == 0 then
+										-- gp_legs_not_active = 1
+									-- end
+									-- if gp_available == 0 then
+										-- gp_legs_not_active = 1
+									-- end
+									if legs_data2[jj][20] ~= 0 then	--and string.sub(legs_data2[jj][1], 1, 2) == "RW" then	--and gp_legs_not_active == 0 then
 										left_line_x[ii] = left_line_x[ii] .. " GP" .. string.format("%4.2f", -legs_data2[jj][20]) .. "`"
 									end
 								else
@@ -46053,13 +46079,21 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									-- temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 								else
 									if jj <= td_idx then
-										temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
-										right_line[ii] = right_line[ii] .. temp_string
 										if legs_data2[jj][6] == 43 then
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											right_line[ii] = right_line[ii] .. temp_string
 											right_line[ii] = right_line[ii] .. "A"
-										elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
+										elseif legs_data2[jj][6] == 45 then
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											right_line[ii] = right_line[ii] .. temp_string
+											right_line[ii] = right_line[ii] .. "B"
+										elseif legs_data2[jj][6] == 41 then
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
+											right_line[ii] = right_line[ii] .. temp_string
 											right_line[ii] = right_line[ii] .. "B"
 										else	-- 32 blank 
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											right_line[ii] = right_line[ii] .. temp_string
 											right_line[ii] = right_line[ii] .. " "
 										end
 									else
@@ -46123,13 +46157,21 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									-- temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 								else
 									if jj <= td_idx then
-										temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
-										line_m[ii] = line_m[ii] .. temp_string
 										if legs_data2[jj][6] == 43 then
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. "A"
-										elseif legs_data2[jj][6] == 45 or legs_data2[jj][6] == 41 then
+										elseif legs_data2[jj][6] == 45 then
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											line_m[ii] = line_m[ii] .. temp_string
+											line_m[ii] = line_m[ii] .. "B"
+										elseif legs_data2[jj][6] == 41 then
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][41])
+											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. "B"
 										else	-- 32 blank 
+											temp_string = "/" .. string.format("%5d",legs_data2[jj][5])
+											line_m[ii] = line_m[ii] .. temp_string
 											line_m[ii] = line_m[ii] .. " "
 										end
 									else
@@ -49096,13 +49138,39 @@ function B738_fmc_descent()
 		else
 			line1_x = " E/D ALT"
 		end
-		if ed_alt > 0 then
+		
+		-- if ed_alt > 0 then
+			-- if str_rest_alt == "" then
+				-- line1_m = ""
+				-- line1_l = string.format("%5d", ed_alt)
+			-- else
+				-- line1_m = "     " .. str_rest_alt
+				-- line1_l = string.format("%5d", ed_alt) .. "            /"
+			-- end
+		-- else
+			-- if str_rest_alt == "" then
+				-- line1_m = ""
+				-- line1_l = ""
+			-- else
+				-- line1_m = "     " .. str_rest_alt
+				-- line1_l = "                 /"
+			-- end
+			-- --line1_l = "     " .. str_rest_alt
+		-- end
+		
+		local ed_alt_new = 0
+		if rnav_idx_last ~= 0 and rnav_idx_last <= legs_num then
+			if string.sub(legs_data[rnav_idx_last][1], 1, 2) == "RW" then
+				ed_alt_new = roundUpToIncrement(legs_data[rnav_idx_last][5] + 50, 10)
+			else
+				ed_alt_new = legs_data[rnav_idx_last][5]
+			end
 			if str_rest_alt == "" then
 				line1_m = ""
-				line1_l = string.format("%5d", ed_alt)
+				line1_l = string.format("%5d", ed_alt_new)
 			else
 				line1_m = "     " .. str_rest_alt
-				line1_l = string.format("%5d", ed_alt) .. "            /"
+				line1_l = string.format("%5d", ed_alt_new) .. "            /"
 			end
 		else
 			if str_rest_alt == "" then
@@ -49114,7 +49182,6 @@ function B738_fmc_descent()
 			end
 			--line1_l = "     " .. str_rest_alt
 		end
-		
 		
 		--		line2_x = " TGT SPD        TO -----"
 --		line2_l = "280/.720   2004.5 / 15NM"
@@ -71417,7 +71484,16 @@ function B738_vnav_desc_spd()
 	else
 		vnav_desc_spd_disable = 1
 	end
-	B738DR_vnav_desc_spd_disable = vnav_desc_spd_disable
+	
+	if change_desc_to_path == 0 then
+		B738DR_vnav_desc_spd_disable = vnav_desc_spd_disable
+	else
+		B738DR_vnav_desc_spd_disable = 1
+		change_desc_to_path = 0
+	end
+	if legs_num > 0 and offset > 0 and offset <= legs_num then
+		B738DR_act_wpt_gp = legs_data[offset][20]
+	end
 	
 end
 
@@ -72865,8 +72941,9 @@ temp_ils4 = ""
 	rw_ext_dist = "--.-"
 	rw_ext_fpa = "-.--"
 	gp_available = 0
+	change_desc_to_path = 0
 	
-	version = "v3.26p"
+	version = "v3.26q"
 
 end
 

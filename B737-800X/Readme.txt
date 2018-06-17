@@ -77,6 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26q:
+------
+- corrected systems (VNAV descent path logic, E/D,...)
+- fixed bugs on Legs page
+For revert from VNAV SPD to VNAV PTH use 5RSK button (PATH) in Descent page
+
 3.26p:
 ------
 - corrected some systems

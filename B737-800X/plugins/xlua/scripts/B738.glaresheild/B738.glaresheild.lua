@@ -913,6 +913,9 @@ cross_wind						= find_dataref("laminar/B738/fms/cross_wind")
 
 B738DR_nd_rings					= find_dataref("laminar/B738/effect/nd_rings")
 
+ed_found				= find_dataref("laminar/B738/fms/ed_idx")
+B738_legs_num			= find_dataref("laminar/B738/vnav/legs_num")
+B738DR_act_wpt_gp		= find_dataref("laminar/B738/fms/act_wpt_gp")
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -5572,21 +5575,21 @@ function B738_autopilot_spd_interv_CMDhandler(phase, duration)
 			if B738DR_ap_spd_interv_status == 0 then
 				B738DR_ap_spd_interv_status = 1
 				if B738DR_flight_phase > 4 then
-					if B738DR_vnav_desc_spd_disable == 0 and vnav_desc_spd == 0 then	--and B738DR_pfd_spd_mode == PFD_SPD_ARM then
+					-- if B738DR_vnav_desc_spd_disable == 0 and vnav_desc_spd == 0 then	--and B738DR_pfd_spd_mode == PFD_SPD_ARM then
 						vnav_desc_spd = 1
 						vnav_desc_protect_spd = 0
-					else
-						vnav_desc_spd = 0
-						vnav_desc_protect_spd = 0
-					end
+					-- else
+						-- vnav_desc_spd = 0
+						-- vnav_desc_protect_spd = 0
+					-- end
 				end
 				simDR_airspeed_dial_kts = AP_airspeed	--simDR_airspeed_pilot
 			else
 				B738DR_ap_spd_interv_status = 0
-				if B738DR_thrust1_leveler ~= 0 and B738DR_thrust2_leveler ~= 0 then 
-					vnav_desc_spd = 0
-				end
-				vnav_desc_protect_spd = 0
+				-- if B738DR_thrust1_leveler ~= 0 and B738DR_thrust2_leveler ~= 0 then 
+					--vnav_desc_spd = 0
+				-- end
+				--vnav_desc_protect_spd = 0
 			end
 		end
 	elseif phase == 2 then
@@ -8927,25 +8930,28 @@ function B738_vnav6()
 					if B738DR_vnav_td_dist < 0.8 then
 						if simDR_ap_altitude_dial_ft < B738DR_fmc_cruise_alt then
 							-- vnav descent
-							-- if simDR_autopilot_altitude_mode ~= 4 then
-								-- simDR_ap_vvi_dial = B738DR_vnav_vvi
-								-- simCMD_autopilot_vs_sel:once()
-							-- end
-							----------------------------------
-							if simDR_autopilot_altitude_mode ~= 5 then
-								simCMD_autopilot_lvl_chg:once()
-							end
-							vnav_desc_spd = 1	-- change to VNAV SPD
-							----------------------------------
-							at_mode = 7
-							eng1_N1_thrust_trg = 0.0
-							eng2_N1_thrust_trg = 0.0
-							B738DR_autopilot_n1_status = 0
-							if B738DR_thrust1_leveler == 0 or B738DR_thrust2_leveler == 0 then
-								at_mode = 0
-								B738DR_pfd_spd_mode = PFD_SPD_ARM
+							if ed_found <= B738_legs_num then
+								if simDR_autopilot_altitude_mode ~= 4 then
+									simDR_ap_vvi_dial = B738DR_vnav_vvi
+									simCMD_autopilot_vs_sel:once()
+								end
+								at_mode = 2
+								vnav_desc_spd = 0	-- change to VNAV PTH
 							else
-								B738DR_pfd_spd_mode = PFD_SPD_RETARD
+								if simDR_autopilot_altitude_mode ~= 5 then
+									simCMD_autopilot_lvl_chg:once()
+								end
+								vnav_desc_spd = 1	-- change to VNAV SPD
+								at_mode = 7
+								eng1_N1_thrust_trg = 0.0
+								eng2_N1_thrust_trg = 0.0
+								B738DR_autopilot_n1_status = 0
+								if B738DR_thrust1_leveler == 0 or B738DR_thrust2_leveler == 0 then
+									at_mode = 0
+									B738DR_pfd_spd_mode = PFD_SPD_ARM
+								else
+									B738DR_pfd_spd_mode = PFD_SPD_RETARD
+								end
 							end
 						else
 							vnav_alt_mode = 1
@@ -9405,37 +9411,51 @@ function B738_vnav6()
 						if vnav_alt_mode == 0 then
 						
 							if B738DR_vnav_desc_spd_disable == 0 then
-								if vnav_desc_spd == 0 then
-									if B738DR_thrust1_leveler == 0 and B738DR_thrust2_leveler == 0 then
-										if simDR_airspeed_is_mach == 0 then
-											delta_alt_dial = AP_airspeed - vnav_speed_trg
-										else
-											delta_alt_dial = (AP_airspeed_mach - vnav_speed_trg) * 150
-										end
-										if delta_alt_dial < 0 then
-											delta_alt_dial = -delta_alt_dial
-										end
-										if delta_alt_dial < 3 and B738DR_vnav_alt_err > -50 and B738DR_vnav_alt_err < 50 then
-											if simDR_autopilot_altitude_mode ~= 5 and simDR_autopilot_altitude_mode ~= 6 and simDR_glideslope_status == 0 then
-												simCMD_autopilot_lvl_chg:once()
-												at_mode = 7
-												vnav_desc_spd = 1	-- change to VNAV SPD
-											end
-										end
-									end
-								else
-								--if vnav_desc_spd ~= 0 then
-									if B738DR_ap_spd_interv_status == 0 then
+								-- if vnav_desc_spd == 0 then
+									-- if B738DR_thrust1_leveler == 0 and B738DR_thrust2_leveler == 0 then
+										-- if simDR_airspeed_is_mach == 0 then
+											-- delta_alt_dial = AP_airspeed - vnav_speed_trg
+										-- else
+											-- delta_alt_dial = (AP_airspeed_mach - vnav_speed_trg) * 150
+										-- end
+										-- if delta_alt_dial < 0 then
+											-- delta_alt_dial = -delta_alt_dial
+										-- end
+										-- if delta_alt_dial < 3 and B738DR_vnav_alt_err > -50 and B738DR_vnav_alt_err < 50 then
+											-- if simDR_autopilot_altitude_mode ~= 5 and simDR_autopilot_altitude_mode ~= 6 and simDR_glideslope_status == 0 then
+												-- simCMD_autopilot_lvl_chg:once()
+												-- at_mode = 7
+												-- vnav_desc_spd = 1	-- change to VNAV SPD
+											-- end
+										-- end
+									-- end
+								-- else
+								
+								if vnav_desc_spd == 1 then
+									if B738DR_act_wpt_gp ~= 0 then
 										if simDR_autopilot_altitude_mode ~= 6 then
-											if B738DR_vnav_alt_err < -350 or B738DR_vnav_alt_err > 350 then
-												if simDR_autopilot_altitude_mode ~= 4 and simDR_glideslope_status == 0 then
-													simDR_ap_vvi_dial = B738DR_vnav_vvi
-													simCMD_autopilot_vs_sel:once()
-													at_mode = 2
-													vnav_desc_spd = 0 -- change to VNAV PTH
-												end
+											if simDR_autopilot_altitude_mode ~= 4 and simDR_glideslope_status == 0 then
+												simDR_ap_vvi_dial = B738DR_vnav_vvi
+												simCMD_autopilot_vs_sel:once()
+												-- at_mode = 2
+												-- vnav_desc_spd = 0 -- change to VNAV PTH
 											end
 										end
+										at_mode = 2
+										vnav_desc_spd = 0 -- change to VNAV PTH
+									-- else
+										-- if B738DR_ap_spd_interv_status == 0 then
+											-- if simDR_autopilot_altitude_mode ~= 6 then
+												-- if B738DR_vnav_alt_err < -350 or B738DR_vnav_alt_err > 350 then
+													-- if simDR_autopilot_altitude_mode ~= 4 and simDR_glideslope_status == 0 then
+														-- simDR_ap_vvi_dial = B738DR_vnav_vvi
+														-- simCMD_autopilot_vs_sel:once()
+														-- at_mode = 2
+														-- vnav_desc_spd = 0 -- change to VNAV PTH
+													-- end
+												-- end
+											-- end
+										-- end
 									end
 								end
 							end
