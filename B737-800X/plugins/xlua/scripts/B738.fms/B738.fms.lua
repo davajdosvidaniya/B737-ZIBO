@@ -142,6 +142,13 @@ vnav_des_dist =
 		[70] = { 13, 21.4, 29.4, 37.0, 44.4, 51.6, 57.4, 63.2, 69.0, 74.9, 80.8, 86.7, 92.7, 98.7, 104.8, 111.0, 115.8, 120.4, 125.4, 130.6, 136.0 }
 	}
 
+vnav_des_dist_diff =
+	{	[40] = { 0, 9.6, 9.0, 8.5, 8.2, 7.3, 6.1, 5.9, 5.9, 5.7, 5.8, 5.7, 5.7, 5.7, 5.8, 5.9, 4.6, 4.4, 4.8, 5.0, 5.1 },
+		[50] = { 0, 9.6, 9.0, 8.5, 8.2, 7.3, 6.1, 5.9, 5.9, 5.7, 5.8, 5.7, 5.7, 5.7, 5.8, 5.9, 4.6, 4.4, 4.8, 5.0, 5.1 },
+		[60] = { 0, 9.6, 9.0, 8.5, 8.2, 7.3, 6.1, 5.9, 5.9, 5.7, 5.8, 5.7, 5.7, 5.7, 5.8, 5.9, 4.6, 4.4, 4.8, 5.0, 5.1 },
+		[70] = { 0, 9.6, 9.0, 8.5, 8.2, 7.3, 6.1, 5.9, 5.9, 5.7, 5.8, 5.7, 5.7, 5.7, 5.8, 5.9, 4.6, 4.4, 4.8, 5.0, 5.1 }
+	}
+
 vnav_des_dist_no_tai =
 	{	[40] = { 0, 8.4, 8, 7.6, 7.4, 6.9, 5.8, 5.8, 5.8, 5.9, 5.9, 5.9, 6, 6, 6.1, 6.2, 4.8, 4.6, 5, 5.2, 5.4 },
 		[50] = { 0, 8.4, 8, 7.6, 7.4, 6.9, 5.8, 5.8, 5.8, 5.9, 5.9, 5.9, 6, 6, 6.1, 6.2, 4.8, 4.6, 5, 5.2, 5.4 },
@@ -70297,6 +70304,73 @@ function create_vpth_table(x_gw_str)
 		-- end
 	-- end
 	
+	for ii = 1, 21 do
+		if ii == 1 then
+			x_dist1 = vnav_des_dist[x_gw1][ii]
+			x_dist2 = vnav_des_dist[x_gw2][ii]
+		else
+			x_dist1 = vnav_des_table_dist[ii-1] + vnav_des_dist_diff[x_gw1][ii]
+			x_dist2 = vnav_des_table_dist[ii-1] + vnav_des_dist_diff[x_gw2][ii]
+		end
+		if vnav_des_alt[ii] >= 11000 then
+			x_dist1 = x_dist1 * x_idx_des_spd
+			x_dist2 = x_dist2 * x_idx_des_spd
+		end
+		vnav_des_table_dist[ii] = B738_rescale(x_gw1, x_dist1, x_gw2, x_dist2, x_gw00)
+		vnav_des_table_alt[ii] = vnav_des_alt[ii]
+		vnav_des_table_num = vnav_des_table_num + 1
+	end
+	
+end
+
+function create_vpth_table_old2(x_gw_str)
+	
+	local ii = 0
+	local x_dist1 = 0
+	local x_dist2 = 0
+	local x_gw1 = 0
+	local x_gw2 = 0
+	
+	local tmp_des_spd = math.min(B738DR_fmc_descent_speed, 290)
+	tmp_des_spd = math.max(B738DR_fmc_descent_speed, 265)
+	local x_idx_des_spd = B738_rescale(265, 1.15, 290, 0.9, tmp_des_spd)
+	local x_gw = tonumber(x_gw_str)
+	if x_gw == nil then
+		x_gw = 40
+	end
+	
+	local x_gw00 = math.min ( 70, x_gw)
+	x_gw00 = math.max ( 40, x_gw00)
+	
+	x_gw2 = math.min ( 70, roundUpToIncrement(x_gw00, 10 ))
+	x_gw2 = math.max ( 40, x_gw2)
+	x_gw1 = math.min (70, x_gw2 - 10)
+	x_gw1 = math.max ( 40, x_gw1)
+	
+	vnav_des_table_dist = {}
+	vnav_des_table_alt = {}
+	vnav_des_table_num = 0
+	
+	-- local desc_spd_table = {}
+	-- local desc_spd_table_num = 0
+	-- local desc_spd = 0
+	
+	-- desc_spd_table[1] = 0
+	-- for ii = 2, legs_num + 1
+		-- if legs_data[ii][4] ~= 0 then
+			-- desc_spd_table[ii] = legs_data[ii][4]
+		-- else
+			-- desc_spd_table[ii] = desc_spd_table[ii-1]
+		-- end
+	-- end
+	
+	-- desc_spd = B738DR_fmc_descent_speed
+	-- if desc_spd_table[ii] ~= 0 then
+		-- if desc_spd_table[ii] < desc_spd then
+			-- desc_spd = desc_spd_table[ii]
+		-- end
+	-- end
+	
 	
 	-- find nereast altitude
 	local tai_on_alt_num_tmp = 0
@@ -70453,7 +70527,7 @@ function calc_vnav_pth_alt2(x_alt01, x_dist)
 	return result
 end
 
-function create_vpth_table2(x_gw_str)
+function create_vpth_table2_old(x_gw_str)
 	
 	local ii = 0
 	local x_dist1 = 0
@@ -70493,6 +70567,54 @@ function create_vpth_table2(x_gw_str)
 	
 end
 
+function create_vpth_table2(x_gw_str)
+	
+	local ii = 0
+	local x_dist1 = 0
+	local x_dist2 = 0
+	local x_gw1 = 0
+	local x_gw2 = 0
+	
+	local tmp_des_spd = math.min(B738DR_fmc_descent_speed, 290)
+	tmp_des_spd = math.max(B738DR_fmc_descent_speed, 265)
+	local x_idx_des_spd = B738_rescale(265, 1.15, 290, 0.9, tmp_des_spd)
+	local x_gw = tonumber(x_gw_str)
+	if x_gw == nil then
+		x_gw = 40
+	end
+	
+	local x_gw00 = math.min ( 70, x_gw)
+	x_gw00 = math.max ( 40, x_gw00)
+	
+	x_gw2 = math.min ( 70, roundUpToIncrement(x_gw00, 10 ))
+	x_gw2 = math.max ( 40, x_gw2)
+	x_gw1 = math.min (70, x_gw2 - 10)
+	x_gw1 = math.max ( 40, x_gw1)
+	
+	vnav_des_table_dist2 = {}
+	vnav_des_table_alt2 = {}
+	vnav_des_table_num2 = 0
+	
+	for ii = 1, 21 do
+		if ii == 1 then
+			x_dist1 = vnav_des_dist[x_gw1][ii]
+			x_dist2 = vnav_des_dist[x_gw2][ii]
+		else
+			x_dist1 = vnav_des_table_dist2[ii-1] + vnav_des_dist_diff[x_gw1][ii]
+			x_dist2 = vnav_des_table_dist2[ii-1] + vnav_des_dist_diff[x_gw2][ii]
+		end
+		if vnav_des_alt[ii] >= 11000 then
+			x_dist1 = x_dist1 * x_idx_des_spd
+			x_dist2 = x_dist2 * x_idx_des_spd
+		end
+		vnav_des_table_dist2[ii] = B738_rescale(x_gw1, x_dist1, x_gw2, x_dist2, x_gw00)
+		vnav_des_table_alt2[ii] = vnav_des_alt[ii]
+		vnav_des_table_num2 = vnav_des_table_num2 + 1
+	end
+	
+end
+
+
 function modify_vpth_table2(x_alt01, x_idx)
 	
 	local ii = 0
@@ -70510,6 +70632,7 @@ function modify_vpth_table2(x_alt01, x_idx)
 	end
 	
 end
+
 
 function B738_path_err()
 	
@@ -75091,7 +75214,7 @@ temp_ils4 = ""
 	B738DR_des_rwy_altitude = 0
 	B738DR_pfd_rwy_show = 0
 	
-	version = "v3.27d"
+	version = "v3.27e"
 
 end
 

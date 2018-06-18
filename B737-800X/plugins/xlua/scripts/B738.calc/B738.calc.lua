@@ -1583,6 +1583,8 @@ B738DR_eng2_N1		= create_dataref("laminar/B738/engine/indicators/N1_percent_2", 
 B738DR_eng1_N2		= create_dataref("laminar/B738/engine/indicators/N2_percent_1", "number")
 B738DR_eng2_N2		= create_dataref("laminar/B738/engine/indicators/N2_percent_2", "number")
 
+B738DR_idle_mode		= create_dataref("laminar/B738/engine/idle_mode", "number")
+
 B738DR_eng1_req_N1		= create_dataref("laminar/B738/engine/eng1_req_n1", "number")
 B738DR_eng2_req_N1		= create_dataref("laminar/B738/engine/eng2_req_n1", "number")
 
@@ -1831,6 +1833,14 @@ function B738_engine_rpm2()
 	local eng1_N2 = simDR_eng1_N2
 	local eng2_N2 = simDR_eng2_N2
 	
+	local eng1_N1_trg = 0
+	local eng2_N1_trg = 0
+	local eng1_N2_trg = 0
+	local eng2_N2_trg = 0
+	
+	local eng1_req_N1_trg = 0
+	local eng2_req_N1_trg = 0
+	
 --	local idle_thrust = 0
 	local req_idle = 0
 	local mixture1 = 1.0
@@ -1856,8 +1866,14 @@ function B738_engine_rpm2()
 					stop_timer(B738_mode_ground)
 				end
 			else
-				if is_timer_scheduled(B738_mode_ground) == false then
-					run_after_time(B738_mode_ground, 5)
+				if simDR_throttle1_use < 0.10 and simDR_throttle2_use < 0.10 then
+					if is_timer_scheduled(B738_mode_ground) == false then
+						run_after_time(B738_mode_ground, 5)
+					end
+				else
+					if is_timer_scheduled(B738_mode_ground) == true then
+						stop_timer(B738_mode_ground)
+					end
 				end
 			end
 		end
@@ -1871,7 +1887,6 @@ function B738_engine_rpm2()
 				idle_mode = 2
 			end
 		else
-			--if simDR_flaps_ratio >= 0.625 
 			if simDR_flaps_handle_ratio >= 0.625 
 			or simDR_gear_retract > 0.98 then		-- flaps >=15 or gear down
 				idle_mode = 2
@@ -1884,26 +1899,110 @@ function B738_engine_rpm2()
 	
 	if idle_mode == 0 then
 		if simDR_throttle1_use > 0.50 or simDR_throttle2_use > 0.50 then -- full idle
-			idle_mode = 2
+			idle_mode = 1	-- flight mode
 			aircraft_was_on_air2 = 1
 		end
 	end
+	
+	--idle_mode = 2
 	if idle_mode == 0 then	-- ground mode
-		mixture1 = 0.50 * B738DR_mixture_ratio1
-		mixture2 = 0.50 * B738DR_mixture_ratio2
-		SFC_half_lo_JET = 0.0000092
+		mixture1 = 0.59 * B738DR_mixture_ratio1
+		mixture2 = 0.59 * B738DR_mixture_ratio2
+		--SFC_half_lo_JET = 0.0000092
+		SFC_half_lo_JET = 0.0000045
+		eng1_N1_trg = eng1_N1
+		eng2_N1_trg = eng2_N1
+		eng1_N2_trg = eng1_N2
+		eng2_N2_trg = eng2_N2
+		
+		if simDR_throttle1_use < 0.505 then
+			eng1_req_N1_trg = B738_rescale(0, 0.21, 0.505, 0.589, simDR_throttle1_use)
+		else
+			eng1_req_N1_trg = B738_rescale(0.505, 0.589, 1.04, 1.015, simDR_throttle1_use)
+		end
+		if simDR_throttle2_use < 0.505 then
+			eng2_req_N1_trg = B738_rescale(0, 0.21, 0.505, 0.589, simDR_throttle2_use)
+		else
+			eng2_req_N1_trg = B738_rescale(0.505, 0.589, 1.04, 1.015, simDR_throttle2_use)
+		end
+	
 	elseif idle_mode == 1 then	-- flight mode
-		-- mixture1 = 0.80 * B738DR_mixture_ratio1
-		-- mixture2 = 0.80 * B738DR_mixture_ratio2
-		elev = math.min(25000, elev)
-		elev = math.max(10000, elev)
-		elev = B738_rescale(10000, 0.80, 25000, 1.00, elev)
-		mixture1 = elev * B738DR_mixture_ratio1
-		mixture2 = elev * B738DR_mixture_ratio2
+		mixture1 = B738DR_mixture_ratio1
+		mixture2 = B738DR_mixture_ratio2
+		eng1_N1_trg = eng1_N1
+		eng2_N1_trg = eng2_N1
+		eng1_N2_trg = eng1_N2
+		eng2_N2_trg = eng2_N2
+	
+		if simDR_throttle1_use < 0.505 then
+			eng1_req_N1_trg = B738_rescale(0, 0.321, 0.505, 0.646, simDR_throttle1_use)
+		else
+			eng1_req_N1_trg = B738_rescale(0.505, 0.646, 1.04, 1.01, simDR_throttle1_use)
+		end
+		if simDR_throttle2_use < 0.505 then
+			eng2_req_N1_trg = B738_rescale(0, 0.321, 0.505, 0.646, simDR_throttle2_use)
+		else
+			eng2_req_N1_trg = B738_rescale(0.505, 0.646, 1.04, 1.01, simDR_throttle2_use)
+		end
+	
 	elseif idle_mode == 2 then	-- approach mode
-		mixture1 = 1.00 * B738DR_mixture_ratio1
-		mixture2 = 1.00 * B738DR_mixture_ratio2
+		mixture1 = B738DR_mixture_ratio1
+		mixture2 = B738DR_mixture_ratio2
+		
+		if simDR_throttle1_use < 0.505 then
+			eng1_req_N1_trg = B738_rescale(0, 0.379, 0.505, 0.678, simDR_throttle1_use)
+		else
+			eng1_req_N1_trg = B738_rescale(0.505, 0.678, 1.04, 1.012, simDR_throttle1_use)
+		end
+		if simDR_throttle2_use < 0.505 then
+			eng2_req_N1_trg = B738_rescale(0, 0.379, 0.505, 0.678, simDR_throttle2_use)
+		else
+			eng2_req_N1_trg = B738_rescale(0.505, 0.678, 1.04, 1.012, simDR_throttle2_use)
+		end
+	
+		if eng1_N1 < 30 then
+			eng1_N1_trg = eng1_N1
+		else
+			eng1_N1_trg = B738_rescale(30, 36, 104, 104, eng1_N1)
+		end
+		if eng2_N1 < 30 then
+			eng2_N1_trg = eng2_N1
+		else
+			eng2_N1_trg = B738_rescale(30, 36, 104, 104, eng2_N1)
+		end
+		if eng1_N2 < 70 then
+			eng1_N2_trg = eng1_N2
+		else
+			eng1_N2_trg = B738_rescale(70, 76, 104, 104, eng1_N2)
+		end
+		if eng2_N2 < 70 then
+			eng2_N2_trg = eng2_N2
+		else
+			eng2_N2_trg = B738_rescale(70, 76, 104, 104, eng2_N2)
+		end
 	end
+	
+	B738DR_idle_mode = idle_mode
+	
+	B738DR_eng1_N1 = B738_set_animation_position(B738DR_eng1_N1, eng1_N1_trg, 0, 105, 1)
+	B738DR_eng2_N1 = B738_set_animation_position(B738DR_eng2_N1, eng2_N1_trg, 0, 105, 1)
+	
+	B738DR_eng1_N2 = B738_set_animation_position(B738DR_eng1_N2, eng1_N2_trg, 0, 105, 1)
+	B738DR_eng2_N2 = B738_set_animation_position(B738DR_eng2_N2, eng2_N2_trg, 0, 105, 1)
+	
+	B738DR_eng1_req_N1 = B738_set_animation_position(B738DR_eng1_req_N1, eng1_req_N1_trg, 0, 1.05, 1)
+	B738DR_eng2_req_N1 = B738_set_animation_position(B738DR_eng2_req_N1, eng2_req_N1_trg, 0, 1.05, 1)
+	
+	-- mixture1 = 0.59
+	-- mixture2 = 0.59
+	
+	
+	-- req_idle = math.max(0.5, mixture1_cur)
+	-- req1_idle = B738_rescale(0.5, 0.218, 1.0, 0.382, req_idle)
+	-- req_idle = math.max(0.5, mixture2_cur)
+	-- req2_idle = B738_rescale(0.5, 0.218, 1.0, 0.382, req_idle)
+	-- B738DR_eng1_req_N1 = B738_rescale(0, req1_idle, 1.04, 1.06, simDR_throttle1_use)
+	-- B738DR_eng2_req_N1 = B738_rescale(0, req2_idle, 1.04, 1.06, simDR_throttle2_use)
 	
 	mixture1_cur = B738_set_animation_position(mixture1_cur, mixture1, 0, 1.0, 1)
 	mixture2_cur = B738_set_animation_position(mixture2_cur, mixture2, 0, 1.0, 1)
@@ -1911,28 +2010,21 @@ function B738_engine_rpm2()
 	simDR_engine_mixture1 = mixture1_cur	--B738DR_mixture_ratio1	--mixture1_cur
 	simDR_engine_mixture2 = mixture2_cur	--B738DR_mixture_ratio2	--mixture2_cur
 	
-	req_idle = math.max(0.5, mixture1_cur)
-	req1_idle = B738_rescale(0.5, 0.218, 1.0, 0.382, req_idle)
-	req_idle = math.max(0.5, mixture2_cur)
-	req2_idle = B738_rescale(0.5, 0.218, 1.0, 0.382, req_idle)
-	B738DR_eng1_req_N1 = B738_rescale(0, req1_idle, 1.04, 1.06, simDR_throttle1_use)
-	B738DR_eng2_req_N1 = B738_rescale(0, req2_idle, 1.04, 1.06, simDR_throttle2_use)
-	
-	B738DR_eng1_N1 = eng1_N1
-	B738DR_eng2_N1 = eng2_N1
 	
 	-- N2
-	if eng1_N2 < 10 then
-		B738DR_eng1_N2 = B738_rescale(0, 0, 10, rndm_eng1_N2, eng1_N2)
-	else
-		B738DR_eng1_N2 = eng1_N2 - (10 - rndm_eng1_N2)
-	end
-	if eng2_N2 < 10 then
-		B738DR_eng2_N2 = B738_rescale(0, 0, 10, rndm_eng2_N2, eng2_N2)
-	else
-		B738DR_eng2_N2 = eng2_N2 - (10 - rndm_eng2_N2)
-	end
+	-- if eng1_N2 < 10 then
+		-- B738DR_eng1_N2 = B738_rescale(0, 0, 10, rndm_eng1_N2, eng1_N2)
+	-- else
+		-- B738DR_eng1_N2 = eng1_N2 - (10 - rndm_eng1_N2)
+	-- end
+	-- if eng2_N2 < 10 then
+		-- B738DR_eng2_N2 = B738_rescale(0, 0, 10, rndm_eng2_N2, eng2_N2)
+	-- else
+		-- B738DR_eng2_N2 = eng2_N2 - (10 - rndm_eng2_N2)
+	-- end
 	
+	-- B738DR_eng1_N2 = eng1_N2
+	-- B738DR_eng2_N2 = eng2_N2
 	
 	simDR_SFC_half_lo_JET = SFC_half_lo_JET
 	
@@ -1942,7 +2034,9 @@ function B738_engine_rpm2()
 	--simDR_high_idle_ratio = 2.161	--B738DR_high_idle	--2.15	--B738DR_high_idle
 	--simDR_low_idle_ratio = 1.162		--B738DR_low_idle	--1.152	--B738DR_low_idle
 
-
+	simDR_high_idle_ratio = 1.8
+	simDR_low_idle_ratio = 1.0
+	
 end
 
 function start_rnd()
@@ -1951,22 +2045,22 @@ function start_rnd()
 	local seed = math.random(1, frac*1000.0)
 	math.randomseed(seed)
 	
-	rndm_eng1_N2 = math.random(594, 600) + math.random()
-	rndm_eng2_N2 = math.random(0, 6) + math.random()
+	-- rndm_eng1_N2 = math.random(594, 600) + math.random()
+	-- rndm_eng2_N2 = math.random(0, 6) + math.random()
 	
-	rndm_eng2_N2 = (rndm_eng1_N2 + (rndm_eng1_N2 - 3)) / 100
-	if rndm_eng2_N2 < 5.94 then
-		rndm_eng2_N2 = 5.94
-	end
-	if rndm_eng2_N2 > 6 then
-		rndm_eng2_N2 = 6
-	end
-	rndm_eng1_N2 = rndm_eng1_N2 / 100
+	-- rndm_eng2_N2 = (rndm_eng1_N2 + (rndm_eng1_N2 - 3)) / 100
+	-- if rndm_eng2_N2 < 5.94 then
+		-- rndm_eng2_N2 = 5.94
+	-- end
+	-- if rndm_eng2_N2 > 6 then
+		-- rndm_eng2_N2 = 6
+	-- end
+	-- rndm_eng1_N2 = rndm_eng1_N2 / 100
 	
-	rndm_eng1_egt = math.random(850, 858) + math.random()
-	rndm_eng2_egt = math.random(0, 8) + math.random()
+	rndm_eng1_egt = math.random(850, 852) + math.random()
+	rndm_eng2_egt = math.random(0, 2) + math.random()
 	
-	rndm_eng2_egt = (rndm_eng1_egt + (rndm_eng1_egt - 4)) / 1000
+	rndm_eng2_egt = (rndm_eng1_egt + (rndm_eng1_egt - 1)) / 1000
 	if rndm_eng2_egt < 0.850 then
 		rndm_eng2_egt = 0.850
 	end

@@ -77,6 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.27e:
+------
+- improved idle logic
+- improved N1 thrust limit
+- corrected descent idle path
+
 3.27d:
 ------
 - fixed Nose wheel steering switch with cover for 4k version

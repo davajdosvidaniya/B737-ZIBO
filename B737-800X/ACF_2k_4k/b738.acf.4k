@@ -138,7 +138,7 @@ P _gear/0/_axiE 0.0
 P _gear/0/_axiN 0.0
 P _gear/0/_axiR 0.0
 P _gear/0/_cyc_time 7.500000000
-P _gear/0/_damp 3989.0
+P _gear/0/_damp 8989.0
 P _gear/0/_eagle_claw_deg 0.0
 P _gear/0/_gear_brakes 0
 P _gear/0/_gear_can_retract 1
@@ -158,7 +158,7 @@ P _gear/0/_lonE 0.0
 P _gear/0/_lonN 0.0
 P _gear/0/_lonR 111.0
 P _gear/0/_scon 111648.273437500
-P _gear/0/_stat_def 0.105656408
+P _gear/0/_stat_def 0.105656393
 P _gear/0/_steerdeg_hispeed 5.0
 P _gear/0/_steerdeg_lospeed 58.0
 P _gear/0/_strut_comp 0.0
@@ -40474,7 +40474,7 @@ GROUP EICAS x
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
         KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 1.060000 205.500000 1.000000
+        KEY_FRAME 1.040000 205.500000 1.000000
         KEY_FRAME 1.100000 205.500000
         IS_DRAGGABLE 0
         OFFSET 0.000000
@@ -40490,7 +40490,7 @@ GROUP EICAS x
         LIGHT_RHEOSTAT 4
         BUS_SRC 3
         KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 1.060000 205.500000 1.000000
+        KEY_FRAME 1.040000 205.500000 1.000000
         KEY_FRAME 1.100000 205.500000
         IS_DRAGGABLE 0
         OFFSET 0.000000
