@@ -1996,7 +1996,7 @@ function B738_engine_egt()
 	else
 		B738DR_eng2_oil_press = B738_rescale(6.2, 1.0, 100.0, 100.0, simDR_oil_pressure_psi2)
 	end
-
+	
 end
 
 

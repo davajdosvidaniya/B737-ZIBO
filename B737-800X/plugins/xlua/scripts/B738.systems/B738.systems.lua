@@ -1369,6 +1369,9 @@ B738DR_arrow2_no_available		= create_dataref("laminar/B738/radio/arrow2_no_avail
 B738DR_arrow1					= create_dataref("laminar/B738/radio/arrow1", "number")
 B738DR_arrow2					= create_dataref("laminar/B738/radio/arrow2", "number")
 
+B738DR_egt_redline1				= create_dataref("laminar/B738/systems/egt_redline1", "number")
+B738DR_egt_redline2				= create_dataref("laminar/B738/systems/egt_redline2", "number")
+
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
 --*************************************************************************************--
@@ -5378,6 +5381,9 @@ function B738_start_engine()
 				ignition1 = 3
 			end
 		end
+		if simDR_engine_N1_pct1 < 17 then
+			B738DR_egt_redline1 = 1
+		end
 	-- Position AUTO
 	elseif B738DR_engine1_starter_pos == 1 then
 		ignition1 = 0
@@ -5425,6 +5431,9 @@ function B738_start_engine()
 				ignition2 = 3
 			end
 		end
+		if simDR_engine_N1_pct2 < 17 then
+			B738DR_egt_redline2 = 1
+		end
 	-- Position AUTO
 	elseif B738DR_engine2_starter_pos == 1 then
 		ignition2 = 0
@@ -5458,6 +5467,19 @@ function B738_start_engine()
 	end
 	
 	
+	if simDR_engine_N1_pct1 > 18 then
+		B738DR_egt_redline1 = 0
+	end
+	if B738DR_engine1_starter_pos ~= 0 and B738DR_eng1_N2 < 5 then
+		B738DR_egt_redline1 = 0
+	end
+	
+	if simDR_engine_N1_pct2 > 18 then
+		B738DR_egt_redline2 = 0
+	end
+	if B738DR_engine2_starter_pos ~= 0 and B738DR_eng2_N2 < 5 then
+		B738DR_egt_redline2 = 0
+	end
 	
 	-- --ENGINE 1
 	-- --Position GRD

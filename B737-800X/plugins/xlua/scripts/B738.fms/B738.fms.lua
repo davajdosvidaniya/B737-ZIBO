@@ -330,6 +330,11 @@ page_rte_legs = 0
 page_ac = 0
 page_ac_atis = 0
 page_ac_msg = 0
+page_xtras_visual = 0
+page_xtras_realism = 0
+page_xtras_optional = 0
+page_xtras_config = 0
+page_xtras_hardware = 0
 
 page_menu2 = 0
 page_ident2 = 0
@@ -376,6 +381,11 @@ page_rte_legs2 = 0
 page_ac2 = 0
 page_ac_atis2 = 0
 page_ac_msg2 = 0
+page_xtras_visual2 = 0
+page_xtras_realism2 = 0
+page_xtras_optional2 = 0
+page_xtras_config2 = 0
+page_xtras_hardware2 = 0
 
 new_hold2 = 0
 
@@ -3168,6 +3178,9 @@ gp_alt_err_ratio			= create_dataref("laminar/B738/fms/gp_alt_err_ratio", "number
 cross_wind					= create_dataref("laminar/B738/fms/cross_wind", "number")
 
 B738DR_dest_runway_alt		= create_dataref("laminar/B738/fms/dest_runway_alt", "number")
+B738DR_dest_runway_len 		= create_dataref("laminar/B738/fms/dest_runway_len", "number")
+B738DR_dest_runway_crs 		= create_dataref("laminar/B738/fms/dest_runway_crs", "number")
+
 B738DR_legs_mod_active		= create_dataref("laminar/B738/fms/legs_mod_active", "number")
 
 --*************************************************************************************--
@@ -6558,6 +6571,53 @@ function find_rnw_data()
 			end
 		end
 	end
+	
+end
+
+function des_rnw_length_crs()
+	
+	local rnw_txt_tmp = ""
+	local res_lenght = 0
+	local res_course = 0
+	
+	local ii = 0
+	local jj = 0
+	local kk = 0
+	local nd_x = 0
+	local idx_rec = 0
+	
+	if string.sub(des_app, 1, 2) == "RW" then
+		rnw_txt_tmp = string.sub(des_app, 3, -1)
+	else
+		if string.len(des_app) > 4 then
+			jj, kk = string.find(des_app, "-")
+			if jj == nil then
+				rnw_txt_tmp = string.sub(des_app, 2, -2)
+			else
+				rnw_txt_tmp = string.sub(des_app, 2, jj-1)
+			end
+		else
+			rnw_txt_tmp = string.sub(des_app, 2, -1)
+		end
+	end
+	
+	if rnw_data_num > 0 then
+		nd_x = string.byte(string.sub(des_icao, 1, 1))
+		if (nd_x >= 48 and nd_x <= 57) or (nd_x >= 65 and nd_x <= 90) then
+			if idx_rnw[nd_x][99999] > 0 then
+				for ii = 1, idx_rnw[nd_x][99999] do
+					idx_rec = idx_rnw[nd_x][ii]
+					if des_icao == rnw_data[idx_rec][1] and rnw_txt_tmp == rnw_data[idx_rec][2] then
+						res_lenght = rnw_data[idx_rec][7]
+						res_course = rnw_data[idx_rec][8]
+						break
+					end
+				end
+			end
+		end
+	end
+	
+	return res_lenght, res_course
 	
 end
 
@@ -10758,8 +10818,13 @@ function B738_calc_rte()
 			B738_find_rnav()
 			calc_rte_enable = 0
 			--dataref_legs()
-			if des_app2 ~= "------" and B738DR_dest_runway_alt == -1 then
-				B738DR_dest_runway_alt = des_icao_alt
+			B738DR_dest_runway_len = 0
+			B738DR_dest_runway_crs = 0
+			if des_app ~= "------" then
+				if B738DR_dest_runway_alt == -1 then
+					B738DR_dest_runway_alt = des_icao_alt
+				end
+				B738DR_dest_runway_len, B738DR_dest_runway_crs = des_rnw_length_crs()
 			end
 	end
 	--B738DR_fms_test3 = calc_rte_act
@@ -17475,36 +17540,6 @@ function B738_find_rnav()
 					last_miss_app_idx = ii
 				end
 			end
-			-- if ii < 255 then
-				-- -- legs data + lat,lon
-				-- if ii == 1 then
-					-- fms_line = legs_data[1][1]
-				-- else
-					-- fms_line = fms_line .. " " .. legs_data[ii][1]
-				-- end
-				-- B738DR_fms_legs_lat[ii] = legs_data[ii][7]
-				-- B738DR_fms_legs_lon[ii] = legs_data[ii][8]
-				-- B738DR_fms_legs_alt_rest1[ii] = legs_data[ii][5]
-				-- if legs_data[ii][6] == 45 then	-- Below
-					-- B738DR_fms_legs_alt_rest_type[ii] = 1
-					-- B738DR_fms_legs_alt_rest2[ii] = 0
-				-- elseif legs_data[ii][6] == 43 then	-- Above
-					-- B738DR_fms_legs_alt_rest_type[ii] = 2
-					-- B738DR_fms_legs_alt_rest2[ii] = 0
-				-- --elseif legs_data[ii][6] == 41 then	-- Between
-					-- --B738DR_fms_legs_alt_rest_type[ii] = 3
-					-- --B738DR_fms_legs_alt_rest2[ii] = 0
-				-- else	-- At
-					-- B738DR_fms_legs_alt_rest_type[ii] = 0
-					-- B738DR_fms_legs_alt_rest2[ii] = 0
-				-- end
-				-- B738DR_fms_legs_alt_calc[ii] = legs_data[ii][10]
-				-- if legs_data[ii][32] ~= 0 then
-					-- B738DR_fms_legs_type[ii] = 5
-				-- else
-					-- B738DR_fms_legs_type[ii] = 0
-				-- end
-			-- end
 		end
 	end
 	
@@ -18211,6 +18246,12 @@ function reset_fmc_pages()
 	page_ac = 0
 	page_ac_atis = 0
 	page_ac_msg = 0
+	page_xtras_visual = 0
+	page_xtras_realism = 0
+	page_xtras_optional = 0
+	page_xtras_config = 0
+	page_xtras_hardware = 0
+
 end
 
 function reset_fmc_pages_fo()
@@ -18258,6 +18299,12 @@ function reset_fmc_pages_fo()
 	page_ac2 = 0
 	page_ac_atis2 = 0
 	page_ac_msg2 = 0
+	page_xtras_visual2 = 0
+	page_xtras_realism2 = 0
+	page_xtras_optional2 = 0
+	page_xtras_config2 = 0
+	page_xtras_hardware2 = 0
+	
 end
 
 function check_rte(idx_in, star_in, app_in)
@@ -20358,44 +20405,18 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 		elseif page_fmod_eq > 0 then
 			fmc_fmod_eq(1,0)
 		elseif page_xtras_others == 1 then
-			-- OTHERS - Align time
-			if B738DR_align_time == 0 then
-				B738DR_align_time = 1
-			elseif B738DR_align_time == 1 then
-				B738DR_align_time = 2
-			else
-				B738DR_align_time = 0
-			end
-		elseif page_xtras_others == 2 then
-			if B738DR_engine_no_running_state == 0 then
-				B738DR_engine_no_running_state = 1
-			else
-				B738DR_engine_no_running_state = 0
-			end
-		elseif page_xtras_others == 3 then
-			if B738DR_fpln_format == 0 then
-				B738DR_fpln_format = 1
-			else
-				B738DR_fpln_format = 0
-			end
-		elseif page_xtras_others == 4 then
-			if B738DR_hide_glass == 0 then
-				B738DR_hide_glass = 1
-			else
-				B738DR_hide_glass = 0
-			end
-		elseif page_xtras_others == 5 then
-			if B738DR_brake_temp == 0 then
-				B738DR_brake_temp = 1
-			else
-				B738DR_brake_temp = 0
-			end
-		elseif page_xtras_others == 6 then
-			if simDR_pitch_nz <= 0 then
-				simDR_pitch_nz = 0.30
-			else
-				simDR_pitch_nz = simDR_pitch_nz - 0.01
-			end
+			page_xtras_others = 0
+			page_xtras_realism = 1
+		elseif page_xtras_visual > 0 then
+			fmc_xtras_visual(1,0)
+		elseif page_xtras_realism > 0 then
+			fmc_xtras_realism(1,0)
+		elseif page_xtras_optional > 0 then
+			fmc_xtras_optional(1,0)
+		elseif page_xtras_config > 0 then
+			fmc_xtras_config(1,0)
+		elseif page_xtras_hardware > 0 then
+			fmc_xtras_hardware(1,0)
 		elseif page_ac == 1 then
 			-- go to ACARS ATIS
 			page_ac_atis = 1
@@ -20539,29 +20560,18 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 		elseif page_fmod_eq > 0 then
 			fmc_fmod_eq(2,0)
 		elseif page_xtras_others == 1 then
-			if simDR_hide_yoke == 0 then
-				simDR_hide_yoke = 1
-			else
-				simDR_hide_yoke = 0
-			end
-		elseif page_xtras_others == 2 then
-			if B738DR_parkbrake_remove_chock == 0 then
-				B738DR_parkbrake_remove_chock = 1
-			else
-				B738DR_parkbrake_remove_chock = 0
-			end
-		elseif page_xtras_others == 3 then
-			if B738DR_track_up == 0 then
-				B738DR_track_up = 1
-			else
-				B738DR_track_up = 0
-			end
-		elseif page_xtras_others == 4 then
-			if B738DR_tire_blown == 0 then
-				B738DR_tire_blown = 1
-			else
-				B738DR_tire_blown = 0
-			end
+			page_xtras_optional = 1
+			page_xtras_others = 0
+		elseif page_xtras_visual > 0 then
+			fmc_xtras_visual(2,0)
+		elseif page_xtras_realism > 0 then
+			fmc_xtras_realism(2,0)
+		elseif page_xtras_optional > 0 then
+			fmc_xtras_optional(2,0)
+		elseif page_xtras_config > 0 then
+			fmc_xtras_config(2,0)
+		elseif page_xtras_hardware > 0 then
+			fmc_xtras_hardware(2,0)
 		elseif page_fix == 1 then
 			local ii = 0
 			local jj = string.len(entry)
@@ -21599,12 +21609,12 @@ function B738_fmc1_2L_CMDhandler(phase, duration)
 				-- atis_msg_status = 0
 				-- atis_send_time = "     "
 			end
-		elseif page_xtras_others == 6 then
-			if simDR_roll_nz <= 0 then
-				simDR_roll_nz = 0.30
-			else
-				simDR_roll_nz = simDR_roll_nz - 0.01
-			end
+		-- elseif page_xtras_others == 6 then
+			-- if simDR_roll_nz <= 0 then
+				-- simDR_roll_nz = 0.30
+			-- else
+				-- simDR_roll_nz = simDR_roll_nz - 0.01
+			-- end
 		end
 		
 	elseif phase == 2 then
@@ -21849,24 +21859,18 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 		elseif page_fmod_eq > 0 then
 			fmc_fmod_eq(3,0)
 		elseif page_xtras_others == 1 then
-			B738CMD_chock_toggle:once()
-		elseif page_xtras_others == 2 then
-			B738DR_throttle_noise = B738DR_throttle_noise + 1
-			if B738DR_throttle_noise > 10 then
-				B738DR_throttle_noise = 0
-			end
-		elseif page_xtras_others == 3 then
-			if B738DR_baro_in_hpa == 0 then
-				B738DR_baro_in_hpa = 1
-			else
-				B738DR_baro_in_hpa = 0
-			end
-		elseif page_xtras_others == 4 then
-			if B738DR_nd_rings == 0 then
-				B738DR_nd_rings = 1
-			else
-				B738DR_nd_rings = 0
-			end
+			page_xtras_visual = 1
+			page_xtras_others = 0
+		elseif page_xtras_visual > 0 then
+			fmc_xtras_visual(3,0)
+		elseif page_xtras_realism > 0 then
+			fmc_xtras_realism(3,0)
+		elseif page_xtras_optional > 0 then
+			fmc_xtras_optional(3,0)
+		elseif page_xtras_config > 0 then
+			fmc_xtras_config(3,0)
+		elseif page_xtras_hardware > 0 then
+			fmc_xtras_hardware(3,0)
 		elseif page_arr == 1 then
 			if des_star2 == "------" then
 				if des_star_sel[3] ~= "------" then
@@ -22643,12 +22647,12 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 			else
 				add_fmc_msg(INVALID_INPUT, 1)
 			end
-		elseif page_xtras_others == 6 then
-			if simDR_yaw_nz <= 0 then
-				simDR_yaw_nz = 0.30
-			else
-				simDR_yaw_nz = simDR_yaw_nz - 0.01
-			end
+		-- elseif page_xtras_others == 6 then
+			-- if simDR_yaw_nz <= 0 then
+				-- simDR_yaw_nz = 0.30
+			-- else
+				-- simDR_yaw_nz = simDR_yaw_nz - 0.01
+			-- end
 		end
 		
 	elseif phase == 2 then
@@ -22850,25 +22854,18 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 		elseif page_fmod_eq > 0 then
 			fmc_fmod_eq(4,0)
 		elseif page_xtras_others == 1 then
-			B738CMD_pause_td_toggle:once()
-		elseif page_xtras_others == 2 then
-			if B738DR_fuelgauge == 0 then
-				B738DR_fuelgauge = 1
-			else
-				B738DR_fuelgauge = 0
-			end
-		elseif page_xtras_others == 3 then
-			if B738DR_min_baro_radio == 0 then
-				B738DR_min_baro_radio = 1
-			else
-				B738DR_min_baro_radio = 0
-			end
-		elseif page_xtras_others == 4 then
-			if B738DR_hide_gauges_reflection == 0 then
-				B738DR_hide_gauges_reflection = 1
-			else
-				B738DR_hide_gauges_reflection = 0
-			end
+			page_xtras_config = 1
+			page_xtras_others = 0
+		elseif page_xtras_visual > 0 then
+			fmc_xtras_visual(4,0)
+		elseif page_xtras_realism > 0 then
+			fmc_xtras_realism(4,0)
+		elseif page_xtras_optional > 0 then
+			fmc_xtras_optional(4,0)
+		elseif page_xtras_config > 0 then
+			fmc_xtras_config(4,0)
+		elseif page_xtras_hardware > 0 then
+			fmc_xtras_hardware(4,0)
 		elseif page_arr == 1 then
 			if des_star2 == "------" then
 				if des_star_sel[4] ~= "------" then
@@ -23809,35 +23806,18 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 		elseif page_fmod_eq > 0 then
 			fmc_fmod_eq(5,0)
 		elseif page_xtras_others == 1 then
-			if B738DR_toe_brakes_ovr == 0 then
-				B738DR_toe_brakes_ovr = 1
-			else
-				B738DR_toe_brakes_ovr = 0
-			end
-		elseif page_xtras_others == 2 then
-			if B738DR_nosewheel == 0 then
-				B738DR_nosewheel = 1
-			elseif B738DR_nosewheel == 1 then
-				B738DR_nosewheel = 2
-			elseif B738DR_nosewheel == 2 then
-				B738DR_nosewheel = 3
-			else
-				B738DR_nosewheel = 0
-			end
-		elseif page_xtras_others == 3 then
-			if B738DR_kill_windshield == 0 then
-				B738DR_kill_windshield = 1
-			elseif B738DR_kill_windshield == 1 then
-				B738DR_kill_windshield = 2
-			else
-				B738DR_kill_windshield = 0
-			end
-		elseif page_xtras_others == 4 then
-			if B738DR_flight_ctrl == 0 then
-				B738DR_flight_ctrl = 1
-			else
-				B738DR_flight_ctrl = 0
-			end
+			page_xtras_hardware = 1
+			page_xtras_others = 0
+		elseif page_xtras_visual > 0 then
+			fmc_xtras_visual(5,0)
+		elseif page_xtras_realism > 0 then
+			fmc_xtras_realism(5,0)
+		elseif page_xtras_optional > 0 then
+			fmc_xtras_optional(5,0)
+		elseif page_xtras_config > 0 then
+			fmc_xtras_config(5,0)
+		elseif page_xtras_hardware > 0 then
+			fmc_xtras_hardware(5,0)
 		elseif page_arr == 1 then
 			if des_star2 == "------" then
 				if des_star_sel[5] ~= "------" then
@@ -24618,6 +24598,21 @@ function B738_fmc1_6L_CMDhandler(phase, duration)
 		elseif page_xtras_others > 0 then
 			-- DEFAULT value
 			B738_default_others_config()
+		elseif page_xtras_visual > 0 then
+			-- DEFAULT value
+			B738_default_others_config()
+		elseif page_xtras_realism > 0 then
+			-- DEFAULT value
+			B738_default_others_config()
+		elseif page_xtras_optional > 0 then
+			-- DEFAULT value
+			B738_default_others_config()
+		elseif page_xtras_config > 0 then
+			-- DEFAULT value
+			B738_default_others_config()
+		elseif page_xtras_hardware > 0 then
+			-- DEFAULT value
+			B738_default_others_config()
 		elseif page_init == 1 then
 			-- go to OFFSET
 			page_init = 0
@@ -25250,14 +25245,14 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 					fms_recalc = 1
 				end
 			end
-		elseif page_menu == 1 then
-			-- select Units
-			if units == 0 then
-				units = 1
-			else
-				units = 0
-			end
-			units_recalc = 1
+		-- elseif page_menu == 1 then
+			-- -- select Units
+			-- if units == 0 then
+				-- units = 1
+			-- else
+				-- units = 0
+			-- end
+			-- units_recalc = 1
 		elseif page_approach == 1 then
 			-- select flaps 15
 			if vref_15 == "---" then
@@ -25526,12 +25521,14 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 					entry = string.sub(legs_data2[item][38], 1, 3) .. string.sub(legs_data2[item][38], -4, -1)
 				end
 			end
-		elseif page_xtras_others == 6 then
-			if simDR_pitch_nz < 0.30 then
-				simDR_pitch_nz = simDR_pitch_nz + 0.01
-			else
-				simDR_pitch_nz = 0
-			end
+		elseif page_xtras_hardware > 0 then
+			fmc_xtras_hardware(6,0)
+		-- elseif page_xtras_others == 6 then
+			-- if simDR_pitch_nz < 0.30 then
+				-- simDR_pitch_nz = simDR_pitch_nz + 0.01
+			-- else
+				-- simDR_pitch_nz = 0
+			-- end
 		end
 		
 	elseif phase == 2 then
@@ -25941,12 +25938,14 @@ function B738_fmc1_2R_CMDhandler(phase, duration)
 			end
 		elseif page_xtras_fmod > 0 then
 			fmc_fmod_main(0,2)
-		elseif page_xtras_others == 6 then
-			if simDR_roll_nz < 0.30 then
-				simDR_roll_nz = simDR_roll_nz + 0.01
-			else
-				simDR_roll_nz = 0
-			end
+		elseif page_xtras_hardware > 0 then
+			fmc_xtras_hardware(7,0)
+		-- elseif page_xtras_others == 6 then
+			-- if simDR_roll_nz < 0.30 then
+				-- simDR_roll_nz = simDR_roll_nz + 0.01
+			-- else
+				-- simDR_roll_nz = 0
+			-- end
 		elseif page_rte_legs > 0 then
 			-- entry WIND DATA
 			local strlen = string.len(entry)
@@ -26565,12 +26564,14 @@ function B738_fmc1_3R_CMDhandler(phase, duration)
 					end
 				end
 			end
-		elseif page_xtras_others == 6 then
-			if simDR_yaw_nz < 0.30 then
-				simDR_yaw_nz = simDR_yaw_nz + 0.01
-			else
-				simDR_yaw_nz = 0
-			end
+		elseif page_xtras_hardware > 0 then
+			fmc_xtras_hardware(8,0)
+		-- elseif page_xtras_others == 6 then
+			-- if simDR_yaw_nz < 0.30 then
+				-- simDR_yaw_nz = simDR_yaw_nz + 0.01
+			-- else
+				-- simDR_yaw_nz = 0
+			-- end
 		elseif page_rte_legs > 0 then
 			-- entry WIND DATA
 			local strlen = string.len(entry)
@@ -28051,6 +28052,31 @@ function B738_fmc1_6R_CMDhandler(phase, duration)
 			page_xtras_others = 0
 			page_xtras = 1
 			act_page = 1
+		elseif page_xtras_visual > 0 then
+			-- go to BACK
+			page_xtras_visual = 0
+			page_xtras_others = 1
+			act_page = 1
+		elseif page_xtras_realism > 0 then
+			-- go to BACK
+			page_xtras_realism = 0
+			page_xtras_others = 1
+			act_page = 1
+		elseif page_xtras_optional > 0 then
+			-- go to BACK
+			page_xtras_optional = 0
+			page_xtras_others = 1
+			act_page = 1
+		elseif page_xtras_config > 0 then
+			-- go to BACK
+			page_xtras_config = 0
+			page_xtras_others = 1
+			act_page = 1
+		elseif page_xtras_hardware > 0 then
+			-- go to BACK
+			page_xtras_hardware = 0
+			page_xtras_others = 1
+			act_page = 1
 		elseif page_xtras_fuel == 1 then
 			-- go to BACK
 			page_xtras_fuel = 0
@@ -28444,6 +28470,16 @@ function B738_fmc1_prev_page_CMDhandler(phase, duration)
 				page_ac = act_page
 			elseif page_ac_atis ~= 0 then
 				page_ac_atis = act_page
+			elseif page_xtras_visual ~= 0 then
+				page_xtras_visual = act_page
+			elseif page_xtras_realism ~= 0 then
+				page_xtras_realism = act_page
+			elseif page_xtras_optional ~= 0 then
+				page_xtras_optional = act_page
+			elseif page_xtras_config ~= 0 then
+				page_xtras_config = act_page
+			elseif page_xtras_hardware ~= 0 then
+				page_xtras_hardware = act_page
 			end
 		
 	elseif phase == 2 then
@@ -28509,6 +28545,16 @@ function B738_fmc1_next_page_CMDhandler(phase, duration)
 				page_ac = act_page
 			elseif page_ac_atis ~= 0 then
 				page_ac_atis = act_page
+			elseif page_xtras_visual ~= 0 then
+				page_xtras_visual = act_page
+			elseif page_xtras_realism ~= 0 then
+				page_xtras_realism = act_page
+			elseif page_xtras_optional ~= 0 then
+				page_xtras_optional = act_page
+			elseif page_xtras_config ~= 0 then
+				page_xtras_config = act_page
+			elseif page_xtras_hardware ~= 0 then
+				page_xtras_hardware = act_page
 			end
 			
 		
@@ -31009,6 +31055,16 @@ function B738_fmc2_prev_page_CMDhandler(phase, duration)
 				page_ac2 = act_page2
 			elseif page_ac_atis2 ~= 0 then
 				page_ac_atis2 = act_page2
+			elseif page_xtras_visual2 ~= 0 then
+				page_xtras_visual2 = act_page2
+			elseif page_xtras_realism2 ~= 0 then
+				page_xtras_realism2 = act_page2
+			elseif page_xtras_optional2 ~= 0 then
+				page_xtras_optional2 = act_page2
+			elseif page_xtras_config2 ~= 0 then
+				page_xtras_config2 = act_page2
+			elseif page_xtras_hardware2 ~= 0 then
+				page_xtras_hardware2 = act_page2
 			end
 		
 	elseif phase == 2 then
@@ -31074,6 +31130,16 @@ function B738_fmc2_next_page_CMDhandler(phase, duration)
 				page_ac2 = act_page2
 			elseif page_ac_atis2 ~= 0 then
 				page_ac_atis2 = act_page2
+			elseif page_xtras_visual2 ~= 0 then
+				page_xtras_visual2 = act_page2
+			elseif page_xtras_realism2 ~= 0 then
+				page_xtras_realism2 = act_page2
+			elseif page_xtras_optional2 ~= 0 then
+				page_xtras_optional2 = act_page2
+			elseif page_xtras_config2 ~= 0 then
+				page_xtras_config2 = act_page2
+			elseif page_xtras_hardware2 ~= 0 then
+				page_xtras_hardware2 = act_page2
 			end
 			
 		
@@ -32732,44 +32798,18 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 		elseif page_fmod_eq2 > 0 then
 			fmc_fmod_eq(1,1)
 		elseif page_xtras_others2 == 1 then
-			-- OTHERS - Align time
-			if B738DR_align_time == 0 then
-				B738DR_align_time = 1
-			elseif B738DR_align_time == 1 then
-				B738DR_align_time = 2
-			else
-				B738DR_align_time = 0
-			end
-		elseif page_xtras_others2 == 2 then
-			if B738DR_engine_no_running_state == 0 then
-				B738DR_engine_no_running_state = 1
-			else
-				B738DR_engine_no_running_state = 0
-			end
-		elseif page_xtras_others2 == 3 then
-			if B738DR_fpln_format == 0 then
-				B738DR_fpln_format = 1
-			else
-				B738DR_fpln_format = 0
-			end
-		elseif page_xtras_others2 == 4 then
-			if B738DR_hide_glass == 0 then
-				B738DR_hide_glass = 1
-			else
-				B738DR_hide_glass = 0
-			end
-		elseif page_xtras_others2 == 5 then
-			if B738DR_brake_temp == 0 then
-				B738DR_brake_temp = 1
-			else
-				B738DR_brake_temp = 0
-			end
-		elseif page_xtras_others2 == 6 then
-			if simDR_pitch_nz <= 0 then
-				simDR_pitch_nz = 0.30
-			else
-				simDR_pitch_nz = simDR_pitch_nz - 0.01
-			end
+			page_xtras_others2 = 0
+			page_xtras_realism2 = 1
+		elseif page_xtras_visual2 > 0 then
+			fmc_xtras_visual(1,1)
+		elseif page_xtras_realism2 > 0 then
+			fmc_xtras_realism(1,1)
+		elseif page_xtras_optional2 > 0 then
+			fmc_xtras_optional(1,1)
+		elseif page_xtras_config2 > 0 then
+			fmc_xtras_config(1,1)
+		elseif page_xtras_hardware2 > 0 then
+			fmc_xtras_hardware(1,1)
 		elseif page_ac2 == 1 then
 			-- go to ACARS ATIS
 			page_ac_atis2 = 1
@@ -32913,29 +32953,18 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 		elseif page_fmod_eq2 > 0 then
 			fmc_fmod_eq(2,1)
 		elseif page_xtras_others2 == 1 then
-			if simDR_hide_yoke == 0 then
-				simDR_hide_yoke = 1
-			else
-				simDR_hide_yoke = 0
-			end
-		elseif page_xtras_others2 == 2 then
-			if B738DR_parkbrake_remove_chock == 0 then
-				B738DR_parkbrake_remove_chock = 1
-			else
-				B738DR_parkbrake_remove_chock = 0
-			end
-		elseif page_xtras_others2 == 3 then
-			if B738DR_track_up == 0 then
-				B738DR_track_up = 1
-			else
-				B738DR_track_up = 0
-			end
-		elseif page_xtras_others2 == 4 then
-			if B738DR_tire_blown == 0 then
-				B738DR_tire_blown = 1
-			else
-				B738DR_tire_blown = 0
-			end
+			page_xtras_others2 = 0
+			page_xtras_optional2 = 1
+		elseif page_xtras_visual2 > 0 then
+			fmc_xtras_visual(2,1)
+		elseif page_xtras_realism2 > 0 then
+			fmc_xtras_realism(2,1)
+		elseif page_xtras_optional2 > 0 then
+			fmc_xtras_optional(2,1)
+		elseif page_xtras_config2 > 0 then
+			fmc_xtras_config(2,1)
+		elseif page_xtras_hardware2 > 0 then
+			fmc_xtras_hardware(2,1)
 		elseif page_fix2 == 1 then
 			local ii = 0
 			local jj = string.len(entry2)
@@ -33973,12 +34002,12 @@ function B738_fmc2_2L_CMDhandler(phase, duration)
 				-- atis_msg_status = 0
 				-- atis_send_time = "     "
 			end
-		elseif page_xtras_others2 == 6 then
-			if simDR_roll_nz <= 0 then
-				simDR_roll_nz = 0.30
-			else
-				simDR_roll_nz = simDR_roll_nz - 0.01
-			end
+		-- elseif page_xtras_others2 == 6 then
+			-- if simDR_roll_nz <= 0 then
+				-- simDR_roll_nz = 0.30
+			-- else
+				-- simDR_roll_nz = simDR_roll_nz - 0.01
+			-- end
 		end
 		
 	elseif phase == 2 then
@@ -34223,24 +34252,18 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 		elseif page_fmod_eq2 > 0 then
 			fmc_fmod_eq(3,1)
 		elseif page_xtras_others2 == 1 then
-			B738CMD_chock_toggle:once()
-		elseif page_xtras_others2 == 2 then
-			B738DR_throttle_noise = B738DR_throttle_noise + 1
-			if B738DR_throttle_noise > 10 then
-				B738DR_throttle_noise = 0
-			end
-		elseif page_xtras_others2 == 3 then
-			if B738DR_baro_in_hpa == 0 then
-				B738DR_baro_in_hpa = 1
-			else
-				B738DR_baro_in_hpa = 0
-			end
-		elseif page_xtras_others2 == 4 then
-			if B738DR_nd_rings == 0 then
-				B738DR_nd_rings = 1
-			else
-				B738DR_nd_rings = 0
-			end
+			page_xtras_others2 = 0
+			page_xtras_visual2 = 1
+		elseif page_xtras_visual2 > 0 then
+			fmc_xtras_visual(3,1)
+		elseif page_xtras_realism2 > 0 then
+			fmc_xtras_realism(3,1)
+		elseif page_xtras_optional2 > 0 then
+			fmc_xtras_optional(3,1)
+		elseif page_xtras_config2 > 0 then
+			fmc_xtras_config(3,1)
+		elseif page_xtras_hardware2 > 0 then
+			fmc_xtras_hardware(3,1)
 		elseif page_arr2 == 1 then
 			if des_star2 == "------" then
 				if des_star_sel[3] ~= "------" then
@@ -35017,12 +35040,12 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 			else
 				add_fmc_msg(INVALID_INPUT, 1)
 			end
-		elseif page_xtras_others2 == 6 then
-			if simDR_yaw_nz <= 0 then
-				simDR_yaw_nz = 0.30
-			else
-				simDR_yaw_nz = simDR_yaw_nz - 0.01
-			end
+		-- elseif page_xtras_others2 == 6 then
+			-- if simDR_yaw_nz <= 0 then
+				-- simDR_yaw_nz = 0.30
+			-- else
+				-- simDR_yaw_nz = simDR_yaw_nz - 0.01
+			-- end
 		end
 		
 	elseif phase == 2 then
@@ -35224,25 +35247,18 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 		elseif page_fmod_eq2 > 0 then
 			fmc_fmod_eq(4,1)
 		elseif page_xtras_others2 == 1 then
-			B738CMD_pause_td_toggle:once()
-		elseif page_xtras_others2 == 2 then
-			if B738DR_fuelgauge == 0 then
-				B738DR_fuelgauge = 1
-			else
-				B738DR_fuelgauge = 0
-			end
-		elseif page_xtras_others2 == 3 then
-			if B738DR_min_baro_radio == 0 then
-				B738DR_min_baro_radio = 1
-			else
-				B738DR_min_baro_radio = 0
-			end
-		elseif page_xtras_others2 == 4 then
-			if B738DR_hide_gauges_reflection == 0 then
-				B738DR_hide_gauges_reflection = 1
-			else
-				B738DR_hide_gauges_reflection = 0
-			end
+			page_xtras_others2 = 0
+			page_xtras_config2 = 1
+		elseif page_xtras_visual2 > 0 then
+			fmc_xtras_visual(4,1)
+		elseif page_xtras_realism2 > 0 then
+			fmc_xtras_realism(4,1)
+		elseif page_xtras_optional2 > 0 then
+			fmc_xtras_optional(4,1)
+		elseif page_xtras_config2 > 0 then
+			fmc_xtras_config(4,1)
+		elseif page_xtras_hardware2 > 0 then
+			fmc_xtras_hardware(4,1)
 		elseif page_arr2 == 1 then
 			if des_star2 == "------" then
 				if des_star_sel[4] ~= "------" then
@@ -36183,35 +36199,18 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 		elseif page_fmod_eq2 > 0 then
 			fmc_fmod_eq(5,1)
 		elseif page_xtras_others2 == 1 then
-			if B738DR_toe_brakes_ovr == 0 then
-				B738DR_toe_brakes_ovr = 1
-			else
-				B738DR_toe_brakes_ovr = 0
-			end
-		elseif page_xtras_others2 == 2 then
-			if B738DR_nosewheel == 0 then
-				B738DR_nosewheel = 1
-			elseif B738DR_nosewheel == 1 then
-				B738DR_nosewheel = 2
-			elseif B738DR_nosewheel == 2 then
-				B738DR_nosewheel = 3
-			else
-				B738DR_nosewheel = 0
-			end
-		elseif page_xtras_others2 == 3 then
-			if B738DR_kill_windshield == 0 then
-				B738DR_kill_windshield = 1
-			elseif B738DR_kill_windshield == 1 then
-				B738DR_kill_windshield = 2
-			else
-				B738DR_kill_windshield = 0
-			end
-		elseif page_xtras_others2 == 4 then
-			if B738DR_flight_ctrl == 0 then
-				B738DR_flight_ctrl = 1
-			else
-				B738DR_flight_ctrl = 0
-			end
+			page_xtras_others2 = 0
+			page_xtras_hardware2 = 1
+		elseif page_xtras_visual2 > 0 then
+			fmc_xtras_visual(5,1)
+		elseif page_xtras_realism2 > 0 then
+			fmc_xtras_realism(5,1)
+		elseif page_xtras_optional2 > 0 then
+			fmc_xtras_optional(5,1)
+		elseif page_xtras_config2 > 0 then
+			fmc_xtras_config(5,1)
+		elseif page_xtras_hardware2 > 0 then
+			fmc_xtras_hardware(5,1)
 		elseif page_arr2 == 1 then
 			if des_star2 == "------" then
 				if des_star_sel[5] ~= "------" then
@@ -37624,14 +37623,14 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 					fms_recalc = 1
 				end
 			end
-		elseif page_menu2 == 1 then
-			-- select Units
-			if units == 0 then
-				units = 1
-			else
-				units = 0
-			end
-			units_recalc = 1
+		-- elseif page_menu2 == 1 then
+			-- -- select Units
+			-- if units == 0 then
+				-- units = 1
+			-- else
+				-- units = 0
+			-- end
+			-- units_recalc = 1
 		elseif page_approach2 == 1 then
 			-- select flaps 15
 			if vref_15 == "---" then
@@ -37900,12 +37899,14 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 					entry2 = string.sub(legs_data2[item][38], 1, 3) .. string.sub(legs_data2[item][38], -4, -1)
 				end
 			end
-		elseif page_xtras_others2 == 6 then
-			if simDR_pitch_nz < 0.30 then
-				simDR_pitch_nz = simDR_pitch_nz + 0.01
-			else
-				simDR_pitch_nz = 0
-			end
+		elseif page_xtras_hardware2 > 0 then
+			fmc_xtras_hardware(6,1)
+		-- elseif page_xtras_others2 == 6 then
+			-- if simDR_pitch_nz < 0.30 then
+				-- simDR_pitch_nz = simDR_pitch_nz + 0.01
+			-- else
+				-- simDR_pitch_nz = 0
+			-- end
 		end
 		
 	elseif phase == 2 then
@@ -38280,12 +38281,14 @@ function B738_fmc2_2R_CMDhandler(phase, duration)
 			end
 		elseif page_xtras_fmod2 > 0 then
 			fmc_fmod_main(0,2)
-		elseif page_xtras_others2 == 6 then
-			if simDR_roll_nz < 0.30 then
-				simDR_roll_nz = simDR_roll_nz + 0.01
-			else
-				simDR_roll_nz = 0
-			end
+		elseif page_xtras_hardware2 > 0 then
+			fmc_xtras_hardware(7,1)
+		-- elseif page_xtras_others2 == 6 then
+			-- if simDR_roll_nz < 0.30 then
+				-- simDR_roll_nz = simDR_roll_nz + 0.01
+			-- else
+				-- simDR_roll_nz = 0
+			-- end
 		elseif page_rte_legs2 > 0 then
 			-- entry2 WIND DATA
 			local strlen = string.len(entry2)
@@ -38903,12 +38906,14 @@ function B738_fmc2_3R_CMDhandler(phase, duration)
 					end
 				end
 			end
-		elseif page_xtras_others2 == 6 then
-			if simDR_yaw_nz < 0.30 then
-				simDR_yaw_nz = simDR_yaw_nz + 0.01
-			else
-				simDR_yaw_nz = 0
-			end
+		elseif page_xtras_hardware2 > 0 then
+			fmc_xtras_hardware(8,1)
+		-- elseif page_xtras_others2 == 6 then
+			-- if simDR_yaw_nz < 0.30 then
+				-- simDR_yaw_nz = simDR_yaw_nz + 0.01
+			-- else
+				-- simDR_yaw_nz = 0
+			-- end
 		elseif page_rte_legs2 > 0 then
 			-- entry2 WIND DATA
 			local strlen = string.len(entry2)
@@ -40453,6 +40458,31 @@ function B738_fmc2_6R_CMDhandler(phase, duration)
 			page_xtras_others2 = 0
 			page_xtras2 = 1
 			act_page2 = 1
+		elseif page_xtras_visual2 > 0 then
+			-- go to BACK
+			page_xtras_others2 = 1
+			page_xtras_visual2 = 0
+			act_page2 = 1
+		elseif page_xtras_realism2 > 0 then
+			-- go to BACK
+			page_xtras_others2 = 1
+			page_xtras_realism2 = 0
+			act_page2 = 1
+		elseif page_xtras_optional2 > 0 then
+			-- go to BACK
+			page_xtras_others2 = 1
+			page_xtras_optional2 = 0
+			act_page2 = 1
+		elseif page_xtras_config2 > 0 then
+			-- go to BACK
+			page_xtras_others2 = 1
+			page_xtras_config2 = 0
+			act_page2 = 1
+		elseif page_xtras_hardware2 > 0 then
+			-- go to BACK
+			page_xtras_others2 = 1
+			page_xtras_hardware2 = 0
+			act_page2 = 1
 		elseif page_xtras_fuel2 == 1 then
 			-- go to BACK
 			page_xtras_fuel2 = 0
@@ -41717,18 +41747,19 @@ function B738_fmc_menu()
 	if page_menu == 1 then
 		act_page = 1
 		max_page = 1
-		local units_str_l = "   /KGS>"
-		local units_str_s = "LBS     "
-		if units == 0 then
-			units_str_l = "LBS/   >"
-			units_str_s = "    KGS "
-		end
+		-- local units_str_l = "   /KGS>"
+		-- local units_str_s = "LBS     "
+		-- if units == 0 then
+			-- units_str_l = "LBS/   >"
+			-- units_str_s = "    KGS "
+		-- end
 		line0_l = "         MENU           "
 		-- line0_s = "                        "
-		line1_x = "                  UNITS "
-		line1_l = "<FMC            " .. units_str_l
-		line1_s = "                " .. units_str_s
+		-- line1_x = "                  UNITS "
+		-- line1_l = "<FMC            " .. units_str_l
+		-- line1_s = "                " .. units_str_s
 		-- line2_x = "                        "
+		line1_l = "<FMC                    "
 		line2_l = "<ACARS         ADVANCED>"
 		-- line2_s = "                        "
 		---------------------------------------------------------
@@ -42915,14 +42946,135 @@ function fmc_fmod_flight_ctrl(fmod_butt, fmc_side)
 	
 end
 
-function B738_fmc_xtras_others()
+function fmc_xtras_visual(fmod_butt, fmc_side)
+	
+	local page_tmp = page_xtras_visual
+	
+	if fmc_side ~= 0 then
+		page_tmp = page_xtras_visual2
+	end
+	
+	if page_tmp == 1 then
+		if fmod_butt == 1 then
+			-- Windshield effect
+			if B738DR_kill_windshield == 0 then
+				B738DR_kill_windshield = 1
+			elseif B738DR_kill_windshield == 1 then
+				B738DR_kill_windshield = 2
+			else
+				B738DR_kill_windshield = 0
+			end
+		elseif fmod_butt == 2 then
+			-- Windshield reflection
+			if B738DR_hide_glass == 0 then
+				B738DR_hide_glass = 1
+			else
+				B738DR_hide_glass = 0
+			end
+		elseif fmod_butt == 3 then
+			-- Gauges reflection
+			if B738DR_hide_gauges_reflection == 0 then
+				B738DR_hide_gauges_reflection = 1
+			else
+				B738DR_hide_gauges_reflection = 0
+			end
+		end
+	end
+end
 
-	if page_xtras_others == 1 then
+
+function B738_fmc_xtras_visual()
+	
+	if page_xtras_visual == 1 then
 		act_page = 1
-		max_page = 6
+		max_page = 1
 		
-		line0_l = " OTHER CONFIG           "
-		line0_s = "                    1/6 "
+		line0_l = " VISUAL EFFECTS         "
+		line0_s = "                    1/1 "
+		line1_x = " WINDSHIELD EFFECTS     "
+		if B738DR_kill_windshield == 0 then
+			line1_l = "<  /  /                 "
+			line1_g = " ON                     "
+			line1_s = "    XE OFF              "
+		elseif B738DR_kill_windshield == 1 then
+			line1_l = "<  /  /                 "
+			line1_g = "    XE                  "
+			line1_s = " ON    OFF              "
+		else
+			line1_l = "<  /  /                 "
+			line1_g = "       OFF              "
+			line1_s = " ON XE                  "
+		end
+		line2_x = " WINDSHIELD REFLECTION  "
+		if B738DR_hide_glass == 0 then
+			line2_l = "<   /                   "
+			line2_g = "     ON                 "
+			line2_s = " OFF                    "
+		else
+			line2_l = "<   /                   "
+			line2_g = " OFF                    "
+			line2_s = "     ON                 "
+		end
+		line3_x = " GAUGES REFLECTION      "
+		if B738DR_hide_gauges_reflection == 0 then
+			line3_l = "<   /                   "
+			line3_g = "     ON                 "
+			line3_s = " OFF                    "
+		else
+			line3_l = "<   /                   "
+			line3_g = " OFF                    "
+			line3_s = "     ON                 "
+		end
+		line6_l = "<DEFAULT           BACK>"
+	end
+	
+end
+
+function fmc_xtras_visual(fmod_butt, fmc_side)
+	
+	local page_tmp = page_xtras_visual
+	
+	if fmc_side ~= 0 then
+		page_tmp = page_xtras_visual2
+	end
+	
+	if page_tmp == 1 then
+		if fmod_butt == 1 then
+			-- Windshield effect
+			if B738DR_kill_windshield == 0 then
+				B738DR_kill_windshield = 1
+			elseif B738DR_kill_windshield == 1 then
+				B738DR_kill_windshield = 2
+			else
+				B738DR_kill_windshield = 0
+			end
+		elseif fmod_butt == 2 then
+			-- Windshield reflection
+			if B738DR_hide_glass == 0 then
+				B738DR_hide_glass = 1
+			else
+				B738DR_hide_glass = 0
+			end
+		elseif fmod_butt == 3 then
+			-- Gauges reflection
+			if B738DR_hide_gauges_reflection == 0 then
+				B738DR_hide_gauges_reflection = 1
+			else
+				B738DR_hide_gauges_reflection = 0
+			end
+		end
+	end
+end
+
+
+function B738_fmc_xtras_realism()
+	
+	if page_xtras_realism == 1 then
+		act_page = 1
+		max_page = 1
+		
+		line0_l = " REALISM                "
+		line0_s = "                    1/1 "
 		line1_x = " ALIGN TIME             "
 		if B738DR_align_time == 0 then
 			line1_l = "<    /    /             "
@@ -42937,67 +43089,8 @@ function B738_fmc_xtras_others()
 			line1_g = "           SHORT        "
 			line1_s = " REAL LONG              "
 		end
-		line2_x = " HIDE YOKE              "
-		if simDR_hide_yoke == 0 then
-			line2_l = "<    /                  "
-			line2_g = " HIDE                   "
-			line2_s = "      SHOW              "
-		else
-			line2_l = "<    /                  "
-			line2_g = "      SHOW              "
-			line2_s = " HIDE                   "
-		end
-		line3_x = " CHOCK                  "
-		if B738DR_chock_status == 0 then
-			line3_l = "<   /                   "
-			line3_g = " OFF                    "
-			line3_s = "     ON                 "
-		else
-			line3_l = "<   /                   "
-			line3_g = "     ON                 "
-			line3_s = " OFF                    "
-		end
-		line4_x = " PAUSE AT T/D           "
+		line2_x = " PAUSE AT T/D           "
 		if B738DR_pause_td == 0 then
-			line4_l = "<   /                   "
-			line4_g = " OFF                    "
-			line4_s = "     ON                 "
-		else
-			line4_l = "<   /                   "
-			line4_g = "     ON                 "
-			line4_s = " OFF                    "
-		end
-		line5_x = " TOE BRAKE AXIS         "
-		if B738DR_toe_brakes_ovr == 0 then
-			line5_l = "<   /                   "
-			line5_g = "     ON                 "
-			line5_s = " OFF                    "
-		else
-			line5_l = "<   /                   "
-			line5_g = " OFF                    "
-			line5_s = "     ON                 "
-		end
-		-- line6_x = "                        "
-		line6_l = "<DEFAULT           BACK>"
-		-- line6_s = "                        "
-	elseif page_xtras_others == 2 then
-		act_page = 2
-		max_page = 6
-		
-		line0_l = " OTHER CONFIG           "
-		line0_s = "                    2/6 "
-		line1_x = " ENGINE NO RUNNING STATE"
-		if B738DR_engine_no_running_state == 0 then
-			line1_l = "<         /             "
-			line1_g = " COLD-DARK              "
-			line1_s = "           TURN AROUND  "
-		else
-			line1_l = "<         /             "
-			line1_g = "           TURN AROUND  "
-			line1_s = " COLD-DARK              "
-		end
-		line2_x = " PARKBRAKE REMOVE CHOCKS"
-		if B738DR_parkbrake_remove_chock == 0 then
 			line2_l = "<   /                   "
 			line2_g = " OFF                    "
 			line2_s = "     ON                 "
@@ -43006,60 +43099,69 @@ function B738_fmc_xtras_others()
 			line2_g = "     ON                 "
 			line2_s = " OFF                    "
 		end
-		line3_x = " THROTTLE NOISE LOCK    "
-		if B738DR_throttle_noise == 0 then
-			line3_g = " OFF"
+		line3_x = " TIRE BLOWN ADVANCED    "
+		if B738DR_tire_blown == 0 then
+			line3_l = "<   /                   "
+			line3_g = " OFF                    "
+			line3_s = "     ON                 "
 		else
-			line3_g = "  " .. string.format("%2d", B738DR_throttle_noise)
+			line3_l = "<   /                   "
+			line3_g = "     ON                 "
+			line3_s = " OFF                    "
 		end
-		line3_l = "<     /OFF,1-10/"
-		-- line3_s = "                        "
-		line4_x = " FUEL GAUGE             "
-		if B738DR_fuelgauge == 0 then
-			line4_l = "<          /            "
-			line4_g = " SIDEBYSIDE             "
-			line4_s = "            OVERUNDER   "
-		else
-			line4_l = "<          /            "
-			line4_g = "            OVERUNDER   "
-			line4_s = " SIDEBYSIDE             "
-		end
-		line5_x = " NOSEWHEEL AXIS         "
-		if B738DR_nosewheel == 0 then
-			line5_l = "<  /   /    /           "
-			line5_g = " ON                     "
-			line5_s = "    YAW ROLL VR         "
-		elseif B738DR_nosewheel == 1 then
-			line5_l = "<  /   /    /           "
-			line5_g = "    YAW                 "
-			line5_s = " ON     ROLL VR         "
-		elseif B738DR_nosewheel == 2 then
-			line5_l = "<  /   /    /           "
-			line5_g = "        ROLL            "
-			line5_s = " ON YAW      VR         "
-		elseif B738DR_nosewheel == 3 then
-			line5_l = "<  /   /    /           "
-			line5_g = "             VR         "
-			line5_s = " ON YAW ROLL            "
-		end
-		-- line6_x = "                        "
 		line6_l = "<DEFAULT           BACK>"
-		-- line6_s = "                        "
-	elseif page_xtras_others == 3 then
-		act_page = 3
-		max_page = 6
+	end
+end
+
+function fmc_xtras_realism(fmod_butt, fmc_side)
+	
+	local page_tmp = page_xtras_realism
+	
+	if fmc_side ~= 0 then
+		page_tmp = page_xtras_realism2
+	end
+	
+	if page_tmp == 1 then
+		if fmod_butt == 1 then
+			-- Allign time
+			if B738DR_align_time == 0 then
+				B738DR_align_time = 1
+			elseif B738DR_align_time == 1 then
+				B738DR_align_time = 2
+			else
+				B738DR_align_time = 0
+			end
+		elseif fmod_butt == 2 then
+			-- Pause T/D
+			B738CMD_pause_td_toggle:once()
+		elseif fmod_butt == 3 then
+			-- Tire blown advanced
+			if B738DR_tire_blown == 0 then
+				B738DR_tire_blown = 1
+			else
+				B738DR_tire_blown = 0
+			end
+		end
+	end
+end
+
+function B738_fmc_xtras_optional()
+	
+	if page_xtras_optional == 1 then
+		act_page = 1
+		max_page = 1
 		
-		line0_l = " OTHER CONFIG           "
-		line0_s = "                    3/6 "
-		line1_x = " FLIGHTPLAN SAVE FORMAT "
-		if B738DR_fpln_format == 0 then
-			line1_l = "<   /                   "
-			line1_g = " FMX                    "
-			line1_s = "     FMS                "
+		line0_l = " OPTIONAL ACCESSORY     "
+		line0_s = "                    1/1 "
+		line1_x = " FUEL GAUGE             "
+		if B738DR_fuelgauge == 0 then
+			line1_l = "<          /            "
+			line1_g = " SIDEBYSIDE             "
+			line1_s = "            OVERUNDER   "
 		else
-			line1_l = "<   /                   "
-			line1_g = "     FMS                "
-			line1_s = " FMX                    "
+			line1_l = "<          /            "
+			line1_g = "            OVERUNDER   "
+			line1_s = " SIDEBYSIDE             "
 		end
 		line2_x = " ND DISPLAY             "
 		if B738DR_track_up == 1 then
@@ -43071,67 +43173,6 @@ function B738_fmc_xtras_others()
 			line2_g = "          HEADING-UP    "
 			line2_s = " TRACK-UP               "
 		end
-		line3_x = " BARO UNITS             "
-		if B738DR_baro_in_hpa == 0 then
-			line3_l = "<  /                    "
-			line3_g = " IN                     "
-			line3_s = "    HPA                 "
-		else
-			line3_l = "<  /                    "
-			line3_g = "    HPA                 "
-			line3_s = " IN                     "
-		end
-		line4_x = " MINIMUMS BARO/RADIO    "
-		if B738DR_min_baro_radio == 0 then
-			line4_l = "<     /                 "
-			line4_g = " RADIO                  "
-			line4_s = "       BARO             "
-		else
-			line4_l = "<     /                 "
-			line4_g = "       BARO             "
-			line4_s = " RADIO                  "
-		end
-		line5_x = " WINDSHIELD EFFECTS     "
-		if B738DR_kill_windshield == 0 then
-			line5_l = "<  /  /                 "
-			line5_g = " ON                     "
-			line5_s = "    XE OFF              "
-		elseif B738DR_kill_windshield == 1 then
-			line5_l = "<  /  /                 "
-			line5_g = "    XE                  "
-			line5_s = " ON    OFF              "
-		else
-			line5_l = "<  /  /                 "
-			line5_g = "       OFF              "
-			line5_s = " ON XE                  "
-		end
-		line6_l = "<DEFAULT           BACK>"
-	elseif page_xtras_others == 4 then
-		act_page = 4
-		max_page = 6
-		
-		line0_l = " OTHER CONFIG           "
-		line0_s = "                    4/6 "
-		line1_x = " WINDSHIELD REFLECTION  "
-		if B738DR_hide_glass == 0 then
-			line1_l = "<   /                   "
-			line1_g = "     ON                 "
-			line1_s = " OFF                    "
-		else
-			line1_l = "<   /                   "
-			line1_g = " OFF                    "
-			line1_s = "     ON                 "
-		end
-		line2_x = " TIRE BLOWN ADVANCED    "
-		if B738DR_tire_blown == 0 then
-			line2_l = "<   /                   "
-			line2_g = " OFF                    "
-			line2_s = "     ON                 "
-		else
-			line2_l = "<   /                   "
-			line2_g = "     ON                 "
-			line2_s = " OFF                    "
-		end
 		line3_x = " ND DISTANCE RINGS      "
 		if B738DR_nd_rings == 0 then
 			line3_l = "<  /                    "
@@ -43142,18 +43183,18 @@ function B738_fmc_xtras_others()
 			line3_g = "    YES                 "
 			line3_s = " NO                     "
 		end
-		line4_x = " GAUGES REFLECTION      "
-		if B738DR_hide_gauges_reflection == 0 then
-			line4_l = "<   /                   "
-			line4_g = "     ON                 "
-			line4_s = " OFF                    "
-		else
+		line4_x = " LDU FLIGHT CONTROL     "
+		if B738DR_flight_ctrl == 0 then
 			line4_l = "<   /                   "
 			line4_g = " OFF                    "
 			line4_s = "     ON                 "
+		else
+			line4_l = "<   /                   "
+			line4_g = "     ON                 "
+			line4_s = " OFF                    "
 		end
-		line5_x = " LDU FLIGHT CONTROL     "
-		if B738DR_flight_ctrl == 0 then
+		line5_x = " LDU BRAKE TEMPERATURE  "
+		if B738DR_brake_temp == 0 then
 			line5_l = "<   /                   "
 			line5_g = " OFF                    "
 			line5_s = "     ON                 "
@@ -43163,29 +43204,118 @@ function B738_fmc_xtras_others()
 			line5_s = " OFF                    "
 		end
 		line6_l = "<DEFAULT           BACK>"
-	elseif page_xtras_others == 5 then
-		act_page = 5
-		max_page = 6
+	end
+end
+
+function fmc_xtras_optional(fmod_butt, fmc_side)
+	
+	local page_tmp = page_xtras_optional
+	
+	if fmc_side ~= 0 then
+		page_tmp = page_xtras_optional2
+	end
+	
+	if page_tmp == 1 then
+		if fmod_butt == 1 then
+			-- Fuel gauges
+			if B738DR_fuelgauge == 0 then
+				B738DR_fuelgauge = 1
+			else
+				B738DR_fuelgauge = 0
+			end
+		elseif fmod_butt == 2 then
+			-- ND Track-up/Heading-up
+			if B738DR_track_up == 0 then
+				B738DR_track_up = 1
+			else
+				B738DR_track_up = 0
+			end
+		elseif fmod_butt == 3 then
+			-- ND distance rings
+			if B738DR_nd_rings == 0 then
+				B738DR_nd_rings = 1
+			else
+				B738DR_nd_rings = 0
+			end
+		elseif fmod_butt == 4 then
+			-- LDU Flight control
+			if B738DR_flight_ctrl == 0 then
+				B738DR_flight_ctrl = 1
+			else
+				B738DR_flight_ctrl = 0
+			end
+		elseif fmod_butt == 5 then
+			-- LDU Brake temperature
+			if B738DR_brake_temp == 0 then
+				B738DR_brake_temp = 1
+			else
+				B738DR_brake_temp = 0
+			end
+		end
+	end
+end
+
+function B738_fmc_xtras_hardware()
+	
+	if page_xtras_hardware == 1 then
+		act_page = 1
+		max_page = 2
 		
-		line0_l = " OTHER CONFIG           "
-		line0_s = "                    5/6 "
-		line1_x = " LDU BRAKE TEMPERATURE  "
-		if B738DR_brake_temp == 0 then
-			line1_l = "<   /                   "
-			line1_g = " OFF                    "
-			line1_s = "     ON                 "
-		else
+		line0_l = " HARDWARE               "
+		line0_s = "                    1/2 "
+		line1_x = " TOE BRAKE AXIS         "
+		if B738DR_toe_brakes_ovr == 0 then
 			line1_l = "<   /                   "
 			line1_g = "     ON                 "
 			line1_s = " OFF                    "
+		else
+			line1_l = "<   /                   "
+			line1_g = " OFF                    "
+			line1_s = "     ON                 "
+		end
+		line2_x = " NOSEWHEEL AXIS         "
+		if B738DR_nosewheel == 0 then
+			line2_l = "<  /   /    /           "
+			line2_g = " ON                     "
+			line2_s = "    YAW ROLL VR         "
+		elseif B738DR_nosewheel == 1 then
+			line2_l = "<  /   /    /           "
+			line2_g = "    YAW                 "
+			line2_s = " ON     ROLL VR         "
+		elseif B738DR_nosewheel == 2 then
+			line2_l = "<  /   /    /           "
+			line2_g = "        ROLL            "
+			line2_s = " ON YAW      VR         "
+		elseif B738DR_nosewheel == 3 then
+			line2_l = "<  /   /    /           "
+			line2_g = "             VR         "
+			line2_s = " ON YAW ROLL            "
+		end
+		line3_x = " THROTTLE NOISE LOCK    "
+		if B738DR_throttle_noise == 0 then
+			line3_g = " OFF"
+		else
+			line3_g = "  " .. string.format("%2d", B738DR_throttle_noise)
+		end
+		line3_l = "<     /OFF,1-10/"
+		line4_x = " PARKBRAKE REMOVE CHOCKS"
+		if B738DR_parkbrake_remove_chock == 0 then
+			line4_l = "<   /                   "
+			line4_g = " OFF                    "
+			line4_s = "     ON                 "
+		else
+			line4_l = "<   /                   "
+			line4_g = "     ON                 "
+			line4_s = " OFF                    "
 		end
 		line6_l = "<DEFAULT           BACK>"
-	elseif page_xtras_others == 6 then
-		act_page = 6
-		max_page = 6
+	elseif page_xtras_hardware == 2 then
+		act_page = 2
+		max_page = 2
 		
-		line0_l = " OTHER CONFIG           "
-		line0_s = "                    6/6 "
+		line0_l = " HARDWARE               "
+		line0_s = "                    2/2 "
+		
 		line1_x = " PITCH NULL ZONE        "
 		line1_g = "      " .. string.format("%2d", simDR_pitch_nz * 100)
 		line1_l = "<           /0-30/     >"
@@ -43195,6 +43325,262 @@ function B738_fmc_xtras_others()
 		line3_x = " YAW NULL ZONE          "
 		line3_g = "      " .. string.format("%2d", simDR_yaw_nz * 100)
 		line3_l = "<           /0-30/     >"
+		line6_l = "<DEFAULT           BACK>"
+	end
+	
+end
+
+function fmc_xtras_hardware(fmod_butt, fmc_side)
+	
+	local page_tmp = page_xtras_hardware
+	
+	if fmc_side ~= 0 then
+		page_tmp = page_xtras_hardware2
+	end
+	
+	if page_tmp == 1 then
+		if fmod_butt == 1 then
+			-- TOE brake axis
+			if B738DR_toe_brakes_ovr == 0 then
+				B738DR_toe_brakes_ovr = 1
+			else
+				B738DR_toe_brakes_ovr = 0
+			end
+		elseif fmod_butt == 2 then
+			-- Nosewheel axis
+			if B738DR_nosewheel == 0 then
+				B738DR_nosewheel = 1
+			elseif B738DR_nosewheel == 1 then
+				B738DR_nosewheel = 2
+			elseif B738DR_nosewheel == 2 then
+				B738DR_nosewheel = 3
+			else
+				B738DR_nosewheel = 0
+			end
+		elseif fmod_butt == 3 then
+			-- Throttle noise lock
+			if B738DR_throttle_noise >= 0 and B738DR_throttle_noise < 10 then
+				B738DR_throttle_noise = B738DR_throttle_noise + 1
+			else
+				B738DR_throttle_noise = 0
+			end
+		elseif fmod_butt == 4 then
+			-- Parking brake remove chock
+			if B738DR_parkbrake_remove_chock == 0 then
+				B738DR_parkbrake_remove_chock = 1
+			else
+				B738DR_parkbrake_remove_chock = 0
+			end
+		end
+	elseif page_tmp == 2 then
+		-- LSK buttons
+		if fmod_butt == 1 then
+			if simDR_pitch_nz <= 0 then
+				simDR_pitch_nz = 0.30
+			else
+				simDR_pitch_nz = simDR_pitch_nz - 0.01
+			end
+		elseif fmod_butt == 2 then
+			if simDR_roll_nz <= 0 then
+				simDR_roll_nz = 0.30
+			else
+				simDR_roll_nz = simDR_roll_nz - 0.01
+			end
+		elseif fmod_butt == 3 then
+			if simDR_yaw_nz <= 0 then
+				simDR_yaw_nz = 0.30
+			else
+				simDR_yaw_nz = simDR_yaw_nz - 0.01
+			end
+		-- elseif fmod_butt == 4 then
+		-- elseif fmod_butt == 5 then
+		
+		-- RSK button
+		elseif fmod_butt == 6 then
+			if simDR_pitch_nz < 0.30 then
+				simDR_pitch_nz = simDR_pitch_nz + 0.01
+			else
+				simDR_pitch_nz = 0
+			end
+		elseif fmod_butt == 7 then
+			if simDR_roll_nz < 0.30 then
+				simDR_roll_nz = simDR_roll_nz + 0.01
+			else
+				simDR_roll_nz = 0
+			end
+		elseif fmod_butt == 8 then
+			if simDR_yaw_nz < 0.30 then
+				simDR_yaw_nz = simDR_yaw_nz + 0.01
+			else
+				simDR_yaw_nz = 0
+			end
+		-- elseif fmod_butt == 9 then
+		-- elseif fmod_butt == 10 then
+		end
+	end
+end
+
+function B738_fmc_xtras_config()
+	
+	if page_xtras_config == 1 then
+		act_page = 1
+		max_page = 2
+		
+		line0_l = " CONFIG                 "
+		line0_s = "                    1/2 "
+		
+		line1_x = " GLOBAL UNITS           "
+		if B738DR_fmc_units == 0 then
+			line1_l = "<   /                   "
+			line1_g = " LBS                    "
+			line1_s = "     KGS                "
+		else
+			line1_l = "<   /                   "
+			line1_g = "     KGS                "
+			line1_s = " LBS                    "
+		end
+		line2_x = " BARO UNITS             "
+		if B738DR_baro_in_hpa == 0 then
+			line2_l = "<  /                    "
+			line2_g = " IN                     "
+			line2_s = "    HPA                 "
+		else
+			line2_l = "<  /                    "
+			line2_g = "    HPA                 "
+			line2_s = " IN                     "
+		end
+		line3_x = " MINIMUMS BARO/RADIO    "
+		if B738DR_min_baro_radio == 0 then
+			line3_l = "<     /                 "
+			line3_g = " RADIO                  "
+			line3_s = "       BARO             "
+		else
+			line3_l = "<     /                 "
+			line3_g = "       BARO             "
+			line3_s = " RADIO                  "
+		end
+		line4_x = " HIDE YOKE              "
+		if simDR_hide_yoke == 0 then
+			line4_l = "<    /                  "
+			line4_g = " HIDE                   "
+			line4_s = "      SHOW              "
+		else
+			line4_l = "<    /                  "
+			line4_g = "      SHOW              "
+			line4_s = " HIDE                   "
+		end
+		line5_x = " CHOCK                  "
+		if B738DR_chock_status == 0 then
+			line5_l = "<   /                   "
+			line5_g = " OFF                    "
+			line5_s = "     ON                 "
+		else
+			line5_l = "<   /                   "
+			line5_g = "     ON                 "
+			line5_s = " OFF                    "
+		end
+		line6_l = "<DEFAULT           BACK>"
+	elseif page_xtras_config == 2 then
+		line1_x = " ENGINE NO RUNNING STATE"
+		if B738DR_engine_no_running_state == 0 then
+			line1_l = "<         /             "
+			line1_g = " COLD-DARK              "
+			line1_s = "           TURN AROUND  "
+		else
+			line1_l = "<         /             "
+			line1_g = "           TURN AROUND  "
+			line1_s = " COLD-DARK              "
+		end
+		line2_x = " FLIGHTPLAN SAVE FORMAT "
+		if B738DR_fpln_format == 0 then
+			line2_l = "<   /                   "
+			line2_g = " FMX                    "
+			line2_s = "     FMS                "
+		else
+			line2_l = "<   /                   "
+			line2_g = "     FMS                "
+			line2_s = " FMX                    "
+		end
+		line6_l = "<DEFAULT           BACK>"
+	end
+	
+end
+
+function fmc_xtras_config(fmod_butt, fmc_side)
+	
+	local page_tmp = page_xtras_config
+	
+	if fmc_side ~= 0 then
+		page_tmp = page_xtras_config2
+	end
+	
+	if page_tmp == 1 then
+		if fmod_butt == 1 then
+			-- Global units LBS/KGS
+			if units == 0 then
+				units = 1
+			else
+				units = 0
+			end
+			units_recalc = 1
+		elseif fmod_butt == 2 then
+			-- Baro IN/HPA
+			if B738DR_baro_in_hpa == 0 then
+				B738DR_baro_in_hpa = 1
+			else
+				B738DR_baro_in_hpa = 0
+			end
+		elseif fmod_butt == 3 then
+			-- Minimums BARO/RADIO
+			if B738DR_min_baro_radio == 0 then
+				B738DR_min_baro_radio = 1
+			else
+				B738DR_min_baro_radio = 0
+			end
+		elseif fmod_butt == 4 then
+			-- Yooke show/hide
+			if simDR_hide_yoke == 0 then
+				simDR_hide_yoke = 1
+			else
+				simDR_hide_yoke = 0
+			end
+		elseif fmod_butt == 5 then
+			-- Chocks show/hide
+			B738CMD_chock_toggle:once()
+		end
+	elseif page_tmp == 2 then
+		if fmod_butt == 1 then
+			-- Turn around state
+			if B738DR_engine_no_running_state == 0 then
+				B738DR_engine_no_running_state = 1
+			else
+				B738DR_engine_no_running_state = 0
+			end
+		elseif fmod_butt == 2 then
+			-- Save flightplan format
+			if B738DR_fpln_format == 0 then
+				B738DR_fpln_format = 1
+			else
+				B738DR_fpln_format = 0
+			end
+		end
+	end
+	
+end
+
+function B738_fmc_xtras_others()
+
+	if page_xtras_others == 1 then
+		act_page = 1
+		max_page = 1
+		
+		line0_l = " OTHER CONFIG           "
+		line0_s = "                    1/1 "
+		line1_l = "<REALISM                "
+		line2_l = "<OPTIONAL ACCESSORY     "
+		line3_l = "<VISUAL EFFECTS         "
+		line4_l = "<CONFIG                 "
+		line5_l = "<HARDWARE               "
 		line6_l = "<DEFAULT           BACK>"
 	end
 end
@@ -50959,6 +51345,16 @@ function B738_fmc_disp_capt()
 		-- B738_fmc_fmod_dspl()
 	elseif page_xtras_others > 0 then
 		B738_fmc_xtras_others()
+	elseif page_xtras_visual > 0 then
+		B738_fmc_xtras_visual()
+	elseif page_xtras_realism > 0 then
+		B738_fmc_xtras_realism()
+	elseif page_xtras_optional > 0 then
+		B738_fmc_xtras_optional()
+	elseif page_xtras_config > 0 then
+		B738_fmc_xtras_config()
+	elseif page_xtras_hardware > 0 then
+		B738_fmc_xtras_hardware()
 	elseif page_xtras_fuel > 0 then
 		B738_fmc_fuel()
 	elseif page_ref_nav_data > 0 then
@@ -51044,6 +51440,11 @@ function B738_fmc_disp_fo()
 	local page_ac_00 = page_ac
 	local page_ac_atis_00 = page_ac_atis
 	local page_ac_msg_00 = page_ac_msg
+	local page_xtras_visual_00 = page_xtras_visual
+	local page_xtras_realism_00 = page_xtras_realism
+	local page_xtras_optional_00 = page_xtras_optional
+	local page_xtras_config_00 = page_xtras_config
+	local page_xtras_hardware_00 = page_xtras_hardware
 	
 	act_page = act_page2
 	max_page = max_page2
@@ -51097,6 +51498,11 @@ function B738_fmc_disp_fo()
 	page_ac = page_ac2
 	page_ac_atis = page_ac_atis2
 	page_ac_msg = page_ac_msg2
+	page_xtras_visual = page_xtras_visual2
+	page_xtras_realism = page_xtras_realism2
+	page_xtras_optional = page_xtras_optional2
+	page_xtras_config = page_xtras_config2
+	page_xtras_hardware = page_xtras_hardware2
 	
 	
 	if page_menu > 0 then
@@ -51154,6 +51560,16 @@ function B738_fmc_disp_fo()
 		B738_fmc_fmod_main()
 	elseif page_xtras_others > 0 then
 		B738_fmc_xtras_others()
+	elseif page_xtras_visual > 0 then
+		B738_fmc_xtras_visual()
+	elseif page_xtras_realism > 0 then
+		B738_fmc_xtras_realism()
+	elseif page_xtras_optional > 0 then
+		B738_fmc_xtras_optional()
+	elseif page_xtras_config > 0 then
+		B738_fmc_xtras_config()
+	elseif page_xtras_hardware > 0 then
+		B738_fmc_xtras_hardware()
 	elseif page_xtras_fuel > 0 then
 		B738_fmc_fuel()
 	elseif page_ref_nav_data > 0 then
@@ -51230,6 +51646,11 @@ function B738_fmc_disp_fo()
 	page_ac = page_ac_00
 	page_ac_atis = page_ac_atis_00
 	page_ac_msg = page_ac_msg_00
+	page_xtras_visual = page_xtras_visual_00
+	page_xtras_realism = page_xtras_realism_00
+	page_xtras_optional = page_xtras_optional_00
+	page_xtras_config = page_xtras_config_00
+	page_xtras_hardware = page_xtras_hardware_00
 	
 	B738_fmc_display2()
 
@@ -73487,7 +73908,7 @@ temp_ils4 = ""
 	B738DR_legs_mod_active = 0
 	fms_recalc = 0
 	
-	version = "v3.26v"
+	version = "v3.26w"
 
 end
 

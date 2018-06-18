@@ -77,6 +77,13 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26w:
+------
+- rewriten FMC menu
+- add buttons AP disengage for captain and first officier on yoke
+- add moveable checklist bug (yellow knob) for captain and first officier on yoke
+- add EGT start redline on EICAS
+
 3.26v:
 ------
 - corrected electrical systems

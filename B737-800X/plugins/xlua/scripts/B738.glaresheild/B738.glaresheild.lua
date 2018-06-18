@@ -478,6 +478,9 @@ rudder_target = 0
 hdg_ratio_old = 0
 hdg_ratio = 0
 
+ap_capt_disco_status = 0
+ap_fo_disco_status = 0
+
 -- AP_airspeed = 0
 -- AP_airspeed_mach = 0
 
@@ -1586,6 +1589,12 @@ function B738DR_reverse_both_DRhandler()
 	
 end
 
+
+function B738DR_yoke_capt_ap_disengage_DRhandler() end
+function B738DR_yoke_fo_ap_disengage_DRhandler() end
+function B738DR_yoke_capt_checklist_DRhandler() end
+function B738DR_yoke_fo_checklist_DRhandler() end
+
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
@@ -1615,6 +1624,11 @@ B738DR_test_test2			= create_dataref("laminar/B738/test_test2", "number", B738DR
 
 -----
 --B738DR_changed_flight_phase = create_dataref("laminar/B738/changed_flight_phase", "number", B738DR_changed_flight_phase_DRhandler)
+
+B738DR_yoke_capt_ap_disengage	= create_dataref("laminar/B738/capt/yoke_ap_disengage", "number", B738DR_yoke_capt_ap_disengage_DRhandler)
+B738DR_yoke_fo_ap_disengage		= create_dataref("laminar/B738/fo/yoke_ap_disengage", "number", B738DR_yoke_fo_ap_disengage_DRhandler)
+B738DR_yoke_capt_checklist		= create_dataref("laminar/B738/capt/yoke_checklist", "number", B738DR_yoke_capt_checklist_DRhandler)
+B738DR_yoke_fo_checklist		= create_dataref("laminar/B738/fo/yoke_checklist", "number", B738DR_yoke_fo_checklist_DRhandler)
 
 B738DR_test_glare			= create_dataref("laminar/B738/test_glare", "number", B738DR_test_glare_DRhandler)
 
@@ -4389,6 +4403,9 @@ function B738_autopilot_cmd_a_press_CMDhandler(phase, duration)
 				else
 					autopilot_cmd_a_status = 1
 					ap_dis_time = 0
+					ap_capt_disco_status = 0
+					ap_fo_disco_status = 0
+					
 					if autopilot_cmd_b_status == 1
 					and simDR_approach_status == 2
 					and B738DR_autopilot_vhf_source_pos == 0 
@@ -4500,8 +4517,8 @@ function B738_autopilot_cmd_a_press_CMDhandler(phase, duration)
 				simDR_flight_dir_mode = 1
 
 				autopilot_cmd_a_status = 0
---				ap_roll_mode_eng = 0
---				ap_pitch_mode_eng = 0
+				ap_capt_disco_status = 1
+				ap_fo_disco_status = 1
 			end
 		end
 	elseif phase == 2 then
@@ -4537,6 +4554,9 @@ function B738_autopilot_cmd_b_press_CMDhandler(phase, duration)
 				else
 					autopilot_cmd_b_status = 1
 					ap_dis_time = 0
+					ap_capt_disco_status = 0
+					ap_fo_disco_status = 0
+					
 					if autopilot_cmd_a_status == 1
 					and simDR_approach_status == 2
 					and B738DR_autopilot_vhf_source_pos == 0 
@@ -4647,8 +4667,8 @@ function B738_autopilot_cmd_b_press_CMDhandler(phase, duration)
 				simDR_flight_dir_mode = 1
 
 				autopilot_cmd_b_status = 0
---				ap_roll_mode_eng = 0
---				ap_pitch_mode_eng = 0
+				ap_capt_disco_status = 1
+				ap_fo_disco_status = 1
 			end
 		end
 	elseif phase == 2 then
@@ -4675,6 +4695,8 @@ function B738_autopilot_cws_a_press_CMDhandler(phase, duration)
 			if B738DR_autopilot_lnav_status == 0 then
 				autopilot_fms_nav_status = 0
 			end
+			ap_capt_disco_status = 0
+			ap_fo_disco_status = 0
 		elseif autopilot_cws_a_status == 1  and B738DR_fd_on == 1 and ap_app_block == 0 then
 			simCMD_autopilot_cws:stop()
 			autopilot_cws_a_status = 0
@@ -4710,6 +4732,8 @@ function B738_autopilot_cws_b_press_CMDhandler(phase, duration)
 				--simDR_autopilot_side = 0
 				autopilot_side = 0
 			end
+			ap_capt_disco_status = 0
+			ap_fo_disco_status = 0
 		elseif autopilot_cws_b_status == 1  and B738DR_fd_on == 1 and ap_app_block == 0 then
 			simCMD_autopilot_cws:stop()
 			autopilot_cws_b_status = 0
@@ -5690,6 +5714,89 @@ function B738_mic_CMDhandler(phase, duration)
 	end
 end
 
+
+function B738_ap_capt_dis_press_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_yoke_capt_ap_disengage = 1
+		if ap_capt_disco_status == 0 then
+			if autopilot_cmd_a_status == 1 then
+				simDR_flight_dir_mode = 1
+				autopilot_cmd_a_status = 0
+				ap_disco2 = 1
+			end
+			if autopilot_cmd_b_status == 1 then
+				simDR_flight_dir_mode = 1
+				autopilot_cmd_b_status = 0
+				ap_disco2 = 1
+			end
+			if autopilot_cws_a_status == 1 then
+				simCMD_autopilot_cws:stop()
+				autopilot_cws_a_status = 0
+				simDR_flight_dir_mode = 1
+				ap_roll_mode_eng = 0
+				ap_pitch_mode_eng = 0
+				ap_disco2 = 1
+			end
+			if autopilot_cws_b_status == 1 then
+				simCMD_autopilot_cws:stop()
+				autopilot_cws_b_status = 0
+				simDR_flight_dir_mode = 1
+				ap_roll_mode_eng = 0
+				ap_pitch_mode_eng = 0
+				ap_disco2 = 1
+			end
+			ap_capt_disco_status = 1
+		else
+			B738DR_ap_light_pilot = 1
+			ap_capt_disco_status = 0
+		end
+	elseif phase == 2 then
+		B738DR_yoke_capt_ap_disengage = 0
+		B738DR_ap_light_pilot = 0
+	end
+end
+
+function B738_ap_fo_dis_press_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_yoke_fo_ap_disengage = 1
+		if ap_fo_disco_status == 0 then
+			if autopilot_cmd_a_status == 1 then
+				simDR_flight_dir_mode = 1
+				autopilot_cmd_a_status = 0
+				ap_disco2 = 1
+			end
+			if autopilot_cmd_b_status == 1 then
+				simDR_flight_dir_mode = 1
+				autopilot_cmd_b_status = 0
+				ap_disco2 = 1
+			end
+			if autopilot_cws_a_status == 1 then
+				simCMD_autopilot_cws:stop()
+				autopilot_cws_a_status = 0
+				simDR_flight_dir_mode = 1
+				ap_roll_mode_eng = 0
+				ap_pitch_mode_eng = 0
+				ap_disco2 = 1
+			end
+			if autopilot_cws_b_status == 1 then
+				simCMD_autopilot_cws:stop()
+				autopilot_cws_b_status = 0
+				simDR_flight_dir_mode = 1
+				ap_roll_mode_eng = 0
+				ap_pitch_mode_eng = 0
+				ap_disco2 = 1
+			end
+			ap_fo_disco_status = 1
+		else
+			B738DR_ap_light_fo = 1
+			ap_fo_disco_status = 0
+		end
+	elseif phase == 2 then
+		B738DR_yoke_fo_ap_disengage = 0
+		B738DR_ap_light_fo = 0
+	end
+end
+
 --*************************************************************************************--
 --** 				              CREATE CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -5701,6 +5808,10 @@ B738CMD_autopilot_right_toga_press	= create_command("laminar/B738/autopilot/righ
 
 B738CMD_autopilot_left_atds_press	= create_command("laminar/B738/autopilot/left_at_dis_press", "Left A/T disengage", B738_ap_left_atds_press_CMDhandler)
 B738CMD_autopilot_right_atds_press	= create_command("laminar/B738/autopilot/right_at_dis_press", "Right A/T disengage", B738_ap_right_atds_press_CMDhandler)
+
+B738CMD_autopilot_capt_disco_press	= create_command("laminar/B738/autopilot/capt_disco_press", "Captain A/P disengage", B738_ap_capt_dis_press_CMDhandler)
+B738CMD_autopilot_fo_disco_press	= create_command("laminar/B738/autopilot/fo_disco_press", "FO A/P disengage", B738_ap_fo_dis_press_CMDhandler)
+
 
 -- CAPT and F/O minimums
 B738CMD_fo_minimums_up = create_command("laminar/B738/EFIS_control/fo/minimums_up", "FO Minimums select up", B738_fo_minimums_up_CMDhandler)
@@ -12050,10 +12161,14 @@ function B738_ap_at_disconnect()
 	if B738DR_autopilot_disco2 == 1 and ap_disco2 == 0 then
 		ap_dis_enable = 0
 		ap_dis_time = 0
+		ap_capt_disco_status = 0
+		ap_fo_disco_status = 0
 	end
 	if B738DR_ap_light_pilot == 1 or B738DR_ap_light_fo == 1 then
 		ap_dis_enable = 0
 		ap_dis_time = 0
+		ap_capt_disco_status = 0
+		ap_fo_disco_status = 0
 	end
 	if B738DR_at_light_pilot == 1 or B738DR_at_light_fo == 1 then
 		at_dis_enable = 0
@@ -17813,11 +17928,17 @@ fo_exp_vor_app_mode = 1
 AP_airspeed = 0
 AP_airspeed_mach = 0
 
+B738DR_yoke_capt_checklist = 1
+B738DR_yoke_fo_checklist = 1
+ap_capt_disco_status = 0
+ap_fo_disco_status = 0
+
 B738DR_kp = 9.0		--10.5
 B738DR_ki = 1.6		--1.8		--0.5
 B738DR_kd = 1.0		--1.3		--1.5		--1.2
 B738DR_kf = 60		--6.0
 B738DR_bias = 6
+
 
 --B738DR_test_test = 1.0
 --B738DR_test_test2 = 2.0
