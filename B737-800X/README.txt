@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.27d:
+------
+- fixed Nose wheel steering switch with cover for 4k version
+- fixed radio panel (ON-OFF), Audio sel COM1/COM2
+
 3.27c:
 ------
 - add TAI transfer valve annun on EICAS

@@ -649,6 +649,9 @@ B738DR_flaps_test_pos		= find_dataref("laminar/B738/push_button/flaps_test_pos")
 
 B738DR_parking_brake_pos	= find_dataref("laminar/B738/parking_brake_pos")
 
+B738DR_audio_sel_com1		= find_dataref("laminar/B738/comm/audio_sel_com1")
+B738DR_audio_sel_com2		= find_dataref("laminar/B738/comm/audio_sel_com2")
+
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -2235,8 +2238,11 @@ function B738_annunciators()
 
 -- AUDIO PANEL
 
-	B738DR_audio_panel_indicator_com1 = simDR_audio_selection_com1 * brightness_level
-	B738DR_audio_panel_indicator_com2 = simDR_audio_selection_com2 * brightness_level
+	-- B738DR_audio_panel_indicator_com1 = simDR_audio_selection_com1 * brightness_level
+	-- B738DR_audio_panel_indicator_com2 = simDR_audio_selection_com2 * brightness_level
+	B738DR_audio_panel_indicator_com1 = B738DR_audio_sel_com1 * brightness_level
+	B738DR_audio_panel_indicator_com2 = B738DR_audio_sel_com2 * brightness_level
+	
 	B738DR_audio_panel_indicator_nav1 = simDR_audio_selection_nav1 * brightness_level
 	B738DR_audio_panel_indicator_nav2 = simDR_audio_selection_nav2 * brightness_level
 	B738DR_audio_panel_indicator_marker = simDR_audio_selection_marker * brightness_level

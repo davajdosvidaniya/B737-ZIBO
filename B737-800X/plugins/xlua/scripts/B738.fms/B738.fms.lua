@@ -75091,7 +75091,7 @@ temp_ils4 = ""
 	B738DR_des_rwy_altitude = 0
 	B738DR_pfd_rwy_show = 0
 	
-	version = "v3.27c"
+	version = "v3.27d"
 
 end
 

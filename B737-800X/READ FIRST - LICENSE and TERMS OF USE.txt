@@ -15,6 +15,13 @@ You may download and use the provided files as you wish, but you may not:
 - use them for commercial or non-commercial products without the express permission by the authors (see contacts below)
 - take credit for any part
 
+You may create liveries and also modify and share textures if part of the livery, as long as
+a) you do not charge for it (that includes mandatory donations)
+b) you credit the original authors
+c) you don't use them for another project
+
+If you are unsure or if would like to get permission for something, you are invited to use the provided contacts for any questions.
+
 By installing and using any files provided with the download, you acknowledge that the author is not responsible for any potential harm they might cause either to you, 
 other people, your hardware or software.
 Any files in this download are provided "as is".

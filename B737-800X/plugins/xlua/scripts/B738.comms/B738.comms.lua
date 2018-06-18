@@ -58,9 +58,10 @@ ac_tnsbus2_status_old = 0
 
 simDR_startup_running       = find_dataref("sim/operation/prefs/startup_running")
 
-
-
-
+simDR_com1_power 			= find_dataref("sim/cockpit2/radios/actuators/com1_power")
+simDR_com2_power 			= find_dataref("sim/cockpit2/radios/actuators/com2_power")
+simDR_audio_sel_com1		= find_dataref("sim/cockpit2/radios/actuators/audio_selection_com1")
+simDR_audio_sel_com2		= find_dataref("sim/cockpit2/radios/actuators/audio_selection_com2")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM DATAREFS             			    	 **--
@@ -114,6 +115,9 @@ B738DR_com2_audio_sel_pos			= create_dataref("laminar/B738/comm/com2_audio_sel_p
 B738DR_nav1_audio_sel_pos			= create_dataref("laminar/B738/comm/nav1_audio_sel_pos", "number")
 B738DR_nav2_audio_sel_pos			= create_dataref("laminar/B738/comm/nav2_audio_sel_pos", "number")
 B738DR_mark_audio_sel_pos			= create_dataref("laminar/B738/comm/mark_audio_sel_pos", "number")
+
+B738DR_audio_sel_com1				= create_dataref("laminar/B738/comm/audio_sel_com1", "number")
+B738DR_audio_sel_com2				= create_dataref("laminar/B738/comm/audio_sel_com2", "number")
 
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
@@ -172,6 +176,11 @@ simCMD_audio_nav1 			= find_command("sim/audio_panel/monitor_audio_nav1")
 simCMD_audio_nav2 			= find_command("sim/audio_panel/monitor_audio_nav2")
 simCMD_audio_mark 			= find_command("sim/audio_panel/monitor_audio_mkr")
 
+simCMD_com1_on				= find_command("sim/radios/power_com1_on")
+simCMD_com1_off				= find_command("sim/radios/power_com1_off")
+simCMD_com2_on				= find_command("sim/radios/power_com2_on")
+simCMD_com2_off				= find_command("sim/radios/power_com2_off")
+
 --*************************************************************************************--
 --** 				              CUSTOM COMMAND HANDLERS            			     **--
 --*************************************************************************************--
@@ -185,10 +194,12 @@ function B738_rtp_L_off_switch_CMDhandler(phase, duration)
 				B738DR_rtp_L_lcd_to_display = 90
 				B738_radio_sel_swap(0, 0, 0, 0, 0, 0, 0)
 				B738DR_rtp_L_offside_tuning_status = 0
+				simCMD_com1_off:once()
 			elseif B738DR_rtp_L_off_status == 1 then
 				B738DR_rtp_L_off_status = 0
 				--B738_lcd_display_status()
 				B738_radio_sel_swap(0, 1, 0, 0, 0, 0, 0)
+				simCMD_com1_on:once()
 			end
 		end
     end
@@ -367,9 +378,11 @@ function B738_rtp_R_off_switch_CMDhandler(phase, duration)
 				B738DR_rtp_R_lcd_to_display = 90
 				B738_radio_sel_swap(1, 0, 0, 0, 0, 0, 0)
 				B738DR_rtp_R_offside_tuning_status = 0
+				simCMD_com2_off:once()
 			elseif B738DR_rtp_R_off_status == 1 then
 				B738DR_rtp_R_off_status = 0
 				B738_radio_sel_swap(1, 0, 1, 0, 0, 0, 0)
+				simCMD_com2_on:once()
 				--B738_lcd_display_status()
 			end
 		end
@@ -535,7 +548,14 @@ end
 function B738_com1_audio_sel_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_com1_audio_sel_pos = 1
-		simCMD_audio_com1:once()
+		if B738DR_audio_sel_com1 == 0 then
+			B738DR_audio_sel_com1 = 1
+		else
+			B738DR_audio_sel_com1 = 0
+		end
+		-- if simDR_com1_power == 1 then
+			--simCMD_audio_com1:once()
+		-- end
 	elseif phase == 2 then
 		B738DR_com1_audio_sel_pos = 0
 	end
@@ -544,7 +564,14 @@ end
 function B738_com2_audio_sel_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_com2_audio_sel_pos = 1
-		simCMD_audio_com2:once()
+		if B738DR_audio_sel_com2 == 0 then
+			B738DR_audio_sel_com2 = 1
+		else
+			B738DR_audio_sel_com2 = 0
+		end
+		-- if simDR_com2_power == 1 then
+			-- simCMD_audio_com2:once()
+		-- end
 	elseif phase == 2 then
 		B738DR_com2_audio_sel_pos = 0
 	end
@@ -791,8 +818,11 @@ function B738_aircraft_load_com()
     B738DR_rtp_L_hf_sens_ctrl_rheo = 500
     B738DR_rtp_R_hf_sens_ctrl_rheo = 500
 
-    
-    
+    ac_stdbus_status_old = 0
+	ac_tnsbus2_status_old = 0
+	
+	B738DR_audio_sel_com1 = 1
+	B738DR_audio_sel_com2 = 1
 
     -- COLD & DARK ----------------------------------------------------------------------
     if simDR_startup_running == 0 then
@@ -819,6 +849,7 @@ function B738_electric_radios()
 			B738DR_rtp_L_off_status = 1
 			B738DR_rtp_L_lcd_to_display = 90
 			B738_radio_sel_swap(0, 0, 0, 0, 0, 0, 0)
+			simCMD_com1_off:once()
 		end
 		B738DR_rtp_L_offside_tuning_status = 0
 	else
@@ -836,6 +867,7 @@ function B738_electric_radios()
 			B738DR_rtp_R_off_status = 1
 			B738DR_rtp_R_lcd_to_display = 90
 			B738_radio_sel_swap(1, 0, 0, 0, 0, 0, 0)
+			simCMD_com2_off:once()
 		end
 		B738DR_rtp_R_offside_tuning_status = 0
 	else
@@ -851,9 +883,38 @@ function B738_electric_radios()
 	ac_stdbus_status_old = B738DR_ac_stdbus_status
 	ac_tnsbus2_status_old = B738DR_ac_tnsbus2_status
 	
+	if simDR_com1_power == 0 then
+		if simDR_audio_sel_com1 == 1 then
+			simDR_audio_sel_com1 = 0
+		end
+	else
+		if B738DR_audio_sel_com1 == 0 then
+			if simDR_audio_sel_com1 == 1 then
+				simDR_audio_sel_com1 = 0
+			end
+		else
+			if simDR_audio_sel_com1 == 0 then
+				simDR_audio_sel_com1 = 1
+			end
+		end
+	end
+	if simDR_com2_power == 0 then
+		if simDR_audio_sel_com2 == 1 then
+			simDR_audio_sel_com2 = 0
+		end
+	else
+		if B738DR_audio_sel_com2 == 0 then
+			if simDR_audio_sel_com2 == 1 then
+				simDR_audio_sel_com2 = 0
+			end
+		else
+			if simDR_audio_sel_com2 == 0 then
+				simDR_audio_sel_com2 = 1
+			end
+		end
+	end
+	
 end
-
-
 
 
 --*************************************************************************************--
@@ -878,8 +939,8 @@ function after_physics()
 	
 	if first_time < 3 then
 		first_time = first_time + 1
-		ac_stdbus_status_old = B738DR_ac_stdbus_status
-		ac_tnsbus2_status_old = B738DR_ac_tnsbus2_status
+		-- ac_stdbus_status_old = B738DR_ac_stdbus_status
+		-- ac_tnsbus2_status_old = B738DR_ac_tnsbus2_status
 	else
 		B738_electric_radios()
 	end
