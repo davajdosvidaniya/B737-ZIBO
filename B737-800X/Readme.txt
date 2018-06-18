@@ -77,6 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26v:
+------
+- corrected electrical systems
+- add backlights for displays
+- fixed bugs (VNAV descent speed, FMC typo error,...)
+
 3.26u:
 ------
 - corrected systems and graphics (IRS allign time display, APU - start, door, annnunciate)

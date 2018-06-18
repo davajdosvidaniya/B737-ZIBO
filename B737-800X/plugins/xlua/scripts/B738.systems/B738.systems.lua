@@ -811,6 +811,10 @@ simCMD_gpu_off					= find_command("sim/electrical/GPU_off")
 simDR_lndgear_emer_on			= find_command("sim/flight_controls/landing_gear_emer_on")
 simDR_lndgear_emer_off			= find_command("sim/flight_controls/landing_gear_emer_off")
 
+
+simCMD_battery2_off				= find_command("sim/electrical/battery_2_off")
+simCMD_battery2_on				= find_command("sim/electrical/battery_2_on")
+
 simDR_override_heading			= find_dataref("sim/operation/override/override_joystick_heading")
 simDR_override_pitch			= find_dataref("sim/operation/override/override_joystick_pitch")
 simDR_override_roll				= find_dataref("sim/operation/override/override_joystick_roll")
@@ -850,6 +854,7 @@ simDR_nav1_vdef_dots			= find_dataref("sim/cockpit2/radios/indicators/nav1_vdef_
 simDR_nav1_vert_signal			= find_dataref("sim/cockpit2/radios/indicators/nav1_display_vertical")
 
 xfirst_time2			= find_dataref("laminar/B738/fms/xfirst_time2")
+
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM DATAREFS             			    	 **--
@@ -1638,14 +1643,24 @@ end
 function B738_speedbrake_stop_pos_DRhandler()end
 
 
+function B738DR_ap_backlight_DRhandler()end
+function B738DR_padesteal_backlight_DRhandler()end
+function B738DR_padesteal_backlight2_DRhandler()end
+function B738DR_overhead_backlight_DRhandler()end
+function B738DR_clock_backlight_DRhandler()end
+
 function B738DR_steer_speed_DRhandler()end
 function B738DR_nosewheel_steer_ratio_DRhandler()end
+
+function B738DR_standby_bat_pos_DRhandler()end
 
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
 
 steer_speed						= create_dataref("laminar/B738/steer_speed", "number", B738DR_steer_speed_DRhandler)
+
+B738DR_standby_bat_pos			= create_dataref("laminar/B738/electric/standby_bat_pos", "number", B738DR_standby_bat_pos_DRhandler)
 
 B738DR_nosewheel_steer_ratio	= create_dataref("laminar/B738/nosewheel_steer_ratio", "number", B738DR_nosewheel_steer_ratio_DRhandler)
 
@@ -1677,7 +1692,11 @@ B738DR_off_on2				= create_dataref("laminar/B738/toggle_switch/off_on2", "number
 
 B738DR_panel_brightness			= create_dataref("laminar/B738/electric/panel_brightness", "array[4]", B738DR_panel_brightness_DRhandler)
 B738DR_instrument_brightness	= create_dataref("laminar/B738/electric/instrument_brightness", "array[16]", B738DR_instrument_brightness_DRhandler)
-
+B738DR_ap_backlight				= create_dataref("laminar/B738/electric/ap_backlight", "number", B738DR_ap_backlight_DRhandler)
+B738DR_padesteal_backlight		= create_dataref("laminar/B738/electric/padesteal_backlight", "number", B738DR_padesteal_backlight_DRhandler)
+B738DR_padesteal_backlight2		= create_dataref("laminar/B738/electric/padesteal_backlight2", "number", B738DR_padesteal_backlight2_DRhandler)
+B738DR_overhead_backlight		= create_dataref("laminar/B738/electric/overhead_backlight", "number", B738DR_overhead_backlight_DRhandler)
+B738DR_clock_backlight			= create_dataref("laminar/B738/electric/clock_backlight", "number", B738DR_clock_backlight_DRhandler)
 
 B738DR_kill_systems	= create_dataref("laminar/B738/perf/kill_systems", "number", B738DR_kill_systems_DRhandler)
 
@@ -4100,10 +4119,24 @@ function sim_toggle_speedbrakes_CMDhandler(phase, duration)
 	end    
 end
 
+function B738_standby_bat_off_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_standby_bat_pos = 0
+	end
+end
+
+function B738_standby_bat_on_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_standby_bat_pos = 1
+	end
+end
 
 --*************************************************************************************--
 --** 				              CREATE CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
+
+B738CMD_standby_bat_off		= create_command("laminar/B738/switch/standby_bat_off", "Standby battery off", B738_standby_bat_off_CMDhandler)
+B738CMD_standby_bat_on		= create_command("laminar/B738/switch/standby_bat_on", "Standby battery on", B738_standby_bat_on_CMDhandler)
 
 B738CMD_adf_ant1			= create_command("laminar/B738/toggle_switch/adf_ant1", "ADF1 ADF/ANT", B738_adf_ant1_CMDhandler)
 B738CMD_off_on1				= create_command("laminar/B738/toggle_switch/off_on1", "ADF1 OFF/ON", B738_off_on1_CMDhandler)
@@ -4981,7 +5014,24 @@ local volts_ac_mode5			= math.random(112, 118) + math.random()
 -- ACDC
 
 function B738_ac_dc_power()
-
+	
+	if simDR_bus_battery1_on == 0 then
+		if simDR_bus_battery2_on == 1 then
+			simCMD_battery2_off:once()
+		end
+	else
+		if B738DR_standby_bat_pos == 0 then
+			if simDR_bus_battery2_on == 1 then
+				simCMD_battery2_off:once()
+			end
+		else
+			if simDR_bus_battery2_on == 0 then
+				simCMD_battery2_on:once()
+			end
+		end
+	end
+	
+	
 	local gpu_available = 0
 	if simDR_aircraft_on_ground == 1 
 	and simDR_aircraft_groundspeed < 0.05 then
@@ -10584,7 +10634,8 @@ function B738_electric_bus()
 	B738DR_dc_stdbus_status = dc_bus1
 	
 	-- AC STANDBY BUS
-	if ac_tnsbus1_status == 1 or battery_bus == 1 then
+	--if ac_tnsbus1_status == 1 or battery_bus == 1 then
+	if ac_tnsbus1_status == 1 or simDR_bus_battery2_on == 1 then
 		B738DR_ac_stdbus_status = 1
 	else
 		B738DR_ac_stdbus_status = 0
@@ -10644,6 +10695,13 @@ end
 
 function B738_brightness()
 
+	if B738DR_panel_brightness[3] < 0.05 then
+		B738DR_panel_brightness[3] = 0	-- padesteal backlight off
+	end
+	if B738DR_panel_brightness[2] < 0.05 then
+		B738DR_panel_brightness[2] = 0	-- overhead backlight off
+	end
+	
 	-- Panels brightness lights
 	if B738DR_ac_tnsbus2_status == 0 then
 		simDR_panel_brightness[0] = B738DR_batbus_status
@@ -10653,6 +10711,34 @@ function B738_brightness()
 	simDR_panel_brightness[1] = B738DR_panel_brightness[1] * B738DR_ac_tnsbus2_status		-- FO Main panel
 	simDR_panel_brightness[2] = B738DR_panel_brightness[2] * B738DR_ac_tnsbus2_status	-- Overhead panel
 	simDR_panel_brightness[3] = B738DR_panel_brightness[3] * B738DR_ac_tnsbus2_status	-- Padestal panel
+	
+	local padeastel_ratio = 0
+	if B738DR_panel_brightness[3] == 0 then
+		padeastel_ratio = 0
+	elseif B738DR_panel_brightness[3] < 0.5 then
+		padeastel_ratio = B738_rescale(0.05, 0.4, 0.5, 1, B738DR_panel_brightness[3])
+	else
+		padeastel_ratio = 1
+	end
+	
+	local overhead_ratio = 0
+	if B738DR_panel_brightness[2] == 0 then
+		overhead_ratio = 0
+	elseif B738DR_panel_brightness[2] < 0.5 then
+		overhead_ratio = B738_rescale(0.05, 0.4, 0.5, 1, B738DR_panel_brightness[2])
+	else
+		overhead_ratio = 1
+	end
+	
+	simDR_instrument_brightness[13] = padeastel_ratio 	-- Padesteal
+	simDR_instrument_brightness[14] = overhead_ratio 	-- Overhead
+	B738DR_padesteal_backlight = B738_rescale(0, 0, 1, 0.8, B738DR_panel_brightness[3])
+	if B738DR_ac_tnsbus2_status == 0 then
+		B738DR_padesteal_backlight2 = 0
+	else
+		B738DR_padesteal_backlight2 = B738_rescale(0, 0, 1, 0.8, B738DR_panel_brightness[3])
+	end
+	B738DR_overhead_backlight = B738_rescale(0, 0, 0.8, 1, B738DR_panel_brightness[2])
 	
 	-- Instruments brightness lights
 	simDR_instrument_brightness[0] = B738DR_instrument_brightness[0] * B738DR_ac_stdbus_status	-- CPT PFD
@@ -10664,7 +10750,7 @@ function B738_brightness()
 	simDR_instrument_brightness[10] = B738DR_instrument_brightness[10] * B738DR_ac_stdbus_status	-- CPT FMC
 	simDR_instrument_brightness[11] = B738DR_instrument_brightness[11] * B738DR_ac_tnsbus2_status	-- FO FMC
 	
-	-- radio, AP
+	-- AP
 	--simDR_instrument_brightness[9]
 	
 	--clock
@@ -10672,6 +10758,12 @@ function B738_brightness()
 	
 	--IRS
 	--simDR_instrument_brightness[12]
+	
+	-- Transponder, radio, NAV, ADF
+	--simDR_instrument_brightness[13]
+	
+	-- pressurization panel [14]
+	--simDR_instrument_brightness[14]
 
 	local lost_inertial_warn_on = 0
 	if B738DR_batbus_status == 1 and B738DR_ac_tnsbus2_status == 0 then
@@ -10693,6 +10785,15 @@ function B738_brightness()
 	
 	B738DR_lost_fo_inertial = lost_inertial
 	
+	-- AP backlight [15]
+	simDR_instrument_brightness[15] = B738DR_ap_backlight
+	-- radio/nav/adf/transp [16]   radio2/nav2/adf2 [19]
+	simDR_instrument_brightness[16] = B738DR_padesteal_backlight	-- Captain side + Transponder
+	simDR_instrument_brightness[19] = B738DR_padesteal_backlight2	-- FO side
+	-- pressurization [17]
+	simDR_instrument_brightness[17] = B738DR_overhead_backlight
+	-- clock [18]
+	simDR_instrument_brightness[18] = B738DR_clock_backlight
 end
 
 function B738_fmc_source()
@@ -11173,6 +11274,14 @@ B738_init_engineMGMT_fltStart()
 	brake_smoothly_left = 0
 	brake_smoothly_right = 0
 	apu_door_target = 0
+	
+	B738DR_ap_backlight = 0.6
+	B738DR_clock_backlight = 0.5
+	-- B738DR_padesteal_backlight = 0.5
+	-- B738DR_overhead_backlight = 0.5
+	
+	B738DR_panel_brightness[2] = 0.2
+	B738DR_panel_brightness[3] = 0.2
 	
 end
 

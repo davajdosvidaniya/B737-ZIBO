@@ -9360,9 +9360,13 @@ function B738_vnav6()
 								-- else
 									-- vnav_speed_trg = math.max(B738DR_rest_wpt_spd, B738DR_pfd_flaps_up)
 								-- end
+								-- if B738DR_pfd_flaps_up == 340 then
+									-- if vnav_speed_trg < 240 then
+										-- vnav_speed_trg = 240
+									-- end
 								if B738DR_pfd_flaps_up == 340 then
-									if vnav_speed_trg < 240 then
-										vnav_speed_trg = 240
+									if vnav_speed_trg < 210 then
+										vnav_speed_trg = 210
 									end
 								else
 									if vnav_speed_trg < B738DR_pfd_flaps_up then
@@ -9668,8 +9672,8 @@ function B738_vnav6()
 										-- vnav_speed_trg = math.max(B738DR_rest_wpt_spd, B738DR_pfd_flaps_up)
 									-- end
 									if B738DR_pfd_flaps_up == 340 then
-										if vnav_speed_trg < 240 then
-											vnav_speed_trg = 240
+										if vnav_speed_trg < 210 then
+											vnav_speed_trg = 210
 										end
 									else
 										if vnav_speed_trg < B738DR_pfd_flaps_up then

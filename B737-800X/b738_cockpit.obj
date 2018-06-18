@@ -15466,9 +15466,9 @@ TRIS 8136 36
 ANIM_end
 ANIM_begin
 ANIM_trans -0.107200 0.991300 2.520400 -0.107200 0.991300 2.520400 0.000000 0.000000 none
-ANIM_rotate 0.000000 0.414684 0.909965 0.000000 30.000000 0.000000 1.000000 sim/cockpit2/electrical/battery_on[1]
+ANIM_rotate 0.000000 0.414684 0.909965 0.000000 30.000000 0.000000 1.000000 laminar/B738/electric/standby_bat_pos
 ANIM_trans 0.107200 -0.991300 -2.520400 0.107200 -0.991300 -2.520400 0.000000 0.000000 none
-ATTR_manip_command_switch_left_right left_right sim/electrical/battery_2_on sim/electrical/battery_2_off Standby Battery
+ATTR_manip_command_switch_left_right left_right laminar/B738/switch/standby_bat_on laminar/B738/switch/standby_bat_off Standby Battery
 TRIS 8172 30
 ANIM_end
 ANIM_begin

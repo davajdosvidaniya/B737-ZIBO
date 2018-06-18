@@ -43169,7 +43169,7 @@ function B738_fmc_xtras_others()
 		
 		line0_l = " OTHER CONFIG           "
 		line0_s = "                    5/6 "
-		line1_x = " LDU FLIGHT CONTROL     "
+		line1_x = " LDU BRAKE TEMPERATURE  "
 		if B738DR_brake_temp == 0 then
 			line1_l = "<   /                   "
 			line1_g = " OFF                    "
@@ -68225,6 +68225,7 @@ function B738_restrict_data()
 							B738DR_rest_wpt_spd_id = legs_restr_spd[ii][1]
 							B738DR_rest_wpt_spd = legs_restr_spd[ii][3]
 							B738DR_rest_wpt_spd_idx = legs_restr_spd[ii][2]
+							decel_dist = 90000
 							break
 						elseif decel_before_idx == offset and simDR_fmc_dist <= decel_dist then
 							B738DR_rest_wpt_spd_id = legs_restr_spd[ii][1]
@@ -73486,7 +73487,7 @@ temp_ils4 = ""
 	B738DR_legs_mod_active = 0
 	fms_recalc = 0
 	
-	version = "v3.26u"
+	version = "v3.26v"
 
 end
 

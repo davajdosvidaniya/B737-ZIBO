@@ -75,7 +75,7 @@ simDR_startup_running		= find_dataref("sim/operation/prefs/startup_running")
 --*************************************************************************************--
 
 simCMD_batt_on				= find_command("sim/electrical/battery_1_on")
-simCMD_stdby_batt_on		= find_command("sim/electrical/battery_2_on")
+--simCMD_stdby_batt_on		= find_command("sim/electrical/battery_2_on")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM DATAREFS             			    	 **--
@@ -86,12 +86,13 @@ B738DR_engine_no_running_state 	= find_dataref("laminar/B738/fms/engine_no_runni
 simDR_bus_transfer_on 			= find_dataref("sim/cockpit2/electrical/cross_tie")
 B738DR_pas_oxy_switch_position 	= find_dataref("laminar/B738/one_way_switch/pax_oxy_pos")
 B738DR_elt_switch_pos 			= find_dataref("laminar/B738/toggle_switch/elt")
+B738DR_standby_bat_pos			= find_dataref("laminar/B738/electric/standby_bat_pos")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
 
-
+B738CMD_standby_bat_on			= find_command("laminar/B738/switch/standby_bat_on")
 
 --*************************************************************************************--
 --** 				        CREATE READ-ONLY CUSTOM DATAREFS               	         **--
@@ -271,7 +272,6 @@ function B738_button_switch_cover_animation()
 end
 
 
-
 function B738_cover_turn()
 
 	if B738DR_button_switch_cover_position[2] < 0.3
@@ -280,7 +280,8 @@ function B738_cover_turn()
 	end
 	if B738DR_button_switch_cover_position[3] < 0.3 
 	and simDR_stdby_batt_on == 0 then
-		simCMD_stdby_batt_on:once()
+		--simCMD_stdby_batt_on:once()
+		B738CMD_standby_bat_on:once()
 	end
 	if B738DR_button_switch_cover_position[9] < 0.3 
 	and B738DR_emer_exit_lights_switch ~= 1 then
@@ -319,7 +320,8 @@ function flight_start()
 		B738DR_button_switch_cover_position[2] = 1
 		B738DR_button_switch_cover_position[3] = 1
 		simDR_batt_on = 0
-		simDR_stdby_batt_on = 0
+		--simDR_stdby_batt_on = 0
+		B738DR_standby_bat_pos = 0
 		B738_button_switch_cover_position_target[9] = 1		-- Emergency Exit Lights Cover
 		B738DR_button_switch_cover_position[9] = 1			-- Emergency Exit Lights Cover
 		B738DR_emer_exit_lights_switch = 0					-- Emergency Exit Lights
@@ -329,7 +331,8 @@ function flight_start()
 		B738DR_button_switch_cover_position[2] = 0
 		B738DR_button_switch_cover_position[3] = 0
 		simDR_batt_on = 1
-		simDR_stdby_batt_on = 1
+		--simDR_stdby_batt_on = 1
+		B738DR_standby_bat_pos = 1
 		B738_button_switch_cover_position_target[9] = 0		-- Emergency Exit Lights Cover
 		B738DR_button_switch_cover_position[9] = 0			-- Emergency Exit Lights Cover
 		B738DR_emer_exit_lights_switch = 1					-- Emergency Exit Lights
