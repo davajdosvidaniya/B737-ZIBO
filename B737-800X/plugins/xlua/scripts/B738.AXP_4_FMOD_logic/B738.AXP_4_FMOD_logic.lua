@@ -31,6 +31,7 @@ passengers_board = 0
 -- plane on ground - all wheels
 on_the_ground = 0
 
+
 -- plane on air more than 30 sec and any wheel touch the ground (protect against bump toachdown)
 touch_down = 0
 
@@ -120,7 +121,10 @@ FA_departure_time = 0
 FA_leo_time = 0
 FA_max_time = 300
 
--- laminar/B738/push_button/flt_dk_door_close
+-- 1806+
+
+TO_trigger = 0		-- determines if wing lights or beacon trigger TO announcements > commands
+
 
 -------------------------------------------- FINDING COMMANDS ---------------------------------------------------------------------------------------
 
@@ -128,12 +132,22 @@ close_fdd = find_command("laminar/B738/push_button/flt_dk_door_close")
 
 -------------------------------------------- FINDING DATAREFS ---------------------------------------------------------------------------------------
 
+
+--- 1806 +
+
+
+is_on_ground = find_dataref("sim/flightmodel/failures/onground_all")
+is_winglight_on = find_dataref("sim/cockpit2/switches/generic_lights_switch[0]")
+is_strobes_level = find_dataref("laminar/B738/toggle_switch/position_light_pos")
+TO_trigger = find_dataref("laminar/b738/fmodpack/TO_trigger")
+
 --- DEV
 
 is_dev_event = find_dataref("axp/dev_event")
 
 
 --- DEV
+
 
 FAC_volume = find_dataref("laminar/b738/fmodpack/fmod_vol_FAC")
 
@@ -310,6 +324,11 @@ N1_eng_1 = find_dataref("sim/flightmodel/engine/ENGN_N1_[1]")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------- CREATING DATAREFS ---------------------------------------------------------------------------------------
+--- 1806+
+
+play_TO = create_dataref("laminar/b738/fmodpack/play_TO", "number")
+
+
 --- FA in cockpit
 
 FA_departure_time = create_dataref("laminar/b738/fmodpack/axp_FA_dep_timer", "number")
@@ -1179,6 +1198,29 @@ end
 
 -- 4-8-2017 AXP detect if TCAS is performing test to suppress false alerts playing during test (normal alert dataref is set to 1 during TCAS self test)
 
+
+-- switch between wing lights and position lights as trigger for TO announcements
+function play_TO_announcements()
+
+    
+	if TO_trigger == 0 then                     -- standard trigger = winglight
+
+    	if is_winglight_on == 1 then play_TO = 1
+        else play_TO = 0
+        end
+        
+    elseif TO_trigger == 1 then                 -- custom trigger = strobes & steady
+
+        if is_strobes_level == 1 then play_TO = 1
+        else play_TO = 0
+        end
+        
+    end
+
+end
+
+
+
 function detect_true_TCAS()
 
 	if tcas_testing == 0 then	-- if no test is performed...
@@ -1728,6 +1770,7 @@ function after_physics()
 	 detect_fire_handles()
 	 -- detect_pax_leave()
 	 play_after_takeoff_announcements()
+	 play_TO_announcements()
 	 alert_positive_rate()
 	 -- 3-8-2017 new AXP  -------------------------------------------------------
 	 detect_pre_takeoff()

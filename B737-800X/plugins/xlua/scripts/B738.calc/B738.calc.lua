@@ -1904,7 +1904,7 @@ function B738_engine_rpm2()
 		end
 	end
 	
-	--idle_mode = 2
+	--idle_mode = 1
 	if idle_mode == 0 then	-- ground mode
 		mixture1 = 0.59 * B738DR_mixture_ratio1
 		mixture2 = 0.59 * B738DR_mixture_ratio2

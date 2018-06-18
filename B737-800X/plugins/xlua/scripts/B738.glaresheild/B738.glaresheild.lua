@@ -14550,18 +14550,18 @@ function control_N1_direct(N1_lim1, N1_lim2)
 		end
 	elseif B738DR_idle_mode == 1 then
 		if N1_lim1 < 0.646 then
-			result1 = B738_rescale(0.321, 0, 0.646, 0.457, N1_lim1)
+			result1 = B738_rescale(0.321, 0, 0.646, 0.509, N1_lim1)
 		elseif N1_lim1 < 0.90 then
-			result1 = B738_rescale(0.646, 0.457, 0.9, 0.866, N1_lim1)
+			result1 = B738_rescale(0.646, 0.509, 0.9, 0.883, N1_lim1)
 		else
-			result1 = B738_rescale(0.9, 0.866, 1.01, 1.038, N1_lim1)
+			result1 = B738_rescale(0.9, 0.883, 1.01, 1.04, N1_lim1)
 		end
 		if N1_lim2 < 0.646 then
-			result2 = B738_rescale(0.321, 0, 0.646, 0.457, N1_lim2)
+			result2 = B738_rescale(0.321, 0, 0.646, 0.509, N1_lim2)
 		elseif N1_lim2 < 0.90 then
-			result2 = B738_rescale(0.646, 0.457, 0.9, 0.866, N1_lim2)
+			result2 = B738_rescale(0.646, 0.509, 0.9, 0.883, N1_lim2)
 		else
-			result2 = B738_rescale(0.9, 0.866, 1.01, 1.038, N1_lim2)
+			result2 = B738_rescale(0.9, 0.883, 1.01, 1.04, N1_lim2)
 		end
 	else
 		if N1_lim1 < 0.678 then
@@ -14848,6 +14848,14 @@ function B738_N1_thrust_manage4()
 				thr1_target = eng1_N1_thrust_cur + throttle_limit
 				thr2_target = eng2_N1_thrust_cur + throttle_limit
 				
+				lim1, lim2 = control_N1_direct(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug)
+				if thr1_target > lim1 then
+					thr1_target = lim1
+				end
+				if thr2_target > lim2 then
+					thr2_target = lim2
+				end
+				
 				eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, thr1_target, 0.0, 1.04, 0.5)	--2.0
 				eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, thr2_target, 0.0, 1.04, 0.5)	--2.0
 				
@@ -14873,6 +14881,14 @@ function B738_N1_thrust_manage4()
 				throttle_limit = math.min(throttle_limit, throttle_limit2)
 				thr1_target = eng1_N1_thrust_cur + throttle_limit
 				thr2_target = eng2_N1_thrust_cur + throttle_limit
+				
+				lim1, lim2 = control_N1_direct(B738DR_eng1_N1_bug, B738DR_eng2_N1_bug)
+				if thr1_target > lim1 then
+					thr1_target = lim1
+				end
+				if thr2_target > lim2 then
+					thr2_target = lim2
+				end
 				
 				eng1_N1_thrust_cur = B738_set_anim_value(eng1_N1_thrust_cur, thr1_target, 0.0, 1.04, 0.5)	--2.0
 				eng2_N1_thrust_cur = B738_set_anim_value(eng2_N1_thrust_cur, thr2_target, 0.0, 1.04, 0.5)	--2.0

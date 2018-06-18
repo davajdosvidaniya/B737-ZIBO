@@ -77,6 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.27f:
+------
+- add item TO ANNOUNC. TRIGGER for FMOD V1806 REV 4 by AudioBirdXP (read fmod manual)
+- fixed bug for N1 thrust limit
+- fixed bug for vnav idle descent path and calculation
+
 3.27e:
 ------
 - improved idle logic

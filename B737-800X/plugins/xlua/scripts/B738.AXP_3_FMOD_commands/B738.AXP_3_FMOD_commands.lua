@@ -84,6 +84,9 @@ B738DR_vol_weather = create_dataref("laminar/b738/fmodpack/fmod_vol_weather", "n
 --obsolete but kept to maintain compatibility with Zibo's FMC menu
 B738DR_enable_crew					= create_dataref("laminar/b738/fmodpack/fmod_crew_on", "number")
 
+-- new AXP 1806REV3+
+
+B738DR_TO_trigger = create_dataref("laminar/b738/fmodpack/TO_trigger", "number")    
 
 
 ---------- FIND REFS -------------------------------------------------------------------------------
@@ -575,7 +578,23 @@ function B738_vol_weather_CMDhandler(phase, duration)
 	end
 end
 
+-- new AXP 1806REV3+
 
+function B738_switch_TO_trigger_CMDhandler(phase, duration)
+
+	if phase == 0 then
+
+		if B738DR_TO_trigger == 0 then
+			B738DR_TO_trigger = 1
+
+		elseif B738DR_TO_trigger == 1 then
+			B738DR_TO_trigger = 0
+
+		end
+
+	end
+	
+end
 
 ---------- CREATE COMMANDS -------------------------------------------------------------------------------
 
@@ -673,6 +692,10 @@ B738CMD_vol_FAC		= create_command("laminar/b738/fmodpack/fmod_vol_FAC", "Change 
 
 B738CMD_vol_weather = create_command("laminar/b378/fmodpack/fmod_vol_weather", "Control volume of thunder and rain", B738_vol_weather_CMDhandler)
 
+-- NEW AXP 1606REV3+
+
+
+B738CMD_switch_TO_trigger = create_command("laminar/b738/fmodpack/CMD_switch_TO_trigger", "Toggle take-off announcements with wing lights or pos. lights on STROBE & STEADY", B738_switch_TO_trigger_CMDhandler)
 
 function after_physics() 
 end

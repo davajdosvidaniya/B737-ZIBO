@@ -1853,6 +1853,7 @@ B738DR_vol_computer 		= find_dataref("laminar/b738/fmodpack/fmod_vol_computer")
 
 B738DR_vol_FAC 				= find_dataref("laminar/b738/fmodpack/fmod_vol_FAC")
 B738DR_vol_weather 			= find_dataref("laminar/b738/fmodpack/fmod_vol_weather")
+B738DR_TO_trigger 			= find_dataref("laminar/b738/fmodpack/TO_trigger")
 
 ap_goaround 				= find_dataref("laminar/B738/autopilot/ap_goaround")
 fd_goaround 				= find_dataref("laminar/B738/autopilot/fd_goaround")
@@ -1905,6 +1906,7 @@ B738CMD_vol_computer		= find_command("laminar/b738/fmodpack/fmod_vol_computer")
 
 B738CMD_vol_FAC				= find_command("laminar/b738/fmodpack/fmod_vol_FAC")
 B738CMD_vol_weather 		= find_command("laminar/b378/fmodpack/fmod_vol_weather")
+B738CMD_switch_TO_trigger 	= find_command("laminar/b738/fmodpack/CMD_switch_TO_trigger")
 
 --*************************************************************************************--
 --** 				                X-PLANE DATAREFS            			    	 **--
@@ -15960,6 +15962,7 @@ function B738_default_fmod_config()
 	B738DR_vol_computer = 5
 	B738DR_vol_FAC = 5
 	B738DR_vol_weather = 5
+	B738DR_TO_trigger = 0
 	
 end
 
@@ -16248,6 +16251,18 @@ function B738_load_config()
 								B738DR_enable_fmc_mute_on = 1
 							else
 								B738DR_enable_fmc_mute_on = 0
+							end
+						end
+					end
+				elseif string.sub(fms_line, 1, 16) == "TO TRIGGER     =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							if temp_fmod == 1 then
+								B738DR_TO_trigger = 1
+							else
+								B738DR_TO_trigger = 0
 							end
 						end
 					end
@@ -16772,6 +16787,7 @@ function B738_load_fmod_config()
 		fmod_preset[temp_fmod][28] = 5		-- COMPUTER VOLUME
 		fmod_preset[temp_fmod][29] = 5		-- FA IN COCKPIT
 		fmod_preset[temp_fmod][30] = 5		-- WEATHER VOLUME
+		fmod_preset[temp_fmod][31] = 0		-- TO TRIGGER
 	end
 	
 	
@@ -17171,6 +17187,18 @@ function B738_load_fmod_config()
 							end
 						end
 					end
+				elseif string.sub(fms_line, 1, 16) == "TO TRIGGER     =" then
+					temp_fmod = string.len(fms_line)
+					if temp_fmod > 16 then
+						temp_fmod = tonumber(string.sub(fms_line, 17, -1))
+						if temp_fmod ~= nil then
+							if temp_fmod == 1 then
+								fmod_preset[preset_nr_act][31] = 1
+							else
+								fmod_preset[preset_nr_act][31] = 0
+							end
+						end
+					end
 				end
 			end
 			fms_line = file_navdata:read()
@@ -17212,6 +17240,7 @@ function B738_set_fmod_config(fmod_nr)
 	B738DR_vol_computer 			= fmod_preset[ff][28]
 	B738DR_vol_FAC					= fmod_preset[ff][29]
 	B738DR_vol_weather				= fmod_preset[ff][30]
+	B738DR_TO_trigger				= fmod_preset[ff][31]
 	
 end
 
@@ -17248,6 +17277,7 @@ function B738_mod_fmod_config(fmod_nr)
 	fmod_preset[ff][28] 	= B738DR_vol_computer
 	fmod_preset[ff][29] 	= B738DR_vol_FAC
 	fmod_preset[ff][30] 	= B738DR_vol_weather
+	fmod_preset[ff][31] 	= B738DR_TO_trigger
 	
 end
 
@@ -17358,6 +17388,8 @@ function B738_save_config()
 		fms_line = "ANNOUNCEM SET  = " .. string.format("%2d", B738DR_ann_set) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "MUTE FMC       = " .. string.format("%2d", B738DR_enable_fmc_mute_on) .. "\n"
+		file_navdata:write(fms_line)
+		fms_line = "TO TRIGGER     = " .. string.format("%2d", B738DR_TO_trigger) .. "\n"
 		file_navdata:write(fms_line)
 		fms_line = "PM VOLUME      = " .. string.format("%2d", B738DR_vol_PM) .. "\n"
 		file_navdata:write(fms_line)
@@ -43258,6 +43290,16 @@ function B738_fmc_fmod_dspl()
 			line2_g = " ON                     "
 			line2_s = "    OFF                  "
 		end
+		line3_x = " TO ANNOUNC. TRIGGER    "
+		if B738DR_TO_trigger == 0 then
+			line3_l = "<       /               "
+			line3_g = " WING LT                "
+			line3_s = "         POS.LT.        "
+		else
+			line3_l = "<       /               "
+			line3_g = "         POS.LT.        "
+			line3_s = " WING LT                 "
+		end
 		line6_l = "<DEFAULT           BACK>"
 		
 	-- VOLUMES
@@ -43505,6 +43547,9 @@ function fmc_fmod_features(fmod_butt, fmc_side)
 			elseif fmod_butt == 2 then
 				-- PAX APPLAUSE VOLUME ON/OFF
 				B738CMD_vol_int_pax_applause:once()
+			elseif fmod_butt == 3 then
+				-- TO TRIGGER
+				B738CMD_switch_TO_trigger:once()
 			end
 		end
 	else
@@ -62097,7 +62142,7 @@ function B738_vnav_calc()
 					-----------------------------------------------------------
 					-- find T/D , econ vnav descent path
 					-----------------------------------------------------------
-					create_vpth_table(gw_app_kgs)
+					create_vpth_table(gw_app_kgs, ed_alt)
 					last_wpt_idx = 0
 	
 	
@@ -62123,29 +62168,8 @@ function B738_vnav_calc()
 						
 						if td_dist > ed_dist then
 							
-							-- if legs_intdir_act == 1 and ii == offset2 then
-								-- if B738DR_wpt_path == "DF" then
-									-- temp_brg = math.rad((simDR_fmc_trk + 180) % 360)
-								-- else
-									-- temp_brg = math.rad((legs_intdir_crs - simDR_mag_variation + 360 + 180) % 360)
-								-- end
-							-- else
-								-- temp_brg = legs_data[ii][2] + math.pi	--math.rad(180) --3.1415926535
-							-- end
-							
 							td_dist = legs_data[ii][3] - (td_dist - ed_dist)
 							td_idx = ii 	-- before idx
-							
-							-- if td_idx == 1 or (legs_intdir_act == 1 and ii == offset2) then
-								-- calc_brg_dist(legs_data[td_idx][7], legs_data[td_idx][8], temp_brg, td_dist)
-							-- else
-								-- dist2 = legs_data[td_idx][3] - td_dist
-								-- temp_brg = legs_data[td_idx][2]
-								-- calc_brg_dist(legs_data[td_idx-1][7], legs_data[td_idx-1][8], temp_brg, dist2)
-							-- end
-							-- td_lat = math.rad(calc_lat)
-							-- td_lon = math.rad(calc_lon)
-							
 							
 							break
 						end
@@ -62253,7 +62277,7 @@ function B738_vnav_calc()
 									ed_dist = calc_vnav_pth_dist(ed_fix_alt, crz_alt_num)
 									n = 2	--jj
 									ed_fix_vpa2[ed_fix_num] = econ_des_vpa
-									create_vpth_table(gw_app_kgs)
+									create_vpth_table(gw_app_kgs, ed_fix_alt)
 								else
 									n = ed_fix_found2[(ed_fix_num-1)] + 1
 									
@@ -62510,7 +62534,7 @@ function B738_vnav_calc()
 									ed_fix_vpa2[ed_fix_num] = econ_des_vpa
 									td_dist = 0
 									td_idx = 0
-									create_vpth_table(gw_app_kgs)
+									create_vpth_table(gw_app_kgs, ed_fix_alt)
 								else
 									--n = ed_fix_found2[(ed_fix_num-1)] + 1
 									n = first_restrict + 1
@@ -63620,7 +63644,7 @@ function B738_vnav_calc_mod()
 					-- find T/D , econ vnav descent path
 					-----------------------------------------------------------
 					last_wpt_idx = 0
-					create_vpth_table2(gw_app_kgs)
+					create_vpth_table2(gw_app_kgs, ed_alt_mod)
 					for ii = ed_found_mod, 2, -1 do
 						
 						if legs_data2[ii][1] ~= "VECTOR" then
@@ -63767,7 +63791,7 @@ function B738_vnav_calc_mod()
 									ed_dist_mod = calc_vnav_pth_dist2(ed_fix_alt_mod, crz_alt_num)
 									n = 2	--jj
 									ed_fix_vpa2_mod[ed_fix_num_mod] = econ_des_vpa
-									create_vpth_table2(gw_app_kgs)
+									create_vpth_table2(gw_app_kgs, ed_fix_alt_mod)
 								else
 									n = ed_fix_found2_mod[(ed_fix_num_mod-1)] + 1
 									
@@ -63989,7 +64013,7 @@ function B738_vnav_calc_mod()
 									ed_fix_vpa2_mod[ed_fix_num_mod] = econ_des_vpa
 									td_dist_mod = 0
 									td_idx_mod = 0
-									create_vpth_table2(gw_app_kgs)
+									create_vpth_table2(gw_app_kgs, ed_fix_alt_mod)
 								else
 									n = first_restrict + 1
 									--calc vpa
@@ -70114,6 +70138,49 @@ end
 
 
 -- calculate dist by alt
+function calc_vnav_pth_dist_old(x_alt01, x_alt02)
+	
+	local result = 0
+	local x_ed_alt_find = 0
+	local x_dist = 0
+	local x_dist2 = 0
+	local x_last_alt = x_alt01
+	
+	if vnav_des_table_num > 0 and x_alt02 > x_alt01 then
+		for ii = 1, vnav_des_table_num do
+			if x_alt01 <= vnav_des_table_alt[ii] and x_ed_alt_find == 0 then
+				x_ed_alt_find = 1
+				if ii == 1 then
+					x_dist2 = 9.0
+				else
+					x_dist2 = vnav_des_table_dist[ii] -((x_alt01 - vnav_des_table_alt[ii-1]) / (vnav_des_table_alt[ii] - vnav_des_table_alt[ii-1]) * vnav_des_table_dist[ii])
+				end
+			end
+			if x_ed_alt_find == 1 then
+				if x_alt02 >= vnav_des_table_alt[ii] then
+					x_dist = x_dist2 -((x_alt02 - x_last_alt) / (vnav_des_table_alt[ii] - x_last_alt) * x_dist2)
+					break
+				end
+				x_last_alt = vnav_des_table_alt[ii]
+				x_dist = x_dist2
+				x_ed_alt_find = 2
+			elseif x_ed_alt_find == 2 then
+				x_dist2 = vnav_des_table_dist[ii]
+				if x_alt02 >= vnav_des_table_alt[ii] then
+					x_dist = x_dist + x_dist2 -((x_alt02 - x_last_alt) / (vnav_des_table_alt[ii] - x_last_alt) * x_dist2)
+					break
+				end
+				x_last_alt = vnav_des_table_alt[ii]
+				x_dist = x_dist + x_dist2
+			end
+		end
+	end
+	
+	return x_dist
+	
+end
+
+-- calculate dist by alt
 function calc_vnav_pth_dist(x_alt01, x_alt02)
 	
 	local ii = 0
@@ -70171,8 +70238,47 @@ function calc_vnav_pth_dist(x_alt01, x_alt02)
 	
 end
 
+-- FOR TEST ONLY --
+function calc_vnav_pth_table(x_alt)
+	
+	local result = -1
+	
+	if vnav_des_table_num > 0 then
+		for ii = 1, vnav_des_table_num do
+			if x_alt == vnav_des_table_alt[ii] then
+				result = vnav_des_table_dist[ii]
+				break
+			end
+		end
+	end
+	return result
+end
+
 -- calculate alt by distance
+
 function calc_vnav_pth_alt(x_alt01, x_dist)
+	
+	local ii = 0
+	local result = 41000	--x_alt01
+	
+	if vnav_des_table_num > 0 and x_dist > 0 then
+		for ii = 1, vnav_des_table_num do
+			if x_dist < vnav_des_table_dist[ii] then
+				if ii == 1 then
+					result = 2000
+				else
+					result = B738_rescale(vnav_des_table_dist[ii-1], vnav_des_table_alt[ii-1], vnav_des_table_dist[ii], vnav_des_table_alt[ii], x_dist)
+				end
+				break
+			end
+		end
+	end
+	B738DR_fms_test3 = result
+	return result
+	
+end
+
+function calc_vnav_pth_alt_old(x_alt01, x_dist)
 	
 	local ii = 0
 	local x_dist00 = 0
@@ -70256,7 +70362,7 @@ function create_vpth_table_old(x_gw_str)
 end
 
 
-function create_vpth_table(x_gw_str)
+function create_vpth_table(x_gw_str, x_alt)
 	
 	local ii = 0
 	local x_dist1 = 0
@@ -70304,21 +70410,74 @@ function create_vpth_table(x_gw_str)
 		-- end
 	-- end
 	
+	local find_alt_high = 0
+	local find_alt_dist_high1 = 0
+	local find_alt_dist_high2 = 0
+	local find_alt_low = 0
+	local dist_alt = 0
+	local dist_alt_first = 0
+	
 	for ii = 1, 21 do
-		if ii == 1 then
-			x_dist1 = vnav_des_dist[x_gw1][ii]
-			x_dist2 = vnav_des_dist[x_gw2][ii]
-		else
-			x_dist1 = vnav_des_table_dist[ii-1] + vnav_des_dist_diff[x_gw1][ii]
-			x_dist2 = vnav_des_table_dist[ii-1] + vnav_des_dist_diff[x_gw2][ii]
+		if x_alt <= vnav_des_alt[ii] then
+			find_alt_high = vnav_des_alt[ii]
+			find_alt_dist_high1 = vnav_des_dist_diff[x_gw1][ii]
+			find_alt_dist_high2 = vnav_des_dist_diff[x_gw2][ii]
+			find_alt_dist_high1 = B738_rescale(x_gw1, find_alt_dist_high1, x_gw2, find_alt_dist_high2, x_gw00)
+			if ii > 1 then
+				find_alt_low = vnav_des_alt[ii-1]
+			else
+				find_alt_low = vnav_des_alt[1]
+			end
+			break
 		end
-		if vnav_des_alt[ii] >= 11000 then
-			x_dist1 = x_dist1 * x_idx_des_spd
-			x_dist2 = x_dist2 * x_idx_des_spd
+	end
+	
+	if find_alt_high == 0 or find_alt_high == find_alt_low then
+		for ii = 1, 21 do
+			if ii == 1 then
+				x_dist1 = vnav_des_dist[x_gw1][1]
+				x_dist2 = vnav_des_dist[x_gw2][1]
+			else
+				x_dist1 = vnav_des_table_dist[ii-1] + vnav_des_dist_diff[x_gw1][ii]
+				x_dist2 = vnav_des_table_dist[ii-1] + vnav_des_dist_diff[x_gw2][ii]
+			end
+			if vnav_des_alt[ii] >= 11000 then
+				x_dist1 = x_dist1 * x_idx_des_spd
+				x_dist2 = x_dist2 * x_idx_des_spd
+			end
+			vnav_des_table_dist[ii] = B738_rescale(x_gw1, x_dist1, x_gw2, x_dist2, x_gw00)
+			vnav_des_table_alt[ii] = vnav_des_alt[ii]
+			vnav_des_table_num = vnav_des_table_num + 1
 		end
-		vnav_des_table_dist[ii] = B738_rescale(x_gw1, x_dist1, x_gw2, x_dist2, x_gw00)
-		vnav_des_table_alt[ii] = vnav_des_alt[ii]
-		vnav_des_table_num = vnav_des_table_num + 1
+	else
+		dist_alt = find_alt_dist_high1 - ((x_alt - find_alt_low) / (find_alt_high - find_alt_low) * find_alt_dist_high1)
+		for ii = 1, 21 do
+			if vnav_des_alt[ii] < x_alt then
+				vnav_des_table_dist[ii] = 0
+				vnav_des_table_alt[ii] = vnav_des_alt[ii]
+				vnav_des_table_num = vnav_des_table_num + 1
+			else
+				if ii == 1 then
+					x_dist1 = 9.0
+					x_dist2 = 9.0
+					dist_alt_first = 1
+				elseif dist_alt_first == 0 then
+					dist_alt_first = 1
+					x_dist1 = dist_alt
+					x_dist2 = dist_alt
+				else
+					x_dist1 = vnav_des_table_dist[ii-1] + vnav_des_dist_diff[x_gw1][ii]
+					x_dist2 = vnav_des_table_dist[ii-1] + vnav_des_dist_diff[x_gw2][ii]
+				end
+				if vnav_des_alt[ii] >= 11000 then
+					x_dist1 = x_dist1 * x_idx_des_spd
+					x_dist2 = x_dist2 * x_idx_des_spd
+				end
+				vnav_des_table_dist[ii] = B738_rescale(x_gw1, x_dist1, x_gw2, x_dist2, x_gw00)
+				vnav_des_table_alt[ii] = vnav_des_alt[ii]
+				vnav_des_table_num = vnav_des_table_num + 1
+			end
+		end
 	end
 	
 end
@@ -70490,6 +70649,29 @@ end
 function calc_vnav_pth_alt2(x_alt01, x_dist)
 	
 	local ii = 0
+	local result = 41000	--x_alt01
+	
+	if vnav_des_table_num2 > 0 and x_dist > 0 then
+		for ii = 1, vnav_des_table_num2 do
+			if x_dist < vnav_des_table_dist2[ii] then
+				if ii == 1 then
+					result = 2000
+				else
+					result = B738_rescale(vnav_des_table_dist2[ii-1], vnav_des_table_alt2[ii-1], vnav_des_table_dist2[ii], vnav_des_table_alt2[ii], x_dist)
+				end
+				break
+			end
+		end
+	end
+	
+	return result
+	
+end
+
+
+function calc_vnav_pth_alt2_old(x_alt01, x_dist)
+	
+	local ii = 0
 	local x_dist00 = 0
 	local x_dist1 = 0
 	local x_dist2 = 0
@@ -70552,6 +70734,7 @@ function create_vpth_table2_old(x_gw_str)
 	vnav_des_table_dist2 = {}
 	vnav_des_table_alt2 = {}
 	vnav_des_table_num2 = 0
+	
 	--for ii = 1, 18 do
 	for ii = 1, 20 do
 		x_dist1 = vnav_des_dist[x_gw1][ii]
@@ -70567,7 +70750,7 @@ function create_vpth_table2_old(x_gw_str)
 	
 end
 
-function create_vpth_table2(x_gw_str)
+function create_vpth_table2(x_gw_str, x_alt)
 	
 	local ii = 0
 	local x_dist1 = 0
@@ -70595,21 +70778,74 @@ function create_vpth_table2(x_gw_str)
 	vnav_des_table_alt2 = {}
 	vnav_des_table_num2 = 0
 	
+	local find_alt_high = 0
+	local find_alt_dist_high1 = 0
+	local find_alt_dist_high2 = 0
+	local find_alt_low = 0
+	local dist_alt = 0
+	local dist_alt_first = 0
+	
 	for ii = 1, 21 do
-		if ii == 1 then
-			x_dist1 = vnav_des_dist[x_gw1][ii]
-			x_dist2 = vnav_des_dist[x_gw2][ii]
-		else
-			x_dist1 = vnav_des_table_dist2[ii-1] + vnav_des_dist_diff[x_gw1][ii]
-			x_dist2 = vnav_des_table_dist2[ii-1] + vnav_des_dist_diff[x_gw2][ii]
+		if x_alt <= vnav_des_alt[ii] then
+			find_alt_high = vnav_des_alt[ii]
+			find_alt_dist_high1 = vnav_des_dist_diff[x_gw1][ii]
+			find_alt_dist_high2 = vnav_des_dist_diff[x_gw2][ii]
+			find_alt_dist_high1 = B738_rescale(x_gw1, find_alt_dist_high1, x_gw2, find_alt_dist_high2, x_gw00)
+			if ii > 1 then
+				find_alt_low = vnav_des_alt[ii-1]
+			else
+				find_alt_low = vnav_des_alt[1]
+			end
+			break
 		end
-		if vnav_des_alt[ii] >= 11000 then
-			x_dist1 = x_dist1 * x_idx_des_spd
-			x_dist2 = x_dist2 * x_idx_des_spd
+	end
+	
+	if find_alt_high == 0 or find_alt_high == find_alt_low then
+		for ii = 1, 21 do
+			if ii == 1 then
+				x_dist1 = vnav_des_dist[x_gw1][1]
+				x_dist2 = vnav_des_dist[x_gw2][1]
+			else
+				x_dist1 = vnav_des_table_dist2[ii-1] + vnav_des_dist_diff[x_gw1][ii]
+				x_dist2 = vnav_des_table_dist2[ii-1] + vnav_des_dist_diff[x_gw2][ii]
+			end
+			if vnav_des_alt[ii] >= 11000 then
+				x_dist1 = x_dist1 * x_idx_des_spd
+				x_dist2 = x_dist2 * x_idx_des_spd
+			end
+			vnav_des_table_dist2[ii] = B738_rescale(x_gw1, x_dist1, x_gw2, x_dist2, x_gw00)
+			vnav_des_table_alt2[ii] = vnav_des_alt[ii]
+			vnav_des_table_num2 = vnav_des_table_num2 + 1
 		end
-		vnav_des_table_dist2[ii] = B738_rescale(x_gw1, x_dist1, x_gw2, x_dist2, x_gw00)
-		vnav_des_table_alt2[ii] = vnav_des_alt[ii]
-		vnav_des_table_num2 = vnav_des_table_num2 + 1
+	else
+		dist_alt = find_alt_dist_high1 - ((x_alt - find_alt_low) / (find_alt_high - find_alt_low) * find_alt_dist_high1)
+		for ii = 1, 21 do
+			if vnav_des_alt[ii] < x_alt then
+				vnav_des_table_dist2[ii] = 0
+				vnav_des_table_alt2[ii] = vnav_des_alt[ii]
+				vnav_des_table_num2 = vnav_des_table_num2 + 1
+			else
+				if ii == 1 then
+					x_dist1 = 9.0
+					x_dist2 = 9.0
+					dist_alt_first = 1
+				elseif dist_alt_first == 0 then
+					dist_alt_first = 1
+					x_dist1 = dist_alt
+					x_dist2 = dist_alt
+				else
+					x_dist1 = vnav_des_table_dist2[ii-1] + vnav_des_dist_diff[x_gw1][ii]
+					x_dist2 = vnav_des_table_dist2[ii-1] + vnav_des_dist_diff[x_gw2][ii]
+				end
+				if vnav_des_alt[ii] >= 11000 then
+					x_dist1 = x_dist1 * x_idx_des_spd
+					x_dist2 = x_dist2 * x_idx_des_spd
+				end
+				vnav_des_table_dist2[ii] = B738_rescale(x_gw1, x_dist1, x_gw2, x_dist2, x_gw00)
+				vnav_des_table_alt2[ii] = vnav_des_alt[ii]
+				vnav_des_table_num2 = vnav_des_table_num2 + 1
+			end
+		end
 	end
 	
 end
@@ -70830,19 +71066,19 @@ function B738_vnav_pth3()
 					vnav_vvi_trg = simDR_vvi_fpm_pilot + B738DR_vnav_vvi_corr
 					
 					vnav_vvi_trg = vnav_vvi_trg / 1000
-					vnav_vvi_trg = math.max (vnav_vvi_trg, -3.0)
+					vnav_vvi_trg = math.max (vnav_vvi_trg, -3.8)
 					vnav_vvi_trg = math.min (vnav_vvi_trg, 0)
 					vnav_vvi_tmp = B738DR_vnav_vvi / 1000
 					
 					if B738DR_altitude_mode == 5 and simDR_autopilot_altitude_mode ~= 6 then -- VNAV
-						vnav_vvi_tmp = B738_set_anim_value2(vnav_vvi_tmp, vnav_vvi_trg, -3.0, 0, 2, 0.02)
+						vnav_vvi_tmp = B738_set_anim_value2(vnav_vvi_tmp, vnav_vvi_trg, -3.8, 0, 2, 0.02)
 						B738DR_vnav_vvi = vnav_vvi_tmp * 1000
 					else
 						B738DR_vnav_vvi = 0
 					end
 					
-					if B738DR_vnav_vvi < -3000 then		-- max descent vvi -2500
-						B738DR_vnav_vvi= -3000
+					if B738DR_vnav_vvi < -3800 then		-- max descent vvi -2500
+						B738DR_vnav_vvi= -3800
 					end
 					if B738DR_vnav_vvi > 0 then		-- min descent vvi 0
 						B738DR_vnav_vvi = 0
@@ -75214,7 +75450,7 @@ temp_ils4 = ""
 	B738DR_des_rwy_altitude = 0
 	B738DR_pfd_rwy_show = 0
 	
-	version = "v3.27e"
+	version = "v3.27f"
 
 end
 
@@ -75845,7 +76081,8 @@ function after_physics()
 		--calc_rte_enable2 = 0
 		--B738DR_fms_test3 = calc_vnav_pth_dist(0, B738DR_fms_test, "50")
 		--x_dist00 = 16
-		
+		--B738DR_fms_test3 = calc_vnav_pth_alt(0, B738DR_fms_test)
+		--B738DR_fms_test3 = calc_vnav_pth_table(B738DR_fms_test)
 	end
 	
 end
