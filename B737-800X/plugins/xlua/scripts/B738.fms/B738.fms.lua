@@ -17683,7 +17683,9 @@ function B738_find_rnav()
 	if rnav_idx_last > 0 and rnav_idx_last <= legs_num then
 		if string.sub(legs_data[rnav_idx_last][1], 1, 2) == "RW" then
 			gp_available = 1
-			rnav_vpa = -nd_fpa
+			if string.sub(des_app, 1, 2) == "RW" then
+				rnav_vpa = -nd_fpa
+			end
 		end
 	end
 
@@ -42018,7 +42020,7 @@ function B738_fmc_menu()
 		line4_l = "  Z I B O               "
 		line4_s = "           M O D  " .. version
 		if menu_tick < 5 then
-			line5_x = "FLIGHT MODEL 4.5 TWKSTER"
+			line5_x = "FLIGHT MODEL 4.6 TWKSTER"
 			line5_l = "         A   S  D  G    "
 			line5_s = "  AND BY  ERO IM EV ROUP"
 			line6_x = "SOUND PACK "
@@ -74192,7 +74194,7 @@ temp_ils4 = ""
 	B738DR_des_rwy_altitude = 0
 	B738DR_pfd_rwy_show = 0
 	
-	version = "v3.26y"
+	version = "v3.26z"
 
 end
 

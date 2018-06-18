@@ -868,6 +868,8 @@ xfirst_time2			= find_dataref("laminar/B738/fms/xfirst_time2")
 --*************************************************************************************--
 
 simDR_elevation_m				= find_dataref("sim/flightmodel/position/elevation")
+simDR_current_inhg 				= find_dataref("sim/weather/barometer_current_inhg")
+simDR_sea_level_inhg			= find_dataref("sim/weather/barometer_sealevel_inhg")
 
 simDR_nose_gear_fail = find_dataref("sim/operation/failures/rel_collapse1")
 simDR_left_gear_fail = find_dataref("sim/operation/failures/rel_collapse2")
@@ -1379,6 +1381,14 @@ B738DR_arrow2					= create_dataref("laminar/B738/radio/arrow2", "number")
 B738DR_egt_redline1				= create_dataref("laminar/B738/systems/egt_redline1", "number")
 B738DR_egt_redline2				= create_dataref("laminar/B738/systems/egt_redline2", "number")
 
+B738DR_standby_alt_hpin_pos		= create_dataref("laminar/B738/knobs/standby_alt_hpin_pos", "number")
+B738DR_standby_alt_app_pos		= create_dataref("laminar/B738/knobs/standby_alt_app_pos", "number")
+B738DR_standby_alt_rst_pos		= create_dataref("laminar/B738/knobs/standby_alt_rst_pos", "number")
+B738DR_standby_alt_plus_pos		= create_dataref("laminar/B738/knobs/standby_alt_plus_pos", "number")
+B738DR_standby_alt_minus_pos	= create_dataref("laminar/B738/knobs/standby_alt_minus_pos", "number")
+
+B738DR_standby_altimeter		= create_dataref("laminar/B738/gauges/standby_altitude_ft", "number")
+
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
 --*************************************************************************************--
@@ -1664,6 +1674,14 @@ function B738DR_nosewheel_steer_ratio_DRhandler()end
 
 function B738DR_standby_bat_pos_DRhandler()end
 
+function B738DR_standby_alt_baro_DRhandler()
+	if B738DR_standby_alt_baro < 0 then
+		B738DR_standby_alt_baro = 0
+	elseif B738DR_standby_alt_baro > 40.00 then
+		B738DR_standby_alt_baro = 40.00
+	end
+end
+
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
@@ -1671,6 +1689,8 @@ function B738DR_standby_bat_pos_DRhandler()end
 steer_speed						= create_dataref("laminar/B738/steer_speed", "number", B738DR_steer_speed_DRhandler)
 
 B738DR_standby_bat_pos			= create_dataref("laminar/B738/electric/standby_bat_pos", "number", B738DR_standby_bat_pos_DRhandler)
+
+B738DR_standby_alt_baro			= create_dataref("laminar/B738/knobs/standby_alt_baro", "number", B738DR_standby_alt_baro_DRhandler)
 
 B738DR_nosewheel_steer_ratio	= create_dataref("laminar/B738/nosewheel_steer_ratio", "number", B738DR_nosewheel_steer_ratio_DRhandler)
 
@@ -4143,9 +4163,86 @@ function B738_standby_bat_on_CMDhandler(phase, duration)
 	end
 end
 
+function B738_standby_alt_hpin_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_standby_alt_hpin_pos = 1
+	elseif phase == 2 then
+		B738DR_standby_alt_hpin_pos = 0
+	end
+end
+
+function B738_standby_alt_app_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_standby_alt_app_pos = 1
+	elseif phase == 2 then
+		B738DR_standby_alt_app_pos = 0
+	end
+end
+
+function B738_standby_alt_rst_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_standby_alt_rst_pos = 1
+	elseif phase == 2 then
+		B738DR_standby_alt_rst_pos = 0
+	end
+end
+
+function B738_standby_alt_plus_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_standby_alt_plus_pos = 1
+	elseif phase == 2 then
+		B738DR_standby_alt_plus_pos = 0
+	end
+end
+
+function B738_standby_alt_minus_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_standby_alt_minus_pos = 1
+	elseif phase == 2 then
+		B738DR_standby_alt_minus_pos = 0
+	end
+end
+
+function B738_standby_alt_baro_up_CMDhandler(phase, duration)
+	
+	if phase == 0 then
+		if B738DR_standby_alt_baro < 40.00 then
+			B738DR_standby_alt_baro = B738DR_standby_alt_baro + 0.01
+		end
+	elseif phase == 1 and duration > 1.5 then
+		if B738DR_standby_alt_baro < 40.00 then
+			B738DR_standby_alt_baro = B738DR_standby_alt_baro + 0.01
+		end
+	end
+end
+
+function B738_standby_alt_baro_dn_CMDhandler(phase, duration)
+	
+	local standby_alt_baro = 0
+	
+	if phase == 0 then
+		if B738DR_standby_alt_baro > 0.00 then
+			B738DR_standby_alt_baro = B738DR_standby_alt_baro - 0.01
+		end
+	elseif phase == 1 and duration > 1.5 then
+		if B738DR_standby_alt_baro > 0.00 then
+			B738DR_standby_alt_baro = B738DR_standby_alt_baro - 0.01
+		end
+	end
+end
+
 --*************************************************************************************--
 --** 				              CREATE CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
+
+-- Standby altimeter
+B738CMD_standby_alt_baro_up = create_command("laminar/B738/knob/standby_alt_baro_up", "Standby altimeter baro Up", B738_standby_alt_baro_up_CMDhandler)
+B738CMD_standby_alt_baro_dn = create_command("laminar/B738/knob/standby_alt_baro_dn", "Standby altimeter baro Down", B738_standby_alt_baro_dn_CMDhandler)
+B738CMD_standby_alt_hpin		= create_command("laminar/B738/toggle_switch/standby_alt_hpin", "Standby altimeter HP/IN", B738_standby_alt_hpin_CMDhandler)
+B738CMD_standby_alt_app			= create_command("laminar/B738/toggle_switch/standby_alt_app", "Standby altimeter APP", B738_standby_alt_app_CMDhandler)
+B738CMD_standby_alt_rst			= create_command("laminar/B738/toggle_switch/standby_alt_rst", "Standby altimeter RST", B738_standby_alt_rst_CMDhandler)
+B738CMD_standby_alt_plus		= create_command("laminar/B738/toggle_switch/standby_alt_plus", "Standby altimeter PLUS", B738_standby_alt_plus_CMDhandler)
+B738CMD_standby_alt_minus		= create_command("laminar/B738/toggle_switch/standby_alt_minus", "Standby altimeter MINUS", B738_standby_alt_minus_CMDhandler)
 
 B738CMD_standby_bat_off		= create_command("laminar/B738/switch/standby_bat_off", "Standby battery off", B738_standby_bat_off_CMDhandler)
 B738CMD_standby_bat_on		= create_command("laminar/B738/switch/standby_bat_on", "Standby battery on", B738_standby_bat_on_CMDhandler)
@@ -11215,6 +11312,44 @@ function B738_tire()
 	
 end
 
+-- function B738_standby_altimeter_old()
+	
+	-- local standby_height = ((simDR_elevation_m / 1000) * 6356.766) / (simDR_elevation_m + 6356.766)
+	-- local std_temperature = 0
+	-- local std_pressure = 0
+	-- if standby_height <= 11 then
+		-- std_temperature = 288.15 - (6.5 * standby_height)
+		-- std_pressure = 101325 * math.pow(288.15 / std_temperature, -5.255877)
+	-- elseif standby_height <= 20 then
+		-- std_temperature = 216.65
+		-- std_pressure = 22632.06 * math.exp(-0.1577 * (standby_height - 11))
+	-- elseif standby_height <= 32 then
+		-- std_temperature = 196.65 + standby_height
+		-- std_pressure = 5474.889 * math.pow(216.65 / std_temperature, 34.16319)
+	-- else
+		-- std_temperature = 288.65 + (2.8 * (standby_height - 32))
+		-- std_pressure = 868.0187 * math.pow(228.65 / std_temperature, 12.2011)
+	-- end
+	-- std_pressure = (std_pressure / 100) * 0.02952998751		-- convert from hPa to inhg
+	-- standby_altimeter = (simDR_elevation_m * 3.28083989501) + ((B738DR_standby_alt_baro - std_pressure) * 915)
+	-- B738DR_standby_altimeter = B738_set_anim_value(B738DR_standby_altimeter, standby_altimeter, -10000, 47000, 3)
+	
+-- end
+
+function B738_standby_altimeter()
+	
+	local standby_altimeter = 145366.45 * (1 - (simDR_current_inhg / B738DR_standby_alt_baro)^0.190284)
+	if standby_altimeter < -5000 then
+		standby_altimeter = -5000
+	elseif standby_altimeter > 47000 then
+		standby_altimeter = 46900
+	elseif standby_altimeter > 0 and standby_altimeter <= 47000 then
+		standby_altimeter = B738_rescale(0, 0, 47000, 46900, standby_altimeter)
+	end
+	B738DR_standby_altimeter = B738_set_anim_value(B738DR_standby_altimeter, standby_altimeter, -5000, 47000, 2)
+	
+end
+
 --*************************************************************************************--
 --** 				               XLUA EVENT CALLBACKS       	        			 **--
 --*************************************************************************************--
@@ -11442,6 +11577,9 @@ B738_init_engineMGMT_fltStart()
 	B738DR_panel_brightness[2] = 0.2
 	B738DR_panel_brightness[3] = 0.2
 	
+	B738DR_standby_alt_baro = 29.92
+	B738DR_standby_altimeter = 0
+	
 end
 
 --function flight_crash() end
@@ -11507,6 +11645,7 @@ function after_physics()
 		B738_speedbrake_handle_animation()
 		B738_speedbrake_disagree_monitor()
 		B738_tire()
+		B738_standby_altimeter()
 		
 		if fmod_flap_sound == 1 then
 			fmod_flap_sound = 2
@@ -11515,7 +11654,7 @@ function after_physics()
 		end
 	end
 	
-
+	
 	--B738_bus_trans()
 	--DR_sys_test = gpws_playing_sound	--gpws_aural_phase
 	--B738DR_tcas_test_test = gpws_aural_phase

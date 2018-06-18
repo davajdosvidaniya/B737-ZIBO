@@ -77,6 +77,10 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26z:
+------
+- add Standby altimeter - knob and buttons (working only altimeter setting yet)
+
 3.26y:
 -----
 - add APU protection systems (ECU)

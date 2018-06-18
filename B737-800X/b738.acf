@@ -47188,7 +47188,6 @@ GROUP FROM 2D
 END_GROUP
 GROUP LAT LON
   LOCKED
-  GROUP_OPEN
   GROUP IRS entry pos
     SHOW_EQUAL 1.000000 laminar/B738/irs_entry_pos_show
     LOCKED
@@ -107690,6 +107689,7 @@ GROUP ND FO
 END_GROUP
 GROUP STANDBY Horizon
   LOCKED
+  GROUP_OPEN
   gen_needle STBY Horizon
     POS 1170.500000 623.000000
     IMAGE Standby/horizon
@@ -107777,7 +107777,7 @@ GROUP STANDBY Horizon
     gen_pointer ALT Tape 1
       POS 1286.500000 624.000000
       IMAGE Standby/Alt_Tapes/-1_6k
-      DATAREF sim/cockpit2/gauges/indicators/altitude_ft_pilot
+      DATAREF laminar/B738/gauges/standby_altitude_ft
       LOCKED
       CLIP
       LIGHT_MODE GLASS_AUTO
@@ -107792,7 +107792,7 @@ GROUP STANDBY Horizon
     gen_pointer ALT Tape 2
       POS 1286.500000 624.000000
       IMAGE Standby/Alt_Tapes/6_13k
-      DATAREF sim/cockpit2/gauges/indicators/altitude_ft_pilot
+      DATAREF laminar/B738/gauges/standby_altitude_ft
       LOCKED
       CLIP
       LIGHT_MODE GLASS_AUTO
@@ -107807,7 +107807,7 @@ GROUP STANDBY Horizon
     gen_pointer ALT Tape 3
       POS 1286.500000 624.000000
       IMAGE Standby/Alt_Tapes/13_20k
-      DATAREF sim/cockpit2/gauges/indicators/altitude_ft_pilot
+      DATAREF laminar/B738/gauges/standby_altitude_ft
       LOCKED
       CLIP
       LIGHT_MODE GLASS_AUTO
@@ -107822,7 +107822,7 @@ GROUP STANDBY Horizon
     gen_pointer ALT Tape 4
       POS 1286.500000 624.000000
       IMAGE Standby/Alt_Tapes/20-27k
-      DATAREF sim/cockpit2/gauges/indicators/altitude_ft_pilot
+      DATAREF laminar/B738/gauges/standby_altitude_ft
       LOCKED
       CLIP
       LIGHT_MODE GLASS_AUTO
@@ -107837,7 +107837,7 @@ GROUP STANDBY Horizon
     gen_pointer ALT Tape 5
       POS 1286.500000 624.000000
       IMAGE Standby/Alt_Tapes/27-34k
-      DATAREF sim/cockpit2/gauges/indicators/altitude_ft_pilot
+      DATAREF laminar/B738/gauges/standby_altitude_ft
       LOCKED
       CLIP
       LIGHT_MODE GLASS_AUTO
@@ -107852,7 +107852,7 @@ GROUP STANDBY Horizon
     gen_pointer ALT Tape 6
       POS 1286.500000 624.000000
       IMAGE Standby/Alt_Tapes/34-41k
-      DATAREF sim/cockpit2/gauges/indicators/altitude_ft_pilot
+      DATAREF laminar/B738/gauges/standby_altitude_ft
       LOCKED
       CLIP
       LIGHT_MODE GLASS_AUTO
@@ -107867,7 +107867,7 @@ GROUP STANDBY Horizon
     gen_pointer ALT Tape 7
       POS 1286.500000 624.000000
       IMAGE Standby/Alt_Tapes/41-48k
-      DATAREF sim/cockpit2/gauges/indicators/altitude_ft_pilot
+      DATAREF laminar/B738/gauges/standby_altitude_ft
       LOCKED
       CLIP
       LIGHT_MODE GLASS_AUTO
@@ -107883,7 +107883,7 @@ GROUP STANDBY Horizon
   gen_rolling ALT Scrolling
     POS 1285.500000 611.500000
     IMAGE Standby/alt_scrolling
-    DATAREF sim/cockpit2/gauges/indicators/altitude_ft_pilot
+    DATAREF laminar/B738/gauges/standby_altitude_ft
     LOCKED
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 7
@@ -107895,7 +107895,7 @@ GROUP STANDBY Horizon
   gen_pointer rolling 20s
     POS 1302.000000 611.500000
     IMAGE Standby/Scrolling_20s
-    DATAREF sim/cockpit2/gauges/indicators/altitude_ft_pilot
+    DATAREF laminar/B738/gauges/standby_altitude_ft
     LOCKED
     KF_WRAP_BOTTOM
     KF_WRAP_TOP
@@ -107913,7 +107913,7 @@ GROUP STANDBY Horizon
     POS 1255.000000 611.000000
     IMAGE Standby/neg_ALT
     DATAREF 
-    SHOW_LESS -1.000000 sim/cockpit2/gauges/indicators/altitude_ft_pilot
+    SHOW_LESS -1.000000 laminar/B738/gauges/standby_altitude_ft
     LOCKED
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 7
@@ -107955,7 +107955,7 @@ GROUP STANDBY Horizon
   gen_LED BARO Setting IN
     POS 1200.000000 746.000000
     IMAGE TYPE/green_size21
-    DATAREF sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot
+    DATAREF laminar/B738/knobs/standby_alt_baro
     LOCKED
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 7

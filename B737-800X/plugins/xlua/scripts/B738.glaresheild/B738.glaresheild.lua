@@ -1595,6 +1595,11 @@ function B738DR_yoke_fo_ap_disengage_DRhandler() end
 function B738DR_yoke_capt_checklist_DRhandler() end
 function B738DR_yoke_fo_checklist_DRhandler() end
 
+function B738DR_minim_fo_pfd_DRhandler() end
+function B738DR_minim_capt_pfd_DRhandler() end
+function B738DR_minim_dh_fo_pfd_DRhandler() end
+function B738DR_minim_dh_capt_pfd_DRhandler() end
+
 --*************************************************************************************--
 --** 				       CREATE READ-WRITE CUSTOM DATAREFS                         **--
 --*************************************************************************************--
@@ -1699,10 +1704,10 @@ B738DR_minim_capt = 			create_dataref("laminar/B738/EFIS_control/cpt/minimums", 
 B738DR_minim_dh_fo = 				create_dataref("laminar/B738/EFIS_control/fo/minimums_dh", "number", B738DR_minim_dh_fo_DRhandler)
 B738DR_minim_dh_capt = 				create_dataref("laminar/B738/EFIS_control/capt/minimums_dh", "number", B738DR_minim_dh_capt_DRhandler)
 
-B738DR_minim_fo_pfd = 				create_dataref("laminar/B738/EFIS_control/fo/minimums_pfd", "number", B738DR_minim_fo_DRhandler)
-B738DR_minim_capt_pfd = 			create_dataref("laminar/B738/EFIS_control/cpt/minimums_pfd", "number", B738DR_minim_capt_DRhandler)
-B738DR_minim_dh_fo_pfd = 			create_dataref("laminar/B738/EFIS_control/fo/minimums_dh_pfd", "number", B738DR_minim_dh_fo_DRhandler)
-B738DR_minim_dh_capt_pfd = 			create_dataref("laminar/B738/EFIS_control/capt/minimums_dh_pfd", "number", B738DR_minim_dh_capt_DRhandler)
+B738DR_minim_fo_pfd = 				create_dataref("laminar/B738/EFIS_control/fo/minimums_pfd", "number", B738DR_minim_fo_pfd_DRhandler)
+B738DR_minim_capt_pfd = 			create_dataref("laminar/B738/EFIS_control/cpt/minimums_pfd", "number", B738DR_minim_capt_pfd_DRhandler)
+B738DR_minim_dh_fo_pfd = 			create_dataref("laminar/B738/EFIS_control/fo/minimums_dh_pfd", "number", B738DR_minim_dh_fo_pfd_DRhandler)
+B738DR_minim_dh_capt_pfd = 			create_dataref("laminar/B738/EFIS_control/capt/minimums_dh_pfd", "number", B738DR_minim_dh_capt_pfd_DRhandler)
 
 --*************************************************************************************--
 --** 				             CUSTOM COMMAND HANDLERS            			     **--
