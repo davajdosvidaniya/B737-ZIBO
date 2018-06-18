@@ -194,47 +194,7 @@ tcas_tara = 0
 tcas_tara_status = 0
 tcas_dis = 0
 
--- tcas_dis_1 = 0
--- tcas_dis_2 = 0
--- tcas_dis_3 = 0
--- tcas_dis_4 = 0
--- tcas_dis_5 = 0
--- tcas_dis_6 = 0
--- tcas_dis_7 = 0
--- tcas_dis_8 = 0
--- tcas_dis_9 = 0
--- tcas_dis_10 = 0
--- tcas_dis_11 = 0
--- tcas_dis_12 = 0
--- tcas_dis_13 = 0
--- tcas_dis_14 = 0
--- tcas_dis_15 = 0
--- tcas_dis_16 = 0
--- tcas_dis_17 = 0
--- tcas_dis_18 = 0
--- tcas_dis_19 = 0
-
 tcas_el_0 = 0	-- my elevation
--- tcas_el_1 = 0
--- tcas_el_2 = 0
--- tcas_el_3 = 0
--- tcas_el_4 = 0
--- tcas_el_5 = 0
--- tcas_el_6 = 0
--- tcas_el_7 = 0
--- tcas_el_8 = 0
--- tcas_el_9 = 0
--- tcas_el_10 = 0
--- tcas_el_11 = 0
--- tcas_el_12 = 0
--- tcas_el_13 = 0
--- tcas_el_14 = 0
--- tcas_el_15 = 0
--- tcas_el_16 = 0
--- tcas_el_17 = 0
--- tcas_el_18 = 0
--- tcas_el_19 = 0
-
 tcas_dis_ai = {}
 tcas_el_ai = {}
 
@@ -392,6 +352,9 @@ brake_smoothly_right = 0
 
 apu_start_avaiable = 0
 apu_protection_disabled = 1
+
+last_steer_cmd = 0
+pushback_active = 0
 
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
@@ -1010,7 +973,6 @@ B738CMD_position_light_switch_dn 	= find_command("laminar/B738/toggle_switch/pos
 --** 				        CREATE READ-ONLY CUSTOM DATAREFS               	         **--
 --*************************************************************************************--
 
-
 B738DR_apu_start_switch_position	= create_dataref("laminar/B738/spring_toggle_switch/APU_start_pos", "number")
 
 B738DR_drive_disconnect1_switch_position = create_dataref("laminar/B738/one_way_switch/drive_disconnect1_pos", "number")
@@ -1298,6 +1260,8 @@ B738DR_zone_temp		= create_dataref("laminar/B738/zone_temp", "number")
 B738DR_fdr_cover_pos	= create_dataref("laminar/B738/switches/fdr_cover_pos", "number")
 B738DR_fdr_pos			= create_dataref("laminar/B738/switches/fdr_pos", "number")
 
+-- NOSE STEER
+B738DR_nose_steer_pos	= create_dataref("laminar/B738/switches/nose_steer_pos", "number")
 
 B738DR_gpu_available	= create_dataref("laminar/B738/gpu_available", "number")
 
@@ -3428,12 +3392,12 @@ end
 	-- end
 -- end
 
--- PARKING BRAKES
+-- PARKING BRAKES TOGGLE
 function B738_park_brake_toggle_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_parking_brake_pos == 0 then
 			B738DR_parking_brake_pos = 1
-			--simDR_brake = 1
+			simDR_brake = 1
 			--parkbrake_force = 1
 			brake_smoothly_left = 0
 			brake_smoothly_right = 0
@@ -3448,29 +3412,53 @@ function B738_park_brake_toggle_CMDhandler(phase, duration)
 	end
 end
 
+-- REGULAR BRAKES TOGGLE
 function B738_park_brake_reg_toggle_CMDhandler(phase, duration)
 	if phase == 0 then
-		if B738DR_parking_brake_pos == 0 then
+		-- if B738DR_parking_brake_pos == 0 then
+			-- B738DR_parking_brake_pos = TOE_BRAKE_FORCE -- --0.24
+			-- if simDR_brake > TOE_BRAKE_FORCE then
+				-- simDR_brake = TOE_BRAKE_FORCE
+			-- end
+			-- --simDR_brake = 0.24
+			-- --parkbrake_force = 0.24
+		-- else
+			-- B738DR_parking_brake_pos = 0
+			-- simDR_brake = 0
+			-- --simDR_brake = 0
+			-- --parkbrake_force = 0
+		-- end
+		
+		if B738DR_parking_brake_pos == 1 then
+			B738DR_parking_brake_pos = TOE_BRAKE_FORCE
+			simDR_brake = TOE_BRAKE_FORCE
+		elseif B738DR_parking_brake_pos == 0 then
 			B738DR_parking_brake_pos = TOE_BRAKE_FORCE -- --0.24
-			if simDR_brake > TOE_BRAKE_FORCE then
-				simDR_brake = TOE_BRAKE_FORCE
-			end
-			--simDR_brake = 0.24
-			--parkbrake_force = 0.24
 		else
 			B738DR_parking_brake_pos = 0
-			simDR_brake = 0
-			--simDR_brake = 0
-			--parkbrake_force = 0
 		end
+		if B738DR_chock_status == 1 and B738DR_parkbrake_remove_chock == 1 then
+			B738DR_chock_status = 0
+		end
+		
 	end
 end
 
+-- REGULAR MAX
 function B738_park_brake_CMDhandler(phase, duration)
 	if phase == 0 or phase == 1 then
-		B738DR_parking_brake_pos = 1
-		--simDR_brake = 1
-		--parkbrake_force = 1
+		-- B738DR_parking_brake_pos = 1
+		-- simDR_brake = 1
+		-- --parkbrake_force = 1
+		-- brake_smoothly_left = 0
+		-- brake_smoothly_right = 0
+		-- if B738DR_chock_status == 1 and B738DR_parkbrake_remove_chock == 1 then
+			-- B738DR_chock_status = 0
+		-- end
+		if B738DR_parking_brake_pos == 1 then
+			simDR_brake = TOE_BRAKE_FORCE
+		end
+		B738DR_parking_brake_pos = TOE_BRAKE_FORCE -- --0.24
 		brake_smoothly_left = 0
 		brake_smoothly_right = 0
 		if B738DR_chock_status == 1 and B738DR_parkbrake_remove_chock == 1 then
@@ -3482,14 +3470,22 @@ function B738_park_brake_CMDhandler(phase, duration)
 	end
 end
 
+-- REGULAR BRAKES
 function B738_park_brake_reg_CMDhandler(phase, duration)
 	if phase == 0 or phase == 1 then
-		B738DR_parking_brake_pos = TOE_BRAKE_FORCE -- --0.24
-		if simDR_brake > TOE_BRAKE_FORCE then
+		-- B738DR_parking_brake_pos = TOE_BRAKE_FORCE -- --0.24
+		-- if simDR_brake > TOE_BRAKE_FORCE then
+			-- simDR_brake = TOE_BRAKE_FORCE
+		-- end
+		if B738DR_parking_brake_pos == 1 then
 			simDR_brake = TOE_BRAKE_FORCE
 		end
-		--simDR_brake = 0.24
-		--parkbrake_force = 0.24
+		B738DR_parking_brake_pos = TOE_BRAKE_FORCE -- --0.24
+		brake_smoothly_left = 0
+		brake_smoothly_right = 0
+		if B738DR_chock_status == 1 and B738DR_parkbrake_remove_chock == 1 then
+			B738DR_chock_status = 0
+		end
 	elseif phase == 2 then
 		B738DR_parking_brake_pos = 0
 		--parkbrake_force = 0
@@ -4381,6 +4377,18 @@ function B738_oxy_test_fo2_CMDhandler(phase, duration)
 end
 
 
+function B738_nose_steer_alt_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_nose_steer_pos = 0
+	end
+end
+
+function B738_nose_steer_norm_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_nose_steer_pos = 1
+	end
+end
+
 --*************************************************************************************--
 --** 				              CREATE CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -4397,6 +4405,10 @@ B738CMD_standby_alt_baro_std	= create_command("laminar/B738/toggle_switch/standb
 
 B738CMD_standby_bat_off		= create_command("laminar/B738/switch/standby_bat_off", "Standby battery off", B738_standby_bat_off_CMDhandler)
 B738CMD_standby_bat_on		= create_command("laminar/B738/switch/standby_bat_on", "Standby battery on", B738_standby_bat_on_CMDhandler)
+
+B738CMD_nose_steer_alt		= create_command("laminar/B738/switch/nose_steer_alt", "Nose steer ALT", B738_nose_steer_alt_CMDhandler)
+B738CMD_nose_steer_norm		= create_command("laminar/B738/switch/nose_steer_norm", "Nose steer NORM", B738_nose_steer_norm_CMDhandler)
+
 
 B738CMD_oxy_test_cpt		= create_command("laminar/B738/push_button/oxy_test_cpt", "Oxygen test Captain", B738_oxy_test_cpt_CMDhandler)
 B738CMD_oxy_test_fo			= create_command("laminar/B738/push_button/oxy_test_fo", "Oxygen test First Officier", B738_oxy_test_fo_CMDhandler)
@@ -8523,12 +8535,13 @@ function B738_nose_steer()
 	-- local brake_smoothly_right = 0
 	local brake_sm_left_tgt = 0
 	local brake_sm_right_tgt = 0
+	local brake_tempor = 0
 	
 	local throttle_used = math.max(simDR_throttle_used_ratio[0], simDR_throttle_used_ratio[1])
 	throttle_used = math.min(throttle_used, 0.5)
 	
 	-- deactivate Parking brake
-	if simDR_left_brake > 0.9 and simDR_right_brake > 0.9 then
+	if simDR_left_brake > 0.92 and simDR_right_brake > 0.92 then
 		B738DR_parking_brake_pos = 0
 	end
 	if left_brake >= TOE_BRAKE_FORCE and right_brake >= TOE_BRAKE_FORCE then
@@ -8545,6 +8558,13 @@ function B738_nose_steer()
 	end
 	--simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos, gear_rot_brake)
 	
+	pushback_active = 0
+	if (simDR_left_brake > 0.89 and simDR_left_brake < 0.91 
+	and simDR_right_brake > 0.89 and simDR_right_brake < 0.91 ) 
+	or simDR_faxil_plug ~= 0 then
+		pushback_active = 1
+	end
+	
 	local brake_tgt = math.max(autobrake_ratio, B738DR_parking_brake_pos, gear_rot_brake) * 100
 	local brake_act = simDR_brake * 100
 	if B738DR_parking_brake_pos == 1 then
@@ -8554,24 +8574,43 @@ function B738_nose_steer()
 		if brake_tgt < brake_act then
 			--simDR_brake = B738_set_animation_rate(brake_act, brake_tgt, 0, 100, 0.027) / 100
 			simDR_brake = B738_set_anim_value(brake_act, brake_tgt, 0, 100, 4.2) / 100
+			brake_tempor = (brake_tgt / 100) + 0.02
+			if simDR_brake < brake_tempor then
+				simDR_brake = brake_tgt / 100
+			end
 		else
 			--simDR_brake = B738_set_animation_rate(brake_act, brake_tgt, 0, 100, 0.15) / 100
 			simDR_brake = B738_set_anim_value(brake_act, brake_tgt, 0, 100, 0.8) / 100
+			brake_tempor = (brake_tgt / 100) - 0.02
+			if simDR_brake > brake_tempor then
+				simDR_brake = brake_tgt / 100
+			end
 		end
 	end
-	
-	-- if B738DR_toe_brakes_ovr == 0 then
-		-- simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos)
-	-- else
-		-- simDR_brake = B738DR_parking_brake_pos
-	-- end
 	
 	if B738DR_chock_status == 0 then
 	
 		if simDR_faxil_plug ~= 0 then
+			last_steer_cmd = simDR_steer_cmd
 			return
 		end
 		
+		if B738DR_nose_steer_pos == 0 then
+			-- Nose wheel steering ALT
+			if B738DR_hyd_B_status == 0 then
+				simDR_steer_ovr = 1
+				simDR_steer_cmd = last_steer_cmd
+				return
+			end
+		else
+			-- Nose wheel steering NORM
+			if B738DR_hyd_A_status == 0 then
+				simDR_steer_ovr = 1
+				simDR_steer_cmd = last_steer_cmd
+				return
+			end
+		end
+	
 		if B738DR_toe_brakes_ovr == 0 then
 			--simDR_steer_ovr = 0
 			simDR_toe_brakes_ovr = 0
@@ -8704,8 +8743,8 @@ function B738_nose_steer()
 				end
 				simDR_steer_cmd = 0
 			end
-			
 		end
+		
 		
 		--if autobrake_ratio == 0 then
 			--roll_co_max = B738_rescale(0, 0.040, 225, 0.200, gs_limit * gs_limit)
@@ -8723,6 +8762,7 @@ function B738_nose_steer()
 		simDR_steer_ovr = 1
 	end
 	
+	
 	--gs_limit = math.min(simDR_ground_speed, 36)	-- 70 kts
 	gs_limit = math.min(simDR_ground_speed, 72)		-- 140 kts
 	local roll_brake_tgt = 55
@@ -8732,8 +8772,9 @@ function B738_nose_steer()
 		roll_brake_tgt = B738_rescale(18, 55, 72, 45, gs_limit)		-- 35 kts to 140 kts
 	end
 	simDR_roll_brake = roll_brake_tgt / 100
-	
 	--simDR_roll_brake = 0.35		--0.8
+	
+	last_steer_cmd = simDR_steer_cmd
 	
 end
 
@@ -10442,47 +10483,30 @@ function B738_brakes_press_system()
 	--brake_compress = B738_rescale(0, 0, 3400, 6540, delta_pressure)
 	brake_compress = B738_rescale(0, 0, 3400, 6500, delta_pressure)
 	
-	-- if B738DR_parking_brake_pos ~= simDR_brake_old then
-		-- brake3 = 150
-	-- end
-	-- if simDR_left_brake ~= simDR_left_brake_old then
-		-- if simDR_left_brake > 0 then
-			-- brake2 = B738_rescale(0, 0, 1, 20, simDR_left_brake)
-		-- end
-	-- end
-	-- if simDR_right_brake ~= simDR_right_brake_old then
-		-- if simDR_right_brake > 0 then
-			-- brake2 = brake2 + B738_rescale(0, 0, 1, 20, simDR_right_brake)
-		-- end
-	-- end
 	if B738DR_parking_brake_pos ~= simDR_brake_old then
-		brake3 = 150
+		if B738DR_parking_brake_pos == 0 or B738DR_parking_brake_pos == 1 then
+			brake3 = 150
+		end
 	end
 	if B738DR_parking_brake_pos ~= 1 then
 		brake3 = B738_rescale(0, 0, 1, 500, simDR_brake)
 	end
-	brake2 = B738_rescale(0, 0, 1, 500, simDR_left_brake)
-	brake2 = brake2 + B738_rescale(0, 0, 1, 500, simDR_right_brake)
+	
+	if pushback_active == 0 then
+		brake2 = B738_rescale(0, 0, 1, 500, simDR_left_brake)
+		brake2 = brake2 + B738_rescale(0, 0, 1, 500, simDR_right_brake)
+	end
 	
 	if autobrake_ratio > 0 then
 		brake2 = brake2 + B738_rescale(0, 0, 1, 500, autobrake_ratio)
 	end
 	
 	brake_decompress = brake3 + brake2
-	-- delta_pressure = brake3 + brake2
-	-- brake_decompress = math.max(brake_decompress, delta_pressure)
 	
 	local hyd_A_max = B738_rescale(0, 0, 3500, 3600, hyd_A_pressure)
 	local hyd_B_max = B738_rescale(0, 0, 3500, 3600, hyd_B_pressure)
 	brake_press_target = B738DR_brake_press + ((brake_compress - brake_decompress) * SIM_PERIOD * 52)
 	brake_press_target = math.max(0, brake_press_target, hyd_A_max, hyd_B_max)
-	
-	-- delta_pressure = brake_decompress + brake3 + brake2
-	-- --delta_pressure = delta_pressure - B738_rescale(0, 0, 3310, 18, brake1)
-	-- delta_pressure = delta_pressure - B738_rescale(0, 0, 3310, 25, brake1)
-	-- if delta_pressure > 0 then
-		-- brake_decompress = delta_pressure
-	-- end
 	
 	simDR_brake_old = B738DR_parking_brake_pos
 	simDR_left_brake_old = simDR_left_brake
@@ -11864,6 +11888,8 @@ B738_init_engineMGMT_fltStart()
 	B738DR_standby_alt_std_mode = 0		-- no APP
 	B738DR_standby_alt_mode = 0		-- in
 	B738DR_standby_altimeter = 0
+	last_steer_cmd = 0
+	pushback_active = 0
 	
 end
 

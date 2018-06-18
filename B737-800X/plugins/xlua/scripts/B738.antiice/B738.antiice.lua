@@ -133,9 +133,9 @@ B738DR_ac_tnsbus2_status	= find_dataref("laminar/B738/electric/ac_tnsbus2_status
 --B738DR_wing_ice_on_L		= create_dataref("laminar/B738/annunciator/wing_ice_on_L", "number")
 --B738DR_wing_ice_on_R		= create_dataref("laminar/B738/annunciator/wing_ice_on_R", "number")
 
-
-B738DR_eng1_tai			= create_dataref("laminar/B738/eicas/eng1_tai", "number")
-B738DR_eng2_tai			= create_dataref("laminar/B738/eicas/eng2_tai", "number")
+--- TEMPORARY
+-- B738DR_eng1_tai			= create_dataref("laminar/B738/eicas/eng1_tai", "number")
+-- B738DR_eng2_tai			= create_dataref("laminar/B738/eicas/eng2_tai", "number")
 
 
 l_side_temp 	= create_dataref("laminar/B738/ice/l_side_temp", "number")
@@ -364,24 +364,32 @@ function B738_engine_anti_ice()
 
 	if B738DR_eng1_heat_pos == 1
 	and simDR_engine1_on == 1
-	and simDR_cowl_ice_0_on == 0 then
-		simCMD_eng1_heat_on:once()
+	and simDR_cowl_ice_0_on == 0 
+	and B738DR_duct_pressure_L > 5 then
+		if simDR_cowl_ice_0_on == 0 then
+			simCMD_eng1_heat_on:once()
+		end
 	end
 
-	if B738DR_eng1_heat_pos == 0
-	and simDR_cowl_ice_0_on == 1 then
-		simCMD_eng1_heat_off:once()
+	if B738DR_eng1_heat_pos == 0 or B738DR_duct_pressure_L < 5 or simDR_engine1_on == 0 then
+		if simDR_cowl_ice_0_on == 1 then
+			simCMD_eng1_heat_off:once()
+		end
 	end
 
 	if B738DR_eng2_heat_pos == 1
 	and simDR_engine2_on == 1
-	   and simDR_cowl_ice_1_on == 0 then
-		simCMD_eng2_heat_on:once()
+	and simDR_cowl_ice_1_on == 0 
+	and B738DR_duct_pressure_R > 5 then
+		if simDR_cowl_ice_1_on == 0 then
+			simCMD_eng2_heat_on:once()
+		end
 	end
 	
-	if B738DR_eng2_heat_pos == 0
-	and simDR_cowl_ice_1_on == 1 then
-		simCMD_eng2_heat_off:once()
+	if B738DR_eng2_heat_pos == 0 or B738DR_duct_pressure_R < 5 or simDR_engine2_on == 0 then
+		if simDR_cowl_ice_1_on == 1 then
+			simCMD_eng2_heat_off:once()
+		end
 	end
 
 end
@@ -457,27 +465,6 @@ function B738_window_heat()
 		simDR_window_heat_on = 0
 	end
 
-
-end
-
-
-function B738_engine_tai()
-
-	if B738DR_eng1_heat_pos == 1
-	and simDR_engine1_on == 1 
-	and simDR_cowl_ice_0_on == 1 then
-		B738DR_eng1_tai = 1
-	else
-		B738DR_eng1_tai = 0
-	end
-	
-	if B738DR_eng2_heat_pos == 1
-	and simDR_engine2_on == 1 
-	and simDR_cowl_ice_1_on == 1 then
-		B738DR_eng2_tai = 1
-	else
-		B738DR_eng2_tai = 0
-	end
 
 end
 
@@ -568,7 +555,6 @@ function after_physics()
 	B738_engine_anti_ice()
 	B738_wing_anti_ice()
 	B738_window_heat()
-	B738_engine_tai()
 	B738_window_temp()
 
 end

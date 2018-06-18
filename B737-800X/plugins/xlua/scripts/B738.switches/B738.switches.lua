@@ -37,7 +37,7 @@ IN_REPLAY - evaluates to 0 if replay is off, 1 if replay mode is on
 --** 					               CONSTANTS                    				 **--
 --*************************************************************************************--
 
-NUM_BTN_SW_COVERS = 10
+NUM_BTN_SW_COVERS = 11
 
 
 
@@ -70,6 +70,7 @@ local B738_button_switch_cover_CMDhandler = {}
 simDR_batt_on				= find_dataref("sim/cockpit2/electrical/battery_on[0]")
 simDR_stdby_batt_on			= find_dataref("sim/cockpit2/electrical/battery_on[1]")
 simDR_startup_running		= find_dataref("sim/operation/prefs/startup_running")
+
 --*************************************************************************************--
 --** 				               FIND X-PLANE COMMANDS                   	    	 **--
 --*************************************************************************************--
@@ -87,6 +88,7 @@ simDR_bus_transfer_on 			= find_dataref("sim/cockpit2/electrical/cross_tie")
 B738DR_pas_oxy_switch_position 	= find_dataref("laminar/B738/one_way_switch/pax_oxy_pos")
 B738DR_elt_switch_pos 			= find_dataref("laminar/B738/toggle_switch/elt")
 B738DR_standby_bat_pos			= find_dataref("laminar/B738/electric/standby_bat_pos")
+B738DR_nose_steer_pos			= find_dataref("laminar/B738/switches/nose_steer_pos")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
@@ -300,6 +302,12 @@ function B738_cover_turn()
 	and B738DR_elt_switch_pos ~= 0 then
 		B738DR_elt_switch_pos = 0
 	end
+	
+	if B738DR_button_switch_cover_position[10] < 0.3 
+	and B738DR_nose_steer_pos ~= 1 then
+		B738DR_nose_steer_pos = 1
+	end
+	
 
 end
 
@@ -325,6 +333,7 @@ function flight_start()
 		B738_button_switch_cover_position_target[9] = 1		-- Emergency Exit Lights Cover
 		B738DR_button_switch_cover_position[9] = 1			-- Emergency Exit Lights Cover
 		B738DR_emer_exit_lights_switch = 0					-- Emergency Exit Lights
+		B738DR_nose_steer_pos = 1
 	else
 		B738_button_switch_cover_position_target[2] = 0
 		B738_button_switch_cover_position_target[3] = 0
@@ -336,6 +345,7 @@ function flight_start()
 		B738_button_switch_cover_position_target[9] = 0		-- Emergency Exit Lights Cover
 		B738DR_button_switch_cover_position[9] = 0			-- Emergency Exit Lights Cover
 		B738DR_emer_exit_lights_switch = 1					-- Emergency Exit Lights
+		B738DR_nose_steer_pos = 1
 	end
 	
 	math.randomseed( os.time() )

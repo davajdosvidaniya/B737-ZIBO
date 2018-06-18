@@ -77,6 +77,13 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.27c:
+------
+- add TAI transfer valve annun on EICAS
+- add Nose wheel steering switch with guarded cover
+- improved nose wheel steering and brake code (add hydraulic system for nose wheel steering)
+- fixed compatibility with Betterpushback plugin
+
 3.27b:
 ------
 - improved descent idle path with TAI on/off

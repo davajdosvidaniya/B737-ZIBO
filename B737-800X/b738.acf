@@ -192,7 +192,7 @@ P _gear/1/_lonE -4.0
 P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 111648.273437500
-P _gear/1/_stat_def 0.727282107
+P _gear/1/_stat_def 0.727282047
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -226,7 +226,7 @@ P _gear/2/_lonE -4.0
 P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 111648.273437500
-P _gear/2/_stat_def 0.727282107
+P _gear/2/_stat_def 0.727282047
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -39106,7 +39106,7 @@ P acf/_ff_rat_idle_PRP 0.150000006
 P acf/_file_writer_version 112101
 P acf/_flap1_cd 0.172000006
 P acf/_flap1_cl 1.250000000
-P acf/_flap1_cm -0.689999938
+P acf/_flap1_cm -0.689999998
 P acf/_flap1_cratR 0.219999999
 P acf/_flap1_cratT 0.250000000
 P acf/_flap1_dn/0 0.0
@@ -39127,7 +39127,7 @@ P acf/_flap1_roll_above_50 0
 P acf/_flap1_type 4
 P acf/_flap2_cd 0.159999996
 P acf/_flap2_cl 1.210000038
-P acf/_flap2_cm -0.680000067
+P acf/_flap2_cm -0.680000007
 P acf/_flap2_cratR 0.250000000
 P acf/_flap2_cratT 0.259999990
 P acf/_flap2_dn/0 0.0
@@ -40048,11 +40048,13 @@ PANEL_2D_END
 PANEL_3D_BEGIN
 GROUP EICAS x
   LOCKED
+  GROUP_OPEN
   GROUP EICAS y
     LOCKED
     GROUP_OPEN
     GROUP synoptic
       LOCKED
+      GROUP_OPEN
       gen_pie N1 pie #1
         POS 1102.500000 160.500000
         IMAGE EICAS/EICAS_pie
@@ -40943,7 +40945,7 @@ GROUP EICAS x
         POS 1082.000000 192.000000
         IMAGE EICAS/tai
         DATAREF 
-        SHOW_EQUAL 1.000000 laminar/B738/eicas/eng1_tai
+        SHOW_EQUAL 0.500000 laminar/B738/eicas/eng1_tai
         LOCKED
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 4
@@ -40964,6 +40966,50 @@ GROUP EICAS x
       gen_rotary TAI ENG2
         POS 1218.000000 192.000000
         IMAGE EICAS/tai
+        DATAREF 
+        SHOW_EQUAL 0.500000 laminar/B738/eicas/eng2_tai
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 4
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1.000000 1.000000
+        DIGITS 1
+        ROTARY_TYPE NO_CLICK
+        CLICK_RADIUS 10.000000
+        CLICK_RADIUS_DY 0.000000
+        OFFSET 0.000000
+        STEP1 1.000000
+        STEP2 1.000000
+        CURSOR DEFAULT
+        CLICK_DX 0
+        CLICK_DY 0
+
+      gen_rotary TAI ENG1 trans
+        POS 1082.000000 192.000000
+        IMAGE EICAS/tai_trans
+        DATAREF 
+        SHOW_EQUAL 1.000000 laminar/B738/eicas/eng1_tai
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 4
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1.000000 1.000000
+        DIGITS 1
+        ROTARY_TYPE NO_CLICK
+        CLICK_RADIUS 10.000000
+        CLICK_RADIUS_DY 0.000000
+        OFFSET 0.000000
+        STEP1 1.000000
+        STEP2 1.000000
+        CURSOR DEFAULT
+        CLICK_DX 0
+        CLICK_DY 0
+
+      gen_rotary TAI ENG2 trans
+        POS 1218.000000 192.000000
+        IMAGE EICAS/tai_trans
         DATAREF 
         SHOW_EQUAL 1.000000 laminar/B738/eicas/eng2_tai
         LOCKED
@@ -45195,7 +45241,6 @@ END_GROUP
 GROUP AP displays
   SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
   LOCKED
-  GROUP_OPEN
   gen_LED Captain CRS
     POS 1759.000000 741.000000
     IMAGE TYPE/Digital_Large
@@ -117614,7 +117659,6 @@ GROUP Display light test
   SHOW_EQUAL 1.000000 laminar/B738/dspl_light_test
   LOCKED
   HIDE
-  GROUP_OPEN
   gen_rotary AP TEST
     POS 1873.000000 688.000000
     IMAGE Standby/ap_test

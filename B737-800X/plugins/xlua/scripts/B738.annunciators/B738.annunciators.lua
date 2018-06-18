@@ -697,6 +697,10 @@ B738DR_cowl_ice_1_on		= create_dataref("laminar/B738/annunciator/cowl_ice_on_1",
 B738DR_wing_ice_on_L		= create_dataref("laminar/B738/annunciator/wing_ice_on_L", "number")
 B738DR_wing_ice_on_R		= create_dataref("laminar/B738/annunciator/wing_ice_on_R", "number")
 
+B738DR_eng1_tai			= create_dataref("laminar/B738/eicas/eng1_tai", "number")
+B738DR_eng2_tai			= create_dataref("laminar/B738/eicas/eng2_tai", "number")
+
+
 B738DR_apu_fault_annun		= create_dataref("laminar/B738/annunciator/apu_fault", "number")
 
 B738DR_parking_brake_spill 	= create_dataref("laminar/B738/light/spill/ratio/parking_brake", "array[9]")
@@ -3794,7 +3798,10 @@ local takeoff_config_warn = 0
 	elseif cowl_ice_1_time < 0.05 and simDR_cowl_ice_1_on == 0 then
 		cowl_ice_status_1 = 0
 	end
-
+	
+	B738DR_eng1_tai = cowl_ice_status_0
+	B738DR_eng2_tai = cowl_ice_status_1
+	
 	-- cowl_ice_1_time = B738_set_anim_value(cowl_ice_1_time, simDR_cowl_ice_1_on, 0.0, 1.0, 1.5)
 	-- if cowl_ice_1_time < 0.95 then
 		-- cowl_ice_status_1 = 1
@@ -4914,6 +4921,10 @@ spar_valve_2_pos = 0
 spar_valve_2_tgt = 0
 wing_body_ovht_test = 0
 fdr_test = 0
+wing_ice_L_time = 0
+wing_ice_R_time = 0
+cowl_ice_0_time = 0
+cowl_ice_1_time = 0
 
 end
 

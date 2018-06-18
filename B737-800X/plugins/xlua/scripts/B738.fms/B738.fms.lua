@@ -62092,6 +62092,8 @@ function B738_vnav_calc()
 					-----------------------------------------------------------
 					create_vpth_table(gw_app_kgs)
 					last_wpt_idx = 0
+	
+	
 					for ii = ed_found, 2, -1 do
 						
 						if legs_data[ii][1] ~= "VECTOR" then
@@ -62102,23 +62104,6 @@ function B738_vnav_calc()
 						else
 							--calc_wpt_alt = calc_wpt_alt + ((legs_data[ii+1][3] * (math.tan(math.rad(econ_des_vpa)))) * 6076.11549) -- ft
 							wind_temp = wind_pth(legs_data[ii][2], legs_data[ii][39], legs_data[ii][38])
-							
-							-- if legs_restr_spd_n > 0 then
-								-- for xx = legs_restr_spd_n, 1, -1 do
-									-- if legs_restr_spd[rest_idx_spd][2] <= first_star_idx then
-										-- break
-									-- elseif legs_restr_spd[rest_idx_spd][2] <= first_app_idx then
-										-- break
-									-- end
-									-- if legs_restr_spd[rest_idx_spd][2] <= ii then
-										-- find previous des speed
-										-- calculate delta speed
-										-- calculate 
-										-- wind_temp = wind_temp * 1
-										-- break
-									-- end
-								-- end
-							-- end
 							
 							modify_vpth_table(calc_wpt_alt, wind_temp)
 							calc_wpt_alt = calc_vnav_pth_alt(ed_alt , td_dist - legs_data[ii][3])
@@ -70291,7 +70276,27 @@ function create_vpth_table(x_gw_str)
 	vnav_des_table_dist = {}
 	vnav_des_table_alt = {}
 	vnav_des_table_num = 0
-	--for ii = 1, 18 do
+	
+	-- local desc_spd_table = {}
+	-- local desc_spd_table_num = 0
+	-- local desc_spd = 0
+	
+	-- desc_spd_table[1] = 0
+	-- for ii = 2, legs_num + 1
+		-- if legs_data[ii][4] ~= 0 then
+			-- desc_spd_table[ii] = legs_data[ii][4]
+		-- else
+			-- desc_spd_table[ii] = desc_spd_table[ii-1]
+		-- end
+	-- end
+	
+	-- desc_spd = B738DR_fmc_descent_speed
+	-- if desc_spd_table[ii] ~= 0 then
+		-- if desc_spd_table[ii] < desc_spd then
+			-- desc_spd = desc_spd_table[ii]
+		-- end
+	-- end
+	
 	
 	-- find nereast altitude
 	local tai_on_alt_num_tmp = 0
@@ -75086,7 +75091,7 @@ temp_ils4 = ""
 	B738DR_des_rwy_altitude = 0
 	B738DR_pfd_rwy_show = 0
 	
-	version = "v3.27b"
+	version = "v3.27c"
 
 end
 
