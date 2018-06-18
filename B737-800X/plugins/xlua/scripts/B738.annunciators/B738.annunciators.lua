@@ -4308,9 +4308,10 @@ local takeoff_config_warn = 0
 	
 	-- disable
 	if max_allowable_alt_set ~= simDR_max_allowable_alt then
-		if max_allowable_alt_set > simDR_altitude_pilot + 1000 then
+		if max_allowable_alt_set > (simDR_altitude_pilot + 500) and B738DR_flight_phase <= 3 then
 			off_sched_desc_enable = 1
 			off_sched_desc_ann = 0
+			off_sched_desc = 0
 		else
 			off_sched_desc_enable = 0
 		end

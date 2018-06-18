@@ -158,7 +158,7 @@ P _gear/0/_lonE 0.0
 P _gear/0/_lonN 0.0
 P _gear/0/_lonR 111.0
 P _gear/0/_scon 111648.273437500
-P _gear/0/_stat_def 0.105656371
+P _gear/0/_stat_def 0.105656393
 P _gear/0/_steerdeg_hispeed 5.0
 P _gear/0/_steerdeg_lospeed 58.0
 P _gear/0/_strut_comp 0.0
@@ -192,7 +192,7 @@ P _gear/1/_lonE -4.0
 P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 111648.273437500
-P _gear/1/_stat_def 0.727282047
+P _gear/1/_stat_def 0.727282107
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -226,7 +226,7 @@ P _gear/2/_lonE -4.0
 P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 111648.273437500
-P _gear/2/_stat_def 0.727282047
+P _gear/2/_stat_def 0.727282107
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -45195,6 +45195,7 @@ END_GROUP
 GROUP AP displays
   SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
   LOCKED
+  GROUP_OPEN
   gen_LED Captain CRS
     POS 1759.000000 741.000000
     IMAGE TYPE/Digital_Large
@@ -45295,6 +45296,7 @@ GROUP AP displays
     SHOW_EQUAL 1.000000 laminar/B738/autopilot/vvi_dial_show
     SHOW_GREATER 0.100000 sim/cockpit2/autopilot/vvi_dial_fpm
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 9
     BUS_SRC 3
@@ -107932,7 +107934,6 @@ GROUP ND FO
 END_GROUP
 GROUP STANDBY Horizon
   LOCKED
-  GROUP_OPEN
   gen_needle STBY Horizon
     POS 1170.500000 623.000000
     IMAGE Standby/horizon
@@ -117613,6 +117614,7 @@ GROUP Display light test
   SHOW_EQUAL 1.000000 laminar/B738/dspl_light_test
   LOCKED
   HIDE
+  GROUP_OPEN
   gen_rotary AP TEST
     POS 1873.000000 688.000000
     IMAGE Standby/ap_test
@@ -117624,6 +117626,28 @@ GROUP Display light test
     BUS_SRC 3
     KEY_FRAME 0.000000 0.000000 1.000000
     KEY_FRAME 1.000000 6.000000
+    DIGITS 1
+    ROTARY_TYPE NO_CLICK
+    CLICK_RADIUS 10.000000
+    CLICK_RADIUS_DY 0.000000
+    OFFSET 0.000000
+    STEP1 1.000000
+    STEP2 1.000000
+    CURSOR DEFAULT
+    CLICK_DX 0
+    CLICK_DY 0
+
+  gen_rotary DIGIT Plus
+    POS 1773.500000 634.000000
+    IMAGE MCP/Digital_plus
+    DATAREF 
+    LOCKED
+    HIDE
+    LIGHT_MODE GLASS_AUTO
+    LIGHT_RHEOSTAT 9
+    BUS_SRC 3
+    KEY_FRAME 0.000000 0.000000 1.000000
+    KEY_FRAME 1.000000 1.000000
     DIGITS 1
     ROTARY_TYPE NO_CLICK
     CLICK_RADIUS 10.000000

@@ -132,28 +132,28 @@ month_table =
 	-- }
 
 
--- 20 idx
-vnav_des_alt = { 2000, 4000, 6000, 8000, 10000, 11000, 15000, 17000, 19000, 21000, 23000, 25000, 27000, 29000, 31000, 33000, 35000, 37000, 39000, 41000 }
+-- 21 idx
+vnav_des_alt = { 2000, 4000, 6000, 8000, 10000, 11000, 13000, 15000, 17000, 19000, 21000, 23000, 25000, 27000, 29000, 31000, 33000, 35000, 37000, 39000, 41000 }
 
 vnav_des_dist =
-	{	[40] = { 13, 21.4, 29.4, 37.0, 44.4, 51.6, 63.2, 69.0, 74.9, 80.8, 86.7, 92.7, 98.7, 104.8, 111.0, 115.8, 120.4, 125.4, 130.6, 136.0 },
-		[50] = { 13, 21.4, 29.4, 37.0, 44.4, 51.6, 63.2, 69.0, 74.9, 80.8, 86.7, 92.7, 98.7, 104.8, 111.0, 115.8, 120.4, 125.4, 130.6, 136.0 },
-		[60] = { 13, 21.4, 29.4, 37.0, 44.4, 51.6, 63.2, 69.0, 74.9, 80.8, 86.7, 92.7, 98.7, 104.8, 111.0, 115.8, 120.4, 125.4, 130.6, 136.0 },
-		[70] = { 13, 21.4, 29.4, 37.0, 44.4, 51.6, 63.2, 69.0, 74.9, 80.8, 86.7, 92.7, 98.7, 104.8, 111.0, 115.8, 120.4, 125.4, 130.6, 136.0 }
+	{	[40] = { 13, 21.4, 29.4, 37.0, 44.4, 51.6, 57.4, 63.2, 69.0, 74.9, 80.8, 86.7, 92.7, 98.7, 104.8, 111.0, 115.8, 120.4, 125.4, 130.6, 136.0 },
+		[50] = { 13, 21.4, 29.4, 37.0, 44.4, 51.6, 57.4, 63.2, 69.0, 74.9, 80.8, 86.7, 92.7, 98.7, 104.8, 111.0, 115.8, 120.4, 125.4, 130.6, 136.0 },
+		[60] = { 13, 21.4, 29.4, 37.0, 44.4, 51.6, 57.4, 63.2, 69.0, 74.9, 80.8, 86.7, 92.7, 98.7, 104.8, 111.0, 115.8, 120.4, 125.4, 130.6, 136.0 },
+		[70] = { 13, 21.4, 29.4, 37.0, 44.4, 51.6, 57.4, 63.2, 69.0, 74.9, 80.8, 86.7, 92.7, 98.7, 104.8, 111.0, 115.8, 120.4, 125.4, 130.6, 136.0 }
 	}
 
 vnav_des_dist_no_tai =
-	{	[40] = { 8.4, 8, 7.6, 7.4, 7.2, 5.8, 5.8, 5.8, 5.9, 5.9, 5.9, 6, 6, 6.1, 6.2, 4.8, 4.6, 5, 5.2, 5.4 },
-		[50] = { 8.4, 8, 7.6, 7.4, 7.2, 5.8, 5.8, 5.8, 5.9, 5.9, 5.9, 6, 6, 6.1, 6.2, 4.8, 4.6, 5, 5.2, 5.4 },
-		[60] = { 8.4, 8, 7.6, 7.4, 7.2, 5.8, 5.8, 5.8, 5.9, 5.9, 5.9, 6, 6, 6.1, 6.2, 4.8, 4.6, 5, 5.2, 5.4 },
-		[70] = { 8.4, 8, 7.6, 7.4, 7.2, 5.8, 5.8, 5.8, 5.9, 5.9, 5.9, 6, 6, 6.1, 6.2, 4.8, 4.6, 5, 5.2, 5.4 }
+	{	[40] = { 0, 8.4, 8, 7.6, 7.4, 6.9, 5.8, 5.8, 5.8, 5.9, 5.9, 5.9, 6, 6, 6.1, 6.2, 4.8, 4.6, 5, 5.2, 5.4 },
+		[50] = { 0, 8.4, 8, 7.6, 7.4, 6.9, 5.8, 5.8, 5.8, 5.9, 5.9, 5.9, 6, 6, 6.1, 6.2, 4.8, 4.6, 5, 5.2, 5.4 },
+		[60] = { 0, 8.4, 8, 7.6, 7.4, 6.9, 5.8, 5.8, 5.8, 5.9, 5.9, 5.9, 6, 6, 6.1, 6.2, 4.8, 4.6, 5, 5.2, 5.4 },
+		[70] = { 0, 8.4, 8, 7.6, 7.4, 6.9, 5.8, 5.8, 5.8, 5.9, 5.9, 5.9, 6, 6, 6.1, 6.2, 4.8, 4.6, 5, 5.2, 5.4 }
 	}
 
 vnav_des_dist_tai =
-	{	[40] = { 11.6, 10.7, 9.8, 9.3, 8.4, 6.5, 6.2, 6.2, 6, 5.9, 6, 5.8, 5.9, 5.9, 6, 4.7, 4.5, 4.9, 5.2, 5.4 },
-		[50] = { 11.6, 10.7, 9.8, 9.3, 8.4, 6.5, 6.2, 6.2, 6, 5.9, 6, 5.8, 5.9, 5.9, 6, 4.7, 4.5, 4.9, 5.2, 5.4 },
-		[60] = { 11.6, 10.7, 9.8, 9.3, 8.4, 6.5, 6.2, 6.2, 6, 5.9, 6, 5.8, 5.9, 5.9, 6, 4.7, 4.5, 4.9, 5.2, 5.4 },
-		[70] = { 11.6, 10.7, 9.8, 9.3, 8.4, 6.5, 6.2, 6.2, 6, 5.9, 6, 5.8, 5.9, 5.9, 6, 4.7, 4.5, 4.9, 5.2, 5.4 }
+	{	[40] = { 0, 11.6, 10.7, 9.8, 9.3, 8.1, 6.5, 6.2, 6.2, 6, 5.9, 6, 5.8, 5.9, 5.9, 6, 4.7, 4.5, 4.9, 5.2, 5.4 },
+		[50] = { 0, 11.6, 10.7, 9.8, 9.3, 8.1, 6.5, 6.2, 6.2, 6, 5.9, 6, 5.8, 5.9, 5.9, 6, 4.7, 4.5, 4.9, 5.2, 5.4 },
+		[60] = { 0, 11.6, 10.7, 9.8, 9.3, 8.1, 6.5, 6.2, 6.2, 6, 5.9, 6, 5.8, 5.9, 5.9, 6, 4.7, 4.5, 4.9, 5.2, 5.4 },
+		[70] = { 0, 11.6, 10.7, 9.8, 9.3, 8.1, 6.5, 6.2, 6.2, 6, 5.9, 6, 5.8, 5.9, 5.9, 6, 4.7, 4.5, 4.9, 5.2, 5.4 }
 	}
 
 --		{	[40] = { 13, 25, 43, 45, 48, 50, 61.2, 67.3, 73.3, 79.2, 85, 90.7, 96.3, 101.8, 107.2, 112.5, 117.7, 122.8, 127.8, 132.7 },
@@ -629,6 +629,16 @@ tai_on_alt = "-----"
 tai_off_alt = "-----"
 tai_on_alt_num = 0
 tai_off_alt_num = 0
+
+tai_on_alt_mod = "-----"
+tai_off_alt_mod = "-----"
+tai_on_alt_num_mod = 0
+tai_off_alt_num_mod = 0
+
+tai_on_alt_mod_fo = "-----"
+tai_off_alt_mod_fo = "-----"
+tai_on_alt_num_mod_fo = 0
+tai_off_alt_num_mod_fo = 0
 
 eng_out_prompt = 0
 
@@ -22703,7 +22713,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							forec_alt_1_num = n * 100
-							if forec_alt_1_num > B738DR_trans_lvl then
+							if forec_alt_1_num >= B738DR_trans_lvl then
 								--n = n / 100
 								forec_alt_1 = "FL" .. string.format("%03d", n)
 							else
@@ -22724,7 +22734,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_1_num = n * 100
-								if forec_alt_1_num > B738DR_trans_lvl then
+								if forec_alt_1_num >= B738DR_trans_lvl then
 									--n = n / 100
 									forec_alt_1 = "FL" .. string.format("%03d", n)
 								else
@@ -22739,7 +22749,7 @@ function B738_fmc1_3L_CMDhandler(phase, duration)
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_1_num = n
-								if forec_alt_1_num > B738DR_trans_lvl then
+								if forec_alt_1_num >= B738DR_trans_lvl then
 									n = n / 100
 									forec_alt_1 = "FL" .. string.format("%03d", n)
 								else
@@ -23534,7 +23544,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_2_num = n * 100
-								if forec_alt_2_num > B738DR_trans_lvl then
+								if forec_alt_2_num >= B738DR_trans_lvl then
 									--n = n / 100
 									forec_alt_2 = "FL" .. string.format("%03d", n)
 								else
@@ -23549,7 +23559,7 @@ function B738_fmc1_4L_CMDhandler(phase, duration)
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_2_num = n
-								if forec_alt_2_num > B738DR_trans_lvl then
+								if forec_alt_2_num >= B738DR_trans_lvl then
 									n = n / 100
 									forec_alt_2 = "FL" .. string.format("%03d", n)
 								else
@@ -24483,7 +24493,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							forec_alt_3_num = n * 100
-							if forec_alt_3_num > B738DR_trans_lvl then
+							if forec_alt_3_num >= B738DR_trans_lvl then
 								--n = n / 100
 								forec_alt_3 = "FL" .. string.format("%03d", n)
 							else
@@ -24504,7 +24514,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_3_num = n * 100
-								if forec_alt_3_num > B738DR_trans_lvl then
+								if forec_alt_3_num >= B738DR_trans_lvl then
 									--n = n / 100
 									forec_alt_3 = "FL" .. string.format("%03d", n)
 								else
@@ -24519,7 +24529,7 @@ function B738_fmc1_5L_CMDhandler(phase, duration)
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_3_num = n
-								if forec_alt_3_num > B738DR_trans_lvl then
+								if forec_alt_3_num >= B738DR_trans_lvl then
 									n = n / 100
 									forec_alt_3 = "FL" .. string.format("%03d", n)
 								else
@@ -25816,7 +25826,11 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 									n = n * 100
 									if n >= 1000 and n <= 41000 then
 										tai_off_alt_num = n
-										tai_off_alt = string.sub(entry, 2, -1)
+										if tai_off_alt_num >= B738DR_trans_lvl then
+											tai_off_alt = "FL" .. string.format("%03d", tai_off_alt_num / 100)
+										else
+											tai_off_alt = string.format("%5d", tai_off_alt_num)
+										end
 										entry = ""
 									else
 										add_fmc_msg(INVALID_INPUT, 1)
@@ -25829,7 +25843,11 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 								else
 									if n >= 1000 and n <= 41000 then
 										tai_off_alt_num = n
-										tai_off_alt = string.sub(entry, 2, -1)
+										if tai_off_alt_num >= B738DR_trans_lvl then
+											tai_off_alt = "FL" .. string.format("%03d", tai_off_alt_num / 100)
+										else
+											tai_off_alt = string.format("%5d", tai_off_alt_num)
+										end
 										entry = ""
 									else
 										add_fmc_msg(INVALID_INPUT, 1)
@@ -25843,7 +25861,11 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 							else
 								if n >= 1000 and n <= 41000 then
 									tai_off_alt_num = n
-									tai_off_alt = string.sub(entry, 2, -1)
+									if tai_off_alt_num >= B738DR_trans_lvl then
+										tai_off_alt = "FL" .. string.format("%03d", tai_off_alt_num / 100)
+									else
+										tai_off_alt = string.format("%5d", tai_off_alt_num)
+									end
 									entry = ""
 								else
 									add_fmc_msg(INVALID_INPUT, 1)
@@ -25857,7 +25879,11 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 								n = n * 100
 								if n >= 1000 and n <= 41000 then
 									tai_off_alt_num = n
-									tai_off_alt = "FL" .. string.sub(entry, 2, -1)
+									if tai_off_alt_num >= B738DR_trans_lvl then
+										tai_off_alt = "FL" .. string.format("%03d", tai_off_alt_num / 100)
+									else
+										tai_off_alt = string.format("%5d", tai_off_alt_num)
+									end
 									entry = ""
 								else
 									add_fmc_msg(INVALID_INPUT, 1)
@@ -25874,7 +25900,11 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 							n = n * 100
 							if n >= 1000 and n <= 41000 then
 								tai_on_alt_num = n
-								tai_on_alt = entry
+								if tai_on_alt_num >= B738DR_trans_lvl then
+									tai_on_alt = "FL" .. string.format("%03d", tai_on_alt_num / 100)
+								else
+									tai_on_alt = string.format("%5d", tai_on_alt_num)
+								end
 								entry = ""
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
@@ -25887,7 +25917,11 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 						else
 							if n >= 1000 and n <= 41000 then
 								tai_on_alt_num = n
-								tai_on_alt = spaces_before(entry, 5)
+								if tai_on_alt_num >= B738DR_trans_lvl then
+									tai_on_alt = "FL" .. string.format("%03d", tai_on_alt_num / 100)
+								else
+									tai_on_alt = string.format("%5d", tai_on_alt_num)
+								end
 								entry = ""
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
@@ -25901,7 +25935,11 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 							n = n * 100
 							if n >= 1000 and n <= 41000 then
 								tai_on_alt_num = n
-								tai_on_alt = "FL" .. entry
+								if tai_on_alt_num >= B738DR_trans_lvl then
+									tai_on_alt = "FL" .. string.format("%03d", tai_on_alt_num / 100)
+								else
+									tai_on_alt = string.format("%5d", tai_on_alt_num)
+								end
 								entry = ""
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
@@ -35317,7 +35355,7 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							forec_alt_1_num = n * 100
-							if forec_alt_1_num > B738DR_trans_lvl then
+							if forec_alt_1_num >= B738DR_trans_lvl then
 								--n = n / 100
 								forec_alt_1 = "FL" .. string.format("%03d", n)
 							else
@@ -35338,7 +35376,7 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_1_num = n * 100
-								if forec_alt_1_num > B738DR_trans_lvl then
+								if forec_alt_1_num >= B738DR_trans_lvl then
 									--n = n / 100
 									forec_alt_1 = "FL" .. string.format("%03d", n)
 								else
@@ -35353,7 +35391,7 @@ function B738_fmc2_3L_CMDhandler(phase, duration)
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_1_num = n
-								if forec_alt_1_num > B738DR_trans_lvl then
+								if forec_alt_1_num >= B738DR_trans_lvl then
 									n = n / 100
 									forec_alt_1 = "FL" .. string.format("%03d", n)
 								else
@@ -36148,7 +36186,7 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_2_num = n * 100
-								if forec_alt_2_num > B738DR_trans_lvl then
+								if forec_alt_2_num >= B738DR_trans_lvl then
 									--n = n / 100
 									forec_alt_2 = "FL" .. string.format("%03d", n)
 								else
@@ -36163,7 +36201,7 @@ function B738_fmc2_4L_CMDhandler(phase, duration)
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_2_num = n
-								if forec_alt_2_num > B738DR_trans_lvl then
+								if forec_alt_2_num >= B738DR_trans_lvl then
 									n = n / 100
 									forec_alt_2 = "FL" .. string.format("%03d", n)
 								else
@@ -37097,7 +37135,7 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 							add_fmc_msg(INVALID_INPUT, 1)
 						else
 							forec_alt_3_num = n * 100
-							if forec_alt_3_num > B738DR_trans_lvl then
+							if forec_alt_3_num >= B738DR_trans_lvl then
 								--n = n / 100
 								forec_alt_3 = "FL" .. string.format("%03d", n)
 							else
@@ -37118,7 +37156,7 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_3_num = n * 100
-								if forec_alt_3_num > B738DR_trans_lvl then
+								if forec_alt_3_num >= B738DR_trans_lvl then
 									--n = n / 100
 									forec_alt_3 = "FL" .. string.format("%03d", n)
 								else
@@ -37133,7 +37171,7 @@ function B738_fmc2_5L_CMDhandler(phase, duration)
 								add_fmc_msg(INVALID_INPUT, 1)
 							else
 								forec_alt_3_num = n
-								if forec_alt_3_num > B738DR_trans_lvl then
+								if forec_alt_3_num >= B738DR_trans_lvl then
 									n = n / 100
 									forec_alt_3 = "FL" .. string.format("%03d", n)
 								else
@@ -38494,7 +38532,11 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 									n = n * 100
 									if n >= 1000 and n <= 41000 then
 										tai_off_alt_num = n
-										tai_off_alt = string.sub(entry2, 2, -1)
+										if tai_off_alt_num >= B738DR_trans_lvl then
+											tai_off_alt = "FL" .. string.format("%03d", tai_off_alt_num / 100)
+										else
+											tai_off_alt = string.format("%5d", tai_off_alt_num)
+										end
 										entry2 = ""
 									else
 										add_fmc_msg(INVALID_INPUT, 1)
@@ -38507,7 +38549,11 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 								else
 									if n >= 1000 and n <= 41000 then
 										tai_off_alt_num = n
-										tai_off_alt = string.sub(entry2, 2, -1)
+										if tai_off_alt_num >= B738DR_trans_lvl then
+											tai_off_alt = "FL" .. string.format("%03d", tai_off_alt_num / 100)
+										else
+											tai_off_alt = string.format("%5d", tai_off_alt_num)
+										end
 										entry2 = ""
 									else
 										add_fmc_msg(INVALID_INPUT, 1)
@@ -38521,7 +38567,11 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 							else
 								if n >= 1000 and n <= 41000 then
 									tai_off_alt_num = n
-									tai_off_alt = string.sub(entry2, 2, -1)
+									if tai_off_alt_num >= B738DR_trans_lvl then
+										tai_off_alt = "FL" .. string.format("%03d", tai_off_alt_num / 100)
+									else
+										tai_off_alt = string.format("%5d", tai_off_alt_num)
+									end
 									entry2 = ""
 								else
 									add_fmc_msg(INVALID_INPUT, 1)
@@ -38535,7 +38585,11 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 								n = n * 100
 								if n >= 1000 and n <= 41000 then
 									tai_off_alt_num = n
-									tai_off_alt = "FL" .. string.sub(entry2, 2, -1)
+									if tai_off_alt_num >= B738DR_trans_lvl then
+										tai_off_alt = "FL" .. string.format("%03d", tai_off_alt_num / 100)
+									else
+										tai_off_alt = string.format("%5d", tai_off_alt_num)
+									end
 									entry2 = ""
 								else
 									add_fmc_msg(INVALID_INPUT, 1)
@@ -38552,7 +38606,11 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 							n = n * 100
 							if n >= 1000 and n <= 41000 then
 								tai_on_alt_num = n
-								tai_on_alt = entry2
+								if tai_on_alt_num >= B738DR_trans_lvl then
+									tai_on_alt = "FL" .. string.format("%03d", tai_on_alt_num / 100)
+								else
+									tai_on_alt = string.format("%5d", tai_on_alt_num)
+								end
 								entry2 = ""
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
@@ -38565,7 +38623,11 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 						else
 							if n >= 1000 and n <= 41000 then
 								tai_on_alt_num = n
-								tai_on_alt = spaces_before(entry2, 5)
+								if tai_on_alt_num >= B738DR_trans_lvl then
+									tai_on_alt = "FL" .. string.format("%03d", tai_on_alt_num / 100)
+								else
+									tai_on_alt = string.format("%5d", tai_on_alt_num)
+								end
 								entry2 = ""
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
@@ -38579,7 +38641,11 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 							n = n * 100
 							if n >= 1000 and n <= 41000 then
 								tai_on_alt_num = n
-								tai_on_alt = "FL" .. entry2
+								if tai_on_alt_num >= B738DR_trans_lvl then
+									tai_on_alt = "FL" .. string.format("%03d", tai_on_alt_num / 100)
+								else
+									tai_on_alt = string.format("%5d", tai_on_alt_num)
+								end
 								entry2 = ""
 							else
 								add_fmc_msg(INVALID_INPUT, 1)
@@ -47493,7 +47559,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									if legs_data2[jj][11] > B738DR_trans_alt and jj <= td_idx then
 										temp_string = string.format("%05d",legs_data2[jj][11])
 										temp_string = " FL" .. string.sub(temp_string, 1, 3)
-									elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+									elseif legs_data2[jj][11] >= B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 										temp_string = string.format("%05d",legs_data2[jj][11])
 										temp_string = " FL" .. string.sub(temp_string, 1, 3)
 									else
@@ -47523,7 +47589,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									else	-- 32 blank 
 										right_line[ii] = right_line[ii] .. " "
 									end
-								elseif legs_data2[jj][5] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+								elseif legs_data2[jj][5] >= B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 									right_line[ii] = right_line[ii] .. temp_string
@@ -47599,7 +47665,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									else	-- 32 blank 
 										line_m[ii] = line_m[ii] .. " "
 									end
-								elseif legs_data2[jj][5] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+								elseif legs_data2[jj][5] >= B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
 									line_m[ii] = line_m[ii] .. temp_string
@@ -47786,7 +47852,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									if legs_data2[jj][11] > B738DR_trans_alt and jj <= td_idx then
 										temp_string = string.format("%05d",legs_data2[jj][11])
 										temp_string = " FL" .. string.sub(temp_string, 1, 3)
-									elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+									elseif legs_data2[jj][11] >= B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 										temp_string = string.format("%05d",legs_data2[jj][11])
 										temp_string = " FL" .. string.sub(temp_string, 1, 3)
 									else
@@ -47816,7 +47882,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									else	-- 32 blank 
 										right_line[ii] = right_line[ii] .. " "
 									end
-								elseif legs_data2[jj][5] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+								elseif legs_data2[jj][5] >= B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = "/FL" .. string.sub(temp_string, 1, 3)
 									right_line[ii] = right_line[ii] .. temp_string
@@ -47894,7 +47960,7 @@ function B738_fmc_legs99(step_in, map_mode_in, new_hold_in, exec_light_in)
 									else	-- 32 blank 
 										line_m[ii] = line_m[ii] .. " "
 									end
-								elseif legs_data2[jj][11] > B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
+								elseif legs_data2[jj][11] >= B738DR_trans_lvl and jj >= td_idx and td_idx > 0 then
 									temp_string = string.format("%05d",legs_data2[jj][5])
 									temp_string = " FL" .. string.sub(temp_string, 1, 3)
 									line_m[ii] = line_m[ii] .. temp_string
@@ -50837,7 +50903,7 @@ function B738_fmc_descent()
 				line1_s = ""
 			end
 			str_rest_alt = str_rest_alt .. " "
-			if B738DR_rest_wpt_alt > B738DR_trans_lvl then
+			if B738DR_rest_wpt_alt >= B738DR_trans_lvl then
 				str_rest_alt = str_rest_alt .. "FL"
 				str_rest_alt = str_rest_alt .. string.sub(string.format("%05d", B738DR_rest_wpt_alt), 1, 3)
 			else
@@ -50955,7 +51021,7 @@ function B738_fmc_descent()
 				if legs_data[B738DR_rest_wpt_alt_idx][11] == 0 then
 					str_rest_alt = str_rest_alt .. "-----"
 				else
-					if B738DR_rest_wpt_alt > B738DR_trans_lvl then
+					if B738DR_rest_wpt_alt >= B738DR_trans_lvl then
 						str_rest_alt = str_rest_alt .. "FL"
 						str_rest_alt = str_rest_alt .. string.sub(string.format("%05d", legs_data[B738DR_rest_wpt_alt_idx][11]), 1, 3)
 					else
@@ -55274,7 +55340,7 @@ function B738_displ_wpt()
 											txt_cyan_alt = tostring(tmp_wpt_alt) -- string.format("%5d", tmp_wpt_alt)
 										end
 									else
-										if tmp_wpt_alt > B738DR_trans_lvl then
+										if tmp_wpt_alt >= B738DR_trans_lvl then
 											txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 										else
 											txt_cyan_alt = tostring(tmp_wpt_alt) -- string.format("%5d", tmp_wpt_alt)
@@ -55332,7 +55398,7 @@ function B738_displ_wpt()
 											txt_white_alt = tostring(tmp_wpt_alt) --string.format("%5d", tmp_wpt_alt)
 										end
 									else
-										if tmp_wpt_alt > B738DR_trans_lvl then
+										if tmp_wpt_alt >= B738DR_trans_lvl then
 											txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 										else
 											txt_white_alt = tostring(tmp_wpt_alt) -- string.format("%5d", tmp_wpt_alt)
@@ -56950,7 +57016,7 @@ function B738_displ_wpt()
 											txt_cyan_alt = tostring(tmp_wpt_alt) --  string.format("%5d", tmp_wpt_alt)
 										end
 									else
-										if tmp_wpt_alt > B738DR_trans_lvl then
+										if tmp_wpt_alt >= B738DR_trans_lvl then
 											txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 										else
 											txt_cyan_alt = tostring(tmp_wpt_alt) --  string.format("%5d", tmp_wpt_alt)
@@ -57008,7 +57074,7 @@ function B738_displ_wpt()
 											txt_white_alt = tostring(tmp_wpt_alt) --  string.format("%5d", tmp_wpt_alt)
 										end
 									else
-										if tmp_wpt_alt > B738DR_trans_lvl then
+										if tmp_wpt_alt >= B738DR_trans_lvl then
 											txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 										else
 											txt_white_alt = tostring(tmp_wpt_alt) --  string.format("%5d", tmp_wpt_alt)
@@ -58513,7 +58579,7 @@ function disp_type(object, legs_idx, data_status, clr_obj)
 						txt_cyan_alt = tostring(tmp_wpt_alt)
 					end
 				else
-					if tmp_wpt_alt > B738DR_trans_lvl then
+					if tmp_wpt_alt >= B738DR_trans_lvl then
 						txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 					else
 						txt_cyan_alt = tostring(tmp_wpt_alt)
@@ -58533,7 +58599,7 @@ function disp_type(object, legs_idx, data_status, clr_obj)
 							txt_cyan_alt = txt_cyan_alt .. tostring(tmp_wpt_alt)
 						end
 					else
-						if tmp_wpt_alt > B738DR_trans_lvl then
+						if tmp_wpt_alt >= B738DR_trans_lvl then
 							txt_cyan_alt = txt_cyan_alt .. "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 						else
 							txt_cyan_alt = txt_cyan_alt .. tostring(tmp_wpt_alt)
@@ -58588,7 +58654,7 @@ function disp_type(object, legs_idx, data_status, clr_obj)
 						txt_white_alt = tostring(tmp_wpt_alt)
 					end
 				else
-					if tmp_wpt_alt > B738DR_trans_lvl then
+					if tmp_wpt_alt >= B738DR_trans_lvl then
 						txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 					else
 						txt_white_alt = tostring(tmp_wpt_alt)
@@ -58608,7 +58674,7 @@ function disp_type(object, legs_idx, data_status, clr_obj)
 							txt_white_alt = txt_white_alt .. tostring(tmp_wpt_alt)
 						end
 					else
-						if tmp_wpt_alt > B738DR_trans_lvl then
+						if tmp_wpt_alt >= B738DR_trans_lvl then
 							txt_white_alt = txt_white_alt .. "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 						else
 							txt_white_alt = txt_white_alt .. tostring(tmp_wpt_alt)
@@ -59091,7 +59157,7 @@ function disp_type_fo(object, legs_idx, data_status, clr_obj)
 						txt_cyan_alt = tostring(tmp_wpt_alt)
 					end
 				else
-					if tmp_wpt_alt > B738DR_trans_lvl then
+					if tmp_wpt_alt >= B738DR_trans_lvl then
 						txt_cyan_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 					else
 						txt_cyan_alt = tostring(tmp_wpt_alt)
@@ -59111,7 +59177,7 @@ function disp_type_fo(object, legs_idx, data_status, clr_obj)
 							txt_cyan_alt = txt_cyan_alt .. tostring(tmp_wpt_alt)
 						end
 					else
-						if tmp_wpt_alt > B738DR_trans_lvl then
+						if tmp_wpt_alt >= B738DR_trans_lvl then
 							txt_cyan_alt = txt_cyan_alt .. "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 						else
 							txt_cyan_alt = txt_cyan_alt .. tostring(tmp_wpt_alt)
@@ -59166,7 +59232,7 @@ function disp_type_fo(object, legs_idx, data_status, clr_obj)
 						txt_white_alt = tostring(tmp_wpt_alt)
 					end
 				else
-					if tmp_wpt_alt > B738DR_trans_lvl then
+					if tmp_wpt_alt >= B738DR_trans_lvl then
 						txt_white_alt = "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 					else
 						txt_white_alt = tostring(tmp_wpt_alt)
@@ -59186,7 +59252,7 @@ function disp_type_fo(object, legs_idx, data_status, clr_obj)
 							txt_white_alt = txt_white_alt .. tostring(tmp_wpt_alt)
 						end
 					else
-						if tmp_wpt_alt > B738DR_trans_lvl then
+						if tmp_wpt_alt >= B738DR_trans_lvl then
 							txt_white_alt = txt_white_alt .. "FL" .. string.format("%03d", (tmp_wpt_alt/100))
 						else
 							txt_white_alt = txt_white_alt .. tostring(tmp_wpt_alt)
@@ -62443,7 +62509,8 @@ function B738_vnav_calc()
 								
 								ed_fix_vpa = econ_des_vpa
 								--if ed_fix_num == 1 then
-								if first_restrict == 0 or ed_fix_num == 1 then
+								--if first_restrict == 0 or ed_fix_num == 1 then
+								if first_restrict == 0 then
 									-- ed_dist = (crz_alt_num - ed_fix_alt) / math.tan(math.rad(econ_des_vpa))		-- ft
 									-- ed_dist = ed_dist * 0.00016458		-- NM
 									ed_dist = calc_vnav_pth_dist(ed_fix_alt, crz_alt_num)
@@ -70226,14 +70293,23 @@ function create_vpth_table(x_gw_str)
 	vnav_des_table_num = 0
 	--for ii = 1, 18 do
 	
+	-- find nereast altitude
+	local tai_on_alt_num_tmp = 0
+	for ii = 1, 21 do
+		if tai_on_alt_num <= vnav_des_alt[ii] then
+			tai_on_alt_num_tmp = vnav_des_alt[ii]
+		end
+	end
+	
 	local tai_correct1 = 0
 	local tai_correct2 = 0
-	for ii = 1, 20 do
+	for ii = 1, 21 do
 		x_dist1 = vnav_des_dist[x_gw1][ii]
 		x_dist2 = vnav_des_dist[x_gw2][ii]
-		if vnav_des_alt[ii] > tai_off_alt_num and vnav_des_alt[ii] <= tai_on_alt_num then
-			tai_correct1 = vnav_des_dist_tai[x_gw1][ii] - vnav_des_dist_no_tai[x_gw1][ii]
-			tai_correct2 = vnav_des_dist_tai[x_gw2][ii] - vnav_des_dist_no_tai[x_gw2][ii]
+		--if vnav_des_alt[ii] > tai_off_alt_num and vnav_des_alt[ii] <= tai_on_alt_num then
+		if vnav_des_alt[ii] > tai_off_alt_num and vnav_des_alt[ii] <= tai_on_alt_num_tmp then
+			tai_correct1 = vnav_des_dist_tai[x_gw1][ii] -- vnav_des_dist_no_tai[x_gw1][ii]
+			tai_correct2 = vnav_des_dist_tai[x_gw2][ii] -- vnav_des_dist_no_tai[x_gw2][ii]
 		else
 			tai_correct1 = vnav_des_dist_no_tai[x_gw1][ii]
 			tai_correct2 = vnav_des_dist_no_tai[x_gw2][ii]
@@ -71731,6 +71807,7 @@ function B738_fmc_calc()
 					--B738DR_fms_test1 = 101
 					
 					if next_wpt_enable == 1 then
+						
 						last_lat = 0
 						last_lon = 0
 						
@@ -71760,7 +71837,8 @@ function B738_fmc_calc()
 								B738DR_hold_phase = 0
 								hold_term = 0
 								nav_mode = 0
-							end
+								simDR_fmc_dist2 = nd_dis + legs_data[offset][3]
+						end
 							legs_intdir_act = 0
 						elseif legs_data[offset][31] == "HF" then
 							if B738DR_heading_mode == 4 then
@@ -71775,6 +71853,7 @@ function B738_fmc_calc()
 								B738DR_hold_phase = 0
 								hold_term = 0
 								nav_mode = 0
+								simDR_fmc_dist2 = nd_dis + legs_data[offset][3]
 							end
 							legs_intdir_act = 0
 						elseif legs_data[offset][31] == "HM" then
@@ -71786,6 +71865,7 @@ function B738_fmc_calc()
 								B738DR_hold_phase = 0
 								hold_term = 0
 								nav_mode = 0
+								simDR_fmc_dist2 = nd_dis + legs_data[offset][3]
 							end
 							legs_intdir_act = 0
 						--elseif legs_data[offset][1] ~= "VECTOR" and legs_data[offset][1] ~= "DISCONTINUITY" then
@@ -71802,11 +71882,14 @@ function B738_fmc_calc()
 								legs_intdir_act = 0
 								B738DR_hold_phase = 0
 								hold_term = 0
+								simDR_fmc_dist2 = nd_dis + legs_data[offset][3]
 								--nav_mode = 99
 							end
 						else
 							
 							offset = offset + 1
+							simDR_fmc_dist2 = nd_dis + legs_data[offset][3]
+							
 							B738DR_fmc_bank_angle = dta_bank_angle
 							
 							if legs_data[offset][31] ~= "HA" and legs_data[offset][31] ~= "HF" and legs_data[offset][31] ~= "HM" 
@@ -71826,6 +71909,7 @@ function B738_fmc_calc()
 										end
 									end
 								end
+								simDR_fmc_dist2 = nd_dis + legs_data[offset][3]
 							end
 							
 							--B738DR_fms_test1 = 102
@@ -72118,6 +72202,8 @@ function B738_fmc_calc()
 		
 		end
 		
+		local distance_target = 0
+		
 		if nav_mode == 0 then
 			
 			B738DR_radii_turn_act = 0
@@ -72199,14 +72285,20 @@ function B738_fmc_calc()
 			relative_brg = math.abs(relative_brg)
 			relative_brg = math.min(120, relative_brg)
 			
-			speed = math.min(250, speed)
-			speed = math.max(150, speed)
-			--speed_corr = B738_rescale(150, 1.8, 250, 3.0, speed)
-			speed_corr = B738_rescale(150, 1.5, 250, 2.7, speed)
-			dist_corr = B738_rescale(0, 0, 120, speed_corr, relative_brg)
+			-- speed = math.min(250, speed)
+			-- speed = math.max(150, speed)
+			-- speed_corr = B738_rescale(150, 1.5, 250, 2.7, speed)
+			-- dist_corr = B738_rescale(0, 0, 120, speed_corr, relative_brg)
 			
+			-- simDR_fmc_dist = nd_dis
+			-- simDR_fmc_dist2 = nd_dis + dist_corr
+			
+			
+			speed_corr = B738_rescale(150, 1.3, 250, 2.5, speed)
+			dist_corr = B738_rescale(0, 0, 120, speed_corr, relative_brg)
+			distance_target = nd_dis + dist_corr
+			simDR_fmc_dist2 = B738_set_anim_value(simDR_fmc_dist2, distance_target, 0, 99000, 1)
 			simDR_fmc_dist = nd_dis
-			simDR_fmc_dist2 = nd_dis + dist_corr
 			
 		elseif nav_mode == 1 then
 			
@@ -72718,15 +72810,20 @@ function B738_fmc_calc()
 			relative_brg = math.abs(relative_brg)
 			relative_brg = math.min(120, relative_brg)
 			
-			speed = math.min(250, speed)
-			speed = math.max(150, speed)
-			--speed_corr = B738_rescale(150, 1.8, 250, 3.0, speed)
-			speed_corr = B738_rescale(150, 1.5, 250, 2.7, speed)
-			dist_corr = B738_rescale(0, 0, 120, speed_corr, relative_brg)
+			-- speed = math.min(250, speed)
+			-- speed = math.max(150, speed)
+			-- speed_corr = B738_rescale(150, 1.5, 250, 2.7, speed)
+			-- dist_corr = B738_rescale(0, 0, 120, speed_corr, relative_brg)
 			
-			simDR_fmc_dist = nd_dis
-			simDR_fmc_dist2 = nd_dis + dist_corr
+			-- simDR_fmc_dist = nd_dis
+			-- simDR_fmc_dist2 = nd_dis + dist_corr
 		
+			speed_corr = B738_rescale(150, 1.3, 250, 2.5, speed)
+			dist_corr = B738_rescale(0, 0, 120, speed_corr, relative_brg)
+			distance_target = nd_dis + dist_corr
+			simDR_fmc_dist2 = B738_set_anim_value(simDR_fmc_dist2, distance_target, 0, 99000, 1)
+			simDR_fmc_dist = nd_dis
+			
 			relative_brg = (simDR_fmc_crs - simDR_mag_hdg + 360) % 360
 			if relative_brg > 180 then
 				relative_brg = relative_brg - 360
@@ -72790,9 +72887,15 @@ function B738_fmc_calc()
 				end
 			end
 			
-			simDR_fmc_dist = nd_dis
-			simDR_fmc_dist2 = nd_dis
+			-- simDR_fmc_dist = nd_dis
+			-- simDR_fmc_dist2 = nd_dis
 		
+			speed_corr = B738_rescale(150, 1.3, 250, 2.5, speed)
+			dist_corr = B738_rescale(0, 0, 120, speed_corr, relative_brg)
+			distance_target = nd_dis + dist_corr
+			simDR_fmc_dist2 = B738_set_anim_value(simDR_fmc_dist2, distance_target, 0, 99000, 1)
+			simDR_fmc_dist = nd_dis
+			
 			
 		elseif nav_mode == 5 then
 		
@@ -72846,14 +72949,19 @@ function B738_fmc_calc()
 			relative_brg = math.abs(relative_brg)
 			relative_brg = math.min(120, relative_brg)
 			
-			speed = math.min(250, speed)
-			speed = math.max(150, speed)
-			--speed_corr = B738_rescale(150, 1.8, 250, 3.0, speed)
-			speed_corr = B738_rescale(150, 1.5, 250, 2.7, speed)
-			dist_corr = B738_rescale(0, 0, 120, speed_corr, relative_brg)
+			-- speed = math.min(250, speed)
+			-- speed = math.max(150, speed)
+			-- speed_corr = B738_rescale(150, 1.5, 250, 2.7, speed)
+			-- dist_corr = B738_rescale(0, 0, 120, speed_corr, relative_brg)
 			
+			-- simDR_fmc_dist = nd_dis
+			-- simDR_fmc_dist2 = nd_dis + dist_corr
+			
+			speed_corr = B738_rescale(150, 1.3, 250, 2.5, speed)
+			dist_corr = B738_rescale(0, 0, 120, speed_corr, relative_brg)
+			distance_target = nd_dis + dist_corr
+			simDR_fmc_dist2 = B738_set_anim_value(simDR_fmc_dist2, distance_target, 0, 99000, 1)
 			simDR_fmc_dist = nd_dis
-			simDR_fmc_dist2 = nd_dis + dist_corr
 			
 			if B738DR_wpt_path == "DF" or legs_data[offset-1][31] == "DF" then
 				nav_mode = 0
@@ -74978,7 +75086,7 @@ temp_ils4 = ""
 	B738DR_des_rwy_altitude = 0
 	B738DR_pfd_rwy_show = 0
 	
-	version = "v3.27a"
+	version = "v3.27b"
 
 end
 

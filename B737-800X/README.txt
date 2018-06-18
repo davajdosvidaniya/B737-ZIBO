@@ -77,6 +77,11 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.27b:
+------
+- improved descent idle path with TAI on/off
+- corrected systems
+
 3.27a:
 ------
 - add TAI on/off on descent forecast page for calculation descent profile
