@@ -37,9 +37,10 @@ IN_REPLAY - evaluates to 0 if replay is off, 1 if replay mode is on
 --** 					               CONSTANTS                    				 **--
 --*************************************************************************************--
 
-
---ALIGNMENT_TIME_MIN = 2		-- 2 minutes (real 5 minutes)
---ALIGNMENT_TIME_MAX = 5		-- 5 minutes (real 17 minutes)
+-- IRS entry mode
+IRS_entry_mode_lat = 1
+IRS_entry_mode_lon = 2
+IRS_entry_mode_hdg = 3
 
 --*************************************************************************************--
 --** 					            GLOBAL VARIABLES                				 **--
@@ -86,6 +87,17 @@ irs_align_fail_left = 0
 irs_align_fail_right = 0
 irs_dc_fail_left = 0
 irs_dc_fail_right = 0
+
+irs_entry_mod = 0
+irs_entry_pos_lat = ""
+irs_entry_pos_lon = ""
+irs_entry_hdg = ""
+irs_entry_reset = 0
+
+disable_key ={}
+for ii = 0, 9 do
+	disable_key[ii] = 0
+end
 
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
@@ -169,6 +181,9 @@ B738DR_lights_test 			= find_dataref("laminar/B738/annunciator/test")
 --** 				        CREATE READ-ONLY CUSTOM DATAREFS               	         **--
 --*************************************************************************************--
 
+B738DR_irs_ent_light		= create_dataref("laminar/B738/irs_ent_light", "number")
+B738DR_irs_clr_light		= create_dataref("laminar/B738/irs_clr_light", "number")
+
 B738DR_latitude_deg			= create_dataref("laminar/B738/latitude_deg", "number")
 B738DR_latitude_min			= create_dataref("laminar/B738/latitude_min", "number")
 B738DR_latitude_NS			= create_dataref("laminar/B738/latitude_NS", "number")
@@ -182,7 +197,8 @@ B738DR_irs_left2			= create_dataref("laminar/B738/irs_left2", "number")
 B738DR_irs_right1			= create_dataref("laminar/B738/irs_right1", "number")
 B738DR_irs_right2			= create_dataref("laminar/B738/irs_right2", "number")
 
-B738DR_irs_ns_ew_show		= create_dataref("laminar/B738/ns_ew_show", "number")
+B738DR_irs_ns_show		= create_dataref("laminar/B738/ns_show", "number")
+B738DR_irs_ew_show		= create_dataref("laminar/B738/ew_show", "number")
 B738DR_irs_lat_deg_show		= create_dataref("laminar/B738/lat_deg_show", "number")
 B738DR_irs_lat_min_show		= create_dataref("laminar/B738/lat_min_show", "number")
 B738DR_irs_lon_deg_show		= create_dataref("laminar/B738/lon_deg_show", "number")
@@ -193,6 +209,11 @@ B738DR_irs_left2_show		= create_dataref("laminar/B738/irs_left2_show", "number")
 B738DR_irs_right1_show		= create_dataref("laminar/B738/irs_right1_show", "number")
 B738DR_irs_right2_show		= create_dataref("laminar/B738/irs_right2_show", "number")
 B738DR_irs_allign_show		= create_dataref("laminar/B738/irs_allign_show", "number")
+
+B738DR_irs_entry			= create_dataref("laminar/B738/irs_entry", "array[11]")
+B738DR_irs_entry_len		= create_dataref("laminar/B738/irs_entry_len", "number")
+B738DR_irs_entry_pos_show	= create_dataref("laminar/B738/irs_entry_pos_show", "number")
+B738DR_irs_entry_hdg_show	= create_dataref("laminar/B738/irs_entry_hdg_show", "number")
 
 B738DR_irs_align_fail_1		= create_dataref("laminar/B738/annunciator/irs/align_fail_left", "number")
 B738DR_irs_align_fail_2		= create_dataref("laminar/B738/annunciator/irs/align_fail_right", "number")
@@ -231,6 +252,19 @@ alignment_right_remain		= create_dataref("laminar/B738/irs/alignment_right_remai
 
 test						= create_dataref("laminar/B738/irs/test", "number")
 test2						= create_dataref("laminar/B738/irs/test2", "number")
+
+B738DR_irs_key_0_pos		= create_dataref("laminar/B738/push_button/irs_key_0", "number")
+B738DR_irs_key_1_pos		= create_dataref("laminar/B738/push_button/irs_key_1", "number")
+B738DR_irs_key_2_pos		= create_dataref("laminar/B738/push_button/irs_key_2", "number")
+B738DR_irs_key_3_pos		= create_dataref("laminar/B738/push_button/irs_key_3", "number")
+B738DR_irs_key_4_pos		= create_dataref("laminar/B738/push_button/irs_key_4", "number")
+B738DR_irs_key_5_pos		= create_dataref("laminar/B738/push_button/irs_key_5", "number")
+B738DR_irs_key_6_pos		= create_dataref("laminar/B738/push_button/irs_key_6", "number")
+B738DR_irs_key_7_pos		= create_dataref("laminar/B738/push_button/irs_key_7", "number")
+B738DR_irs_key_8_pos		= create_dataref("laminar/B738/push_button/irs_key_8", "number")
+B738DR_irs_key_9_pos		= create_dataref("laminar/B738/push_button/irs_key_9", "number")
+B738DR_irs_key_ent_pos		= create_dataref("laminar/B738/push_button/irs_key_ent", "number")
+B738DR_irs_key_clr_pos		= create_dataref("laminar/B738/push_button/irs_key_clr", "number")
 
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
@@ -410,9 +444,400 @@ function B738_irs_dspl_brt_right_CMDhandler(phase, duration)
 	end
 end
 
+-- IRS numpad function
+function clear_disable_key()
+	local ii = 0
+	for ii = 0, 9 do
+		disable_key[ii] = 0
+	end
+end
+
+function set_disable_key(first_key, last_key)
+	local ii = 0
+	for ii = first_key, last_key do
+		disable_key[ii] = 1
+	end
+end
+
+function irs_check_deg()
+	
+	local check_len = 0
+	
+	if irs_entry_mod == IRS_entry_mode_lat then
+		check_len = string.len(irs_entry_pos_lat)
+		clear_disable_key()
+		if check_len == 1 then
+			disable_key[9] = 1
+		elseif check_len == 3 then
+			set_disable_key(6, 9)
+		end
+	elseif irs_entry_mod == IRS_entry_mode_lon then
+		check_len = string.len(irs_entry_pos_lon)
+		clear_disable_key()
+		if check_len == 0 then
+			set_disable_key(0, 9)
+			disable_key[4] = 0
+			disable_key[6] = 0
+		elseif check_len == 1 then
+			set_disable_key(2, 9)
+		elseif check_len == 2 then
+			if string.sub(irs_entry_pos_lon, 2, 2) == "1" then
+				set_disable_key(8, 9)
+			end
+		elseif check_len == 4 then
+			set_disable_key(6, 9)
+		end
+	elseif irs_entry_mod == IRS_entry_mode_hdg then
+		clear_disable_key()
+		check_len = string.len(irs_entry_hdg)
+		if check_len == 0 then
+			set_disable_key(4, 9)
+		elseif check_len == 1 then
+			if string.sub(irs_entry_hdg, 1, 1) == "3" then
+				set_disable_key(6, 9)
+			end
+		end
+	else
+		clear_disable_key()
+		set_disable_key(0, 9)
+		disable_key[2] = 0
+		disable_key[5] = 0
+		disable_key[8] = 0
+	end
+	
+end
 
 
 
+-- IRS Keypad
+function B738_irs_key_0_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_irs_key_0_pos = 1
+		if disable_key[0] == 0 then
+			if B738DR_irs_dspl_sel == 2 then
+				if irs_entry_mod == IRS_entry_mode_lat and string.len(irs_entry_pos_lat) < 6 then
+					irs_entry_pos_lat = irs_entry_pos_lat .. "0"
+				elseif irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) < 7 then
+					irs_entry_pos_lon = irs_entry_pos_lon .. "0"
+				end
+				irs_check_deg()
+			elseif B738DR_irs_dspl_sel == 4 then
+				if irs_entry_mod == IRS_entry_mode_hdg and string.len(irs_entry_hdg) < 3 then
+					irs_entry_hdg = irs_entry_hdg .. "0"
+				end
+				irs_check_deg()
+			end
+		end
+	elseif phase == 2 then
+		B738DR_irs_key_0_pos = 0
+	end
+end
+
+function B738_irs_key_1_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_irs_key_1_pos = 1
+		if disable_key[1] == 0 then
+			if B738DR_irs_dspl_sel == 2 then
+				if irs_entry_mod == IRS_entry_mode_lat and string.len(irs_entry_pos_lat) < 6 then
+					irs_entry_pos_lat = irs_entry_pos_lat .. "1"
+				elseif irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) < 7 then
+					irs_entry_pos_lon = irs_entry_pos_lon .. "1"
+				end
+				irs_check_deg()
+			elseif B738DR_irs_dspl_sel == 4 then
+				if irs_entry_mod == IRS_entry_mode_hdg and string.len(irs_entry_hdg) < 3 then
+					irs_entry_hdg = irs_entry_hdg .. "1"
+				end
+				irs_check_deg()
+			end
+		end
+	elseif phase == 2 then
+		B738DR_irs_key_1_pos = 0
+	end
+end
+
+function B738_irs_key_2_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_irs_key_2_pos = 1
+		if disable_key[2] == 0 then
+			if B738DR_irs_dspl_sel == 2 then
+				if irs_entry_mod == 0 then
+					irs_entry_mod = IRS_entry_mode_lat
+					irs_entry_pos_lat = "N"
+					B738DR_irs_ent_light = 1
+					irs_entry_pos_lat = ""
+					irs_entry_pos_lon = ""
+				elseif irs_entry_mod == IRS_entry_mode_lat and string.len(irs_entry_pos_lat) < 6 then
+					irs_entry_pos_lat = irs_entry_pos_lat .. "2"
+				elseif irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) < 7 then
+					irs_entry_pos_lon = irs_entry_pos_lon .. "2"
+				end
+				irs_check_deg()
+			elseif B738DR_irs_dspl_sel == 4 then
+				if irs_entry_mod == IRS_entry_mode_hdg and string.len(irs_entry_hdg) < 3 then
+					irs_entry_hdg = irs_entry_hdg .. "2"
+				end
+				irs_check_deg()
+			end
+		end
+	elseif phase == 2 then
+		B738DR_irs_key_2_pos = 0
+	end
+end
+
+function B738_irs_key_3_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_irs_key_3_pos = 1
+		if disable_key[3] == 0 then
+			if B738DR_irs_dspl_sel == 2 then
+				if irs_entry_mod == IRS_entry_mode_lat and string.len(irs_entry_pos_lat) < 6 then
+					irs_entry_pos_lat = irs_entry_pos_lat .. "3"
+				elseif irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) < 7 then
+					irs_entry_pos_lon = irs_entry_pos_lon .. "3"
+				end
+				irs_check_deg()
+			elseif B738DR_irs_dspl_sel == 4 then
+				if irs_entry_mod == IRS_entry_mode_hdg and string.len(irs_entry_hdg) < 3 then
+					irs_entry_hdg = irs_entry_hdg .. "3"
+				end
+				irs_check_deg()
+			end
+		end
+	elseif phase == 2 then
+		B738DR_irs_key_3_pos = 0
+	end
+end
+
+function B738_irs_key_4_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_irs_key_4_pos = 1
+		if disable_key[4] == 0 then
+			if B738DR_irs_dspl_sel == 2 then
+				if irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) == 0 then
+					irs_entry_pos_lon = irs_entry_pos_lon .. "W"
+				elseif irs_entry_mod == IRS_entry_mode_lat and string.len(irs_entry_pos_lat) < 6 then
+					irs_entry_pos_lat = irs_entry_pos_lat .. "4"
+				elseif irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) < 7 then
+					irs_entry_pos_lon = irs_entry_pos_lon .. "4"
+				end
+				irs_check_deg()
+			elseif B738DR_irs_dspl_sel == 4 then
+				if irs_entry_mod == IRS_entry_mode_hdg and string.len(irs_entry_hdg) < 3 then
+					irs_entry_hdg = irs_entry_hdg .. "4"
+				end
+				irs_check_deg()
+			end
+		end
+	elseif phase == 2 then
+		B738DR_irs_key_4_pos = 0
+	end
+end
+
+function B738_irs_key_5_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_irs_key_5_pos = 1
+		if disable_key[5] == 0 then
+			if B738DR_irs_dspl_sel == 2 then
+				if irs_entry_mod == IRS_entry_mode_lat and string.len(irs_entry_pos_lat) < 6 then
+					irs_entry_pos_lat = irs_entry_pos_lat .. "5"
+				elseif irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) < 7 then
+					irs_entry_pos_lon = irs_entry_pos_lon .. "5"
+				end
+				irs_check_deg()
+			elseif B738DR_irs_dspl_sel == 4 then
+				if irs_entry_mod == 0 then
+					irs_entry_mod = IRS_entry_mode_hdg
+					irs_entry_hdg = ""
+					B738DR_irs_ent_light = 1
+					B738DR_irs_clr_light = 1
+				elseif irs_entry_mod == IRS_entry_mode_hdg and string.len(irs_entry_hdg) < 3 then
+					irs_entry_hdg = irs_entry_hdg .. "5"
+				end
+				irs_check_deg()
+			end
+		end
+	elseif phase == 2 then
+		B738DR_irs_key_5_pos = 0
+	end
+end
+
+function B738_irs_key_6_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_irs_key_6_pos = 1
+		if disable_key[6] == 0 then
+			if B738DR_irs_dspl_sel == 2 then
+				if irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) == 0 then
+					irs_entry_pos_lon = irs_entry_pos_lon .. "E"
+				elseif irs_entry_mod == IRS_entry_mode_lat and string.len(irs_entry_pos_lat) < 6 then
+					irs_entry_pos_lat = irs_entry_pos_lat .. "6"
+				elseif irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) < 7 then
+					irs_entry_pos_lon = irs_entry_pos_lon .. "6"
+				end
+				irs_check_deg()
+			elseif B738DR_irs_dspl_sel == 4 then
+				if irs_entry_mod == IRS_entry_mode_hdg and string.len(irs_entry_hdg) < 3 then
+					irs_entry_hdg = irs_entry_hdg .. "6"
+				end
+				irs_check_deg()
+			end
+		end
+	elseif phase == 2 then
+		B738DR_irs_key_6_pos = 0
+	end
+end
+
+function B738_irs_key_7_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_irs_key_7_pos = 1
+		if disable_key[7] == 0 then
+			if B738DR_irs_dspl_sel == 2 then
+				if irs_entry_mod == IRS_entry_mode_lat and string.len(irs_entry_pos_lat) < 6 then
+					irs_entry_pos_lat = irs_entry_pos_lat .. "7"
+				elseif irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) < 7 then
+					irs_entry_pos_lon = irs_entry_pos_lon .. "7"
+				end
+				irs_check_deg()
+			elseif B738DR_irs_dspl_sel == 4 then
+				if irs_entry_mod == IRS_entry_mode_hdg and string.len(irs_entry_hdg) < 3 then
+					irs_entry_hdg = irs_entry_hdg .. "7"
+				end
+				irs_check_deg()
+			end
+		end
+	elseif phase == 2 then
+		B738DR_irs_key_7_pos = 0
+	end
+end
+
+function B738_irs_key_8_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_irs_key_8_pos = 1
+		if disable_key[8] == 0 then
+			if B738DR_irs_dspl_sel == 2 then
+				if irs_entry_mod == 0 then
+					irs_entry_mod = IRS_entry_mode_lat
+					irs_entry_pos_lat = "S"
+					B738DR_irs_ent_light = 1
+					irs_entry_pos_lat = ""
+					irs_entry_pos_lon = ""
+				elseif irs_entry_mod == IRS_entry_mode_lat and string.len(irs_entry_pos_lat) < 6 then
+					irs_entry_pos_lat = irs_entry_pos_lat .. "8"
+				elseif irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) < 7 then
+					irs_entry_pos_lon = irs_entry_pos_lon .. "8"
+				end
+				irs_check_deg()
+			elseif B738DR_irs_dspl_sel == 4 then
+				if irs_entry_mod == IRS_entry_mode_hdg and string.len(irs_entry_hdg) < 3 then
+					irs_entry_hdg = irs_entry_hdg .. "8"
+				end
+				irs_check_deg()
+			end
+		end
+	elseif phase == 2 then
+		B738DR_irs_key_8_pos = 0
+	end
+end
+
+function B738_irs_key_9_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_irs_key_9_pos = 1
+		if disable_key[9] == 0 then
+			if B738DR_irs_dspl_sel == 2 then
+				if irs_entry_mod == IRS_entry_mode_lat and string.len(irs_entry_pos_lat) < 6 then
+					irs_entry_pos_lat = irs_entry_pos_lat .. "9"
+				elseif irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) < 7 then
+					irs_entry_pos_lon = irs_entry_pos_lon .. "9"
+				end
+				irs_check_deg()
+			elseif B738DR_irs_dspl_sel == 4 then
+				if irs_entry_mod == IRS_entry_mode_hdg and string.len(irs_entry_hdg) < 3 then
+					irs_entry_hdg = irs_entry_hdg .. "9"
+				end
+				irs_check_deg()
+			end
+		end
+	elseif phase == 2 then
+		B738DR_irs_key_9_pos = 0
+	end
+end
+
+function B738_irs_key_ent_CMDhandler(phase, duration)
+	
+	local hdg_num = 0
+	
+	if phase == 0 then
+		B738DR_irs_key_ent_pos = 1
+		if irs_entry_mod == IRS_entry_mode_lat and string.len(irs_entry_pos_lat) == 6 then
+			irs_entry_mod = IRS_entry_mode_lon
+			B738DR_irs_clr_light = 1
+		elseif irs_entry_mod == IRS_entry_mode_lon and string.len(irs_entry_pos_lon) == 7 then
+			-- set IRS position
+			irs_pos_set = string.sub(irs_entry_pos_lat, 1, -2) .. "." .. string.sub(irs_entry_pos_lat, -1, -1)
+			irs_pos_set = irs_pos_set .. string.sub(irs_entry_pos_lon, 1, -2) .. "." .. string.sub(irs_entry_pos_lon, -1, -1)
+			irs2_pos_set = irs_pos_set
+			irs_entry_mod = 0
+			B738DR_irs_ent_light = 0
+			B738DR_irs_clr_light = 0
+		elseif irs_entry_mod == IRS_entry_mode_hdg and string.len(irs_entry_hdg) == 3 then
+			-- set IRS heading
+			irs_hdg_set = irs_entry_hdg
+			irs2_hdg_set = irs_hdg_set
+			irs_entry_mod = 0
+			B738DR_irs_ent_light = 0
+			B738DR_irs_clr_light = 0
+		end
+		irs_check_deg()
+	elseif phase == 2 then
+		B738DR_irs_key_ent_pos = 0
+	end
+end
+
+function B738_irs_key_clr_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_irs_key_clr_pos = 1
+		if irs_entry_mod == IRS_entry_mode_lat then
+			irs_entry_mod = 0
+			irs_entry_pos_lat = ""
+			irs_entry_pos_lon = ""
+			irs_entry_hdg = ""
+			B738DR_irs_ent_light = 0
+			B738DR_irs_clr_light = 0
+		elseif irs_entry_mod == IRS_entry_mode_lon then
+			if string.len(irs_entry_pos_lon) == 0 then
+				irs_entry_mod = IRS_entry_mode_lat
+				B738DR_irs_clr_light = 0
+			else
+				irs_entry_pos_lon = ""
+			end
+		elseif irs_entry_mod == IRS_entry_mode_hdg then
+			irs_entry_mod = 0
+			irs_entry_pos_lat = ""
+			irs_entry_pos_lon = ""
+			irs_entry_hdg = ""
+			B738DR_irs_ent_light = 0
+			B738DR_irs_clr_light = 0
+		end
+		irs_check_deg()
+	elseif phase == 2 then
+		B738DR_irs_key_clr_pos = 0
+	end
+end
+
+-- entry FMC to IRS position
+function B738_fmc_to_irs_pos_CMDhandler(phase, duration)
+	if phase == 0 then
+		irs_pos_set = B738DR_irs_pos_fmc_set
+		irs2_pos_set = B738DR_irs_pos_fmc_set
+	end
+end
+
+-- entry FMC to IRS heading
+function B738_fmc_to_irs_hdg_CMDhandler(phase, duration)
+	if phase == 0 then
+		irs_hdg_set = B738DR_irs_hdg_fmc_set
+		irs2_hdg_set = B738DR_irs_hdg_fmc_set
+	end
+end
 
 --*************************************************************************************--
 --** 				              CREATE CUSTOM COMMANDS              			     **--
@@ -430,6 +855,21 @@ B738CMD_irs_dspl_sel_right = create_command("laminar/B738/toggle_switch/irs_dspl
 B738CMD_irs_dspl_brt_left = create_command("laminar/B738/toggle_switch/irs_dspl_sel_brt_left", "IRS display bright left", B738_irs_dspl_brt_left_CMDhandler)
 B738CMD_irs_dspl_brt_right = create_command("laminar/B738/toggle_switch/irs_dspl_sel_brt_right", "IRS display bright right", B738_irs_dspl_brt_right_CMDhandler)
 
+B738CMD_irs_key_0		= create_command("laminar/B738/push_button/irs_key_0", "IRS keypad 0", B738_irs_key_0_CMDhandler)
+B738CMD_irs_key_1		= create_command("laminar/B738/push_button/irs_key_1", "IRS keypad 1", B738_irs_key_1_CMDhandler)
+B738CMD_irs_key_2		= create_command("laminar/B738/push_button/irs_key_2", "IRS keypad 2", B738_irs_key_2_CMDhandler)
+B738CMD_irs_key_3		= create_command("laminar/B738/push_button/irs_key_3", "IRS keypad 3", B738_irs_key_3_CMDhandler)
+B738CMD_irs_key_4		= create_command("laminar/B738/push_button/irs_key_4", "IRS keypad 4", B738_irs_key_4_CMDhandler)
+B738CMD_irs_key_5		= create_command("laminar/B738/push_button/irs_key_5", "IRS keypad 5", B738_irs_key_5_CMDhandler)
+B738CMD_irs_key_6		= create_command("laminar/B738/push_button/irs_key_6", "IRS keypad 6", B738_irs_key_6_CMDhandler)
+B738CMD_irs_key_7		= create_command("laminar/B738/push_button/irs_key_7", "IRS keypad 7", B738_irs_key_7_CMDhandler)
+B738CMD_irs_key_8		= create_command("laminar/B738/push_button/irs_key_8", "IRS keypad 8", B738_irs_key_8_CMDhandler)
+B738CMD_irs_key_9		= create_command("laminar/B738/push_button/irs_key_9", "IRS keypad 9", B738_irs_key_9_CMDhandler)
+B738CMD_irs_key_ent		= create_command("laminar/B738/push_button/irs_key_ent", "IRS keypad ENT", B738_irs_key_ent_CMDhandler)
+B738CMD_irs_key_clr		= create_command("laminar/B738/push_button/irs_key_clr", "IRS keypad CLR", B738_irs_key_clr_CMDhandler)
+
+B738CMD_fmc_to_irs_pos	= create_command("laminar/B738/push_button/fmc_to_irs_pos", "not for use", B738_fmc_to_irs_pos_CMDhandler)
+B738CMD_fmc_to_irs_hdg	= create_command("laminar/B738/push_button/fmc_to_irs_hdg", "not for use", B738_fmc_to_irs_hdg_CMDhandler)
 
 --*************************************************************************************--
 --** 				             X-PLANE COMMAND HANDLERS               	    	 **--
@@ -615,6 +1055,11 @@ function B738_irs_display_data()
 	local irs_fail = 0
 	local alignment_status = 0
 	local irs_allign_show = 0
+	local ii = 0
+	
+	B738DR_irs_entry_len = 0
+	B738DR_irs_entry_pos_show = 0
+	B738DR_irs_entry_hdg_show = 0
 	
 	-- run test IRS DSPL SEL
 	if irs_dspl_test_enable == 1 
@@ -631,13 +1076,14 @@ function B738_irs_display_data()
 			-- test running
 			B738DR_irs_left1 = 88
 			B738DR_irs_left2 = 888
-			B738DR_irs_right1 = 88
+			B738DR_irs_right1 = 888
 			B738DR_irs_right2 = 888
 			B738DR_irs_left1_show = 1
 			B738DR_irs_left2_show = 1
 			B738DR_irs_right1_show = 1
 			B738DR_irs_right2_show = 1
-			B738DR_irs_ns_ew_show = 1
+			B738DR_irs_ns_show = 1
+			B738DR_irs_ew_show = 1
 			B738DR_irs_lat_deg_show = 0
 			B738DR_irs_lat_min_show = 0
 			B738DR_irs_lon_deg_show = 0
@@ -666,7 +1112,8 @@ function B738_irs_display_data()
 		B738DR_irs_right1_show = 0
 		
 		if irs_status == 0 then
-			B738DR_irs_ns_ew_show = 0
+			B738DR_irs_ns_show = 0
+			B738DR_irs_ew_show = 0
 			B738DR_irs_lat_deg_show = 0
 			B738DR_irs_lat_min_show = 0
 			B738DR_irs_lon_deg_show = 0
@@ -679,7 +1126,8 @@ function B738_irs_display_data()
 			B738DR_irs_right1 = 0
 			B738DR_irs_left2 = 0
 			B738DR_irs_right2 = 0
-			B738DR_irs_ns_ew_show = 0
+			B738DR_irs_ns_show = 0
+			B738DR_irs_ew_show = 0
 			B738DR_irs_lat_deg_show = 0
 			B738DR_irs_lat_min_show = 0
 			B738DR_irs_lon_deg_show = 0
@@ -688,192 +1136,298 @@ function B738_irs_display_data()
 			B738DR_irs_left2_show = 0
 			B738DR_irs_right2_show = 0
 		else
-			if irs_mode == 1 then
-				if irs_dspl_sel == 2 and alignment_status == 1 then 
-					-- PPOS -> latitude / longtitude
-					B738DR_irs_ns_ew_show = 1
-					B738DR_irs_lat_deg_show = 1
-					B738DR_irs_lat_min_show = 1
-					B738DR_irs_lon_deg_show = 1
-					B738DR_irs_lon_min_show = 1
-					B738DR_irs_decimals_show = 1
-					B738DR_irs_left2_show = 0
-					B738DR_irs_right2_show = 0
-					B738DR_irs_left1 = 0
-					B738DR_irs_right1 = 0
-					B738DR_irs_left2 = 0
-					B738DR_irs_right2 = 0
-				elseif irs_dspl_sel == 4 then
-					-- alignment remain in minutes
-					B738DR_irs_left1 = 0
-					B738DR_irs_right1 = 0
-					B738DR_irs_left2 = 0
-					B738DR_irs_right2 = 0
-					B738DR_irs_ns_ew_show = 0
-					B738DR_irs_lat_deg_show = 0
-					B738DR_irs_lat_min_show = 0
-					B738DR_irs_lon_deg_show = 0
-					B738DR_irs_lon_min_show = 0
-					B738DR_irs_decimals_show = 0
-					B738DR_irs_right2_show = 0
-					B738DR_irs_left2_show = 0
-					-- if alignment_remain > 0 then
-						-- if alignment_remain > 15 then
-							-- B738DR_irs_right2 = 15
-						-- else
-							-- B738DR_irs_right2 = alignment_remain
-						-- end
-					-- else
-						-- B738DR_irs_right2_show = 0
-					-- end
-					
-					
-					if alignment_remain > 0 then
-						irs_allign_show = 1
-						if alignment_remain > 15 then
-							B738DR_irs_right1 = 15
-						else
-							B738DR_irs_right1 = alignment_remain
-						end
+			if irs_dspl_sel == 4 and irs_entry_mod == IRS_entry_mode_hdg then 
+				
+				-- display heading entry
+				
+				B738DR_irs_entry_len = string.len(irs_entry_hdg)
+				B738DR_irs_entry_hdg_show = 1
+				
+				used_x = B738DR_irs_entry_len
+				if used_x > 0 then
+					for ii = 1, used_x do
+						B738DR_irs_entry[ii-1] = tonumber(string.sub(irs_entry_hdg, ii, ii))
 					end
-				else
-					B738DR_irs_left1 = 0
-					B738DR_irs_right1 = 0
-					B738DR_irs_left2 = 0
-					B738DR_irs_right2 = 0
-					B738DR_irs_ns_ew_show = 0
-					B738DR_irs_lat_deg_show = 0
-					B738DR_irs_lat_min_show = 0
-					B738DR_irs_lon_deg_show = 0
-					B738DR_irs_lon_min_show = 0
-					B738DR_irs_decimals_show = 0
-					B738DR_irs_left2_show = 0
-					B738DR_irs_right2_show = 0
 				end
-			elseif irs_mode == 2 then	-- < 3
-				if irs_dspl_sel == 1 then
-					-- TK/GS -> true track course / ground speed knots
-					used_x = true_track
-					B738DR_irs_left2 = math.floor(used_x + 0.5)
-					--used_x = B738_rescale(0, 0, 205, 400, simDR_ground_speed)
-					used_x = simDR_ground_speed * 1.94384
-					B738DR_irs_right2 = math.floor(used_x + 0.5)
-					B738DR_irs_ns_ew_show = 0
-					B738DR_irs_lat_deg_show = 0
-					B738DR_irs_lat_min_show = 0
-					B738DR_irs_lon_deg_show = 0
-					B738DR_irs_lon_min_show = 0
-					B738DR_irs_decimals_show = 0
-					B738DR_irs_left2_show = 1
-					B738DR_irs_right2_show = 1
-				elseif irs_dspl_sel == 2 then
-					-- PPOS -> latitude / longtitude
-					B738DR_irs_ns_ew_show = 1
-					B738DR_irs_lat_deg_show = 1
-					B738DR_irs_lat_min_show = 1
-					B738DR_irs_lon_deg_show = 1
-					B738DR_irs_lon_min_show = 1
-					B738DR_irs_decimals_show = 1
-					B738DR_irs_left2_show = 0
-					B738DR_irs_right2_show = 0
-				elseif irs_dspl_sel == 3 then
-					-- WIND -> wind direction / wind speed knots
-					used_x = simDR_wind_speed
-					B738DR_irs_right2 = math.floor(used_x + 0.5)
-					if B738DR_irs_right2 == 0 then	-- no wind
-						used_x = 0
-					else
-						used_x = simDR_wind_direct
-					end
-					B738DR_irs_left2 = math.floor(used_x + 0.5)
-					B738DR_irs_ns_ew_show = 0
-					B738DR_irs_lat_deg_show = 0
-					B738DR_irs_lat_min_show = 0
-					B738DR_irs_lon_deg_show = 0
-					B738DR_irs_lon_min_show = 0
-					B738DR_irs_decimals_show = 0
-					B738DR_irs_left2_show = 1
-					B738DR_irs_right2_show = 1
-				elseif irs_dspl_sel == 4 then
-				-- HDG/STS -> true heading / status code
-					used_x = simDR_true_heading
-					B738DR_irs_left2 = math.floor(used_x + 0.5)
-					used_x = 024
-					B738DR_irs_right2 = math.floor(used_x + 0.5)
-					B738DR_irs_ns_ew_show = 0
-					B738DR_irs_lat_deg_show = 0
-					B738DR_irs_lat_min_show = 0
-					B738DR_irs_lon_deg_show = 0
-					B738DR_irs_lon_min_show = 0
-					B738DR_irs_decimals_show = 0
-					B738DR_irs_left2_show = 1
-					B738DR_irs_right2_show = 1
-				end
-				-- if alignment_entry == 0 then
-					-- B738DR_irs_left1 = 0
-					-- B738DR_irs_right1 = 0
-					-- B738DR_irs_left2 = 0
-					-- B738DR_irs_right2 = 0
-					-- B738DR_irs_ns_ew_show = 0
-					-- B738DR_irs_lat_deg_show = 0
-					-- B738DR_irs_lat_min_show = 0
-					-- B738DR_irs_lon_deg_show = 0
-					-- B738DR_irs_lon_min_show = 0
-					-- B738DR_irs_decimals_show = 0
-					-- B738DR_irs_left2_show = 1
-					-- B738DR_irs_right2_show = 1
-				-- end
-				-- if alignment_remain > 0 or alignment_remain < 0 then
-					-- B738DR_irs_left1 = 0
-					-- B738DR_irs_right1 = 0
-					-- B738DR_irs_left2 = 0
-					-- B738DR_irs_right2 = 0
-					-- B738DR_irs_ns_ew_show = 0
-					-- B738DR_irs_lat_deg_show = 0
-					-- B738DR_irs_lat_min_show = 0
-					-- B738DR_irs_lon_deg_show = 0
-					-- B738DR_irs_lon_min_show = 0
-					-- B738DR_irs_decimals_show = 0
-					-- B738DR_irs_left2_show = 1
-					-- B738DR_irs_right2_show = 1
-					-- if irs_dspl_sel == 4 then
-						-- B738DR_irs_left2_show = 0
-						-- if alignment_remain > 0 then
-							-- -- HDG/STS during alignment -> munutes remaining until alignment is complete
-							-- B738DR_irs_right2 = alignment_remain
-						-- else
-							-- B738DR_irs_right2_show = 0
-						-- end
-					-- elseif irs_dspl_sel == 2 then
-						-- B738DR_irs_left1_show = 1
-						-- B738DR_irs_right1_show = 1
-					-- end
-				-- end
-			elseif irs_mode == 3 then
-				-- display only attitude and heading info
-				used_x = simDR_true_attitude
-				B738DR_irs_left2 = math.floor(used_x + 0.5)
-				used_x = simDR_true_heading
-				B738DR_irs_right2 = math.floor(used_x + 0.5)
-				B738DR_irs_ns_ew_show = 0
-				B738DR_irs_lat_deg_show = 0
-				B738DR_irs_lat_min_show = 0
-				B738DR_irs_lon_deg_show = 0
-				B738DR_irs_lon_min_show = 0
-				B738DR_irs_decimals_show = 0
-				B738DR_irs_left2_show = 1
-				B738DR_irs_right2_show = 1
-			else
-				B738DR_irs_right2 = 0
+				
 				B738DR_irs_left2 = 0
-				B738DR_irs_ns_ew_show = 0
+				B738DR_irs_right2 = 0
+				B738DR_irs_ns_show = 0
+				B738DR_irs_ew_show = 0
 				B738DR_irs_lat_deg_show = 0
 				B738DR_irs_lat_min_show = 0
 				B738DR_irs_lon_deg_show = 0
 				B738DR_irs_lon_min_show = 0
 				B738DR_irs_decimals_show = 0
-				B738DR_irs_left2_show = 1
-				B738DR_irs_right2_show = 1
+				B738DR_irs_left2_show = 0
+				B738DR_irs_right2_show = 0
+				
+				--ENT/CLR lights
+				
+				
+			elseif irs_dspl_sel == 2 and (irs_entry_mod == IRS_entry_mode_lat or irs_entry_mod == IRS_entry_mode_lon) then 
+				
+				-- display position entry
+				
+				B738DR_irs_entry_len = string.len(irs_entry_pos_lat) + string.len(irs_entry_pos_lon)
+				B738DR_irs_ns_show = 1
+				B738DR_irs_ew_show = 0
+				B738DR_irs_decimals_show = 1
+				
+				used_x = string.len(irs_entry_pos_lat)
+				if used_x > 1 then
+					for ii = 2, used_x do
+						B738DR_irs_entry[ii-2] = tonumber(string.sub(irs_entry_pos_lat, ii, ii))
+					end
+				end
+				if string.sub(irs_entry_pos_lat, 1, 1) == "S" then
+					B738DR_latitude_deg = -0.1
+				end
+				
+				used_x = string.len(irs_entry_pos_lon)
+				if used_x == 1 then
+					B738DR_irs_ew_show = 1
+				elseif used_x > 1 then
+					for ii = 2, used_x do
+						B738DR_irs_entry[ii+3] = tonumber(string.sub(irs_entry_pos_lon, ii, ii))
+					end
+					B738DR_irs_ew_show = 1
+				end
+				if string.sub(irs_entry_pos_lon, 1, 1) == "W" then
+					B738DR_longitude_deg = -0.1
+				end
+				
+				B738DR_irs_entry_pos_show = 1
+				
+				-- -- B738DR_irs_lat_deg_show = 0
+				-- -- B738DR_irs_lat_min_show = 0
+				
+				-- if used_x > 3 then
+					-- B738DR_latitude_deg = tonumber(string.sub(irs_entry_pos_lat, 2, 3))
+					-- B738DR_latitude_min = tonumber(string.sub(irs_entry_pos_lat, 4, -1))
+					-- -- B738DR_irs_lat_deg_show = 1
+					-- -- B738DR_irs_lat_min_show = 1
+				-- elseif used_x > 1 then
+					-- B738DR_latitude_deg = tonumber(string.sub(irs_entry_pos_lat, 2, -1))
+					-- -- B738DR_irs_lat_deg_show = 1
+					-- B738DR_latitude_min = 0
+				-- else
+					-- B738DR_latitude_deg = 0
+					-- B738DR_latitude_min = 0
+				-- end
+				-- if string.sub(irs_entry_pos_lat, 1, 1) == "S" then
+						-- if used_x == 1 then
+							-- B738DR_latitude_deg = -0.1
+						-- elseif B738DR_latitude_deg == 0 then
+							-- B738DR_latitude_deg = -0.1
+						-- else
+							-- B738DR_latitude_deg = -B738DR_latitude_deg
+						-- end
+				-- end
+				-- B738DR_irs_ns_show = 1
+				-- B738DR_irs_ew_show = 0
+				
+				-- used_x = string.len(irs_entry_pos_lon)
+				-- if irs_entry_mod == IRS_entry_mode_lon and used_x ~= 0 then
+					
+					-- -- B738DR_irs_lat_deg_show = 1
+					-- -- B738DR_irs_lat_min_show = 1
+					-- -- B738DR_irs_lon_deg_show = 0
+					-- -- B738DR_irs_lon_min_show = 0
+					
+					-- if used_x > 4 then
+						-- B738DR_longitude_deg = tonumber(string.sub(irs_entry_pos_lon, 2, 4))
+						-- B738DR_longitude_min = tonumber(string.sub(irs_entry_pos_lon, 5, -1))
+						-- -- B738DR_irs_lon_deg_show = 1
+						-- -- B738DR_irs_lon_min_show = 1
+					-- elseif used_x > 1 then
+						-- B738DR_longitude_deg = tonumber(string.sub(irs_entry_pos_lon, 2, -1))
+						-- -- B738DR_irs_lon_deg_show = 1
+						-- B738DR_longitude_min = 0
+					-- else
+						-- B738DR_longitude_deg = 0
+						-- B738DR_longitude_min = 0
+					-- end
+					-- if string.sub(irs_entry_pos_lon, 1, 1) == "W" then
+						-- if used_x == 1 then
+							-- B738DR_longitude_deg = -0.1
+						-- elseif B738DR_longitude_deg == 0 then
+							-- B738DR_longitude_deg = -0.1
+						-- else
+							-- B738DR_longitude_deg = -B738DR_longitude_deg
+						-- end
+					-- end
+					-- B738DR_irs_ew_show = 1
+				-- end
+				
+-- B738DR_irs_entry			= create_dataref("laminar/B738/irs_entry", "array[11]")
+-- B738DR_irs_entry_len		= create_dataref("laminar/B738/irs_entry_len", "number")
+-- B738DR_irs_entry_pos_show	= create_dataref("laminar/B738/irs_entry_pos_show", "number")
+-- B738DR_irs_entry_hdg_show	= create_dataref("laminar/B738/irs_entry_hdg_show", "number")
+				
+				
+				
+				B738DR_irs_lat_deg_show = 0
+				B738DR_irs_lat_min_show = 0
+				B738DR_irs_lon_deg_show = 0
+				B738DR_irs_lon_min_show = 0
+				--B738DR_irs_lat_deg_show = 1
+				--B738DR_irs_lat_min_show = 1
+				--B738DR_irs_lon_deg_show = 1
+				--B738DR_irs_lon_min_show = 1
+				--B738DR_irs_decimals_show = 1
+				B738DR_irs_left2_show = 0
+				B738DR_irs_right2_show = 0
+				B738DR_irs_left1 = 0
+				B738DR_irs_right1 = 0
+				B738DR_irs_left2 = 0
+				B738DR_irs_right2 = 0
+			else
+				if irs_mode == 1 then
+					if irs_dspl_sel == 2 and alignment_status == 1 then 
+						-- PPOS -> latitude / longtitude
+						B738DR_irs_ns_show = 1
+						B738DR_irs_ew_show = 1
+						B738DR_irs_lat_deg_show = 1
+						B738DR_irs_lat_min_show = 1
+						B738DR_irs_lon_deg_show = 1
+						B738DR_irs_lon_min_show = 1
+						B738DR_irs_decimals_show = 1
+						B738DR_irs_left2_show = 0
+						B738DR_irs_right2_show = 0
+						B738DR_irs_left1 = 0
+						B738DR_irs_right1 = 0
+						B738DR_irs_left2 = 0
+						B738DR_irs_right2 = 0
+					elseif irs_dspl_sel == 4 then
+						-- alignment remain in minutes
+						B738DR_irs_left1 = 0
+						B738DR_irs_right1 = 0
+						B738DR_irs_left2 = 0
+						B738DR_irs_right2 = 0
+						B738DR_irs_ns_show = 0
+						B738DR_irs_ew_show = 0
+						B738DR_irs_lat_deg_show = 0
+						B738DR_irs_lat_min_show = 0
+						B738DR_irs_lon_deg_show = 0
+						B738DR_irs_lon_min_show = 0
+						B738DR_irs_decimals_show = 0
+						B738DR_irs_right2_show = 0
+						B738DR_irs_left2_show = 0
+						if alignment_remain > 0 then
+							irs_allign_show = 1
+							if alignment_remain > 15 then
+								B738DR_irs_right1 = 15
+							else
+								B738DR_irs_right1 = alignment_remain
+							end
+						end
+					else
+						B738DR_irs_left1 = 0
+						B738DR_irs_right1 = 0
+						B738DR_irs_left2 = 0
+						B738DR_irs_right2 = 0
+						B738DR_irs_ns_show = 0
+						B738DR_irs_ew_show = 0
+						B738DR_irs_lat_deg_show = 0
+						B738DR_irs_lat_min_show = 0
+						B738DR_irs_lon_deg_show = 0
+						B738DR_irs_lon_min_show = 0
+						B738DR_irs_decimals_show = 0
+						B738DR_irs_left2_show = 0
+						B738DR_irs_right2_show = 0
+					end
+				elseif irs_mode == 2 then	-- < 3
+					if irs_dspl_sel == 1 then
+						-- TK/GS -> true track course / ground speed knots
+						used_x = true_track
+						B738DR_irs_left2 = math.floor(used_x + 0.5)
+						--used_x = B738_rescale(0, 0, 205, 400, simDR_ground_speed)
+						used_x = simDR_ground_speed * 1.94384
+						B738DR_irs_right2 = math.floor(used_x + 0.5)
+						B738DR_irs_ns_show = 0
+						B738DR_irs_ew_show = 0
+						B738DR_irs_lat_deg_show = 0
+						B738DR_irs_lat_min_show = 0
+						B738DR_irs_lon_deg_show = 0
+						B738DR_irs_lon_min_show = 0
+						B738DR_irs_decimals_show = 0
+						B738DR_irs_left2_show = 1
+						B738DR_irs_right2_show = 1
+					elseif irs_dspl_sel == 2 then
+						-- PPOS -> latitude / longtitude
+						B738DR_irs_ns_show = 1
+						B738DR_irs_ew_show = 1
+						B738DR_irs_lat_deg_show = 1
+						B738DR_irs_lat_min_show = 1
+						B738DR_irs_lon_deg_show = 1
+						B738DR_irs_lon_min_show = 1
+						B738DR_irs_decimals_show = 1
+						B738DR_irs_left2_show = 0
+						B738DR_irs_right2_show = 0
+					elseif irs_dspl_sel == 3 then
+						-- WIND -> wind direction / wind speed knots
+						used_x = simDR_wind_speed
+						B738DR_irs_right2 = math.floor(used_x + 0.5)
+						if B738DR_irs_right2 == 0 then	-- no wind
+							used_x = 0
+						else
+							used_x = simDR_wind_direct
+						end
+						B738DR_irs_left2 = math.floor(used_x + 0.5)
+						B738DR_irs_ns_show = 0
+						B738DR_irs_ew_show = 0
+						B738DR_irs_lat_deg_show = 0
+						B738DR_irs_lat_min_show = 0
+						B738DR_irs_lon_deg_show = 0
+						B738DR_irs_lon_min_show = 0
+						B738DR_irs_decimals_show = 0
+						B738DR_irs_left2_show = 1
+						B738DR_irs_right2_show = 1
+					elseif irs_dspl_sel == 4 then
+					-- HDG/STS -> true heading / status code
+						used_x = simDR_true_heading
+						B738DR_irs_left2 = math.floor(used_x + 0.5)
+						used_x = 024
+						B738DR_irs_right2 = math.floor(used_x + 0.5)
+						B738DR_irs_ns_show = 0
+						B738DR_irs_ew_show = 0
+						B738DR_irs_lat_deg_show = 0
+						B738DR_irs_lat_min_show = 0
+						B738DR_irs_lon_deg_show = 0
+						B738DR_irs_lon_min_show = 0
+						B738DR_irs_decimals_show = 0
+						B738DR_irs_left2_show = 1
+						B738DR_irs_right2_show = 1
+					end
+				elseif irs_mode == 3 then
+					-- display only attitude and heading info
+					used_x = simDR_true_attitude
+					B738DR_irs_left2 = math.floor(used_x + 0.5)
+					used_x = simDR_true_heading
+					B738DR_irs_right2 = math.floor(used_x + 0.5)
+					B738DR_irs_ns_show = 0
+					B738DR_irs_ew_show = 0
+					B738DR_irs_lat_deg_show = 0
+					B738DR_irs_lat_min_show = 0
+					B738DR_irs_lon_deg_show = 0
+					B738DR_irs_lon_min_show = 0
+					B738DR_irs_decimals_show = 0
+					B738DR_irs_left2_show = 1
+					B738DR_irs_right2_show = 1
+				else
+					B738DR_irs_right2 = 0
+					B738DR_irs_left2 = 0
+					B738DR_irs_ns_show = 0
+					B738DR_irs_ew_show = 0
+					B738DR_irs_lat_deg_show = 0
+					B738DR_irs_lat_min_show = 0
+					B738DR_irs_lon_deg_show = 0
+					B738DR_irs_lon_min_show = 0
+					B738DR_irs_decimals_show = 0
+					B738DR_irs_left2_show = 1
+					B738DR_irs_right2_show = 1
+				end
 			end
 		end
 	end
@@ -1017,6 +1571,7 @@ function B738_irs_system()
 	local align_dist_ok = 0
 	
 	local irs_lft = B738DR_irs_left
+	
 	if irs_lft == 0 then
 		-- stop align
 		if is_timer_scheduled(B738_irs_left_align) == true then
@@ -1352,20 +1907,20 @@ function B738_irs_system()
 		B738_run_irs_right()
 	end
 	
-	if B738DR_irs_left_mode == 1 then
-		if B738DR_irs_left == 2 then
-			irs_pos_set = B738DR_irs_pos_fmc_set
-		elseif B738DR_irs_left == 3 then
-			irs_hdg_set = B738DR_irs_hdg_fmc_set
-		end
-	end
-	if B738DR_irs_right_mode == 1 then
-		if B738DR_irs_right == 2 then
-			irs2_pos_set = B738DR_irs_pos_fmc_set
-		elseif B738DR_irs_right == 3 then
-			irs2_hdg_set = B738DR_irs_hdg_fmc_set
-		end
-	end
+	-- if B738DR_irs_left_mode == 1 then
+		-- if B738DR_irs_left == 2 then
+			-- irs_pos_set = B738DR_irs_pos_fmc_set
+		-- elseif B738DR_irs_left == 3 then
+			-- irs_hdg_set = B738DR_irs_hdg_fmc_set
+		-- end
+	-- end
+	-- if B738DR_irs_right_mode == 1 then
+		-- if B738DR_irs_right == 2 then
+			-- irs2_pos_set = B738DR_irs_pos_fmc_set
+		-- elseif B738DR_irs_right == 3 then
+			-- irs2_hdg_set = B738DR_irs_hdg_fmc_set
+		-- end
+	-- end
 	
 end
 
@@ -1537,6 +2092,40 @@ function B738_irs_electric()
 	else
 		irs_enable2 = 1
 		R_turn_off = 0
+	end
+	
+	if irs_enable == 0 and irs_enable2 == 0 then
+		set_disable_key(0, 9)
+		irs_entry_reset = 0
+		irs_entry_mod = 0
+		B738DR_irs_ent_light = 0
+		B738DR_irs_ent_light = 0
+	end
+	
+	if (B738DR_irs_left == 0 or irs_enable == 0) and (B738DR_irs_right == 0 or irs_enable2 == 0) then
+		set_disable_key(0, 9)
+		irs_entry_mod = 0
+		irs_entry_pos_lat = ""
+		irs_entry_pos_lon = ""
+		irs_entry_hdg = ""
+		irs_entry_reset = 0
+		B738DR_irs_ent_light = 0
+		B738DR_irs_ent_light = 0
+	else
+		if irs_entry_mod == 0 and irs_entry_reset == 0 then
+			--clear_disable_key()
+			set_disable_key(0, 9)
+			disable_key[2] = 0
+			disable_key[5] = 0
+			disable_key[8] = 0
+			irs_entry_reset = 1
+			irs_entry_mod = 0
+			irs_entry_pos_lat = ""
+			irs_entry_pos_lon = ""
+			irs_entry_hdg = ""
+			B738DR_irs_ent_light = 0
+			B738DR_irs_ent_light = 0
+		end
 	end
 	
 end
@@ -1726,7 +2315,16 @@ function flight_start()
 	if is_timer_scheduled(B738_irs_flash) == false then
 		run_at_interval(B738_irs_flash, 0.5)
 	end
-
+	
+	clear_disable_key()
+	irs_entry_reset = 0
+	irs_entry_mod = 0
+	irs_entry_pos_lat = ""
+	irs_entry_pos_lon = ""
+	irs_entry_hdg = ""
+	B738DR_irs_ent_light = 0
+	B738DR_irs_ent_light = 0
+	
 	first_time = 0
 	
 end

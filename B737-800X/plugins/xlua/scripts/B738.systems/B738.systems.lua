@@ -387,6 +387,9 @@ brake_smoothly_status = 0
 brake_smoothly_left = 0
 brake_smoothly_right = 0
 
+apu_start_avaiable = 0
+apu_protection = 1
+
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
 --*************************************************************************************--
@@ -753,6 +756,10 @@ B738DR_tire_blow2			= find_dataref("sim/operation/failures/rel_tire3")
 simDR_fail_bus1				= find_dataref("sim/operation/failures/rel_esys")
 simDR_fail_bus2				= find_dataref("sim/operation/failures/rel_esys2")
 	
+simDR_wing_l_heat_on		= find_dataref("sim/cockpit2/ice/ice_surfce_heat_left_on")
+simDR_wing_r_heat_on		= find_dataref("sim/cockpit2/ice/ice_surfce_heat_right_on")
+simDR_cowl_ice_0_on			= find_dataref("sim/cockpit2/ice/ice_inlet_heat_on_per_engine[0]")
+simDR_cowl_ice_1_on			= find_dataref("sim/cockpit2/ice/ice_inlet_heat_on_per_engine[1]")
 
 --*************************************************************************************--
 --** 				               FIND X-PLANE COMMANDS                   	    	 **--
@@ -1887,7 +1894,9 @@ function B738_apu_starter_switch_neg_CMDhandler(phase, duration)
 			-- end
         elseif B738DR_apu_start_switch_position == 1 then		-- ON
             B738DR_apu_start_switch_position = 2				-- START
-			apu_start_active = 1
+			if apu_start_avaiable == 1 then
+				apu_start_active = 1
+			end
 			--run_after_time(apu_back_on, 1.5)
         end
     elseif phase == 2 then
@@ -4880,7 +4889,11 @@ function B738_bleed_air_state()
 		and apu_bleed == 1
 		and eng2_bleed == 0 then
 --		simDR_bleed_air_mode = 5
-		pack_mode = 5
+		if apu_protection == 0 then
+			pack_mode = 1
+		else
+			pack_mode = 5
+		end
 		dual_bleed = 1
 	end
 
@@ -4890,7 +4903,11 @@ function B738_bleed_air_state()
 		pack_mode = 5
 --		simDR_bleed_air_mode = 5
 		if B738bleedAir.isolation.bleed_air_valve.pos > 0.1 then
-			dual_bleed = 1
+			if apu_protection == 0 then
+				pack_mode = 3
+			else
+				dual_bleed = 1
+			end
 		else
 			dual_bleed = 0
 		end
@@ -4908,7 +4925,11 @@ function B738_bleed_air_state()
 		and apu_bleed == 1
 		and eng2_bleed == 1 then
 --		simDR_bleed_air_mode = 5
-		pack_mode = 5
+		if apu_protection == 0 then
+			pack_mode = 2
+		else
+			pack_mode = 5
+		end
 		dual_bleed = 1
 	end
 
@@ -4982,7 +5003,7 @@ function B738_bleed_air_state()
 	local busPower  = math.max(bus1Power, bus2Power)
 	local brightness_level = simDR_generic_brightness_ratio63 * busPower
 	
-	B738DR_dual_bleed_annun = dual_bleed * brightness_level
+	B738DR_dual_bleed_annun = dual_bleed * apu_protection * brightness_level
 
 
 	if B738DR_lights_test == 1 then
@@ -4997,9 +5018,12 @@ local int, frac = math.modf(os.clock())
 local seed = math.random(1, frac*1000.0)
 math.randomseed(seed)
 --local rndm_max_apu_bleed_psi    = math.random(40, 50) + math.random()	-- add 5 psi
-local rndm_max_apu_bleed_psi    = math.random(34, 36) + math.random()	-- add 5 psi
-local rndm_max_eng1_bleed_psi   = math.random(56, 64) + math.random()	-- add 5 psi
-local rndm_max_eng2_bleed_psi   = math.random(55, 62) + math.random()	-- add 5 psi
+--local rndm_max_apu_bleed_psi    = math.random(34, 36) + math.random()	-- add 5 psi
+local rndm_max_apu_bleed_psi    = math.random(41, 43) + math.random()	-- add 5 psi
+local rndm_max_eng1_bleed_psi   = math.random(60, 62) + math.random()	-- add 5 psi
+--local rndm_max_eng2_bleed_psi   = math.random(61, 63) + math.random()	-- add 5 psi
+local diff						= math.random(0, 4) + math.random() - 2
+local rndm_max_eng2_bleed_psi   = rndm_max_eng1_bleed_psi + diff
 
 local freq_ac_mode0				= math.random(395, 405) + math.random()
 local freq_ac_mode1				= math.random(395, 405) + math.random()
@@ -5122,24 +5146,41 @@ function B738_bleed_air_supply()
 --	B738bleedAir.engine1.psi = B738_rescale(0, 0, 100.0, rndm_max_eng1_bleed_psi, rescale)
 	-- rescale = B738DR_eng1_N1 + 10
 	-- B738bleedAir.engine1.psi = B738_rescale(0, 0, 100.0, rndm_max_eng1_bleed_psi, rescale)
-	rescale = B738DR_eng1_N1
-	if rescale < 20 then
-		B738bleedAir.engine1.psi = B738_rescale(0, 0, 19.0, 28.0, rescale)
+	
+	-- rescale = B738DR_eng1_N1
+	-- if rescale < 20 then
+		-- B738bleedAir.engine1.psi = B738_rescale(0, 0, 19.0, 28.0, rescale)
+	-- else
+		-- B738bleedAir.engine1.psi = B738_rescale(19.0, 28.0, 105.0, rndm_max_eng1_bleed_psi, rescale)
+	-- end
+	
+	if B738DR_eng1_N1 < 18 then
+		B738bleedAir.engine1.psi = B738_rescale(0, 0, 18.0, 15.0, B738DR_eng1_N1)
 	else
-		B738bleedAir.engine1.psi = B738_rescale(19.0, 28.0, 105.0, rndm_max_eng1_bleed_psi, rescale)
+		B738bleedAir.engine1.psi = B738_rescale(18.0, 15.0, 105.0, rndm_max_eng1_bleed_psi, B738DR_eng1_N1)
 	end
+	
+	
 
     -- ENGINE 2
 --	rescale = B738_rpm(simDR_engine_N1_pct2, 21.4, 31.5)
  --   B738bleedAir.engine2.psi = B738_rescale(0, 0, 100.0, rndm_max_eng2_bleed_psi, rescale)
 	-- rescale = B738DR_eng2_N1 + 10
     -- B738bleedAir.engine2.psi = B738_rescale(0, 0, 100.0, rndm_max_eng2_bleed_psi, rescale)
-	rescale = B738DR_eng2_N1
-	if rescale < 20 then
-		B738bleedAir.engine2.psi = B738_rescale(0, 0, 19.0, 28.0, rescale)
+	
+	-- rescale = B738DR_eng2_N1
+	-- if rescale < 20 then
+		-- B738bleedAir.engine2.psi = B738_rescale(0, 0, 19.0, 28.0, rescale)
+	-- else
+		-- B738bleedAir.engine2.psi = B738_rescale(19.0, 28.0, 105.0, rndm_max_eng2_bleed_psi, rescale)
+	-- end
+	
+	if B738DR_eng2_N1 < 18 then
+		B738bleedAir.engine2.psi = B738_rescale(0, 0, 18.0, 15.0, B738DR_eng2_N1)
 	else
-		B738bleedAir.engine2.psi = B738_rescale(19.0, 28.0, 105.0, rndm_max_eng2_bleed_psi, rescale)
+		B738bleedAir.engine2.psi = B738_rescale(18.0, 15.0, 105.0, rndm_max_eng2_bleed_psi, B738DR_eng2_N1)
 	end
+	
 
 end
 
@@ -5192,16 +5233,16 @@ function B738_bleed_air_valves()
     B738bleedAir.l_pack.bleed_air_valve.target_pos = 0.0						-- NORMALLY CLOSED
     if B738DR_l_pack_pos > 0.95
 	and B738DR_duct_pressure_L >= bleed_valve_min_act_press then				-- L PACK AUTO or HIGH
-		--B738bleedAir.l_pack.bleed_air_valve.target_pos = 1.0					-- OPERATED BY BLEED AIR PRESSURE (NO ELECTRIC REQUIREMENT)
-		B738bleedAir.l_pack.bleed_air_valve.target_pos = B738DR_l_pack_pos		-- OPERATED BY BLEED AIR PRESSURE (NO ELECTRIC REQUIREMENT)
+		B738bleedAir.l_pack.bleed_air_valve.target_pos = 1.0					-- OPERATED BY BLEED AIR PRESSURE (NO ELECTRIC REQUIREMENT)
+		--B738bleedAir.l_pack.bleed_air_valve.target_pos = B738DR_l_pack_pos		-- OPERATED BY BLEED AIR PRESSURE (NO ELECTRIC REQUIREMENT)
     end
 
 	--- R PACK BLEED AIR VALVE
     B738bleedAir.r_pack.bleed_air_valve.target_pos = 0.0						-- NORMALLY CLOSED
     if B738DR_r_pack_pos > 0.95
 	and B738DR_duct_pressure_R >= bleed_valve_min_act_press then				-- R PACK AUTO or HIGH
-		--B738bleedAir.r_pack.bleed_air_valve.target_pos = 1.0					-- OPERATED BY BLEED AIR PRESSURE (NO ELECTRIC REQUIREMENT)
-		B738bleedAir.r_pack.bleed_air_valve.target_pos = B738DR_r_pack_pos		-- OPERATED BY BLEED AIR PRESSURE (NO ELECTRIC REQUIREMENT)
+		B738bleedAir.r_pack.bleed_air_valve.target_pos = 1.0					-- OPERATED BY BLEED AIR PRESSURE (NO ELECTRIC REQUIREMENT)
+		--B738bleedAir.r_pack.bleed_air_valve.target_pos = B738DR_r_pack_pos		-- OPERATED BY BLEED AIR PRESSURE (NO ELECTRIC REQUIREMENT)
     end
 
 	--- ISOLATION VALVE
@@ -5264,38 +5305,61 @@ function B738_bleed_air_duct_pressure()
 	local r_duct_delta = 0.00
 	local duct_delta = 0.00
 	local apu_duct = 0.00
-
+	
+	local l_pack_valve = 4 * (1 - B738bleedAir.l_pack.bleed_air_valve.pos)
+	local r_pack_valve = 4 * (1 - B738bleedAir.r_pack.bleed_air_valve.pos)
+	
+	local l_anti_ice = simDR_cowl_ice_0_on + (2 * simDR_wing_l_heat_on)
+	local r_anti_ice = simDR_cowl_ice_1_on + (2 * simDR_wing_l_heat_on)
+	
 	-- APU DUCT
 		apu_duct = B738bleedAir.apu.psi * B738bleedAir.apu.bleed_air_valve.pos
+	
 	-- LEFT DUCT
 		-- l_duct_in = math.max(
 			-- (B738bleedAir.apu.psi * B738bleedAir.apu.bleed_air_valve.pos),
 			-- (B738bleedAir.engine1.psi * B738bleedAir.engine1.bleed_air_valve.pos))
+		
+		-- l_duct_in = math.max(apu_duct, (B738bleedAir.engine1.psi * B738bleedAir.engine1.bleed_air_valve.pos))
+		-- l_duct = l_duct_in
+		-- --l_duct = l_duct - (9.5 * (2 - B738bleedAir.l_pack.bleed_air_valve.pos))
+		-- l_duct = l_duct - (4.1 * (2 - B738bleedAir.l_pack.bleed_air_valve.pos))
+		-- l_duct = l_duct - (4.1 * (2 - B738bleedAir.r_pack.bleed_air_valve.pos) * B738bleedAir.isolation.bleed_air_valve.pos)
+		
+		
 		l_duct_in = math.max(apu_duct, (B738bleedAir.engine1.psi * B738bleedAir.engine1.bleed_air_valve.pos))
-		l_duct = l_duct_in
-		--l_duct = l_duct - (9.5 * (2 - B738bleedAir.l_pack.bleed_air_valve.pos))
-		l_duct = l_duct - (4.1 * (2 - B738bleedAir.l_pack.bleed_air_valve.pos))
-		l_duct = l_duct - (4.1 * (2 - B738bleedAir.r_pack.bleed_air_valve.pos) * B738bleedAir.isolation.bleed_air_valve.pos)
+		l_duct = l_duct_in + math.max(l_pack_valve, r_pack_valve * B738bleedAir.isolation.bleed_air_valve.pos) - l_anti_ice
+		l_duct = math.max(0, l_duct)
+		
 	
 	-- RIGHT DUCT
+		-- r_duct_in = B738bleedAir.engine2.psi * B738bleedAir.engine2.bleed_air_valve.pos
+		-- r_duct = r_duct_in
+		-- --r_duct = r_duct - (9.5 * (2 - B738bleedAir.r_pack.bleed_air_valve.pos))
+		-- r_duct = r_duct - (4.1 * (2 - B738bleedAir.r_pack.bleed_air_valve.pos))
+		-- r_duct = r_duct - (4.1 * (2 - B738bleedAir.l_pack.bleed_air_valve.pos) * B738bleedAir.isolation.bleed_air_valve.pos)
+		
 		r_duct_in = B738bleedAir.engine2.psi * B738bleedAir.engine2.bleed_air_valve.pos
-		r_duct = r_duct_in
-		--r_duct = r_duct - (9.5 * (2 - B738bleedAir.r_pack.bleed_air_valve.pos))
-		r_duct = r_duct - (4.1 * (2 - B738bleedAir.r_pack.bleed_air_valve.pos))
-		r_duct = r_duct - (4.1 * (2 - B738bleedAir.l_pack.bleed_air_valve.pos) * B738bleedAir.isolation.bleed_air_valve.pos)
+		r_duct = r_duct_in + math.max(r_pack_valve, l_pack_valve * B738bleedAir.isolation.bleed_air_valve.pos) - r_anti_ice
+		r_duct = math.max(0, r_duct)
 		
 	-- ISOLATION VALVE
 		
-		-- --duct_delta = (math.max(l_duct, r_duct) * 0.8817) 
-		duct_delta = (math.max(l_duct, r_duct) - 1.654) 
-		l_duct_delta = duct_delta - l_duct
-		r_duct_delta = duct_delta - r_duct
-		l_duct = l_duct + (l_duct_delta * B738bleedAir.isolation.bleed_air_valve.pos)
-		r_duct = r_duct + (r_duct_delta * B738bleedAir.isolation.bleed_air_valve.pos)
+		
+		-- -- --duct_delta = (math.max(l_duct, r_duct) * 0.8817) 
+		-- duct_delta = (math.max(l_duct, r_duct) - 1.654) 
+		-- l_duct_delta = duct_delta - l_duct
+		-- r_duct_delta = duct_delta - r_duct
+		-- l_duct = l_duct + (l_duct_delta * B738bleedAir.isolation.bleed_air_valve.pos)
+		-- r_duct = r_duct + (r_duct_delta * B738bleedAir.isolation.bleed_air_valve.pos)
 		
 		
-		l_duct_out_target = l_duct
-		r_duct_out_target = r_duct
+		-- l_duct_out_target = l_duct
+		-- r_duct_out_target = r_duct
+		
+		l_duct_out_target = math.max(l_duct, r_duct * B738bleedAir.isolation.bleed_air_valve.pos)
+		r_duct_out_target = math.max(r_duct, l_duct * B738bleedAir.isolation.bleed_air_valve.pos)
+		
 		l_duct_out = B738_set_anim_value(l_duct_out, l_duct_out_target, 0.0, 80.0, 1.0)
 		r_duct_out = B738_set_anim_value(r_duct_out, r_duct_out_target, 0.0, 80.0, 1.0)
 		B738DR_duct_pressure_L = l_duct_out
@@ -5307,9 +5371,17 @@ function B738_bleed_air_duct_pressure()
 	
 	-- apu damage: duct > apu duct + 13 psi
 	apu_duct = rndm_max_apu_bleed_psi + 5
+	
+	apu_protection = 1
 	if dual_bleed == 1 then
+		apu_duct = rndm_max_apu_bleed_psi + 5
 		if eng1_duct > apu_duct or eng2_duct > apu_duct then
-			simDR_apu_bleed_fail = 1
+			--simDR_apu_bleed_fail = 1
+			apu_protection = 0
+		end
+		apu_duct = rndm_max_apu_bleed_psi + 1
+		if eng1_duct < apu_duct and eng2_duct < apu_duct then
+			apu_protection = 1
 		end
 	end
 	
@@ -5694,7 +5766,8 @@ function apu_start_stop()
 end
 
 function apu_start()
-	if B738DR_apu_fire_ext_switch_pos_arm == 0 and B738DR_batbus_status == 1 then
+	--if B738DR_apu_fire_ext_switch_pos_arm == 0 and B738DR_batbus_status == 1 then
+	if apu_start_avaiable == 1 then
 		simCMD_apu_start:start() 
 		apu_start_active = 2
 		apu_shutdown_active = 0
@@ -5731,6 +5804,22 @@ function B738_apu_system2()
 		apu_temp_oat = 0
 	end
 	
+	apu_start_avaiable = 0
+	
+	if B738DR_apu_fire_ext_switch_pos_arm == 0 
+	and B738DR_batbus_status == 1 
+	and B738DR_apu_was_fire == 0 
+	and simDR_apu_bleed_fail == 0 
+	and simDR_apu_status < 7 then	-- START on
+		if simDR_elevation_m < 1200 and simDR_fuel_tank_weight_kg[0] > 0 then	-- below 1200 meters
+			apu_start_avaiable = 1
+		else
+			if apu_fuel_pump_status == 1 and apu_fuel_tank_status == 1 then
+				apu_start_avaiable = 1
+			end
+		end
+	end
+	
 	if B738DR_apu_start_switch_position == 0 then				-- OFF
 		if simDR_apu_run == 1 then								-- APU running
 			if apu_shutdown_active == 0 then
@@ -5749,7 +5838,8 @@ function B738_apu_system2()
 		B738DR_apu_bus_enable = 0
 		B738DR_apu_low_oil = 0
 	end
-	if apu_start_active == 1 and B738DR_apu_was_fire == 0 and simDR_apu_bleed_fail == 0 and B738DR_batbus_status == 1 then	-- START on
+	--if apu_start_active == 1 and B738DR_apu_was_fire == 0 and simDR_apu_bleed_fail == 0 and B738DR_batbus_status == 1 then	-- START on
+	if apu_start_active == 1 and apu_start_avaiable == 1 then	-- START on
 		if simDR_apu_run == 0 then								-- APU not running
 			if is_timer_scheduled(apu_start) == false then
 				apu_temp_lim = math.min(60, (apu_temp_oat + 30))
@@ -5877,7 +5967,8 @@ function B738_apu_system2()
 		apu_turn_off = 1
 	end
 	
-	if apu_turn_off == 1 or B738DR_apu_was_fire == 1 or simDR_apu_bleed_fail == 1 or B738DR_apu_fire_ext_switch_pos_arm == 1 then
+	if apu_turn_off == 1 or B738DR_apu_was_fire == 1 or simDR_apu_bleed_fail == 1 or B738DR_apu_fire_ext_switch_pos_arm == 1 
+	or B738DR_batbus_status == 0 then
 		apu_shutdown_active = 1
 		apu_start_active = 0
 		B738DR_apu_bus_enable = 0
@@ -9958,14 +10049,15 @@ function B738_wipers()
 	
 end
 
-function real_systems_update()
+-- function real_systems_update()
 	
 	-- BRAKE PRESSURE
-	brake_press_target = B738DR_brake_press + brake_compress - brake_decompress
-	brake_press_target = math.max(1000, brake_press_target, hyd_A_pressure, hyd_B_pressure)
-	brake_decompress = 0
+	-- brake_press_target = B738DR_brake_press + brake_compress - brake_decompress
+	-- --brake_press_target = math.max(1000, brake_press_target, hyd_A_pressure, hyd_B_pressure)
+	-- brake_press_target = math.max(0, brake_press_target, hyd_A_pressure, hyd_B_pressure)
+	-- brake_decompress = 0
 	
-end
+-- end
 
 function B738_brakes_press_system()
 	
@@ -9986,30 +10078,50 @@ function B738_brakes_press_system()
 		delta_pressure = math.min(3320, delta_pressure)
 	end
 	
-	brake_compress = B738_rescale(0, 0, 3400, 6540, delta_pressure)
+	--brake_compress = B738_rescale(0, 0, 3400, 6540, delta_pressure)
+	brake_compress = B738_rescale(0, 0, 3400, 6500, delta_pressure)
 	
+	-- if B738DR_parking_brake_pos ~= simDR_brake_old then
+		-- brake3 = 150
+	-- end
+	-- if simDR_left_brake ~= simDR_left_brake_old then
+		-- if simDR_left_brake > 0 then
+			-- brake2 = B738_rescale(0, 0, 1, 20, simDR_left_brake)
+		-- end
+	-- end
+	-- if simDR_right_brake ~= simDR_right_brake_old then
+		-- if simDR_right_brake > 0 then
+			-- brake2 = brake2 + B738_rescale(0, 0, 1, 20, simDR_right_brake)
+		-- end
+	-- end
 	if B738DR_parking_brake_pos ~= simDR_brake_old then
 		brake3 = 150
 	end
-	if simDR_left_brake ~= simDR_left_brake_old then
-		if simDR_left_brake > 0 then
-			brake2 = B738_rescale(0, 0, 1, 20, simDR_left_brake)
-		end
+	if B738DR_parking_brake_pos ~= 1 then
+		brake3 = B738_rescale(0, 0, 1, 500, simDR_brake)
 	end
-	if simDR_right_brake ~= simDR_right_brake_old then
-		if simDR_right_brake > 0 then
-			brake2 = brake2 + B738_rescale(0, 0, 1, 20, simDR_right_brake)
-		end
-	end
+	brake2 = B738_rescale(0, 0, 1, 500, simDR_left_brake)
+	brake2 = brake2 + B738_rescale(0, 0, 1, 500, simDR_right_brake)
+	
 	if autobrake_ratio > 0 then
-		brake2 = brake2 + B738_rescale(0, 0, 1, 20, autobrake_ratio)
+		brake2 = brake2 + B738_rescale(0, 0, 1, 500, autobrake_ratio)
 	end
 	
-	delta_pressure = brake_decompress + brake3 + brake2
-	delta_pressure = delta_pressure - B738_rescale(0, 0, 3310, 18, brake1)
-	if delta_pressure > 0 then
-		brake_decompress = delta_pressure
-	end
+	brake_decompress = brake3 + brake2
+	-- delta_pressure = brake3 + brake2
+	-- brake_decompress = math.max(brake_decompress, delta_pressure)
+	
+	local hyd_A_max = B738_rescale(0, 0, 3500, 3600, hyd_A_pressure)
+	local hyd_B_max = B738_rescale(0, 0, 3500, 3600, hyd_B_pressure)
+	brake_press_target = B738DR_brake_press + ((brake_compress - brake_decompress) * SIM_PERIOD * 52)
+	brake_press_target = math.max(0, brake_press_target, hyd_A_max, hyd_B_max)
+	
+	-- delta_pressure = brake_decompress + brake3 + brake2
+	-- --delta_pressure = delta_pressure - B738_rescale(0, 0, 3310, 18, brake1)
+	-- delta_pressure = delta_pressure - B738_rescale(0, 0, 3310, 25, brake1)
+	-- if delta_pressure > 0 then
+		-- brake_decompress = delta_pressure
+	-- end
 	
 	simDR_brake_old = B738DR_parking_brake_pos
 	simDR_left_brake_old = simDR_left_brake
@@ -11198,6 +11310,18 @@ B738_init_engineMGMT_fltStart()
 	brake_decompress = 0
 	B738DR_brake_press = 3120
 	brake_press_target = 3120
+	if simDR_startup_running == 0 and B738DR_engine_no_running_state == 0 then
+		if simDR_TAT < -50 then
+			B738DR_brake_press = 720
+			brake_press_target = 720
+		elseif simDR_TAT > 75 then
+			B738DR_brake_press = 1190
+			brake_press_target = 1190
+		else
+			B738DR_brake_press = B738_rescale(-50, 725, 75, 1190, simDR_TAT)
+		end
+	end
+	
 	simDR_brake_old = B738DR_parking_brake_pos
 	simDR_left_brake_old = simDR_left_brake
 	simDR_right_brake_old = simDR_right_brake
@@ -11250,9 +11374,9 @@ B738_init_engineMGMT_fltStart()
 	fuel_prev_1 = simDR_fuel_tank_weight_kg[1]
 	fuel_prev_2 = simDR_fuel_tank_weight_kg[2]
 	
-	if is_timer_scheduled(real_systems_update) == false then
-		run_at_interval(real_systems_update, 0.5)	-- every 0.5 sec
-	end
+	-- if is_timer_scheduled(real_systems_update) == false then
+		-- run_at_interval(real_systems_update, 0.5)	-- every 0.5 sec
+	-- end
 
 	
 	first_time = 0
@@ -11307,6 +11431,8 @@ B738_init_engineMGMT_fltStart()
 	brake_smoothly_left = 0
 	brake_smoothly_right = 0
 	apu_door_target = 0
+	apu_start_avaiable = 0
+	apu_protection = 1
 	
 	B738DR_ap_backlight = 0.6
 	B738DR_clock_backlight = 0.5

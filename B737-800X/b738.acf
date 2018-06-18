@@ -40015,7 +40015,6 @@ PANEL_2D_END
 PANEL_3D_BEGIN
 GROUP EICAS x
   LOCKED
-  GROUP_OPEN
   GROUP EICAS y
     LOCKED
     GROUP synoptic
@@ -43909,6 +43908,41 @@ GROUP CLOCKS
   GROUP CAPT clock
     SHOW_EQUAL 1.000000 B738DR_clock_capt_power
     LOCKED
+    gen_needle CHR Seconds Needle
+      POS 1138.500000 367.500000
+      IMAGE Clocks/CHRseconds_needle
+      DATAREF laminar/B738/clock/captain/chrono_seconds_needle
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 8
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 60.000000 360.000000
+      IS_DRAGGABLE 0
+      OFFSET 0.000000
+
+    gen_rotary RUN ET Mode CAPT
+      POS 1068.000000 277.000000
+      IMAGE Clocks/RUN_HLD
+      DATAREF laminar/B738/clock/captain/et_mode
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 8
+      BUS_SRC 3
+      KEY_FRAME -1.000000 -1.000000 1.000000
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 2
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
     GROUP ET CAPT
       SHOW_EQUAL 1.000000 laminar/B738/clock/chrono_display_mode_capt
       LOCKED
@@ -43948,19 +43982,6 @@ GROUP CLOCKS
       SHOW_EQUAL 0.000000 laminar/B738/clock/chrono_display_mode_capt
       LOCKED
       GROUP_OPEN
-      gen_needle CHR Seconds Needle
-        POS 1138.500000 367.500000
-        IMAGE Clocks/CHRseconds_needle
-        DATAREF laminar/B738/clock/captain/chrono_seconds_needle
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 8
-        BUS_SRC 3
-        KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 60.000000 360.000000
-        IS_DRAGGABLE 0
-        OFFSET 0.000000
-
       gen_LED CHR MInutes CAPT
         POS 1114.000000 342.000000
         IMAGE Clocks/Digital
@@ -44241,29 +44262,6 @@ GROUP CLOCKS
       CLICK_DX 0
       CLICK_DY 0
 
-    gen_rotary RUN ET Mode CAPT
-      POS 1068.000000 277.000000
-      IMAGE Clocks/RUN_HLD
-      DATAREF laminar/B738/clock/captain/et_mode
-      SHOW_EQUAL 1.000000 laminar/B738/clock/chrono_display_mode_capt
-      LOCKED
-      LIGHT_MODE GLASS_AUTO
-      LIGHT_RHEOSTAT 8
-      BUS_SRC 3
-      KEY_FRAME -1.000000 -1.000000 1.000000
-      KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 1.000000 1.000000
-      DIGITS 2
-      ROTARY_TYPE NO_CLICK
-      CLICK_RADIUS 10.000000
-      CLICK_RADIUS_DY 0.000000
-      OFFSET 0.000000
-      STEP1 1.000000
-      STEP2 1.000000
-      CURSOR DEFAULT
-      CLICK_DX 0
-      CLICK_DY 0
-
     gen_rotary Separator CAPT
       POS 1138.000000 391.000000
       IMAGE Clocks/separator
@@ -44335,6 +44333,41 @@ GROUP CLOCKS
   GROUP FO clock
     SHOW_EQUAL 1.000000 B738DR_clock_fo_power
     LOCKED
+    gen_needle CHR Seconds Needle
+      POS 1364.500000 367.500000
+      IMAGE Clocks/CHRseconds_needle
+      DATAREF laminar/B738/clock/fo/chrono_seconds_needle
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 8
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 60.000000 360.000000
+      IS_DRAGGABLE 0
+      OFFSET 0.000000
+
+    gen_rotary RUN ET Mode F/O
+      POS 1294.000000 277.000000
+      IMAGE Clocks/RUN_HLD
+      DATAREF laminar/B738/clock/fo/et_mode
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 8
+      BUS_SRC 3
+      KEY_FRAME -1.000000 -1.000000 1.000000
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 2
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
     GROUP ET FO
       SHOW_EQUAL 1.000000 laminar/B738/clock/chrono_display_mode_fo
       LOCKED
@@ -44374,19 +44407,6 @@ GROUP CLOCKS
       SHOW_EQUAL 0.000000 laminar/B738/clock/chrono_display_mode_fo
       LOCKED
       GROUP_OPEN
-      gen_needle CHR Seconds Needle
-        POS 1364.500000 367.500000
-        IMAGE Clocks/CHRseconds_needle
-        DATAREF laminar/B738/clock/fo/chrono_seconds_needle
-        LOCKED
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 8
-        BUS_SRC 3
-        KEY_FRAME 0.000000 0.000000 1.000000
-        KEY_FRAME 60.000000 360.000000
-        IS_DRAGGABLE 0
-        OFFSET 0.000000
-
       gen_LED CHR Minutes FO
         POS 1340.000000 342.000000
         IMAGE Clocks/Digital
@@ -44663,29 +44683,6 @@ GROUP CLOCKS
       KEY_FRAME 0.000000 1.000000 1.000000
       KEY_FRAME 1.000000 -1.000000
       DIGITS 1
-      ROTARY_TYPE NO_CLICK
-      CLICK_RADIUS 10.000000
-      CLICK_RADIUS_DY 0.000000
-      OFFSET 0.000000
-      STEP1 1.000000
-      STEP2 1.000000
-      CURSOR DEFAULT
-      CLICK_DX 0
-      CLICK_DY 0
-
-    gen_rotary RUN ET Mode F/O
-      POS 1294.000000 277.000000
-      IMAGE Clocks/RUN_HLD
-      DATAREF laminar/B738/clock/fo/et_mode
-      SHOW_EQUAL 1.000000 laminar/B738/clock/chrono_display_mode_fo
-      LOCKED
-      LIGHT_MODE GLASS_AUTO
-      LIGHT_RHEOSTAT 8
-      BUS_SRC 3
-      KEY_FRAME -1.000000 -1.000000 1.000000
-      KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 1.000000 1.000000
-      DIGITS 2
       ROTARY_TYPE NO_CLICK
       CLICK_RADIUS 10.000000
       CLICK_RADIUS_DY 0.000000
@@ -47191,12 +47188,245 @@ GROUP FROM 2D
 END_GROUP
 GROUP LAT LON
   LOCKED
+  GROUP_OPEN
+  GROUP IRS entry pos
+    SHOW_EQUAL 1.000000 laminar/B738/irs_entry_pos_show
+    LOCKED
+    gen_LED IRS entry lat1
+      POS 1661.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[0]
+      SHOW_GREATER 2.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED IRS entry lat2
+      POS 1694.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[1]
+      SHOW_GREATER 3.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED IRS entry lat3
+      POS 1727.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[2]
+      SHOW_GREATER 4.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED IRS entry lat4
+      POS 1760.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[3]
+      SHOW_GREATER 5.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED IRS entry lat5
+      POS 1793.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[4]
+      SHOW_GREATER 6.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED IRS entry lon1
+      POS 1880.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[5]
+      SHOW_GREATER 8.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED IRS entry lon2
+      POS 1913.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[6]
+      SHOW_GREATER 9.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED IRS entry lon3
+      POS 1946.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[7]
+      SHOW_GREATER 10.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED IRS entry lon4
+      POS 1979.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[8]
+      SHOW_GREATER 11.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED IRS entry lon5
+      POS 2012.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[9]
+      SHOW_GREATER 12.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED IRS entry lon6
+      POS 2045.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[10]
+      SHOW_GREATER 13.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+  END_GROUP
+  GROUP IRS entry hdg
+    SHOW_EQUAL 1.000000 laminar/B738/irs_entry_hdg_show
+    gen_LED IRS entry hdg1
+      POS 1727.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[0]
+      SHOW_GREATER 1.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED IRS entry hdg2
+      POS 1760.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[1]
+      SHOW_GREATER 2.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED IRS entry hdg3
+      POS 1793.000000 567.000000
+      IMAGE TYPE/IRS_Type2
+      DATAREF laminar/B738/irs_entry[2]
+      SHOW_GREATER 3.000000 laminar/B738/irs_entry_len
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 12
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 9.000000 9.000000
+      DIGITS 5
+      DECIMALS 3
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+  END_GROUP
   gen_LED IRS Left 1
     POS 1694.000000 567.000000
     IMAGE TYPE/IRS_Type2
     DATAREF laminar/B738/irs_left1
     SHOW_EQUAL 1.000000 laminar/B738/irs_left1_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -47213,6 +47443,7 @@ GROUP LAT LON
     DATAREF laminar/B738/irs_left2
     SHOW_EQUAL 1.000000 laminar/B738/irs_left2_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -47229,6 +47460,7 @@ GROUP LAT LON
     DATAREF laminar/B738/irs_right1
     SHOW_EQUAL 1.000000 laminar/B738/irs_right1_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -47245,6 +47477,7 @@ GROUP LAT LON
     DATAREF laminar/B738/irs_right2
     SHOW_EQUAL 1.000000 laminar/B738/irs_right2_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -47261,6 +47494,7 @@ GROUP LAT LON
     DATAREF laminar/B738/irs_right1
     SHOW_EQUAL 1.000000 laminar/B738/irs_allign_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -47273,10 +47507,11 @@ GROUP LAT LON
 
   gen_LED IRS LAT Degrees
     POS 1694.000000 567.000000
-    IMAGE TYPE/IRS_Type2
+    IMAGE TYPE/IRS_Type
     DATAREF laminar/B738/latitude_deg
     SHOW_EQUAL 1.000000 laminar/B738/lat_deg_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -47293,6 +47528,7 @@ GROUP LAT LON
     DATAREF laminar/B738/latitude_min
     SHOW_EQUAL 1.000000 laminar/B738/lat_min_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -47306,9 +47542,10 @@ GROUP LAT LON
   gen_rotary IRS NS
     POS 1596.000000 567.000000
     IMAGE TYPE/IRS_NS
-    DATAREF sim/flightmodel/position/latitude
-    SHOW_EQUAL 1.000000 laminar/B738/ns_ew_show
+    DATAREF laminar/B738/latitude_deg
+    SHOW_EQUAL 1.000000 laminar/B738/ns_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -47333,6 +47570,7 @@ GROUP LAT LON
     DATAREF 
     SHOW_EQUAL 1.000000 laminar/B738/decimals_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -47351,10 +47589,11 @@ GROUP LAT LON
 
   gen_LED IRS LON Degrees
     POS 1930.000000 567.000000
-    IMAGE TYPE/IRS_Type2
+    IMAGE TYPE/IRS_Type
     DATAREF laminar/B738/longitude_deg
     SHOW_EQUAL 1.000000 laminar/B738/lon_deg_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -47371,6 +47610,7 @@ GROUP LAT LON
     DATAREF laminar/B738/longitude_min
     SHOW_EQUAL 1.000000 laminar/B738/lon_min_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -47384,9 +47624,10 @@ GROUP LAT LON
   gen_rotary IRS EW
     POS 1815.000000 567.000000
     IMAGE TYPE/IRS_EW
-    DATAREF sim/flightmodel/position/longitude
-    SHOW_EQUAL 1.000000 laminar/B738/ns_ew_show
+    DATAREF laminar/B738/longitude_deg
+    SHOW_EQUAL 1.000000 laminar/B738/ew_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -47411,6 +47652,7 @@ GROUP LAT LON
     DATAREF 
     SHOW_EQUAL 1.000000 laminar/B738/decimals_show
     LOCKED
+    HIDE
     LIGHT_MODE GLASS_AUTO
     LIGHT_RHEOSTAT 12
     BUS_SRC 3
@@ -107848,6 +108090,7 @@ END_GROUP
 GROUP PFD Captain
   GROUP PFD Captain
     LOCKED
+    GROUP_OPEN
     gen_rotary Grey Background
       POS 265.000000 39.000000
       IMAGE PFD/grey_background
@@ -107886,6 +108129,7 @@ GROUP PFD Captain
 
     GROUP Tapes
       LOCKED
+      GROUP_OPEN
       GROUP ALT TAPE
         LOCKED
         gen_pointer ALT1
@@ -108163,20 +108407,6 @@ GROUP PFD Captain
         CLICK_DX 0
         CLICK_DY 0
 
-      gen_pointer Ground Level
-        POS 418.000000 9.000000
-        IMAGE PFD/ground_level
-        DATAREF sim/cockpit2/gauges/indicators/radio_altimeter_height_ft_pilot
-        CLIP
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 0
-        BUS_SRC 3
-        KEY_FRAME 0.000000 210.000000 1.000000
-        KEY_FRAME 100.000000 166.000000
-        IS_DRAGGABLE 0
-        IS_VERTICAL 1
-        OFFSET 0.000000
-
       GROUP DH Radio
         LOCKED
         GROUP_OPEN
@@ -108239,6 +108469,21 @@ GROUP PFD Captain
         KEY_FRAME 400.000000 -176.000000
         IS_VERTICAL 1
         OFFSET 0.000000
+        gen_pointer Ground Level
+          POS 418.000000 219.000000
+          IMAGE PFD/ground_level
+          DATAREF laminar/B738/pfd/rwy_altitude
+          SHOW_GREATER 2.000000 laminar/B738/pfd/rwy_show
+          LOCKED
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 0
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 400.000000 176.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
+
         gen_pointer ALT Bug
           POS 399.000000 9.000000
           IMAGE PFD/alt_bug
@@ -109754,6 +109999,7 @@ GROUP PFD Captain
 
     GROUP BARO PRESEL
       SHOW_EQUAL 1.000000 laminar/B738/EFIS/baro_sel_pilot_show
+      LOCKED
       gen_LED BARO IN SEL
         POS 410.000000 -215.000000
         IMAGE PFD/white_type
@@ -111837,6 +112083,7 @@ GROUP PFD FO
 
     GROUP Tapes 2
       LOCKED
+      GROUP_OPEN
       GROUP ALT TAPE 2
         LOCKED
         gen_pointer ALT1 2
@@ -112064,6 +112311,7 @@ GROUP PFD FO
         IMAGE PFD/Trend_Vector_pos
         DATAREF sim/cockpit2/gauges/indicators/airspeed_acceleration_kts_sec_copilot
         SHOW_GREATER 0.400000 sim/cockpit2/gauges/indicators/airspeed_acceleration_kts_sec_copilot
+        LOCKED
         CLIP
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 1
@@ -112081,6 +112329,7 @@ GROUP PFD FO
         IMAGE PFD/Trend_Vector_neg
         DATAREF sim/cockpit2/gauges/indicators/airspeed_acceleration_kts_sec_copilot
         SHOW_LESS -0.400000 sim/cockpit2/gauges/indicators/airspeed_acceleration_kts_sec_copilot
+        LOCKED
         CLIP
         LIGHT_MODE GLASS_AUTO
         LIGHT_RHEOSTAT 1
@@ -112113,20 +112362,6 @@ GROUP PFD FO
         CURSOR DEFAULT
         CLICK_DX 0
         CLICK_DY 0
-
-      gen_pointer Ground Level 2
-        POS 418.000000 521.000000
-        IMAGE PFD/ground_level
-        DATAREF sim/cockpit2/gauges/indicators/radio_altimeter_height_ft_copilot
-        CLIP
-        LIGHT_MODE GLASS_AUTO
-        LIGHT_RHEOSTAT 1
-        BUS_SRC 3
-        KEY_FRAME 0.000000 210.000000 1.000000
-        KEY_FRAME 100.000000 166.000000
-        IS_DRAGGABLE 0
-        IS_VERTICAL 1
-        OFFSET 0.000000
 
       GROUP DH Radio 2
         LOCKED
@@ -112178,6 +112413,7 @@ GROUP PFD FO
 
       GROUP ALT Offset 2
         LOCKED
+        GROUP_OPEN
         GROUP_ANIMATE_MODE TRANSLATE
         GROUP_WIDTH 84
         GROUP_HEIGHT 358
@@ -112188,6 +112424,21 @@ GROUP PFD FO
         KEY_FRAME 400.000000 -176.000000
         IS_VERTICAL 1
         OFFSET 0.000000
+        gen_pointer Ground Level 2
+          POS 418.000000 731.000000
+          IMAGE PFD/ground_level
+          DATAREF laminar/B738/pfd/rwy_altitude
+          SHOW_GREATER 2.000000 laminar/B738/pfd/rwy_show
+          LOCKED
+          LIGHT_MODE GLASS_AUTO
+          LIGHT_RHEOSTAT 1
+          BUS_SRC 3
+          KEY_FRAME 0.000000 0.000000 1.000000
+          KEY_FRAME 400.000000 176.000000
+          IS_DRAGGABLE 0
+          IS_VERTICAL 1
+          OFFSET 0.000000
+
         gen_pointer DH needle FO
           POS 413.000000 521.000000
           IMAGE PFD/DH_needle
@@ -115692,12 +115943,14 @@ GROUP PFD FO
 
   GROUP FO allign
     LOCKED
+    HIDE
     gen_rotary PFD allign 2
       POS 262.000000 506.000000
       IMAGE PFD/pfd_allign
       DATAREF 
       SHOW_EQUAL 1.000000 laminar/B738/irs/pfd_allign
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 1
       BUS_SRC 3
@@ -115720,6 +115973,7 @@ GROUP PFD FO
       DATAREF 
       SHOW_EQUAL 1.000000 laminar/B738/irs/pfd_allign_hdg
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 1
       BUS_SRC 3

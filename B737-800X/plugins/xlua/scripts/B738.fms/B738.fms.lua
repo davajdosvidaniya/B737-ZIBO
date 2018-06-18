@@ -1816,6 +1816,9 @@ fd_goaround 				= find_dataref("laminar/B738/autopilot/fd_goaround")
 --** 				               FIND CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
 
+B738CMD_fmc_to_irs_pos		= find_command("laminar/B738/push_button/fmc_to_irs_pos")
+B738CMD_fmc_to_irs_hdg		= find_command("laminar/B738/push_button/fmc_to_irs_hdg")
+
 -- FMOD by AudioBird XP
 --B738CMD_enable_pax_boarding = find_command("laminar/b738/fmodpack/fmod_toggle_pax_boarding")
 B738CMD_enable_pax_boarding = find_command("laminar/b738/fmodpack/pax_board")
@@ -3181,6 +3184,11 @@ cross_wind					= create_dataref("laminar/B738/fms/cross_wind", "number")
 B738DR_dest_runway_alt		= create_dataref("laminar/B738/fms/dest_runway_alt", "number")
 B738DR_dest_runway_len 		= create_dataref("laminar/B738/fms/dest_runway_len", "number")
 B738DR_dest_runway_crs 		= create_dataref("laminar/B738/fms/dest_runway_crs", "number")
+
+B738DR_ref_rwy_altitude 	= create_dataref("laminar/B738/pfd/ref_rwy_altitude", "number")
+B738DR_des_rwy_altitude 	= create_dataref("laminar/B738/pfd/des_rwy_altitude", "number")
+B738DR_pfd_rwy_altitude 	= create_dataref("laminar/B738/pfd/rwy_altitude", "number")
+B738DR_pfd_rwy_show		 	= create_dataref("laminar/B738/pfd/rwy_show", "number")
 
 B738DR_legs_mod_active		= create_dataref("laminar/B738/fms/legs_mod_active", "number")
 
@@ -6610,7 +6618,7 @@ function des_rnw_length_crs()
 					idx_rec = idx_rnw[nd_x][ii]
 					if des_icao == rnw_data[idx_rec][1] and rnw_txt_tmp == rnw_data[idx_rec][2] then
 						res_lenght = rnw_data[idx_rec][7]
-						res_course = (rnw_data[idx_rec][8] - mag_variation_deg(res_lat, res_lon) + 360) % 360
+						res_course = (rnw_data[idx_rec][8] - mag_variation_deg(rnw_data[idx_rec][3], rnw_data[idx_rec][4]) + 360) % 360
 						break
 					end
 				end
@@ -10677,8 +10685,12 @@ end
 function B738_calc_rte()
 
 	local ii = 0
+	local jj = 0
+	local kk = 0
 	local find_txt = ""
 	local delta_crs = 0
+	local rnw_temp = ""
+	local rnw_alt_found = 0
 	
 	if calc_rte_enable == 1 then
 			calc_rte_enable = 2
@@ -10828,13 +10840,71 @@ function B738_calc_rte()
 			--dataref_legs()
 			B738DR_dest_runway_len = 0
 			B738DR_dest_runway_crs = 0
+			rnw_alt_found = 0
+			if ref_rwy ~= "-----" then
+				-- find ref runway alt
+				if rwy_num > 0 then
+					if string.len(ref_rwy) == 2 then
+						rnw_temp = ref_rwy .. " "
+					else
+						rnw_temp = ref_rwy
+					end
+					for jj = 1, rwy_num do
+						if ref_data[jj][1] == rnw_temp then
+							kk = tonumber(ref_data[jj][2])
+							if kk ~= nil then
+								B738DR_ref_rwy_altitude = kk
+								rnw_alt_found = 1
+							end
+							break
+						end
+					end
+				end
+			end
+			if rnw_alt_found == 0 then
+				B738DR_ref_rwy_altitude = ref_icao_alt
+			end
+			rnw_alt_found = 0
 			if des_app ~= "------" then
 				if B738DR_dest_runway_alt == -1 then
 					B738DR_dest_runway_alt = des_icao_alt
 				end
 				B738DR_dest_runway_len, B738DR_dest_runway_crs = des_rnw_length_crs()
-				
+				-- find des runway alt
+				if des_rwy_num > 0 then
+					if string.sub(des_app, 1, 2) == "RW" then
+						rnw_temp = des_app
+					else
+						if string.len(des_app) > 4 then
+							jj, kk = string.find(des_app, "-")
+							if jj == nil then
+								rnw_temp = "RW" .. string.sub(des_app, 2, -2)
+							else
+								rnw_temp = "RW" .. string.sub(des_app, 2, jj-1)
+							end
+						else
+							rnw_temp = "RW" .. string.sub(des_app, 2, -1)
+						end
+					end
+					if string.len(rnw_temp) == 4 then
+						rnw_temp = rnw_temp .. " "
+					end
+					for jj = 1, des_rwy_num do
+						if des_data[jj][1] == rnw_temp then
+							kk = tonumber(des_data[jj][5])
+							if kk ~= nil then
+								B738DR_des_rwy_altitude = kk
+								rnw_alt_found = 1
+							end
+							break
+						end
+					end
+				end
 			end
+			if rnw_alt_found == 0 then
+				B738DR_des_rwy_altitude = des_icao_alt
+			end
+			--B738DR_pfd_rwy_show = 1
 	end
 	--B738DR_fms_test3 = calc_rte_act
 
@@ -26858,6 +26928,8 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 			if entry == ">DELETE" then
 				irs_pos = "*****.*******.*"
 				entry = ""
+				B738DR_irs_pos_fmc_set = irs_pos
+				B738CMD_fmc_to_irs_pos:once()
 			else
 				if string.len(entry) > 0 then
 					local err_pos = 0
@@ -26894,6 +26966,8 @@ function B738_fmc1_4R_CMDhandler(phase, duration)
 					if err_pos == 0 then
 						irs_pos = entry
 						entry = ""
+						B738DR_irs_pos_fmc_set = irs_pos
+						B738CMD_fmc_to_irs_pos:once()
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
@@ -27600,6 +27674,8 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 			else
 				if entry == ">DELETE" then
 					irs_hdg = "---`"
+					B738DR_irs_hdg_fmc_set = string.sub(irs_hdg, 1, 3)
+					B738CMD_fmc_to_irs_hdg:once()
 					entry = ""
 				else
 					if n == nil then
@@ -27612,6 +27688,8 @@ function B738_fmc1_5R_CMDhandler(phase, duration)
 							irs_hdg = string.format("%03d", n)
 							irs_hdg = irs_hdg .. "`"
 							entry = ""
+							B738DR_irs_hdg_fmc_set = string.sub(irs_hdg, 1, 3)
+							B738CMD_fmc_to_irs_hdg:once()
 						end
 					end
 				end
@@ -39251,6 +39329,8 @@ function B738_fmc2_4R_CMDhandler(phase, duration)
 			if entry2 == ">DELETE" then
 				irs_pos = "*****.*******.*"
 				entry2 = ""
+				B738DR_irs_pos_fmc_set = irs_pos
+				B738CMD_fmc_to_irs_pos:once()
 			else
 				if string.len(entry2) > 0 then
 					local err_pos = 0
@@ -39287,6 +39367,8 @@ function B738_fmc2_4R_CMDhandler(phase, duration)
 					if err_pos == 0 then
 						irs_pos = entry2
 						entry2 = ""
+						B738DR_irs_pos_fmc_set = irs_pos
+						B738CMD_fmc_to_irs_pos:once()
 					else
 						add_fmc_msg(INVALID_INPUT, 1)
 					end
@@ -39994,6 +40076,8 @@ function B738_fmc2_5R_CMDhandler(phase, duration)
 				if entry2 == ">DELETE" then
 					irs_hdg = "---`"
 					entry2 = ""
+					B738DR_irs_hdg_fmc_set = string.sub(irs_hdg, 1, 3)
+					B738CMD_fmc_to_irs_hdg:once()
 				else
 					if n == nil then
 						add_fmc_msg(INVALID_INPUT, 1)
@@ -40005,6 +40089,8 @@ function B738_fmc2_5R_CMDhandler(phase, duration)
 							irs_hdg = string.format("%03d", n)
 							irs_hdg = irs_hdg .. "`"
 							entry2 = ""
+							B738DR_irs_hdg_fmc_set = string.sub(irs_hdg, 1, 3)
+							B738CMD_fmc_to_irs_hdg:once()
 						end
 					end
 				end
@@ -50256,13 +50342,14 @@ function B738_fmc_descent()
 		
 		local ed_alt_new = 0
 		if rnav_idx_last ~= 0 and rnav_idx_last <= legs_num then
-			if string.sub(legs_data[rnav_idx_last][1], 1, 2) == "RW" then
-				-- ed_alt_new = roundUpToIncrement(legs_data[rnav_idx_last][5] + 50, 10)
-				ed_alt_new = roundUpToIncrement(rnav_alt + 50, 10)
-			else
-				-- ed_alt_new = legs_data[rnav_idx_last][5]
-				ed_alt_new = rnav_alt
-			end
+			-- if string.sub(legs_data[rnav_idx_last][1], 1, 2) == "RW" then
+				-- -- ed_alt_new = roundUpToIncrement(legs_data[rnav_idx_last][5] + 50, 10)
+				-- ed_alt_new = roundUpToIncrement(rnav_alt + 50, 10)
+			-- else
+				-- -- ed_alt_new = legs_data[rnav_idx_last][5]
+				-- ed_alt_new = rnav_alt
+			-- end
+			ed_alt_new = rnav_alt
 			if str_rest_alt == "" then
 				line1_m = ""
 				line1_l = string.format("%5d", ed_alt_new)
@@ -52469,8 +52556,9 @@ function B738_irs_sys()
 		irs_pos = "*****.*******.*"
 	end
 	
-	B738DR_irs_pos_fmc_set = irs_pos
-	B738DR_irs_hdg_fmc_set = string.sub(irs_hdg, 1, 3)
+	-- B738DR_irs_pos_fmc_set = irs_pos
+	-- B738DR_irs_hdg_fmc_set = string.sub(irs_hdg, 1, 3)
+	-- B738CMD_fmc_to_irs_pos:once()
 	
 --	local gs = string.format("%3d", B738_rescale(0, 0, 205, 400, simDR_ground_speed))
 	local gs = string.format("%3d", (simDR_ground_spd * 1.94384))
@@ -74100,8 +74188,11 @@ temp_ils4 = ""
 	B738DR_dest_runway_alt = -1
 	B738DR_legs_mod_active = 0
 	fms_recalc = 0
+	B738DR_ref_rwy_altitude = 0
+	B738DR_des_rwy_altitude = 0
+	B738DR_pfd_rwy_show = 0
 	
-	version = "v3.26x"
+	version = "v3.26y"
 
 end
 
@@ -74674,6 +74765,29 @@ function after_physics()
 		if des_app2 == "------" then
 			des_app_rw_only = 0
 		end
+		
+		if calc_rte_enable == 0 then
+			if B738_legs_num == 0 then
+				B738DR_pfd_rwy_show = 0
+				B738DR_pfd_rwy_altitude = 0
+				B738DR_ref_rwy_altitude = 0
+				B738DR_des_rwy_altitude = 0
+			else
+				B738DR_pfd_rwy_show = 2
+				--B738DR_pfd_rwy_show = 1
+				local dist_departure = nd_calc_dist2(simDR_latitude, simDR_longitude, ref_icao_lat, ref_icao_lon)
+				local dist_detination = nd_calc_dist2(simDR_latitude, simDR_longitude, des_icao_lat, des_icao_lon)
+				local time_to_destination = ((dist_detination * 1852) / simDR_ground_spd) / 60
+				-- distance to REF ICAO
+				if (dist_departure > 400 or time_to_destination < 30) and B738DR_flight_phase ~= 0 then
+					-- destination altitude
+					B738DR_pfd_rwy_altitude = B738DR_des_rwy_altitude
+				else
+					B738DR_pfd_rwy_altitude = B738DR_ref_rwy_altitude
+				end
+			end
+		end
+			
 		
 		B738DR_fms_legs_num2 = legs_num2
 		

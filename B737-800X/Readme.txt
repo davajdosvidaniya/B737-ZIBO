@@ -77,6 +77,12 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26y:
+-----
+- add APU protection systems (ECU)
+- add working keypad for IRS unit (overhead)
+- corrected systems: APU bleed, ENGs bleed (with antiice), Chrono clock, Landing altitude indication on PFD, Brake accumulator pre-charge
+
 3.26x:
 ------
 - fixed bugs

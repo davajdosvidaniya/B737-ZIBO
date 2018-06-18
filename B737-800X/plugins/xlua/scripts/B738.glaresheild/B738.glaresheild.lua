@@ -11004,7 +11004,6 @@ function B738_ap_autoland()
 			throttle = 0
 		end
 		simDR_fdir_pitch = fd_cur
-		B738DR_pfd_spd_mode = PFD_SPD_RETARD
 		
 		B738DR_vvi_last = simDR_vvi_fpm_pilot	-- touch down vvi
 
@@ -11012,6 +11011,11 @@ function B738_ap_autoland()
 			if B738DR_autopilot_autothr_arm_pos == 1 then
 				eng1_N1_thrust_trg = throttle
 				eng2_N1_thrust_trg = throttle
+				if throttle == 0 then
+					B738DR_pfd_spd_mode = PFD_SPD_ARM
+				else
+					B738DR_pfd_spd_mode = PFD_SPD_RETARD
+				end
 			end
 		end
 		
