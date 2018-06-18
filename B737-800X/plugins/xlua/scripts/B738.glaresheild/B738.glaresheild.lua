@@ -7210,37 +7210,60 @@ function autopilot_system_lights2()
 		end
 	end
 	
-	if simDR_glideslope_status == 0 then
-		if B738DR_pfd_alt_mode_arm == PFD_ALT_GS_ARM then
-			B738DR_pfd_alt_mode_arm = 0
-		end
-	elseif simDR_glideslope_status == 1 then
+	-- if simDR_glideslope_status == 0 then
+		-- if B738DR_pfd_alt_mode_arm == PFD_ALT_GS_ARM then
+			-- B738DR_pfd_alt_mode_arm = 0
+		-- end
+	-- elseif simDR_glideslope_status == 1 then
+		-- B738DR_pfd_alt_mode_arm = PFD_ALT_GS_ARM
+	-- elseif simDR_glideslope_status == 2 then
+		-- if B738DR_pfd_alt_mode_arm == PFD_ALT_GS_ARM then
+			-- B738DR_pfd_alt_mode_arm = 0
+		-- end
+	-- end
+	if simDR_glideslope_status == 1 then
 		B738DR_pfd_alt_mode_arm = PFD_ALT_GS_ARM
-	elseif simDR_glideslope_status == 2 then
+	else
 		if B738DR_pfd_alt_mode_arm == PFD_ALT_GS_ARM then
 			B738DR_pfd_alt_mode_arm = 0
 		end
 	end
 	
-	if B738DR_gp_status == 0 then
+	-- if B738DR_gp_status == 0 then
+		-- if B738DR_pfd_alt_mode_arm == PFD_ALT_GP_ARM then
+			-- B738DR_pfd_alt_mode_arm = 0
+		-- end
+	-- elseif B738DR_gp_status == 1 then
+		-- B738DR_pfd_alt_mode_arm = PFD_ALT_GP_ARM
+	-- end
+	if B738DR_gp_status == 1 then
+		B738DR_pfd_alt_mode_arm = PFD_ALT_GP_ARM
+	else
 		if B738DR_pfd_alt_mode_arm == PFD_ALT_GP_ARM then
 			B738DR_pfd_alt_mode_arm = 0
 		end
-	elseif B738DR_gp_status == 1 then
-		B738DR_pfd_alt_mode_arm = PFD_ALT_GP_ARM
 	end
 	
-	if B738DR_flare_status == 0 then
-		if B738DR_pfd_alt_mode_arm == PFD_ALT_FLARE_ARM then
-			B738DR_pfd_alt_mode_arm = 0
-		end
-	elseif B738DR_flare_status == 1 then
+	
+	-- if B738DR_flare_status == 0 then
+		-- if B738DR_pfd_alt_mode_arm == PFD_ALT_FLARE_ARM then
+			-- B738DR_pfd_alt_mode_arm = 0
+		-- end
+	-- elseif B738DR_flare_status == 1 then
+		-- B738DR_pfd_alt_mode_arm = PFD_ALT_FLARE_ARM
+	-- elseif B738DR_flare_status == 2 then
+		-- if B738DR_pfd_alt_mode_arm == PFD_ALT_FLARE_ARM then
+			-- B738DR_pfd_alt_mode_arm = 0
+		-- end
+	-- end
+	if B738DR_flare_status == 1 then
 		B738DR_pfd_alt_mode_arm = PFD_ALT_FLARE_ARM
-	elseif B738DR_flare_status == 2 then
+	else
 		if B738DR_pfd_alt_mode_arm == PFD_ALT_FLARE_ARM then
 			B738DR_pfd_alt_mode_arm = 0
 		end
 	end
+	
 	if B738DR_autopilot_vnav_status == 1 then
 		if vnav_engaged == 0 then
 			B738DR_pfd_alt_mode_arm = PFD_ALT_VNAV_ARM
@@ -7318,7 +7341,7 @@ function autopilot_system_lights2()
 				-- B738DR_pfd_alt_mode_arm = 0
 			-- end
 		-- end
-		if B738DR_gp_status == 0 then
+		if B738DR_gp_status < 2 then
 			if B738DR_pfd_alt_mode == PFD_ALT_GP then
 				B738DR_pfd_alt_mode = 0
 			end

@@ -77,6 +77,10 @@ SIM COCKPIT BUILDER
 
 Release note:
 -------------
+3.26x:
+------
+- fixed bugs
+
 3.26w:
 ------
 - rewriten FMC menu

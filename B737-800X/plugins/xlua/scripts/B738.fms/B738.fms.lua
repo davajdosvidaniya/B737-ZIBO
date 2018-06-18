@@ -1711,6 +1711,7 @@ B738DR_nd_rings					= create_dataref("laminar/B738/effect/nd_rings", "number")
 B738DR_hide_gauges_reflection	= create_dataref("laminar/B738/effect/gauges_reflection", "number")
 B738DR_flight_ctrl				= create_dataref("laminar/B738/effects/flight_control", "number")
 B738DR_brake_temp				= create_dataref("laminar/B738/effects/brake_temp", "number")
+B738DR_backlight_color			= create_dataref("laminar/B738/effects/backlight_color", "number")
 
 B738DR_mcp_speed_dial		= find_dataref("laminar/B738/autopilot/mcp_speed_dial_kts_mach")
 
@@ -6609,7 +6610,7 @@ function des_rnw_length_crs()
 					idx_rec = idx_rnw[nd_x][ii]
 					if des_icao == rnw_data[idx_rec][1] and rnw_txt_tmp == rnw_data[idx_rec][2] then
 						res_lenght = rnw_data[idx_rec][7]
-						res_course = rnw_data[idx_rec][8]
+						res_course = (rnw_data[idx_rec][8] - mag_variation_deg(res_lat, res_lon) + 360) % 360
 						break
 					end
 				end
@@ -7315,7 +7316,7 @@ function use_import_data(name_of_file)
 				else
 					read_des_data(des_icao_x)		-- read reference airport data
 					file_navdata:close()
-					apt_ok = 1
+					apt_ok = 2
 				end
 			elseif cust_def_data == 2 then
 				file_name = "Resources/default data/CIFP/" .. des_icao_x
@@ -7328,11 +7329,11 @@ function use_import_data(name_of_file)
 				else
 					read_des_data(des_icao_x)		-- read reference airport data
 					file_navdata:close()
-					apt_ok = 1
+					apt_ok = 2
 				end
 			end
 			
-			if apt_ok == 1 then
+			if apt_ok > 0 then
 				
 				des_app2 = "------"
 				des_app_tns2 = "------"
@@ -7345,13 +7346,20 @@ function use_import_data(name_of_file)
 					des_tns_alt_x = icao_tns_alt
 					des_tns_lvl_x = icao_tns_lvl
 					des_icao_alt_x = 2500
-					if des_rwy_num > 0 then
+					if des_rwy_num > 0 and apt_ok == 2 then
 						ii = tonumber(des_data[1][5])
 						if ii ~= nil then
 							des_icao_alt_x = ii
 						end
 					end
 				else
+					des_icao_alt = 2500
+					if des_rwy_num > 0 and apt_ok == 2 then
+						ii = tonumber(des_data[1][5])
+						if ii ~= nil then
+							des_icao_alt_x = ii
+						end
+					end
 					des_tns_alt_x = 0
 					des_tns_lvl_x = 0
 				end
@@ -10825,6 +10833,7 @@ function B738_calc_rte()
 					B738DR_dest_runway_alt = des_icao_alt
 				end
 				B738DR_dest_runway_len, B738DR_dest_runway_crs = des_rnw_length_crs()
+				
 			end
 	end
 	--B738DR_fms_test3 = calc_rte_act
@@ -14284,6 +14293,15 @@ function rte_add_app2()
 						idx_rec = idx_rnw[nd_x][ii]
 						if des_icao_x == rnw_data[idx_rec][1] and string.sub(des_app2, 3, -1) == rnw_data[idx_rec][2] then
 							
+							if add_ok == 0 then
+								rte_copyb(legs_num2b + 1)
+							end
+							if legs_data2b[legs_num2b][1] ~= "DISCONTINUITY" then
+								-- create DISCONTINUITY
+								legs_num2b = legs_num2b + 1
+								rte_add_discob(legs_num2b)
+							end
+							
 							-- add RX
 							if tonumber(rw_ext_dist) ~= nil then
 								add_ok = math.rad((rnw_data[idx_rec][8] + 180) % 360)
@@ -14667,33 +14685,48 @@ function read_ref_data(ddd_ref_icao)
 			rte_sid[rte_sid_num][5] = fms_word[24]	-- restrict altitude
 			
 			
-			-- at
-			if fms_word[23] == "G" or fms_word[23] == "I" or fms_word[23] == "X" then
-				rte_sid[rte_sid_num][5] = fms_word[24]	-- restrict altitude2
-				rte_sid[rte_sid_num][23] = fms_word[25]	-- restrict altitude1
-				rte_sid[rte_sid_num][6] = " "	-- restrict altitude +,-,B
-			elseif fms_word[23] == "X" then
-				rte_sid[rte_sid_num][5] = fms_word[25]	-- restrict altitude2
-				rte_sid[rte_sid_num][23] = fms_word[24]	-- restrict altitude1
-				rte_sid[rte_sid_num][6] = " "	-- restrict altitude +,-,B
-			-- at or above
-			elseif fms_word[23] == "C" then
-				rte_sid[rte_sid_num][5] = fms_word[25]	-- restrict altitude2
-				rte_sid[rte_sid_num][23] = fms_word[24]	-- restrict altitude1
-				rte_sid[rte_sid_num][6] = "+"	-- restrict altitude +,-,B
-			elseif fms_word[23] == "H" or fms_word[23] == "J" or fms_word[23] == "V" then
-				rte_sid[rte_sid_num][5] = fms_word[24]	-- restrict altitude2
-				rte_sid[rte_sid_num][23] = fms_word[25]	-- restrict altitude1
-				rte_sid[rte_sid_num][6] = "+"	-- restrict altitude +,-,B
-			elseif fms_word[23] == "B" then
+			if fms_word[23] == "B" then
 				rte_sid[rte_sid_num][5] = fms_word[25]	-- restrict altitude1
 				rte_sid[rte_sid_num][23] = fms_word[24]	-- restrict altitude2
 				rte_sid[rte_sid_num][6] = fms_word[23]	-- restrict altitude +,-,B
+			elseif fms_word[23] == "G" or fms_word[23] == "I" or fms_word[23] == "X" or fms_word[23] == "C"
+			or fms_word[23] == "H" or fms_word[23] == "J" or fms_word[23] == "V" then
+				rte_sid[rte_sid_num][5] = fms_word[25]	-- restrict altitude1
+				rte_sid[rte_sid_num][23] = fms_word[24]	-- restrict altitude2
+				rte_sid[rte_sid_num][6] = " "	-- restrict altitude +,-,B
 			else
 				rte_sid[rte_sid_num][5] = fms_word[24]	-- restrict altitude1
 				rte_sid[rte_sid_num][23] = fms_word[25]	-- restrict altitude2
 				rte_sid[rte_sid_num][6] = fms_word[23]	-- restrict altitude +,-,B
 			end
+			
+			-- -- at
+			-- if fms_word[23] == "G" or fms_word[23] == "I" or fms_word[23] == "X" then
+				-- rte_sid[rte_sid_num][5] = fms_word[24]	-- restrict altitude2
+				-- rte_sid[rte_sid_num][23] = fms_word[25]	-- restrict altitude1
+				-- rte_sid[rte_sid_num][6] = " "	-- restrict altitude +,-,B
+			-- elseif fms_word[23] == "X" then
+				-- rte_sid[rte_sid_num][5] = fms_word[25]	-- restrict altitude2
+				-- rte_sid[rte_sid_num][23] = fms_word[24]	-- restrict altitude1
+				-- rte_sid[rte_sid_num][6] = " "	-- restrict altitude +,-,B
+			-- -- at or above
+			-- elseif fms_word[23] == "C" then
+				-- rte_sid[rte_sid_num][5] = fms_word[25]	-- restrict altitude2
+				-- rte_sid[rte_sid_num][23] = fms_word[24]	-- restrict altitude1
+				-- rte_sid[rte_sid_num][6] = "+"	-- restrict altitude +,-,B
+			-- elseif fms_word[23] == "H" or fms_word[23] == "J" or fms_word[23] == "V" then
+				-- rte_sid[rte_sid_num][5] = fms_word[25]	-- restrict altitude2
+				-- rte_sid[rte_sid_num][23] = fms_word[24]	-- restrict altitude1
+				-- rte_sid[rte_sid_num][6] = "+"	-- restrict altitude +,-,B
+			-- elseif fms_word[23] == "B" then
+				-- rte_sid[rte_sid_num][5] = fms_word[25]	-- restrict altitude1
+				-- rte_sid[rte_sid_num][23] = fms_word[24]	-- restrict altitude2
+				-- rte_sid[rte_sid_num][6] = fms_word[23]	-- restrict altitude +,-,B
+			-- else
+				-- rte_sid[rte_sid_num][5] = fms_word[24]	-- restrict altitude1
+				-- rte_sid[rte_sid_num][23] = fms_word[25]	-- restrict altitude2
+				-- rte_sid[rte_sid_num][6] = fms_word[23]	-- restrict altitude +,-,B
+			-- end
 			
 			-- rte_sid[rte_sid_num][23] = fms_word[25]	-- restrict altitude2
 			
@@ -15066,33 +15099,48 @@ function read_des_data(ddd_des_icao)
 			rte_star[rte_star_num][4] = fms_word[28]	-- restrict speed
 			rte_star[rte_star_num][5] = fms_word[24]	-- restrict altitude
 			
-			-- at
-			if fms_word[23] == "G" or fms_word[23] == "I" or fms_word[23] == "X" then
-				rte_star[rte_star_num][5] = fms_word[24]	-- restrict altitude2
-				rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude1
-				rte_star[rte_star_num][6] = " "	-- restrict altitude +,-,B
-			elseif fms_word[23] == "X" then
-				rte_star[rte_star_num][5] = fms_word[25]	-- restrict altitude2
-				rte_star[rte_star_num][23] = fms_word[24]	-- restrict altitude1
-				rte_star[rte_star_num][6] = " "	-- restrict altitude +,-,B
-			-- at or above
-			elseif fms_word[23] == "C" then
-				rte_star[rte_star_num][5] = fms_word[25]	-- restrict altitude2
-				rte_star[rte_star_num][23] = fms_word[24]	-- restrict altitude1
-				rte_star[rte_star_num][6] = "+"	-- restrict altitude +,-,B
-			elseif fms_word[23] == "H" or fms_word[23] == "J" or fms_word[23] == "V" then
-				rte_star[rte_star_num][5] = fms_word[24]	-- restrict altitude2
-				rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude1
-				rte_star[rte_star_num][6] = "+"	-- restrict altitude +,-,B
-			elseif fms_word[23] == "B" then
+			if fms_word[23] == "B" then
 				rte_star[rte_star_num][5] = fms_word[25]	-- restrict altitude1
 				rte_star[rte_star_num][23] = fms_word[24]	-- restrict altitude2
 				rte_star[rte_star_num][6] = fms_word[23]	-- restrict altitude +,-,B
+			elseif fms_word[23] == "G" or fms_word[23] == "I" or fms_word[23] == "X" or fms_word[23] == "C"
+			or fms_word[23] == "H" or fms_word[23] == "J" or fms_word[23] == "V" then
+				rte_star[rte_star_num][5] = fms_word[25]	-- restrict altitude1
+				rte_star[rte_star_num][23] = fms_word[24]	-- restrict altitude2
+				rte_star[rte_star_num][6] = " "	-- restrict altitude +,-,B
 			else
 				rte_star[rte_star_num][5] = fms_word[24]	-- restrict altitude1
 				rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude2
 				rte_star[rte_star_num][6] = fms_word[23]	-- restrict altitude +,-,B
 			end
+			
+			-- -- at
+			-- if fms_word[23] == "G" or fms_word[23] == "I" or fms_word[23] == "X" then
+				-- rte_star[rte_star_num][5] = fms_word[24]	-- restrict altitude2
+				-- rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude1
+				-- rte_star[rte_star_num][6] = " "	-- restrict altitude +,-,B
+			-- elseif fms_word[23] == "X" then
+				-- rte_star[rte_star_num][5] = fms_word[25]	-- restrict altitude2
+				-- rte_star[rte_star_num][23] = fms_word[24]	-- restrict altitude1
+				-- rte_star[rte_star_num][6] = " "	-- restrict altitude +,-,B
+			-- -- at or above
+			-- elseif fms_word[23] == "C" then
+				-- rte_star[rte_star_num][5] = fms_word[25]	-- restrict altitude2
+				-- rte_star[rte_star_num][23] = fms_word[24]	-- restrict altitude1
+				-- rte_star[rte_star_num][6] = "+"	-- restrict altitude +,-,B
+			-- elseif fms_word[23] == "H" or fms_word[23] == "J" or fms_word[23] == "V" then
+				-- rte_star[rte_star_num][5] = fms_word[24]	-- restrict altitude2
+				-- rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude1
+				-- rte_star[rte_star_num][6] = "+"	-- restrict altitude +,-,B
+			-- elseif fms_word[23] == "B" then
+				-- rte_star[rte_star_num][5] = fms_word[25]	-- restrict altitude1
+				-- rte_star[rte_star_num][23] = fms_word[24]	-- restrict altitude2
+				-- rte_star[rte_star_num][6] = fms_word[23]	-- restrict altitude +,-,B
+			-- else
+				-- rte_star[rte_star_num][5] = fms_word[24]	-- restrict altitude1
+				-- rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude2
+				-- rte_star[rte_star_num][6] = fms_word[23]	-- restrict altitude +,-,B
+			-- end
 			
 			-- rte_star[rte_star_num][23] = fms_word[25]	-- restrict altitude2
 			-- if fms_word[23] == "B" then
@@ -15206,33 +15254,48 @@ function read_des_data(ddd_des_icao)
 			rte_app[rte_app_num][20] = fms_word[5]	-- navaid_id_cifs
 			rte_app[rte_app_num][4] = fms_word[28]	-- restrict speed
 			
-			-- at
-			if fms_word[23] == "G" or fms_word[23] == "I" or fms_word[23] == "X" then
-				rte_app[rte_app_num][5] = fms_word[24]	-- restrict altitude2
-				rte_app[rte_app_num][23] = fms_word[25]	-- restrict altitude1
-				rte_app[rte_app_num][6] = " "	-- restrict altitude +,-,B
-			elseif fms_word[23] == "X" then
-				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
-				rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
-				rte_app[rte_app_num][6] = " "	-- restrict altitude +,-,B
-			-- at or above
-			elseif fms_word[23] == "C" then
-				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
-				rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
-				rte_app[rte_app_num][6] = "+"	-- restrict altitude +,-,B
-			elseif fms_word[23] == "H" or fms_word[23] == "J" or fms_word[23] == "V" then
-				rte_app[rte_app_num][5] = fms_word[24]	-- restrict altitude2
-				rte_app[rte_app_num][23] = fms_word[25]	-- restrict altitude1
-				rte_app[rte_app_num][6] = "+"	-- restrict altitude +,-,B
-			elseif fms_word[23] == "B" then
+			if fms_word[23] == "B" then
 				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude1
 				rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude2
 				rte_app[rte_app_num][6] = fms_word[23]	-- restrict altitude +,-,B
+			elseif fms_word[23] == "G" or fms_word[23] == "I" or fms_word[23] == "X" or fms_word[23] == "C"
+			or fms_word[23] == "H" or fms_word[23] == "J" or fms_word[23] == "V" then
+				rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude1
+				rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude2
+				rte_app[rte_app_num][6] = " "	-- restrict altitude +,-,B
 			else
 				rte_app[rte_app_num][5] = fms_word[24]	-- restrict altitude1
 				rte_app[rte_app_num][23] = fms_word[25]	-- restrict altitude2
 				rte_app[rte_app_num][6] = fms_word[23]	-- restrict altitude +,-,B
 			end
+			
+			-- -- at
+			-- if fms_word[23] == "G" or fms_word[23] == "I" or fms_word[23] == "X" then
+				-- rte_app[rte_app_num][5] = fms_word[24]	-- restrict altitude2
+				-- rte_app[rte_app_num][23] = fms_word[25]	-- restrict altitude1
+				-- rte_app[rte_app_num][6] = " "	-- restrict altitude +,-,B
+			-- elseif fms_word[23] == "X" then
+				-- rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
+				-- rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
+				-- rte_app[rte_app_num][6] = " "	-- restrict altitude +,-,B
+			-- -- at or above
+			-- elseif fms_word[23] == "C" then
+				-- rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
+				-- rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude1
+				-- rte_app[rte_app_num][6] = "+"	-- restrict altitude +,-,B
+			-- elseif fms_word[23] == "H" or fms_word[23] == "J" or fms_word[23] == "V" then
+				-- rte_app[rte_app_num][5] = fms_word[24]	-- restrict altitude2
+				-- rte_app[rte_app_num][23] = fms_word[25]	-- restrict altitude1
+				-- rte_app[rte_app_num][6] = "+"	-- restrict altitude +,-,B
+			-- elseif fms_word[23] == "B" then
+				-- rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude1
+				-- rte_app[rte_app_num][23] = fms_word[24]	-- restrict altitude2
+				-- rte_app[rte_app_num][6] = fms_word[23]	-- restrict altitude +,-,B
+			-- else
+				-- rte_app[rte_app_num][5] = fms_word[24]	-- restrict altitude1
+				-- rte_app[rte_app_num][23] = fms_word[25]	-- restrict altitude2
+				-- rte_app[rte_app_num][6] = fms_word[23]	-- restrict altitude +,-,B
+			-- end
 			
 			-- if fms_word[23] == "G" or fms_word[23] == "I" then
 				-- rte_app[rte_app_num][5] = fms_word[25]	-- restrict altitude2
@@ -18872,6 +18935,10 @@ function B738_fmc1_1L_CMDhandler(phase, duration)
 								des_star2 = "------"
 								des_star_trans2 = "------"
 								----
+								des_app_rw_only = 0
+								rw_ext_dist = "--.-"
+								rw_ext_fpa = "-.--"
+								
 								legs_num = 0
 								crz_alt = "*****"
 								crz_alt_num = 0
@@ -24824,7 +24891,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 								else
 									read_des_data(entry)		-- read reference airport data
 									file_navdata:close()
-									apt_ok = 1
+									apt_ok = 2
 								end
 							elseif cust_def_data == 2 then
 								file_name = "Resources/default data/CIFP/" .. entry
@@ -24837,7 +24904,7 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 								else
 									read_des_data(entry)		-- read reference airport data
 									file_navdata:close()
-									apt_ok = 1
+									apt_ok = 2
 								end
 							end
 							
@@ -24852,13 +24919,20 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 										des_tns_alt = icao_tns_alt
 										des_tns_lvl = icao_tns_lvl
 										des_icao_alt = 2500
-										if des_rwy_num > 0 then
+										if des_rwy_num > 0 and apt_ok == 2 then
 											xy = tonumber(des_data[1][5])
 											if xy ~= nil then
 												des_icao_alt = xy
 											end
 										end
 									else
+										des_icao_alt = 2500
+										if des_rwy_num > 0 and apt_ok == 2 then
+											xy = tonumber(des_data[1][5])
+											if xy ~= nil then
+												des_icao_alt = xy
+											end
+										end
 										des_tns_alt = 0
 										des_tns_lvl = 0
 									end
@@ -24883,6 +24957,10 @@ function B738_fmc1_1R_CMDhandler(phase, duration)
 									co_route_x = co_route
 									--legs_num2 = 0
 									
+									des_app_rw_only = 0
+									rw_ext_dist = "--.-"
+									rw_ext_fpa = "-.--"
+								
 									offset_act = 0
 									offset_start = 0
 									offset_end = 0
@@ -29201,6 +29279,10 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 				des_star = "------"
 				des_star_trans = "------"
 				----
+				des_app_rw_only = 0
+				rw_ext_dist = "--.-"
+				rw_ext_fpa = "-.--"
+				
 				ref_rwy2 = "-----"
 				ref_sid2 = "------"
 				ref_sid_tns2 = "------"
@@ -29268,19 +29350,47 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 				des_icao = des_icao_x
 				des_exec = 0
 				
+				local apt_ok = 0
+				if cust_def_data == 1 then
+					file_name = "Custom Data/CIFP/" .. des_icao
+					file_name = file_name .. ".dat"
+					file_navdata = io.open(file_name, "r")
+					if file_navdata ~= nil then
+						read_des_data(des_icao)		-- read reference airport data
+						file_navdata:close()
+						apt_ok = 2
+					end
+				elseif cust_def_data == 2 then
+					file_name = "Resources/default data/CIFP/" .. des_icao
+					file_name = file_name .. ".dat"
+					file_navdata = io.open(file_name, "r")
+					if file_navdata ~= nil then
+						read_des_data(des_icao)		-- read reference airport data
+						file_navdata:close()
+						apt_ok = 2
+					end
+				end
+				
 				if apt_exist(des_icao) == true then
 					des_icao_lat = icao_latitude
 					des_icao_lon = icao_longitude
 					des_tns_alt = icao_tns_alt
 					des_tns_lvl = icao_tns_lvl
 					des_icao_alt = 2500
-					if des_rwy_num > 0 then
+					if des_rwy_num > 0 and apt_ok == 2 then
 						xy = tonumber(des_data[1][5])
 						if xy ~= nil then
 							des_icao_alt = xy
 						end
 					end
 				else
+					des_icao_alt = 2500
+					if des_rwy_num > 0 and apt_ok == 2 then
+						xy = tonumber(des_data[1][5])
+						if xy ~= nil then
+							des_icao_alt = xy
+						end
+					end
 					des_tns_alt = 0
 					des_tns_lvl = 0
 				end
@@ -29301,6 +29411,10 @@ function B738_fmc1_exec_CMDhandler(phase, duration)
 				des_star2 = "------"
 				des_star_trans2 = "------"
 				----
+				des_app_rw_only = 0
+				rw_ext_dist = "--.-"
+				rw_ext_fpa = "-.--"
+								
 				if in_flight_mode == 1 then
 					if legs_num2 > 1 then
 						for qq = 2, legs_num2 do
@@ -31275,6 +31389,10 @@ function B738_fmc2_1L_CMDhandler(phase, duration)
 								des_star2 = "------"
 								des_star_trans2 = "------"
 								----
+								des_app_rw_only = 0
+								rw_ext_dist = "--.-"
+								rw_ext_fpa = "-.--"
+								
 								legs_num = 0
 								crz_alt = "*****"
 								crz_alt_num = 0
@@ -37202,7 +37320,7 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 								else
 									read_des_data(entry2)		-- read reference airport data
 									file_navdata:close()
-									apt_ok = 1
+									apt_ok = 2
 								end
 							elseif cust_def_data == 2 then
 								file_name = "Resources/default data/CIFP/" .. entry2
@@ -37215,7 +37333,7 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 								else
 									read_des_data(entry2)		-- read reference airport data
 									file_navdata:close()
-									apt_ok = 1
+									apt_ok = 2
 								end
 							end
 							
@@ -37230,13 +37348,20 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 										des_tns_alt = icao_tns_alt
 										des_tns_lvl = icao_tns_lvl
 										des_icao_alt = 2500
-										if des_rwy_num > 0 then
+										if des_rwy_num > 0 and apt_ok == 2 then
 											xy = tonumber(des_data[1][5])
 											if xy ~= nil then
 												des_icao_alt = xy
 											end
 										end
 									else
+										des_icao_alt = 2500
+										if des_rwy_num > 0 and apt_ok == 2 then
+											xy = tonumber(des_data[1][5])
+											if xy ~= nil then
+												des_icao_alt = xy
+											end
+										end
 										des_tns_alt = 0
 										des_tns_lvl = 0
 									end
@@ -37257,6 +37382,10 @@ function B738_fmc2_1R_CMDhandler(phase, duration)
 									des_star2 = "------"
 									des_star_trans2 = "------"
 									----
+									des_app_rw_only = 0
+									rw_ext_dist = "--.-"
+									rw_ext_fpa = "-.--"
+								
 									co_route = "------------"
 									co_route_x = co_route
 									--legs_num2 = 0
@@ -41211,6 +41340,10 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 				des_star2 = "------"
 				des_star_trans2 = "------"
 				----
+				des_app_rw_only = 0
+				rw_ext_dist = "--.-"
+				rw_ext_fpa = "-.--"
+				
 				crz_alt = "*****"
 				crz_alt_num = 0
 				crz_alt_num2 = 0
@@ -41270,19 +41403,47 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 				des_icao = des_icao_x
 				des_exec = 0
 				
+				local apt_ok = 0
+				if cust_def_data == 1 then
+					file_name = "Custom Data/CIFP/" .. des_icao
+					file_name = file_name .. ".dat"
+					file_navdata = io.open(file_name, "r")
+					if file_navdata ~= nil then
+						read_des_data(des_icao)		-- read reference airport data
+						file_navdata:close()
+						apt_ok = 2
+					end
+				elseif cust_def_data == 2 then
+					file_name = "Resources/default data/CIFP/" .. des_icao
+					file_name = file_name .. ".dat"
+					file_navdata = io.open(file_name, "r")
+					if file_navdata ~= nil then
+						read_des_data(des_icao)		-- read reference airport data
+						file_navdata:close()
+						apt_ok = 2
+					end
+				end
+				
 				if apt_exist(des_icao) == true then
 					des_icao_lat = icao_latitude
 					des_icao_lon = icao_longitude
 					des_tns_alt = icao_tns_alt
 					des_tns_lvl = icao_tns_lvl
 					des_icao_alt = 2500
-					if des_rwy_num > 0 then
+					if des_rwy_num > 0 and apt_ok == 2 then
 						xy = tonumber(des_data[1][5])
 						if xy ~= nil then
 							des_icao_alt = xy
 						end
 					end
 				else
+					des_icao_alt = 2500
+					if des_rwy_num > 0 and apt_ok == 2 then
+						xy = tonumber(des_data[1][5])
+						if xy ~= nil then
+							des_icao_alt = xy
+						end
+					end
 					des_tns_alt = 0
 					des_tns_lvl = 0
 				end
@@ -41303,6 +41464,10 @@ function B738_fmc2_exec_CMDhandler(phase, duration)
 				des_star2 = "------"
 				des_star_trans2 = "------"
 				----
+				des_app_rw_only = 0
+				rw_ext_dist = "--.-"
+				rw_ext_fpa = "-.--"
+				
 				if in_flight_mode == 1 then
 					if legs_num2 > 1 then
 						for qq = 2, legs_num2 do
@@ -43149,9 +43314,11 @@ function B738_fmc_xtras_optional()
 	
 	if page_xtras_optional == 1 then
 		act_page = 1
+		--max_page = 2
 		max_page = 1
 		
 		line0_l = " OPTIONAL ACCESSORY     "
+		--line0_s = "                    1/2 "
 		line0_s = "                    1/1 "
 		line1_x = " FUEL GAUGE             "
 		if B738DR_fuelgauge == 0 then
@@ -43204,6 +43371,23 @@ function B738_fmc_xtras_optional()
 			line5_s = " OFF                    "
 		end
 		line6_l = "<DEFAULT           BACK>"
+	-- elseif page_xtras_optional == 2 then
+		-- act_page = 2
+		-- max_page = 2
+		
+		-- line0_l = " OPTIONAL ACCESSORY     "
+		-- line0_s = "                    2/2 "
+		-- line1_x = " BACKLIGHT COLOR        "
+		-- if B738DR_backlight_color == 0 then
+			-- line1_l = "<      /                "
+			-- line1_g = " ORANGE                 "
+			-- line1_s = "        BLUE            "
+		-- else
+			-- line1_l = "<      /                "
+			-- line1_g = "        BLUE            "
+			-- line1_s = " ORANGE                 "
+		-- end
+		-- line6_l = "<DEFAULT           BACK>"
 	end
 end
 
@@ -43250,6 +43434,15 @@ function fmc_xtras_optional(fmod_butt, fmc_side)
 				B738DR_brake_temp = 1
 			else
 				B738DR_brake_temp = 0
+			end
+		end
+	elseif page_tmp == 2 then
+		if fmod_butt == 1 then
+			-- Backlight color
+			if B738DR_backlight_color == 0 then
+				B738DR_backlight_color = 1
+			else
+				B738DR_backlight_color = 0
 			end
 		end
 	end
@@ -73908,7 +74101,7 @@ temp_ils4 = ""
 	B738DR_legs_mod_active = 0
 	fms_recalc = 0
 	
-	version = "v3.26w"
+	version = "v3.26x"
 
 end
 

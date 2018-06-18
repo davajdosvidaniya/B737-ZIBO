@@ -18535,12 +18535,13 @@ ANIM_trans 0.000000 0.000000 0.000000 0.000000 -0.001239 -0.004635 0.000000 1.00
 ATTR_manip_command button laminar/B738/push_button/fo_six_pack First officer six pack
 TRIS 20271 30
 ANIM_end
+ATTR_manip_drag_rotate hand -0.807630 0.164700 2.078440 0.901404 0.000000 0.432978 89 -89 0 -1 1 0 0 laminar/B738/nosewheel_steer_ratio	none Nosewheel steer
 ANIM_begin
 ANIM_trans -0.807630 0.164700 2.078440 -0.807630 0.164700 2.078440 0.000000 0.000000 none
-ANIM_rotate 0.901404 0.000000 0.432978 89.000000 -89.000000 -1.000000 1.000000 laminar/B738/nosewheel_steer_ratio
+ANIM_rotate 0.901404 0.000000 0.432978 89.0000 -89.0000 -1.000000 1.000000 laminar/B738/nosewheel_steer_ratio
 ANIM_trans 0.807630 -0.164700 -2.078440 0.807630 -0.164700 -2.078440 0.000000 0.000000 none
-ANIM_hide 0.000000 2.500000 laminar/B738/effects/nosewheel
-ANIM_show 2.500000 3.000000 laminar/B738/effects/nosewheel
+ANIM_hide 0.0 2.5 laminar/B738/effects/nosewheel
+ANIM_show 2.5 3.0 laminar/B738/effects/nosewheel
 TRIS 20301 120
 ANIM_end
 ATTR_manip_drag_rotate	hand	0.1	-0.0069	2.2517	-1	0	0	0	-65.062	0.0045	0	1	0	1	sim/cockpit2/controls/flap_ratio	laminar/B738/handles/flap_lever/stop_pos	Flap Handle

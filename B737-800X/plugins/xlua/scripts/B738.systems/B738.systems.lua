@@ -1646,11 +1646,11 @@ end
 function B738_speedbrake_stop_pos_DRhandler()end
 
 
-function B738DR_ap_backlight_DRhandler()end
-function B738DR_padesteal_backlight_DRhandler()end
-function B738DR_padesteal_backlight2_DRhandler()end
-function B738DR_overhead_backlight_DRhandler()end
-function B738DR_clock_backlight_DRhandler()end
+-- function B738DR_ap_backlight_DRhandler()end
+-- function B738DR_padesteal_backlight_DRhandler()end
+-- function B738DR_padesteal_backlight2_DRhandler()end
+-- function B738DR_overhead_backlight_DRhandler()end
+-- function B738DR_clock_backlight_DRhandler()end
 
 function B738DR_steer_speed_DRhandler()end
 function B738DR_nosewheel_steer_ratio_DRhandler()end
@@ -1695,11 +1695,11 @@ B738DR_off_on2				= create_dataref("laminar/B738/toggle_switch/off_on2", "number
 
 B738DR_panel_brightness			= create_dataref("laminar/B738/electric/panel_brightness", "array[4]", B738DR_panel_brightness_DRhandler)
 B738DR_instrument_brightness	= create_dataref("laminar/B738/electric/instrument_brightness", "array[16]", B738DR_instrument_brightness_DRhandler)
-B738DR_ap_backlight				= create_dataref("laminar/B738/electric/ap_backlight", "number", B738DR_ap_backlight_DRhandler)
-B738DR_padesteal_backlight		= create_dataref("laminar/B738/electric/padesteal_backlight", "number", B738DR_padesteal_backlight_DRhandler)
-B738DR_padesteal_backlight2		= create_dataref("laminar/B738/electric/padesteal_backlight2", "number", B738DR_padesteal_backlight2_DRhandler)
-B738DR_overhead_backlight		= create_dataref("laminar/B738/electric/overhead_backlight", "number", B738DR_overhead_backlight_DRhandler)
-B738DR_clock_backlight			= create_dataref("laminar/B738/electric/clock_backlight", "number", B738DR_clock_backlight_DRhandler)
+-- B738DR_ap_backlight				= create_dataref("laminar/B738/electric/ap_backlight", "number", B738DR_ap_backlight_DRhandler)
+-- B738DR_padesteal_backlight		= create_dataref("laminar/B738/electric/padesteal_backlight", "number", B738DR_padesteal_backlight_DRhandler)
+-- B738DR_padesteal_backlight2		= create_dataref("laminar/B738/electric/padesteal_backlight2", "number", B738DR_padesteal_backlight2_DRhandler)
+-- B738DR_overhead_backlight		= create_dataref("laminar/B738/electric/overhead_backlight", "number", B738DR_overhead_backlight_DRhandler)
+-- B738DR_clock_backlight			= create_dataref("laminar/B738/electric/clock_backlight", "number", B738DR_clock_backlight_DRhandler)
 
 B738DR_kill_systems	= create_dataref("laminar/B738/perf/kill_systems", "number", B738DR_kill_systems_DRhandler)
 
@@ -10734,34 +10734,6 @@ function B738_brightness()
 	simDR_panel_brightness[2] = B738DR_panel_brightness[2] * B738DR_ac_tnsbus2_status	-- Overhead panel
 	simDR_panel_brightness[3] = B738DR_panel_brightness[3] * B738DR_ac_tnsbus2_status	-- Padestal panel
 	
-	local padeastel_ratio = 0
-	if B738DR_panel_brightness[3] == 0 then
-		padeastel_ratio = 0
-	elseif B738DR_panel_brightness[3] < 0.5 then
-		padeastel_ratio = B738_rescale(0.05, 0.4, 0.5, 1, B738DR_panel_brightness[3])
-	else
-		padeastel_ratio = 1
-	end
-	
-	local overhead_ratio = 0
-	if B738DR_panel_brightness[2] == 0 then
-		overhead_ratio = 0
-	elseif B738DR_panel_brightness[2] < 0.5 then
-		overhead_ratio = B738_rescale(0.05, 0.4, 0.5, 1, B738DR_panel_brightness[2])
-	else
-		overhead_ratio = 1
-	end
-	
-	simDR_instrument_brightness[13] = padeastel_ratio 	-- Padesteal
-	simDR_instrument_brightness[14] = overhead_ratio 	-- Overhead
-	B738DR_padesteal_backlight = B738_rescale(0, 0, 1, 0.8, B738DR_panel_brightness[3])
-	if B738DR_ac_tnsbus2_status == 0 then
-		B738DR_padesteal_backlight2 = 0
-	else
-		B738DR_padesteal_backlight2 = B738_rescale(0, 0, 1, 0.8, B738DR_panel_brightness[3])
-	end
-	B738DR_overhead_backlight = B738_rescale(0, 0, 0.8, 1, B738DR_panel_brightness[2])
-	
 	-- Instruments brightness lights
 	simDR_instrument_brightness[0] = B738DR_instrument_brightness[0] * B738DR_ac_stdbus_status	-- CPT PFD
 	simDR_instrument_brightness[1] = B738DR_instrument_brightness[1] * B738DR_ac_tnsbus2_status	-- FO PFD
@@ -10771,6 +10743,54 @@ function B738_brightness()
 	simDR_instrument_brightness[5] = B738DR_instrument_brightness[5] * B738DR_ac_tnsbus2_status	-- Lower DU
 	simDR_instrument_brightness[10] = B738DR_instrument_brightness[10] * B738DR_ac_stdbus_status	-- CPT FMC
 	simDR_instrument_brightness[11] = B738DR_instrument_brightness[11] * B738DR_ac_tnsbus2_status	-- FO FMC
+	
+	
+	
+	local padeastel_ratio = 0
+	if simDR_panel_brightness[3] == 0 then
+		padeastel_ratio = 0
+	elseif simDR_panel_brightness[3] < 0.5 then
+		padeastel_ratio = B738_rescale(0.05, 0.4, 0.5, 1, simDR_panel_brightness[3])
+	else
+		padeastel_ratio = 1
+	end
+	
+	local overhead_ratio = 0
+	if simDR_panel_brightness[2] == 0 then
+		overhead_ratio = 0
+	elseif simDR_panel_brightness[2] < 0.5 then
+		overhead_ratio = B738_rescale(0.05, 0.4, 0.5, 1, simDR_panel_brightness[2])
+	else
+		overhead_ratio = 1
+	end
+	
+	simDR_instrument_brightness[13] = padeastel_ratio 	-- Padesteal
+	simDR_instrument_brightness[14] = overhead_ratio 	-- Overhead
+	
+	-- B738DR_padesteal_backlight = B738_rescale(0, 0, 1, 0.8, simDR_panel_brightness[3])
+	-- -- if B738DR_ac_tnsbus2_status == 0 then
+		-- -- B738DR_padesteal_backlight2 = 0
+	-- -- else
+		-- B738DR_padesteal_backlight2 = B738_rescale(0, 0, 1, 0.8, simDR_panel_brightness[3])
+	-- -- end
+	-- B738DR_overhead_backlight = simDR_panel_brightness[2]
+	-- B738DR_fmc_capt_backlight = B738_rescale(0, 0, 1, 0.8, simDR_instrument_brightness[10])
+	-- B738DR_fmc_fo_backlight = B738_rescale(0, 0, 1, 0.8, simDR_instrument_brightness[11])
+	
+	-- AP backlight [15]
+	simDR_instrument_brightness[15] = 0.6
+	-- radio/nav/adf/transp [16]   radio2/nav2/adf2 [19]
+	simDR_instrument_brightness[16] = B738_rescale(0, 0, 1, 0.8, simDR_panel_brightness[3])		-- Captain side + Transponder
+	simDR_instrument_brightness[19] = B738_rescale(0, 0, 1, 0.8, simDR_panel_brightness[3])		-- FO side
+	-- pressurization [17]
+	simDR_instrument_brightness[17] = simDR_panel_brightness[2]
+	-- clock [18]
+	simDR_instrument_brightness[18] = 0.5
+	
+	-- -- FMC capt [19]
+	-- simDR_instrument_brightness[19] = B738_rescale(0, 0, 1, 0.8, simDR_instrument_brightness[10])
+	-- -- FMC fo [20]
+	-- simDR_instrument_brightness[20] = B738_rescale(0, 0, 1, 0.8, simDR_instrument_brightness[11])
 	
 	-- AP
 	--simDR_instrument_brightness[9]
@@ -10807,15 +10827,6 @@ function B738_brightness()
 	
 	B738DR_lost_fo_inertial = lost_inertial
 	
-	-- AP backlight [15]
-	simDR_instrument_brightness[15] = B738DR_ap_backlight
-	-- radio/nav/adf/transp [16]   radio2/nav2/adf2 [19]
-	simDR_instrument_brightness[16] = B738DR_padesteal_backlight	-- Captain side + Transponder
-	simDR_instrument_brightness[19] = B738DR_padesteal_backlight2	-- FO side
-	-- pressurization [17]
-	simDR_instrument_brightness[17] = B738DR_overhead_backlight
-	-- clock [18]
-	simDR_instrument_brightness[18] = B738DR_clock_backlight
 end
 
 function B738_fmc_source()

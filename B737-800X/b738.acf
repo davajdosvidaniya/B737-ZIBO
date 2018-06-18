@@ -158,7 +158,7 @@ P _gear/0/_lonE 0.0
 P _gear/0/_lonN 0.0
 P _gear/0/_lonR 111.0
 P _gear/0/_scon 112094.945312500
-P _gear/0/_stat_def 0.105244748
+P _gear/0/_stat_def 0.105244771
 P _gear/0/_steerdeg_hispeed 6.0
 P _gear/0/_steerdeg_lospeed 78.0
 P _gear/0/_strut_comp 0.0
@@ -192,7 +192,7 @@ P _gear/1/_lonE -4.0
 P _gear/1/_lonN -4.0
 P _gear/1/_lonR 0.0
 P _gear/1/_scon 112094.945312500
-P _gear/1/_stat_def 0.724415839
+P _gear/1/_stat_def 0.724415779
 P _gear/1/_steerdeg_hispeed 0.0
 P _gear/1/_steerdeg_lospeed 0.0
 P _gear/1/_strut_comp 0.0
@@ -226,7 +226,7 @@ P _gear/2/_lonE -4.0
 P _gear/2/_lonN -4.0
 P _gear/2/_lonR 0.0
 P _gear/2/_scon 112094.945312500
-P _gear/2/_stat_def 0.724415839
+P _gear/2/_stat_def 0.724415779
 P _gear/2/_steerdeg_hispeed 0.0
 P _gear/2/_steerdeg_lospeed 0.0
 P _gear/2/_strut_comp 0.0
@@ -40018,10 +40018,8 @@ GROUP EICAS x
   GROUP_OPEN
   GROUP EICAS y
     LOCKED
-    GROUP_OPEN
     GROUP synoptic
       LOCKED
-      GROUP_OPEN
       gen_pie N1 pie #1
         POS 1102.500000 160.500000
         IMAGE EICAS/EICAS_pie
@@ -41967,7 +41965,6 @@ GROUP EICAS x
       SHOW_LESS 0.000000 laminar/B738/FMS/fmc_units
       SHOW_EQUAL 1.000000 laminar/B738/effects/fuelgauge
       LOCKED
-      GROUP_OPEN
       gen_LED fuel quantity 1
         POS 1367.000000 -191.000000
         IMAGE TYPE/white_size20
@@ -43634,138 +43631,278 @@ GROUP Backlight
     CLICK_DX 0
     CLICK_DY 0
 
-  gen_rotary Backlight Transp
-    POS 1494.000000 568.000000
-    IMAGE AP Radios/glow_transp
-    DATAREF 
-    LOCKED
+  GROUP Color1
+    SHOW_EQUAL 0.000000 laminar/B738/effects/backlight_color
     HIDE
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 16
-    BUS_SRC 7
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 0.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
+    gen_rotary Backlight Transp
+      POS 1494.000000 568.000000
+      IMAGE AP Radios/glow_transp
+      DATAREF 
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 16
+      BUS_SRC 7
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
-  gen_rotary Backlight Radio1
-    POS 1886.000000 474.000000
-    IMAGE AP Radios/glow_com_nav
-    DATAREF 
-    LOCKED
+    gen_rotary Backlight Radio1
+      POS 1886.000000 474.000000
+      IMAGE AP Radios/glow_com_nav
+      DATAREF 
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 16
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary Backlight Radio2
+      POS 1886.000000 366.000000
+      IMAGE AP Radios/glow_com_nav
+      DATAREF 
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 19
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary Backlight ADF1
+      POS 1876.000000 868.000000
+      IMAGE AP Radios/glow_adf
+      DATAREF 
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 16
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary Backlight ADF2
+      POS 1876.000000 808.000000
+      IMAGE AP Radios/glow_adf
+      DATAREF 
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 19
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary Backlight Pressuri
+      POS 1882.000000 282.000000
+      IMAGE AP Radios/glow_press
+      DATAREF 
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 17
+      BUS_SRC 7
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+  END_GROUP
+  GROUP Color2
+    SHOW_EQUAL 1.000000 laminar/B738/effects/backlight_color
     HIDE
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 16
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 0.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
+    gen_rotary Backlight Transp
+      POS 1494.000000 568.000000
+      IMAGE AP Radios/glow_transp_2
+      DATAREF 
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 16
+      BUS_SRC 7
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
-  gen_rotary Backlight Radio2
-    POS 1886.000000 366.000000
-    IMAGE AP Radios/glow_com_nav
-    DATAREF 
-    LOCKED
-    HIDE
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 19
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 0.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
+    gen_rotary Backlight Radio1
+      POS 1886.000000 474.000000
+      IMAGE AP Radios/glow_com_nav_2
+      DATAREF 
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 16
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
-  gen_rotary Backlight ADF1
-    POS 1876.000000 868.000000
-    IMAGE AP Radios/glow_adf
-    DATAREF 
-    LOCKED
-    HIDE
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 16
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 0.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
+    gen_rotary Backlight Radio2
+      POS 1886.000000 366.000000
+      IMAGE AP Radios/glow_com_nav_2
+      DATAREF 
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 19
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
-  gen_rotary Backlight ADF2
-    POS 1876.000000 808.000000
-    IMAGE AP Radios/glow_adf
-    DATAREF 
-    LOCKED
-    HIDE
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 19
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 0.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
+    gen_rotary Backlight ADF1
+      POS 1876.000000 868.000000
+      IMAGE AP Radios/glow_adf_2
+      DATAREF 
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 16
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
-  gen_rotary Backlight Pressuri
-    POS 1882.000000 282.000000
-    IMAGE AP Radios/glow_press
-    DATAREF 
-    LOCKED
-    HIDE
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 17
-    BUS_SRC 7
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 0.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
+    gen_rotary Backlight ADF2
+      POS 1876.000000 808.000000
+      IMAGE AP Radios/glow_adf_2
+      DATAREF 
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 19
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
+    gen_rotary Backlight Pressuri
+      POS 1882.000000 282.000000
+      IMAGE AP Radios/glow_press_2
+      DATAREF 
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 17
+      BUS_SRC 7
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+  END_GROUP
 END_GROUP
 GROUP CLOCKS
   LOCKED
@@ -45061,510 +45198,1498 @@ GROUP AP displays
     LED_ROWS 0
 
 END_GROUP
-GROUP Transponder
-  SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
-  LOCKED
-  gen_LED XPonder
-    POS 1505.000000 555.000000
-    IMAGE TYPE/TransponderOrange
-    DATAREF sim/cockpit2/radios/actuators/transponder_code
-    SHOW_GREATER 1.000000 sim/cockpit2/radios/actuators/transponder_mode
+GROUP Color1 displays
+  SHOW_EQUAL 0.000000 laminar/B738/effects/backlight_color
+  GROUP ADF 1
+    SHOW_LESS 0.000000 laminar/B738/dspl_light_test
+    SHOW_EQUAL 1.000000 laminar/B738/comm/nav1_status
     LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 7
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 7777.000000 7777.000000
-    DIGITS 4
-    DECIMALS 0
-    PERIOD_WIDTH 0
-    LED_ROWS 0
+    gen_rotary ADF annun
+      POS 1723.000000 872.500000
+      IMAGE TYPE/ADF_ann
+      DATAREF 
+      SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant1
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
-  gen_rotary ATC1
-    POS 1457.000000 589.000000
-    IMAGE AP Radios/TransponderATC1
-    DATAREF 
-    SHOW_GREATER 1.000000 sim/cockpit2/radios/actuators/transponder_mode
+    gen_rotary ANT annun
+      POS 1723.000000 858.500000
+      IMAGE TYPE/ANT_ann
+      DATAREF 
+      SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant1
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary ADF annun
+      POS 1886.000000 872.500000
+      IMAGE TYPE/ADF_ann
+      DATAREF 
+      SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant1
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary ANT annun
+      POS 1886.000000 858.500000
+      IMAGE TYPE/ANT_ann
+      DATAREF 
+      SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant1
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_LED ADF1 Active
+      POS 1784.000000 864.000000
+      IMAGE TYPE/RadioOrange_3n
+      DATAREF sim/cockpit2/radios/actuators/adf1_frequency_hz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 4
+      DECIMALS 0
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED ADF1 Active frac
+      POS 1824.000000 864.000000
+      IMAGE TYPE/RadioOrange_3n
+      DATAREF sim/cockpit2/radios/actuators/adf1_frequency_hz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 10000.000000 0.000000
+      DIGITS 1
+      DECIMALS 1
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED ADF1 Standby
+      POS 1948.000000 864.000000
+      IMAGE TYPE/RadioOrange_3n
+      DATAREF sim/cockpit2/radios/actuators/adf1_standby_frequency_hz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 4
+      DECIMALS 0
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED ADF1 Standby frac
+      POS 1988.000000 864.000000
+      IMAGE TYPE/RadioOrange_3n
+      DATAREF sim/cockpit2/radios/actuators/adf1_standby_frequency_hz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 10000.000000 0.000000
+      DIGITS 1
+      DECIMALS 1
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+  END_GROUP
+  GROUP ADF 2
+    SHOW_LESS 0.000000 laminar/B738/dspl_light_test
+    SHOW_EQUAL 1.000000 laminar/B738/comm/nav2_status
     LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 7
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 6.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
+    gen_rotary ADF annun
+      POS 1723.000000 819.500000
+      IMAGE TYPE/ADF_ann
+      DATAREF 
+      SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant2
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
-  gen_rotary XPonder R
-    POS 1544.000000 589.000000
-    IMAGE AP Radios/TransponderReporting
-    DATAREF sim/cockpit/radios/transponder_light
-    SHOW_GREATER 1.000000 sim/cockpit2/radios/actuators/transponder_mode
+    gen_rotary ANT annun
+      POS 1723.000000 805.500000
+      IMAGE TYPE/ANT_ann
+      DATAREF 
+      SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant2
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary ADF annun
+      POS 1886.000000 819.500000
+      IMAGE TYPE/ADF_ann
+      DATAREF 
+      SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant2
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary ANT annun
+      POS 1886.000000 805.500000
+      IMAGE TYPE/ANT_ann
+      DATAREF 
+      SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant2
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_LED ADF2 Active
+      POS 1784.000000 811.000000
+      IMAGE TYPE/RadioOrange_3n
+      DATAREF sim/cockpit2/radios/actuators/adf2_frequency_hz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 4
+      DECIMALS 0
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED ADF2 Active frac
+      POS 1824.000000 811.000000
+      IMAGE TYPE/RadioOrange_3n
+      DATAREF sim/cockpit2/radios/actuators/adf2_frequency_hz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 10000.000000 0.000000
+      DIGITS 1
+      DECIMALS 1
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED ADF2 Standby
+      POS 1948.000000 811.000000
+      IMAGE TYPE/RadioOrange_3n
+      DATAREF sim/cockpit2/radios/actuators/adf2_standby_frequency_hz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 4
+      DECIMALS 0
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED ADF2 Standby frac
+      POS 1988.000000 811.000000
+      IMAGE TYPE/RadioOrange_3n
+      DATAREF sim/cockpit2/radios/actuators/adf2_standby_frequency_hz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 10000.000000 0.000000
+      DIGITS 1
+      DECIMALS 1
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+  END_GROUP
+  GROUP Transponder
+    SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
     LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 7
-    KEY_FRAME 0.000000 -1.000000 1.000000
-    KEY_FRAME 1.000000 0.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
+    gen_LED XPonder
+      POS 1505.000000 555.000000
+      IMAGE TYPE/TransponderOrange
+      DATAREF sim/cockpit2/radios/actuators/transponder_code
+      SHOW_GREATER 1.000000 sim/cockpit2/radios/actuators/transponder_mode
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 7
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 7777.000000 7777.000000
+      DIGITS 4
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
 
+    gen_rotary ATC1
+      POS 1457.000000 589.000000
+      IMAGE AP Radios/TransponderATC1
+      DATAREF 
+      SHOW_GREATER 1.000000 sim/cockpit2/radios/actuators/transponder_mode
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 7
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 6.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary XPonder R
+      POS 1544.000000 589.000000
+      IMAGE AP Radios/TransponderReporting
+      DATAREF sim/cockpit/radios/transponder_light
+      SHOW_GREATER 1.000000 sim/cockpit2/radios/actuators/transponder_mode
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 7
+      KEY_FRAME 0.000000 -1.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+  END_GROUP
+  GROUP Pressurization
+    SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
+    LOCKED
+    gen_LED Landing Alt pos
+      POS 1797.000000 282.000000
+      IMAGE TYPE/TransponderOrange_3zero
+      DATAREF laminar/B738/pressurization/knobs/landing_alt
+      SHOW_GREATER 0.000000 laminar/B738/pressurization/knobs/landing_alt
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 14
+      BUS_SRC 3
+      KEY_FRAME -1000.000000 -1000.000000 1.000000
+      KEY_FRAME 14000.000000 14000.000000
+      COMMENT LAND ALTITUDE
+      DIGITS 5
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED Landing Alt neg
+      POS 1810.000000 282.000000
+      IMAGE TYPE/TransponderOrange_3zero
+      DATAREF laminar/B738/pressurization/knobs/landing_alt
+      SHOW_LESS -0.010000 laminar/B738/pressurization/knobs/landing_alt
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 14
+      BUS_SRC 3
+      KEY_FRAME -1000.000000 -1000.000000 1.000000
+      KEY_FRAME 14000.000000 14000.000000
+      COMMENT LAND ALTITUDE
+      DIGITS 4
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED Aircraft Alt POS
+      POS 1964.000000 282.000000
+      IMAGE TYPE/TransponderOrange_3zero
+      DATAREF sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
+      SHOW_GREATER 0.000000 sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 14
+      BUS_SRC 3
+      KEY_FRAME -1000.000000 -1000.000000 1.000000
+      KEY_FRAME 42000.000000 42000.000000
+      COMMENT AIRCRAFT ALTITUDE
+      DIGITS 5
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED Aircraft Alt NEG
+      POS 1977.000000 282.000000
+      IMAGE TYPE/TransponderOrange_3zero
+      DATAREF sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
+      SHOW_LESS -0.010000 sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 14
+      BUS_SRC 3
+      KEY_FRAME -1000.000000 -1000.000000 1.000000
+      KEY_FRAME 42000.000000 42000.000000
+      COMMENT AIRCRAFT ALTITUDE
+      DIGITS 4
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+  END_GROUP
+  GROUP NAV 1
+    SHOW_LESS 0.000000 laminar/B738/dspl_light_test
+    SHOW_EQUAL 1.000000 laminar/B738/comm/nav1_status
+    LOCKED
+    gen_LED Nav1 Active Mhz
+      POS 1777.000000 446.000000
+      IMAGE TYPE/RadioOrange
+      DATAREF sim/cockpit2/radios/actuators/nav1_frequency_Mhz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 100.000000
+      DIGITS 3
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED Nav1 Active khz
+      POS 1817.000000 446.000000
+      IMAGE TYPE/RadioOrange
+      DATAREF sim/cockpit2/radios/actuators/nav1_frequency_khz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 1.000000
+      DIGITS 2
+      DECIMALS 2
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED Nav1 Standby Mhz
+      POS 1941.000000 446.000000
+      IMAGE TYPE/RadioOrange
+      DATAREF sim/cockpit2/radios/actuators/nav1_standby_frequency_Mhz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 100.000000
+      DIGITS 3
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED Nav1 Standby khz
+      POS 1981.000000 446.000000
+      IMAGE TYPE/RadioOrange
+      DATAREF sim/cockpit2/radios/actuators/nav1_standby_frequency_khz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 1.000000
+      DIGITS 2
+      DECIMALS 2
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+  END_GROUP
+  GROUP NAV 2
+    SHOW_LESS 0.000000 laminar/B738/dspl_light_test
+    SHOW_EQUAL 1.000000 laminar/B738/comm/nav2_status
+    LOCKED
+    gen_LED Nav2 Active Mhz
+      POS 1777.000000 338.000000
+      IMAGE TYPE/RadioOrange
+      DATAREF sim/cockpit2/radios/actuators/nav2_frequency_Mhz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 100.000000
+      DIGITS 3
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED Nav2 Active khz
+      POS 1817.000000 338.000000
+      IMAGE TYPE/RadioOrange
+      DATAREF sim/cockpit2/radios/actuators/nav2_frequency_khz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 1.000000
+      DIGITS 2
+      DECIMALS 2
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED Nav2 Standby Mhz
+      POS 1941.000000 338.000000
+      IMAGE TYPE/RadioOrange
+      DATAREF sim/cockpit2/radios/actuators/nav2_standby_frequency_Mhz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 100.000000
+      DIGITS 3
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED Nav2 Standby khz
+      POS 1981.000000 338.000000
+      IMAGE TYPE/RadioOrange
+      DATAREF sim/cockpit2/radios/actuators/nav2_standby_frequency_khz
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 1.000000
+      DIGITS 2
+      DECIMALS 2
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+  END_GROUP
+  GROUP Radio Tune Panel L
+    SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
+    LOCKED
+    gen_rotary COM3 ACTIVE
+      POS 1799.000000 500.000000
+      IMAGE AP Radios/INOP
+      DATAREF 
+      SHOW_EQUAL 99.000000 laminar/B738/comm/rtp_L/lcd_to_display
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 6.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary COM3 STANDBY
+      POS 1963.000000 500.000000
+      IMAGE AP Radios/INOP
+      DATAREF 
+      SHOW_EQUAL 99.000000 laminar/B738/comm/rtp_L/lcd_to_display
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 6.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    GROUP COM1 ACTIVE
+      SHOW_EQUAL 0.000000 laminar/B738/comm/rtp_L/lcd_to_display
+      LOCKED
+      gen_LED Com1 Active Mhz
+        POS 1765.000000 500.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com1_frequency_Mhz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com1 Active khz
+        POS 1816.000000 500.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com1_frequency_khz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+    GROUP COM1 STANDBY
+      SHOW_EQUAL 0.000000 laminar/B738/comm/rtp_L/lcd_to_display
+      LOCKED
+      gen_LED Com1 Standby Mhz
+        POS 1929.000000 500.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com1_standby_frequency_Mhz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com1 Standby khz
+        POS 1980.000000 500.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com1_standby_frequency_khz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+    GROUP COM2 ACTIVE
+      SHOW_EQUAL 1.000000 laminar/B738/comm/rtp_L/lcd_to_display
+      LOCKED
+      gen_LED Com2 Active Mhz
+        POS 1765.000000 500.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com2_frequency_Mhz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com2 Active khz
+        POS 1816.000000 500.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com2_frequency_khz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+    GROUP COM2 STANDBY
+      SHOW_EQUAL 1.000000 laminar/B738/comm/rtp_L/lcd_to_display
+      LOCKED
+      gen_LED Com2 Standby Mhz
+        POS 1929.000000 500.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com2_standby_frequency_Mhz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com2 Standby khz
+        POS 1980.000000 500.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com2_standby_frequency_khz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+  END_GROUP
+  GROUP Radio Tune Panel R
+    SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
+    LOCKED
+    gen_rotary COM3 ACTIVE 2
+      POS 1799.000000 392.000000
+      IMAGE AP Radios/INOP
+      DATAREF 
+      SHOW_EQUAL 99.000000 laminar/B738/comm/rtp_R/lcd_to_display
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 6.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary COM3 STANDBY 2
+      POS 1963.000000 392.000000
+      IMAGE AP Radios/INOP
+      DATAREF 
+      SHOW_EQUAL 99.000000 laminar/B738/comm/rtp_R/lcd_to_display
+      LOCKED
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 6.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    GROUP COM1 ACTIVE 2
+      SHOW_EQUAL 0.000000 laminar/B738/comm/rtp_R/lcd_to_display
+      LOCKED
+      gen_LED Com1 Active Mhz 2
+        POS 1765.000000 392.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com1_frequency_Mhz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com1 Active khz 2
+        POS 1816.000000 392.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com1_frequency_khz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+    GROUP COM1 STANDBY 2
+      SHOW_EQUAL 0.000000 laminar/B738/comm/rtp_R/lcd_to_display
+      gen_LED Com1 Standby Mhz 2
+        POS 1929.000000 392.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com1_standby_frequency_Mhz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com1 Standby khz 2
+        POS 1980.000000 392.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com1_standby_frequency_khz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+    GROUP COM2 ACTIVE 2
+      SHOW_EQUAL 1.000000 laminar/B738/comm/rtp_R/lcd_to_display
+      gen_LED Com2 Active Mhz 2
+        POS 1765.000000 392.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com2_frequency_Mhz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com2 Active khz 2
+        POS 1816.000000 392.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com2_frequency_khz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+    GROUP COM2 STANDBY 2
+      SHOW_EQUAL 1.000000 laminar/B738/comm/rtp_R/lcd_to_display
+      gen_LED Com2 Standby Mhz 2
+        POS 1929.000000 392.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com2_standby_frequency_Mhz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com2 Standby khz 2
+        POS 1980.000000 392.000000
+        IMAGE TYPE/RadioOrange
+        DATAREF sim/cockpit2/radios/actuators/com2_standby_frequency_khz
+        LOCKED
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+  END_GROUP
 END_GROUP
-GROUP Pressurization
-  SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
-  LOCKED
-  gen_LED Landing Alt pos
-    POS 1797.000000 282.000000
-    IMAGE TYPE/TransponderOrange_3zero
-    DATAREF laminar/B738/pressurization/knobs/landing_alt
-    SHOW_GREATER 0.000000 laminar/B738/pressurization/knobs/landing_alt
+GROUP Color2 displays
+  SHOW_EQUAL 1.000000 laminar/B738/effects/backlight_color
+  HIDE
+  GROUP ADF 1
+    SHOW_LESS 0.000000 laminar/B738/dspl_light_test
+    SHOW_EQUAL 1.000000 laminar/B738/comm/nav1_status
     LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 14
-    BUS_SRC 3
-    KEY_FRAME -1000.000000 -1000.000000 1.000000
-    KEY_FRAME 14000.000000 14000.000000
-    COMMENT LAND ALTITUDE
-    DIGITS 5
-    DECIMALS 0
-    PERIOD_WIDTH 0
-    LED_ROWS 0
-
-  gen_LED Landing Alt neg
-    POS 1810.000000 282.000000
-    IMAGE TYPE/TransponderOrange_3zero
-    DATAREF laminar/B738/pressurization/knobs/landing_alt
-    SHOW_LESS -0.010000 laminar/B738/pressurization/knobs/landing_alt
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 14
-    BUS_SRC 3
-    KEY_FRAME -1000.000000 -1000.000000 1.000000
-    KEY_FRAME 14000.000000 14000.000000
-    COMMENT LAND ALTITUDE
-    DIGITS 4
-    DECIMALS 0
-    PERIOD_WIDTH 0
-    LED_ROWS 0
-
-  gen_LED Aircraft Alt POS
-    POS 1964.000000 282.000000
-    IMAGE TYPE/TransponderOrange_3zero
-    DATAREF sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
-    SHOW_GREATER 0.000000 sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 14
-    BUS_SRC 3
-    KEY_FRAME -1000.000000 -1000.000000 1.000000
-    KEY_FRAME 42000.000000 42000.000000
-    COMMENT AIRCRAFT ALTITUDE
-    DIGITS 5
-    DECIMALS 0
-    PERIOD_WIDTH 0
-    LED_ROWS 0
-
-  gen_LED Aircraft Alt NEG
-    POS 1977.000000 282.000000
-    IMAGE TYPE/TransponderOrange_3zero
-    DATAREF sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
-    SHOW_LESS -0.010000 sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 14
-    BUS_SRC 3
-    KEY_FRAME -1000.000000 -1000.000000 1.000000
-    KEY_FRAME 42000.000000 42000.000000
-    COMMENT AIRCRAFT ALTITUDE
-    DIGITS 4
-    DECIMALS 0
-    PERIOD_WIDTH 0
-    LED_ROWS 0
-
-END_GROUP
-GROUP NAV 1
-  SHOW_LESS 0.000000 laminar/B738/dspl_light_test
-  SHOW_EQUAL 1.000000 laminar/B738/comm/nav1_status
-  LOCKED
-  gen_LED Nav1 Active Mhz
-    POS 1777.000000 446.000000
-    IMAGE TYPE/RadioOrange
-    DATAREF sim/cockpit2/radios/actuators/nav1_frequency_Mhz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 100.000000 100.000000
-    DIGITS 3
-    DECIMALS 0
-    PERIOD_WIDTH 0
-    LED_ROWS 0
-
-  gen_LED Nav1 Active khz
-    POS 1817.000000 446.000000
-    IMAGE TYPE/RadioOrange
-    DATAREF sim/cockpit2/radios/actuators/nav1_frequency_khz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 100.000000 1.000000
-    DIGITS 2
-    DECIMALS 2
-    PERIOD_WIDTH 18
-    LED_ROWS 0
-
-  gen_LED Nav1 Standby Mhz
-    POS 1941.000000 446.000000
-    IMAGE TYPE/RadioOrange
-    DATAREF sim/cockpit2/radios/actuators/nav1_standby_frequency_Mhz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 100.000000 100.000000
-    DIGITS 3
-    DECIMALS 0
-    PERIOD_WIDTH 0
-    LED_ROWS 0
-
-  gen_LED Nav1 Standby khz
-    POS 1981.000000 446.000000
-    IMAGE TYPE/RadioOrange
-    DATAREF sim/cockpit2/radios/actuators/nav1_standby_frequency_khz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 100.000000 1.000000
-    DIGITS 2
-    DECIMALS 2
-    PERIOD_WIDTH 18
-    LED_ROWS 0
-
-END_GROUP
-GROUP NAV 2
-  SHOW_LESS 0.000000 laminar/B738/dspl_light_test
-  SHOW_EQUAL 1.000000 laminar/B738/comm/nav2_status
-  LOCKED
-  gen_LED Nav2 Active Mhz
-    POS 1777.000000 338.000000
-    IMAGE TYPE/RadioOrange
-    DATAREF sim/cockpit2/radios/actuators/nav2_frequency_Mhz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 100.000000 100.000000
-    DIGITS 3
-    DECIMALS 0
-    PERIOD_WIDTH 0
-    LED_ROWS 0
-
-  gen_LED Nav2 Active khz
-    POS 1817.000000 338.000000
-    IMAGE TYPE/RadioOrange
-    DATAREF sim/cockpit2/radios/actuators/nav2_frequency_khz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 100.000000 1.000000
-    DIGITS 2
-    DECIMALS 2
-    PERIOD_WIDTH 18
-    LED_ROWS 0
-
-  gen_LED Nav2 Standby Mhz
-    POS 1941.000000 338.000000
-    IMAGE TYPE/RadioOrange
-    DATAREF sim/cockpit2/radios/actuators/nav2_standby_frequency_Mhz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 100.000000 100.000000
-    DIGITS 3
-    DECIMALS 0
-    PERIOD_WIDTH 0
-    LED_ROWS 0
-
-  gen_LED Nav2 Standby khz
-    POS 1981.000000 338.000000
-    IMAGE TYPE/RadioOrange
-    DATAREF sim/cockpit2/radios/actuators/nav2_standby_frequency_khz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 100.000000 1.000000
-    DIGITS 2
-    DECIMALS 2
-    PERIOD_WIDTH 18
-    LED_ROWS 0
-
-END_GROUP
-GROUP Radio Tune Panel L
-  SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
-  LOCKED
-  gen_rotary COM3 ACTIVE
-    POS 1799.000000 500.000000
-    IMAGE AP Radios/INOP
-    DATAREF 
-    SHOW_EQUAL 99.000000 laminar/B738/comm/rtp_L/lcd_to_display
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 6.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
-  gen_rotary COM3 STANDBY
-    POS 1963.000000 500.000000
-    IMAGE AP Radios/INOP
-    DATAREF 
-    SHOW_EQUAL 99.000000 laminar/B738/comm/rtp_L/lcd_to_display
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 6.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
-  GROUP COM1 ACTIVE
-    SHOW_EQUAL 0.000000 laminar/B738/comm/rtp_L/lcd_to_display
-    LOCKED
-    gen_LED Com1 Active Mhz
-      POS 1765.000000 500.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com1_frequency_Mhz
+    HIDE
+    gen_rotary ADF annun
+      POS 1723.000000 872.500000
+      IMAGE TYPE/ADF_ann_2
+      DATAREF 
+      SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant1
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 13
       BUS_SRC 3
       KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 100.000000 100.000000
-      DIGITS 3
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary ANT annun
+      POS 1723.000000 858.500000
+      IMAGE TYPE/ANT_ann_2
+      DATAREF 
+      SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant1
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary ADF annun
+      POS 1886.000000 872.500000
+      IMAGE TYPE/ADF_ann_2
+      DATAREF 
+      SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant1
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary ANT annun
+      POS 1886.000000 858.500000
+      IMAGE TYPE/ANT_ann_2
+      DATAREF 
+      SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant1
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_LED ADF1 Active
+      POS 1784.000000 864.000000
+      IMAGE TYPE/RadioOrange_3n_2
+      DATAREF sim/cockpit2/radios/actuators/adf1_frequency_hz
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 4
       DECIMALS 0
-      PERIOD_WIDTH 0
+      PERIOD_WIDTH 18
       LED_ROWS 0
 
-    gen_LED Com1 Active khz
-      POS 1816.000000 500.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com1_frequency_khz
+    gen_LED ADF1 Active frac
+      POS 1824.000000 864.000000
+      IMAGE TYPE/RadioOrange_3n_2
+      DATAREF sim/cockpit2/radios/actuators/adf1_frequency_hz
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 13
       BUS_SRC 3
       KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 1000.000000 1.000000
-      DIGITS 3
-      DECIMALS 3
+      KEY_FRAME 10000.000000 0.000000
+      DIGITS 1
+      DECIMALS 1
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED ADF1 Standby
+      POS 1948.000000 864.000000
+      IMAGE TYPE/RadioOrange_3n_2
+      DATAREF sim/cockpit2/radios/actuators/adf1_standby_frequency_hz
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 4
+      DECIMALS 0
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED ADF1 Standby frac
+      POS 1988.000000 864.000000
+      IMAGE TYPE/RadioOrange_3n_2
+      DATAREF sim/cockpit2/radios/actuators/adf1_standby_frequency_hz
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 10000.000000 0.000000
+      DIGITS 1
+      DECIMALS 1
       PERIOD_WIDTH 18
       LED_ROWS 0
 
   END_GROUP
-  GROUP COM1 STANDBY
-    SHOW_EQUAL 0.000000 laminar/B738/comm/rtp_L/lcd_to_display
+  GROUP ADF 2
+    SHOW_LESS 0.000000 laminar/B738/dspl_light_test
+    SHOW_EQUAL 1.000000 laminar/B738/comm/nav2_status
     LOCKED
-    gen_LED Com1 Standby Mhz
-      POS 1929.000000 500.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com1_standby_frequency_Mhz
+    HIDE
+    gen_rotary ADF annun
+      POS 1723.000000 819.500000
+      IMAGE TYPE/ADF_ann_2
+      DATAREF 
+      SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant2
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 13
       BUS_SRC 3
       KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 100.000000 100.000000
-      DIGITS 3
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary ANT annun
+      POS 1723.000000 805.500000
+      IMAGE TYPE/ANT_ann_2
+      DATAREF 
+      SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant2
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary ADF annun
+      POS 1886.000000 819.500000
+      IMAGE TYPE/ADF_ann_2
+      DATAREF 
+      SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant2
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary ANT annun
+      POS 1886.000000 805.500000
+      IMAGE TYPE/ANT_ann_2
+      DATAREF 
+      SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant2
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_LED ADF2 Active
+      POS 1784.000000 811.000000
+      IMAGE TYPE/RadioOrange_3n_2
+      DATAREF sim/cockpit2/radios/actuators/adf2_frequency_hz
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 4
       DECIMALS 0
-      PERIOD_WIDTH 0
+      PERIOD_WIDTH 18
       LED_ROWS 0
 
-    gen_LED Com1 Standby khz
-      POS 1980.000000 500.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com1_standby_frequency_khz
+    gen_LED ADF2 Active frac
+      POS 1824.000000 811.000000
+      IMAGE TYPE/RadioOrange_3n_2
+      DATAREF sim/cockpit2/radios/actuators/adf2_frequency_hz
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 13
       BUS_SRC 3
       KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 1000.000000 1.000000
-      DIGITS 3
-      DECIMALS 3
+      KEY_FRAME 10000.000000 0.000000
+      DIGITS 1
+      DECIMALS 1
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED ADF2 Standby
+      POS 1948.000000 811.000000
+      IMAGE TYPE/RadioOrange_3n_2
+      DATAREF sim/cockpit2/radios/actuators/adf2_standby_frequency_hz
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 1.000000 1.000000
+      DIGITS 4
+      DECIMALS 0
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED ADF2 Standby frac
+      POS 1988.000000 811.000000
+      IMAGE TYPE/RadioOrange_3n_2
+      DATAREF sim/cockpit2/radios/actuators/adf2_standby_frequency_hz
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 10000.000000 0.000000
+      DIGITS 1
+      DECIMALS 1
       PERIOD_WIDTH 18
       LED_ROWS 0
 
   END_GROUP
-  GROUP COM2 ACTIVE
-    SHOW_EQUAL 1.000000 laminar/B738/comm/rtp_L/lcd_to_display
+  GROUP Transponder
+    SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
     LOCKED
-    gen_LED Com2 Active Mhz
-      POS 1765.000000 500.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com2_frequency_Mhz
+    HIDE
+    gen_LED XPonder
+      POS 1505.000000 555.000000
+      IMAGE TYPE/TransponderOrange_2
+      DATAREF sim/cockpit2/radios/actuators/transponder_code
+      SHOW_GREATER 1.000000 sim/cockpit2/radios/actuators/transponder_mode
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 13
-      BUS_SRC 3
+      BUS_SRC 7
       KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 100.000000 100.000000
-      DIGITS 3
+      KEY_FRAME 7777.000000 7777.000000
+      DIGITS 4
       DECIMALS 0
       PERIOD_WIDTH 0
       LED_ROWS 0
 
-    gen_LED Com2 Active khz
-      POS 1816.000000 500.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com2_frequency_khz
+    gen_rotary ATC1
+      POS 1457.000000 589.000000
+      IMAGE AP Radios/TransponderATC1_2
+      DATAREF 
+      SHOW_GREATER 1.000000 sim/cockpit2/radios/actuators/transponder_mode
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 13
-      BUS_SRC 3
+      BUS_SRC 7
       KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 1000.000000 1.000000
-      DIGITS 3
-      DECIMALS 3
-      PERIOD_WIDTH 18
-      LED_ROWS 0
+      KEY_FRAME 1.000000 6.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
+
+    gen_rotary XPonder R
+      POS 1544.000000 589.000000
+      IMAGE AP Radios/TransponderReporting_2
+      DATAREF sim/cockpit/radios/transponder_light
+      SHOW_GREATER 1.000000 sim/cockpit2/radios/actuators/transponder_mode
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 7
+      KEY_FRAME 0.000000 -1.000000 1.000000
+      KEY_FRAME 1.000000 0.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
   END_GROUP
-  GROUP COM2 STANDBY
-    SHOW_EQUAL 1.000000 laminar/B738/comm/rtp_L/lcd_to_display
+  GROUP Pressurization
+    SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
     LOCKED
-    gen_LED Com2 Standby Mhz
-      POS 1929.000000 500.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com2_standby_frequency_Mhz
+    HIDE
+    gen_LED Landing Alt pos
+      POS 1797.000000 282.000000
+      IMAGE TYPE/TransponderOrange_3zero_2
+      DATAREF laminar/B738/pressurization/knobs/landing_alt
+      SHOW_GREATER 0.000000 laminar/B738/pressurization/knobs/landing_alt
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
-      LIGHT_RHEOSTAT 13
+      LIGHT_RHEOSTAT 14
       BUS_SRC 3
-      KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 100.000000 100.000000
-      DIGITS 3
+      KEY_FRAME -1000.000000 -1000.000000 1.000000
+      KEY_FRAME 14000.000000 14000.000000
+      COMMENT LAND ALTITUDE
+      DIGITS 5
       DECIMALS 0
       PERIOD_WIDTH 0
       LED_ROWS 0
 
-    gen_LED Com2 Standby khz
-      POS 1980.000000 500.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com2_standby_frequency_khz
+    gen_LED Landing Alt neg
+      POS 1810.000000 282.000000
+      IMAGE TYPE/TransponderOrange_3zero_2
+      DATAREF laminar/B738/pressurization/knobs/landing_alt
+      SHOW_LESS -0.010000 laminar/B738/pressurization/knobs/landing_alt
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
-      LIGHT_RHEOSTAT 13
+      LIGHT_RHEOSTAT 14
       BUS_SRC 3
-      KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 1000.000000 1.000000
-      DIGITS 3
-      DECIMALS 3
-      PERIOD_WIDTH 18
+      KEY_FRAME -1000.000000 -1000.000000 1.000000
+      KEY_FRAME 14000.000000 14000.000000
+      COMMENT LAND ALTITUDE
+      DIGITS 4
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED Aircraft Alt POS
+      POS 1964.000000 282.000000
+      IMAGE TYPE/TransponderOrange_3zero_2
+      DATAREF sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
+      SHOW_GREATER 0.000000 sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 14
+      BUS_SRC 3
+      KEY_FRAME -1000.000000 -1000.000000 1.000000
+      KEY_FRAME 42000.000000 42000.000000
+      COMMENT AIRCRAFT ALTITUDE
+      DIGITS 5
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED Aircraft Alt NEG
+      POS 1977.000000 282.000000
+      IMAGE TYPE/TransponderOrange_3zero_2
+      DATAREF sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
+      SHOW_LESS -0.010000 sim/cockpit2/pressurization/actuators/max_allowable_altitude_ft
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 14
+      BUS_SRC 3
+      KEY_FRAME -1000.000000 -1000.000000 1.000000
+      KEY_FRAME 42000.000000 42000.000000
+      COMMENT AIRCRAFT ALTITUDE
+      DIGITS 4
+      DECIMALS 0
+      PERIOD_WIDTH 0
       LED_ROWS 0
 
   END_GROUP
-END_GROUP
-GROUP Radio Tune Panel R
-  SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
-  LOCKED
-  gen_rotary COM3 ACTIVE 2
-    POS 1799.000000 392.000000
-    IMAGE AP Radios/INOP
-    DATAREF 
-    SHOW_EQUAL 99.000000 laminar/B738/comm/rtp_R/lcd_to_display
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 6.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
-  gen_rotary COM3 STANDBY 2
-    POS 1963.000000 392.000000
-    IMAGE AP Radios/INOP
-    DATAREF 
-    SHOW_EQUAL 99.000000 laminar/B738/comm/rtp_R/lcd_to_display
+  GROUP NAV 1
+    SHOW_LESS 0.000000 laminar/B738/dspl_light_test
+    SHOW_EQUAL 1.000000 laminar/B738/comm/nav1_status
     LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 6.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
+    HIDE
+    gen_LED Nav1 Active Mhz
+      POS 1777.000000 446.000000
+      IMAGE TYPE/RadioOrange_2
+      DATAREF sim/cockpit2/radios/actuators/nav1_frequency_Mhz
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 100.000000
+      DIGITS 3
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
 
-  GROUP COM1 ACTIVE 2
-    SHOW_EQUAL 0.000000 laminar/B738/comm/rtp_R/lcd_to_display
+    gen_LED Nav1 Active khz
+      POS 1817.000000 446.000000
+      IMAGE TYPE/RadioOrange_2
+      DATAREF sim/cockpit2/radios/actuators/nav1_frequency_khz
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 1.000000
+      DIGITS 2
+      DECIMALS 2
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED Nav1 Standby Mhz
+      POS 1941.000000 446.000000
+      IMAGE TYPE/RadioOrange_2
+      DATAREF sim/cockpit2/radios/actuators/nav1_standby_frequency_Mhz
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 100.000000
+      DIGITS 3
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED Nav1 Standby khz
+      POS 1981.000000 446.000000
+      IMAGE TYPE/RadioOrange_2
+      DATAREF sim/cockpit2/radios/actuators/nav1_standby_frequency_khz
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 1.000000
+      DIGITS 2
+      DECIMALS 2
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+  END_GROUP
+  GROUP NAV 2
+    SHOW_LESS 0.000000 laminar/B738/dspl_light_test
+    SHOW_EQUAL 1.000000 laminar/B738/comm/nav2_status
     LOCKED
-    gen_LED Com1 Active Mhz 2
-      POS 1765.000000 392.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com1_frequency_Mhz
+    HIDE
+    gen_LED Nav2 Active Mhz
+      POS 1777.000000 338.000000
+      IMAGE TYPE/RadioOrange_2
+      DATAREF sim/cockpit2/radios/actuators/nav2_frequency_Mhz
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 13
       BUS_SRC 3
@@ -45575,120 +46700,448 @@ GROUP Radio Tune Panel R
       PERIOD_WIDTH 0
       LED_ROWS 0
 
-    gen_LED Com1 Active khz 2
-      POS 1816.000000 392.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com1_frequency_khz
+    gen_LED Nav2 Active khz
+      POS 1817.000000 338.000000
+      IMAGE TYPE/RadioOrange_2
+      DATAREF sim/cockpit2/radios/actuators/nav2_frequency_khz
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 13
       BUS_SRC 3
       KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 1000.000000 1.000000
+      KEY_FRAME 100.000000 1.000000
+      DIGITS 2
+      DECIMALS 2
+      PERIOD_WIDTH 18
+      LED_ROWS 0
+
+    gen_LED Nav2 Standby Mhz
+      POS 1941.000000 338.000000
+      IMAGE TYPE/RadioOrange_2
+      DATAREF sim/cockpit2/radios/actuators/nav2_standby_frequency_Mhz
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 100.000000
       DIGITS 3
-      DECIMALS 3
+      DECIMALS 0
+      PERIOD_WIDTH 0
+      LED_ROWS 0
+
+    gen_LED Nav2 Standby khz
+      POS 1981.000000 338.000000
+      IMAGE TYPE/RadioOrange_2
+      DATAREF sim/cockpit2/radios/actuators/nav2_standby_frequency_khz
+      LOCKED
+      HIDE
+      LIGHT_MODE GLASS_AUTO
+      LIGHT_RHEOSTAT 13
+      BUS_SRC 3
+      KEY_FRAME 0.000000 0.000000 1.000000
+      KEY_FRAME 100.000000 1.000000
+      DIGITS 2
+      DECIMALS 2
       PERIOD_WIDTH 18
       LED_ROWS 0
 
   END_GROUP
-  GROUP COM1 STANDBY 2
-    SHOW_EQUAL 0.000000 laminar/B738/comm/rtp_R/lcd_to_display
-    gen_LED Com1 Standby Mhz 2
-      POS 1929.000000 392.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com1_standby_frequency_Mhz
+  GROUP Radio Tune Panel L
+    SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
+    LOCKED
+    HIDE
+    gen_rotary COM3 ACTIVE
+      POS 1799.000000 500.000000
+      IMAGE AP Radios/INOP_2
+      DATAREF 
+      SHOW_EQUAL 99.000000 laminar/B738/comm/rtp_L/lcd_to_display
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 13
       BUS_SRC 3
       KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 100.000000 100.000000
-      DIGITS 3
-      DECIMALS 0
-      PERIOD_WIDTH 0
-      LED_ROWS 0
+      KEY_FRAME 1.000000 6.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
-    gen_LED Com1 Standby khz 2
-      POS 1980.000000 392.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com1_standby_frequency_khz
+    gen_rotary COM3 STANDBY
+      POS 1963.000000 500.000000
+      IMAGE AP Radios/INOP_2
+      DATAREF 
+      SHOW_EQUAL 99.000000 laminar/B738/comm/rtp_L/lcd_to_display
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 13
       BUS_SRC 3
       KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 1000.000000 1.000000
-      DIGITS 3
-      DECIMALS 3
-      PERIOD_WIDTH 18
-      LED_ROWS 0
+      KEY_FRAME 1.000000 6.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
+    GROUP COM1 ACTIVE
+      SHOW_EQUAL 0.000000 laminar/B738/comm/rtp_L/lcd_to_display
+      LOCKED
+      HIDE
+      gen_LED Com1 Active Mhz
+        POS 1765.000000 500.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com1_frequency_Mhz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com1 Active khz
+        POS 1816.000000 500.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com1_frequency_khz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+    GROUP COM1 STANDBY
+      SHOW_EQUAL 0.000000 laminar/B738/comm/rtp_L/lcd_to_display
+      LOCKED
+      HIDE
+      gen_LED Com1 Standby Mhz
+        POS 1929.000000 500.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com1_standby_frequency_Mhz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com1 Standby khz
+        POS 1980.000000 500.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com1_standby_frequency_khz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+    GROUP COM2 ACTIVE
+      SHOW_EQUAL 1.000000 laminar/B738/comm/rtp_L/lcd_to_display
+      LOCKED
+      HIDE
+      gen_LED Com2 Active Mhz
+        POS 1765.000000 500.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com2_frequency_Mhz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com2 Active khz
+        POS 1816.000000 500.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com2_frequency_khz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+    GROUP COM2 STANDBY
+      SHOW_EQUAL 1.000000 laminar/B738/comm/rtp_L/lcd_to_display
+      LOCKED
+      HIDE
+      gen_LED Com2 Standby Mhz
+        POS 1929.000000 500.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com2_standby_frequency_Mhz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com2 Standby khz
+        POS 1980.000000 500.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com2_standby_frequency_khz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
   END_GROUP
-  GROUP COM2 ACTIVE 2
-    SHOW_EQUAL 1.000000 laminar/B738/comm/rtp_R/lcd_to_display
-    gen_LED Com2 Active Mhz 2
-      POS 1765.000000 392.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com2_frequency_Mhz
-      LOCKED
+  GROUP Radio Tune Panel R
+    SHOW_EQUAL 0.000000 laminar/B738/dspl_light_test
+    LOCKED
+    HIDE
+    gen_rotary COM3 ACTIVE 2
+      POS 1799.000000 392.000000
+      IMAGE AP Radios/INOP_2
+      DATAREF 
+      SHOW_EQUAL 99.000000 laminar/B738/comm/rtp_R/lcd_to_display
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 13
       BUS_SRC 3
       KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 100.000000 100.000000
-      DIGITS 3
-      DECIMALS 0
-      PERIOD_WIDTH 0
-      LED_ROWS 0
+      KEY_FRAME 1.000000 6.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
-    gen_LED Com2 Active khz 2
-      POS 1816.000000 392.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com2_frequency_khz
+    gen_rotary COM3 STANDBY 2
+      POS 1963.000000 392.000000
+      IMAGE AP Radios/INOP_2
+      DATAREF 
+      SHOW_EQUAL 99.000000 laminar/B738/comm/rtp_R/lcd_to_display
       LOCKED
+      HIDE
       LIGHT_MODE GLASS_AUTO
       LIGHT_RHEOSTAT 13
       BUS_SRC 3
       KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 1000.000000 1.000000
-      DIGITS 3
-      DECIMALS 3
-      PERIOD_WIDTH 18
-      LED_ROWS 0
+      KEY_FRAME 1.000000 6.000000
+      DIGITS 1
+      ROTARY_TYPE NO_CLICK
+      CLICK_RADIUS 10.000000
+      CLICK_RADIUS_DY 0.000000
+      OFFSET 0.000000
+      STEP1 1.000000
+      STEP2 1.000000
+      CURSOR DEFAULT
+      CLICK_DX 0
+      CLICK_DY 0
 
-  END_GROUP
-  GROUP COM2 STANDBY 2
-    SHOW_EQUAL 1.000000 laminar/B738/comm/rtp_R/lcd_to_display
-    gen_LED Com2 Standby Mhz 2
-      POS 1929.000000 392.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com2_standby_frequency_Mhz
+    GROUP COM1 ACTIVE 2
+      SHOW_EQUAL 0.000000 laminar/B738/comm/rtp_R/lcd_to_display
       LOCKED
-      LIGHT_MODE GLASS_AUTO
-      LIGHT_RHEOSTAT 13
-      BUS_SRC 3
-      KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 100.000000 100.000000
-      DIGITS 3
-      DECIMALS 0
-      PERIOD_WIDTH 0
-      LED_ROWS 0
+      HIDE
+      gen_LED Com1 Active Mhz 2
+        POS 1765.000000 392.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com1_frequency_Mhz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
 
-    gen_LED Com2 Standby khz 2
-      POS 1980.000000 392.000000
-      IMAGE TYPE/RadioOrange
-      DATAREF sim/cockpit2/radios/actuators/com2_standby_frequency_khz
-      LOCKED
-      LIGHT_MODE GLASS_AUTO
-      LIGHT_RHEOSTAT 13
-      BUS_SRC 3
-      KEY_FRAME 0.000000 0.000000 1.000000
-      KEY_FRAME 1000.000000 1.000000
-      DIGITS 3
-      DECIMALS 3
-      PERIOD_WIDTH 18
-      LED_ROWS 0
+      gen_LED Com1 Active khz 2
+        POS 1816.000000 392.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com1_frequency_khz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
 
+    END_GROUP
+    GROUP COM1 STANDBY 2
+      SHOW_EQUAL 0.000000 laminar/B738/comm/rtp_R/lcd_to_display
+      HIDE
+      gen_LED Com1 Standby Mhz 2
+        POS 1929.000000 392.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com1_standby_frequency_Mhz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com1 Standby khz 2
+        POS 1980.000000 392.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com1_standby_frequency_khz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+    GROUP COM2 ACTIVE 2
+      SHOW_EQUAL 1.000000 laminar/B738/comm/rtp_R/lcd_to_display
+      HIDE
+      gen_LED Com2 Active Mhz 2
+        POS 1765.000000 392.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com2_frequency_Mhz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com2 Active khz 2
+        POS 1816.000000 392.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com2_frequency_khz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
+    GROUP COM2 STANDBY 2
+      SHOW_EQUAL 1.000000 laminar/B738/comm/rtp_R/lcd_to_display
+      HIDE
+      gen_LED Com2 Standby Mhz 2
+        POS 1929.000000 392.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com2_standby_frequency_Mhz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 100.000000 100.000000
+        DIGITS 3
+        DECIMALS 0
+        PERIOD_WIDTH 0
+        LED_ROWS 0
+
+      gen_LED Com2 Standby khz 2
+        POS 1980.000000 392.000000
+        IMAGE TYPE/RadioOrange_2
+        DATAREF sim/cockpit2/radios/actuators/com2_standby_frequency_khz
+        LOCKED
+        HIDE
+        LIGHT_MODE GLASS_AUTO
+        LIGHT_RHEOSTAT 13
+        BUS_SRC 3
+        KEY_FRAME 0.000000 0.000000 1.000000
+        KEY_FRAME 1000.000000 1.000000
+        DIGITS 3
+        DECIMALS 3
+        PERIOD_WIDTH 18
+        LED_ROWS 0
+
+    END_GROUP
   END_GROUP
 END_GROUP
 GROUP FROM 2D
@@ -115465,312 +116918,6 @@ GROUP FMC FO
       OFFSET_Y -18.000000
 
   END_GROUP
-END_GROUP
-GROUP ADF 1
-  SHOW_LESS 0.000000 laminar/B738/dspl_light_test
-  SHOW_EQUAL 1.000000 laminar/B738/comm/nav1_status
-  LOCKED
-  gen_rotary ADF annun
-    POS 1723.000000 872.500000
-    IMAGE TYPE/ADF_ann
-    DATAREF 
-    SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant1
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 1.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
-  gen_rotary ANT annun
-    POS 1723.000000 858.500000
-    IMAGE TYPE/ANT_ann
-    DATAREF 
-    SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant1
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 1.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
-  gen_rotary ADF annun
-    POS 1886.000000 872.500000
-    IMAGE TYPE/ADF_ann
-    DATAREF 
-    SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant1
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 1.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
-  gen_rotary ANT annun
-    POS 1886.000000 858.500000
-    IMAGE TYPE/ANT_ann
-    DATAREF 
-    SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant1
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 1.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
-  gen_LED ADF1 Active
-    POS 1784.000000 864.000000
-    IMAGE TYPE/RadioOrange_3n
-    DATAREF sim/cockpit2/radios/actuators/adf1_frequency_hz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 1.000000
-    DIGITS 4
-    DECIMALS 0
-    PERIOD_WIDTH 18
-    LED_ROWS 0
-
-  gen_LED ADF1 Active frac
-    POS 1824.000000 864.000000
-    IMAGE TYPE/RadioOrange_3n
-    DATAREF sim/cockpit2/radios/actuators/adf1_frequency_hz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 10000.000000 0.000000
-    DIGITS 1
-    DECIMALS 1
-    PERIOD_WIDTH 18
-    LED_ROWS 0
-
-  gen_LED ADF1 Standby
-    POS 1948.000000 864.000000
-    IMAGE TYPE/RadioOrange_3n
-    DATAREF sim/cockpit2/radios/actuators/adf1_standby_frequency_hz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 1.000000
-    DIGITS 4
-    DECIMALS 0
-    PERIOD_WIDTH 18
-    LED_ROWS 0
-
-  gen_LED ADF1 Standby frac
-    POS 1988.000000 864.000000
-    IMAGE TYPE/RadioOrange_3n
-    DATAREF sim/cockpit2/radios/actuators/adf1_standby_frequency_hz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 10000.000000 0.000000
-    DIGITS 1
-    DECIMALS 1
-    PERIOD_WIDTH 18
-    LED_ROWS 0
-
-END_GROUP
-GROUP ADF 2
-  SHOW_LESS 0.000000 laminar/B738/dspl_light_test
-  SHOW_EQUAL 1.000000 laminar/B738/comm/nav2_status
-  LOCKED
-  gen_rotary ADF annun
-    POS 1723.000000 819.500000
-    IMAGE TYPE/ADF_ann
-    DATAREF 
-    SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant2
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 1.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
-  gen_rotary ANT annun
-    POS 1723.000000 805.500000
-    IMAGE TYPE/ANT_ann
-    DATAREF 
-    SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant2
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 1.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
-  gen_rotary ADF annun
-    POS 1886.000000 819.500000
-    IMAGE TYPE/ADF_ann
-    DATAREF 
-    SHOW_EQUAL 0.000000 laminar/B738/toggle_switch/adf_ant2
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 1.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
-  gen_rotary ANT annun
-    POS 1886.000000 805.500000
-    IMAGE TYPE/ANT_ann
-    DATAREF 
-    SHOW_EQUAL 1.000000 laminar/B738/toggle_switch/adf_ant2
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 1.000000
-    DIGITS 1
-    ROTARY_TYPE NO_CLICK
-    CLICK_RADIUS 10.000000
-    CLICK_RADIUS_DY 0.000000
-    OFFSET 0.000000
-    STEP1 1.000000
-    STEP2 1.000000
-    CURSOR DEFAULT
-    CLICK_DX 0
-    CLICK_DY 0
-
-  gen_LED ADF2 Active
-    POS 1784.000000 811.000000
-    IMAGE TYPE/RadioOrange_3n
-    DATAREF sim/cockpit2/radios/actuators/adf2_frequency_hz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 1.000000
-    DIGITS 4
-    DECIMALS 0
-    PERIOD_WIDTH 18
-    LED_ROWS 0
-
-  gen_LED ADF2 Active frac
-    POS 1824.000000 811.000000
-    IMAGE TYPE/RadioOrange_3n
-    DATAREF sim/cockpit2/radios/actuators/adf2_frequency_hz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 10000.000000 0.000000
-    DIGITS 1
-    DECIMALS 1
-    PERIOD_WIDTH 18
-    LED_ROWS 0
-
-  gen_LED ADF2 Standby
-    POS 1948.000000 811.000000
-    IMAGE TYPE/RadioOrange_3n
-    DATAREF sim/cockpit2/radios/actuators/adf2_standby_frequency_hz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 1.000000 1.000000
-    DIGITS 4
-    DECIMALS 0
-    PERIOD_WIDTH 18
-    LED_ROWS 0
-
-  gen_LED ADF2 Standby frac
-    POS 1988.000000 811.000000
-    IMAGE TYPE/RadioOrange_3n
-    DATAREF sim/cockpit2/radios/actuators/adf2_standby_frequency_hz
-    LOCKED
-    LIGHT_MODE GLASS_AUTO
-    LIGHT_RHEOSTAT 13
-    BUS_SRC 3
-    KEY_FRAME 0.000000 0.000000 1.000000
-    KEY_FRAME 10000.000000 0.000000
-    DIGITS 1
-    DECIMALS 1
-    PERIOD_WIDTH 18
-    LED_ROWS 0
-
 END_GROUP
 GROUP Display light test
   SHOW_EQUAL 1.000000 laminar/B738/dspl_light_test
