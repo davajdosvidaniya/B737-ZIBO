@@ -292,3 +292,6 @@ BEGIN_MANIP command_switch_left_right sim/flight_controls/rudder_trim_right sim/
 	DEG_PER_ACTION 125
 	HOLD_MANIP
 END_MANIP
+BEGIN_MANIP command_knob laminar/B738/knob/standby_alt_baro_up laminar/B738/knob/standby_alt_baro_dn
+	DEG_PER_ACTION 75
+END_MANIP

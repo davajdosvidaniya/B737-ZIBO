@@ -160,6 +160,7 @@ B738DR_seatbelt_sign_switch_pos = create_dataref("laminar/B738/toggle_switch/sea
 B738DR_land_ret_left_pos	= create_dataref("laminar/B738/lights/land_ret_left_pos", "number")
 B738DR_land_ret_right_pos	= create_dataref("laminar/B738/lights/land_ret_right_pos", "number")
 
+
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
 --*************************************************************************************--
@@ -867,7 +868,6 @@ function flight_start()
 	fist_time = 0
 	first_time_enable = 1
 	B738_light_state()
-
 end
 
 

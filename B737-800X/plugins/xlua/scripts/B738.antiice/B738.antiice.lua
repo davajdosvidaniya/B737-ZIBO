@@ -410,13 +410,13 @@ function B738_wing_anti_ice()
 		end
 	end
 	
-	if B738DR_duct_pressure_L < 8
+	if B738DR_duct_pressure_L < 5
 	or wing_heat_enable == 0
 	or B738DR_wing_heat_pos == 0 then
 		wing_l_heat_enable = 0
 	end
 	
-	if B738DR_duct_pressure_R < 8
+	if B738DR_duct_pressure_R < 5
 	or wing_heat_enable == 0
 	or B738DR_wing_heat_pos == 0 then
 		wing_r_heat_enable = 0

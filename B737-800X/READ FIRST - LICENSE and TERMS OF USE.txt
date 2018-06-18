@@ -1,0 +1,28 @@
+All script files (except fmod script files) (c) 2017 / 2018 by Zibo
+All fmod and fmod configuration and scripting files (c) 2017 / 2018 by audiobirdxp / o.schmidt
+All airfoils files (c) 2017/2018 by Alan from AeroSimDevGroup
+All other files with exception of assets provided by Laminar Research provided by Zibo | audiobirdxp / o. schmidt
+-----------------------------------------------------------------------------------------------------------------
+
+The files in this download are free of charge, but not free of copyright:
+
+You may download and use the provided files as you wish, but you may not:
+
+- re-upload them to a different location where anyone but you can access these files
+- share or distribute them in any way
+- modify and distribute them in any way
+- reverse-engineer these files
+- use them for commercial or non-commercial products without the express permission by the authors (see contacts below)
+- take credit for any part
+
+By installing and using any files provided with the download, you acknowledge that the author is not responsible for any potential harm they might cause either to you, 
+other people, your hardware or software.
+Any files in this download are provided "as is".
+
+The contents of the folder "plugins" with exception of any file in "scripts" are (C) by Laminar Research who hold all rights on these files.
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+contact: lubos.zibek@gmail.com
+         audiobirdxp@gmail.com

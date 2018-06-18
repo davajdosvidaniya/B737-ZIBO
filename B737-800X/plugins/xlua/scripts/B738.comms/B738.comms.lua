@@ -109,6 +109,11 @@ B738DR_rtp_R_freq_switch_pos		= create_dataref("laminar/B738/comm/push_button/rt
 B738DR_nav1_status					= create_dataref("laminar/B738/comm/nav1_status", "number")
 B738DR_nav2_status					= create_dataref("laminar/B738/comm/nav2_status", "number")
 
+B738DR_com1_audio_sel_pos			= create_dataref("laminar/B738/comm/com1_audio_sel_pos", "number")
+B738DR_com2_audio_sel_pos			= create_dataref("laminar/B738/comm/com2_audio_sel_pos", "number")
+B738DR_nav1_audio_sel_pos			= create_dataref("laminar/B738/comm/nav1_audio_sel_pos", "number")
+B738DR_nav2_audio_sel_pos			= create_dataref("laminar/B738/comm/nav2_audio_sel_pos", "number")
+B738DR_mark_audio_sel_pos			= create_dataref("laminar/B738/comm/mark_audio_sel_pos", "number")
 
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
@@ -161,7 +166,11 @@ simCMD_com2_stby_fine_dn    = find_command("sim/radios/stby_com2_fine_down_833")
 simCMD_com1_stby_flip       = find_command("sim/radios/com1_standy_flip")
 simCMD_com2_stby_flip       = find_command("sim/radios/com2_standy_flip")
 
-
+simCMD_audio_com1 			= find_command("sim/audio_panel/monitor_audio_com1")
+simCMD_audio_com2 			= find_command("sim/audio_panel/monitor_audio_com2")
+simCMD_audio_nav1 			= find_command("sim/audio_panel/monitor_audio_nav1")
+simCMD_audio_nav2 			= find_command("sim/audio_panel/monitor_audio_nav2")
+simCMD_audio_mark 			= find_command("sim/audio_panel/monitor_audio_mkr")
 
 --*************************************************************************************--
 --** 				              CUSTOM COMMAND HANDLERS            			     **--
@@ -523,9 +532,50 @@ function B738_rtp_R_freq_khz_sel_dial_dn_CMDhandler(phase, duration)
     end
 end
 
+function B738_com1_audio_sel_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_com1_audio_sel_pos = 1
+		simCMD_audio_com1:once()
+	elseif phase == 2 then
+		B738DR_com1_audio_sel_pos = 0
+	end
+end
 
+function B738_com2_audio_sel_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_com2_audio_sel_pos = 1
+		simCMD_audio_com2:once()
+	elseif phase == 2 then
+		B738DR_com2_audio_sel_pos = 0
+	end
+end
 
+function B738_nav1_audio_sel_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_nav1_audio_sel_pos = 1
+		simCMD_audio_nav1:once()
+	elseif phase == 2 then
+		B738DR_nav1_audio_sel_pos = 0
+	end
+end
 
+function B738_nav2_audio_sel_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_nav2_audio_sel_pos = 1
+		simCMD_audio_nav2:once()
+	elseif phase == 2 then
+		B738DR_nav2_audio_sel_pos = 0
+	end
+end
+
+function B738_mark_audio_sel_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_mark_audio_sel_pos = 1
+		simCMD_audio_mark:once()
+	elseif phase == 2 then
+		B738DR_mark_audio_sel_pos = 0
+	end
+end
 
 
 --*************************************************************************************--
@@ -565,7 +615,11 @@ B738CMD_rtp_R_freq_MHz_sel_dial_dn  = create_command("laminar/B738/rtp_R/freq_MH
 B738CMD_rtp_R_freq_khz_sel_dial_up  = create_command("laminar/B738/rtp_R/freq_khz/sel_dial_up", "Radio Tuning Panel Right Freq khz Sel Up", B738_rtp_R_freq_khz_sel_dial_up_CMDhandler)
 B738CMD_rtp_R_freq_khz_sel_dial_dn  = create_command("laminar/B738/rtp_R/freq_khz/sel_dial_dn", "Radio Tuning Panel Right Freq khz Sel Down", B738_rtp_R_freq_khz_sel_dial_dn_CMDhandler)
 
-
+B738CMD_com1_audio_sel 				= create_command("laminar/B738/comm/com1_audio_sel", "Com1 Audio select", B738_com1_audio_sel_CMDhandler)
+B738CMD_com2_audio_sel 				= create_command("laminar/B738/comm/com2_audio_sel", "Com2 Audio select", B738_com2_audio_sel_CMDhandler)
+B738CMD_nav1_audio_sel 				= create_command("laminar/B738/comm/nav1_audio_sel", "Nav1 Audio select", B738_nav1_audio_sel_CMDhandler)
+B738CMD_nav2_audio_sel 				= create_command("laminar/B738/comm/nav2_audio_sel", "Nav1 Audio select", B738_nav2_audio_sel_CMDhandler)
+B738CMD_mark_audio_sel 				= create_command("laminar/B738/comm/mark_audio_sel", "Marker Audio select", B738_mark_audio_sel_CMDhandler)
 
 --*************************************************************************************--
 --** 					            OBJECT CONSTRUCTORS         		    		 **--

@@ -54,7 +54,7 @@ LANDGEAR_NOSE_MAN_TIME = 17.3
 LANDGEAR_LEFT_MAN_TIME = 19.8
 LANDGEAR_RIGHT_MAN_TIME = 19.2
 
-TOE_BRAKE_FORCE = 0.28
+TOE_BRAKE_FORCE = 0.55	--0.75	--0.50	--0.28
 
 PULL_UP = 1
 WINDSHEAR = 2
@@ -165,12 +165,15 @@ pack_mode = 0
 l_duct_in = 0
 r_duct_in = 0
 
-bleed_valve_min_act_press = 7.0
+bleed_valve_min_act_press = 5.0
 
 l_duct_out = 0.00
 r_duct_out = 0.00
-l_duct_out_target = 0.00
-r_duct_out_target = 0.00
+l_duct_out2 = 0.00
+r_duct_out2 = 0.00
+apu_duct = 0.00
+-- l_duct_out_target = 0.00
+-- r_duct_out_target = 0.00
 
 B738_tank_l_status = 0
 B738_tank_c_status = 0
@@ -388,7 +391,7 @@ brake_smoothly_left = 0
 brake_smoothly_right = 0
 
 apu_start_avaiable = 0
-apu_protection = 1
+apu_protection_disabled = 1
 
 --*************************************************************************************--
 --** 					            LOCAL VARIABLES                 				 **--
@@ -404,6 +407,8 @@ local dual_bleed = 0
 
 local B738_speedbrake_stop = 0
 local austin_speedbrake_handle = 0
+
+--local standby_altimeter_baro = 29.92
 
 --*************************************************************************************--
 --** 				             FIND X-PLANE DATAREFS            			    	 **--
@@ -862,6 +867,7 @@ simDR_nav1_vert_signal			= find_dataref("sim/cockpit2/radios/indicators/nav1_dis
 
 xfirst_time2			= find_dataref("laminar/B738/fms/xfirst_time2")
 
+simDR_wind_spd					= find_dataref("sim/cockpit2/gauges/indicators/wind_speed_kts")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM DATAREFS             			    	 **--
@@ -991,6 +997,9 @@ B738DR_fo_vsd_map_mode		= find_dataref("laminar/B738/EFIS_control/fo/vsd_map")
 
 B738DR_tire_blown				= find_dataref("laminar/B738/effect/tire_blown")
 
+simDR_glideslope_status			= find_dataref("sim/cockpit2/autopilot/glideslope_status")
+B738DR_autoland_status			= find_dataref("laminar/B738/autopilot/autoland_status")
+
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
 --*************************************************************************************--
@@ -1023,8 +1032,10 @@ B738DR_duct_pressure_R = create_dataref("laminar/B738/indicators/duct_press_R", 
 B738DR_cross_feed_selector_knob 	= create_dataref("laminar/B738/knobs/cross_feed", "number")
 B738DR_cross_feed_valve			 	= create_dataref("laminar/B738/fuel/cross_feed_valve", "number")
 
-B738DR_stall_test1	= create_dataref("laminar/B738/push_button/stall_test1", "number")
-B738DR_stall_test2	= create_dataref("laminar/B738/push_button/stall_test2", "number")
+B738DR_stall_test1			= create_dataref("laminar/B738/push_button/stall_test1", "number")
+B738DR_stall_test2			= create_dataref("laminar/B738/push_button/stall_test2", "number")
+B738DR_stall_test_active1	= create_dataref("laminar/B738/push_button/stall_test_active1", "number")
+B738DR_stall_test_active2	= create_dataref("laminar/B738/push_button/stall_test_active2", "number")
 
 B738DR_transponder_knob_pos = create_dataref("laminar/B738/knob/transponder_pos", "number")
 B738DR_transponder_ident_button = create_dataref("laminar/B738/push_button/transponder_ident", "number")
@@ -1386,8 +1397,20 @@ B738DR_standby_alt_app_pos		= create_dataref("laminar/B738/knobs/standby_alt_app
 B738DR_standby_alt_rst_pos		= create_dataref("laminar/B738/knobs/standby_alt_rst_pos", "number")
 B738DR_standby_alt_plus_pos		= create_dataref("laminar/B738/knobs/standby_alt_plus_pos", "number")
 B738DR_standby_alt_minus_pos	= create_dataref("laminar/B738/knobs/standby_alt_minus_pos", "number")
+B738DR_standby_alt_std_pos		= create_dataref("laminar/B738/knobs/standby_alt_std_pos", "number")
 
 B738DR_standby_altimeter		= create_dataref("laminar/B738/gauges/standby_altitude_ft", "number")
+B738DR_standby_mode				= create_dataref("laminar/B738/gauges/standby_mode", "number")
+B738DR_standby_alt_mode			= create_dataref("laminar/B738/gauges/standby_alt_mode", "number")
+B738DR_standby_alt_std_mode		= create_dataref("laminar/B738/gauges/standby_alt_std_mode", "number")
+standby_altimeter_baro			= create_dataref("laminar/B738/gauges/standby_altimeter_baro", "number")
+
+B738DR_oxy_test_cpt_pos 		= create_dataref("laminar/B738/push_button/oxy_test_cpt_pos", "number")
+B738DR_oxy_test_fo_pos 			= create_dataref("laminar/B738/push_button/oxy_test_fo_pos", "number")
+B738DR_oxy_test_cpt2_pos 		= create_dataref("laminar/B738/push_button/oxy_test_cpt2_pos", "number")
+B738DR_oxy_test_fo2_pos 		= create_dataref("laminar/B738/push_button/oxy_test_fo2_pos", "number")
+B738DR_fmod_oxy 				= create_dataref("laminar/B738/fmod/oxygen_test", "number")
+
 
 --*************************************************************************************--
 --** 				       READ-WRITE CUSTOM DATAREF HANDLERS     	        	     **--
@@ -1721,7 +1744,7 @@ B738DR_adf_ant2				= create_dataref("laminar/B738/toggle_switch/adf_ant2", "numb
 B738DR_off_on2				= create_dataref("laminar/B738/toggle_switch/off_on2", "number", B738DR_off_on2_DRhandler)
 
 B738DR_panel_brightness			= create_dataref("laminar/B738/electric/panel_brightness", "array[4]", B738DR_panel_brightness_DRhandler)
-B738DR_instrument_brightness	= create_dataref("laminar/B738/electric/instrument_brightness", "array[16]", B738DR_instrument_brightness_DRhandler)
+B738DR_instrument_brightness	= create_dataref("laminar/B738/electric/instrument_brightness", "array[24]", B738DR_instrument_brightness_DRhandler)
 -- B738DR_ap_backlight				= create_dataref("laminar/B738/electric/ap_backlight", "number", B738DR_ap_backlight_DRhandler)
 -- B738DR_padesteal_backlight		= create_dataref("laminar/B738/electric/padesteal_backlight", "number", B738DR_padesteal_backlight_DRhandler)
 -- B738DR_padesteal_backlight2		= create_dataref("laminar/B738/electric/padesteal_backlight2", "number", B738DR_padesteal_backlight2_DRhandler)
@@ -1907,7 +1930,8 @@ function B738_apu_starter_switch_neg_CMDhandler(phase, duration)
         if B738DR_apu_start_switch_position == 0 then			-- OFF
             B738DR_apu_start_switch_position = 1				-- ON
             simCMD_apu_on:once()
-			run_after_time(apu_low_oil, 5.5)				-- Delay 5.5 second
+			--run_after_time(apu_low_oil, 5.5)				-- Delay 5.5 second
+			run_after_time(apu_low_oil, 1.5)				-- Delay 5.5 second
 			apu_door_target = 1
 			-- if simDR_apu_status < 40 then
 				-- B738DR_apu_low_oil = 1
@@ -2149,13 +2173,17 @@ function B738_stall_test1_CMDhandler(phase, duration)
 	if phase == 0 then
 		if simDR_aircraft_on_ground == 1 then
 			B738DR_stall_test1 = 1
-			simCMD_stall_test:start()
+			if B738DR_dc_bus1_status == 1 then
+				simCMD_stall_test:start()
+				B738DR_stall_test_active1 = 1
+			end
 		elseif simDR_aircraft_on_ground == 0 then
 			B738DR_stall_test1 = 1
 		end
 	elseif phase == 2 then
 		B738DR_stall_test1 = 0
 		simCMD_stall_test:stop()
+		B738DR_stall_test_active1 = 0
 	end
 end
 
@@ -2163,13 +2191,17 @@ function B738_stall_test2_CMDhandler(phase, duration)
 	if phase == 0 then
 		if simDR_aircraft_on_ground == 1 then
 			B738DR_stall_test2 = 1
-			simCMD_stall_test:start()
+			if B738DR_dc_bus2_status == 1 then
+				simCMD_stall_test:start()
+				B738DR_stall_test_active2 = 1
+			end
 		elseif simDR_aircraft_on_ground == 0 then
 			B738DR_stall_test2 = 1
 		end
 	elseif phase == 2 then
 		B738DR_stall_test2 = 0
 		simCMD_stall_test:stop()
+		B738DR_stall_test_active2 = 0
 	end
 end
 
@@ -3410,7 +3442,7 @@ function B738_park_brake_toggle_CMDhandler(phase, duration)
 			end
 		else
 			B738DR_parking_brake_pos = 0
-			--simDR_brake = 0
+			simDR_brake = 0
 			--parkbrake_force = 0
 		end
 	end
@@ -3420,10 +3452,14 @@ function B738_park_brake_reg_toggle_CMDhandler(phase, duration)
 	if phase == 0 then
 		if B738DR_parking_brake_pos == 0 then
 			B738DR_parking_brake_pos = TOE_BRAKE_FORCE -- --0.24
+			if simDR_brake > TOE_BRAKE_FORCE then
+				simDR_brake = TOE_BRAKE_FORCE
+			end
 			--simDR_brake = 0.24
 			--parkbrake_force = 0.24
 		else
 			B738DR_parking_brake_pos = 0
+			simDR_brake = 0
 			--simDR_brake = 0
 			--parkbrake_force = 0
 		end
@@ -3442,7 +3478,6 @@ function B738_park_brake_CMDhandler(phase, duration)
 		end
 	elseif phase == 2 then
 		B738DR_parking_brake_pos = 0
-		--simDR_brake = 0
 		--parkbrake_force = 0
 	end
 end
@@ -3450,11 +3485,13 @@ end
 function B738_park_brake_reg_CMDhandler(phase, duration)
 	if phase == 0 or phase == 1 then
 		B738DR_parking_brake_pos = TOE_BRAKE_FORCE -- --0.24
+		if simDR_brake > TOE_BRAKE_FORCE then
+			simDR_brake = TOE_BRAKE_FORCE
+		end
 		--simDR_brake = 0.24
 		--parkbrake_force = 0.24
 	elseif phase == 2 then
 		B738DR_parking_brake_pos = 0
-		--simDR_brake = 0
 		--parkbrake_force = 0
 	end
 end
@@ -3463,6 +3500,7 @@ function B738_brake_smoothly_CMDhandler(phase, duration)
 	if phase == 0 then
 		brake_smoothly_status = 1
 		B738DR_parking_brake_pos = 0
+		simDR_brake = 0
 	elseif phase == 2 then
 		brake_smoothly_status = 0
 	end
@@ -4166,6 +4204,16 @@ end
 function B738_standby_alt_hpin_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_standby_alt_hpin_pos = 1
+		if B738DR_standby_alt_mode == 0 then
+			B738DR_standby_alt_mode = 1
+		else
+			B738DR_standby_alt_mode = 0
+		end
+		if B738DR_standby_alt_mode == 0 then
+			B738DR_standby_alt_baro = standby_altimeter_baro
+		else
+			B738DR_standby_alt_baro = 33.8638816 * standby_altimeter_baro
+		end
 	elseif phase == 2 then
 		B738DR_standby_alt_hpin_pos = 0
 	end
@@ -4174,6 +4222,11 @@ end
 function B738_standby_alt_app_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_standby_alt_app_pos = 1
+		if B738DR_standby_mode == 0 then
+			B738DR_standby_mode = 1
+		else
+			B738DR_standby_mode = 0
+		end
 	elseif phase == 2 then
 		B738DR_standby_alt_app_pos = 0
 	end
@@ -4190,6 +4243,9 @@ end
 function B738_standby_alt_plus_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_standby_alt_plus_pos = 1
+		if B738DR_instrument_brightness[20] <= 0.95 then
+			B738DR_instrument_brightness[20] = B738DR_instrument_brightness[20] + 0.05
+		end
 	elseif phase == 2 then
 		B738DR_standby_alt_plus_pos = 0
 	end
@@ -4198,6 +4254,9 @@ end
 function B738_standby_alt_minus_CMDhandler(phase, duration)
 	if phase == 0 then
 		B738DR_standby_alt_minus_pos = 1
+		if B738DR_instrument_brightness[20] >= 0.05 then
+			B738DR_instrument_brightness[20] = B738DR_instrument_brightness[20] - 0.05
+		end
 	elseif phase == 2 then
 		B738DR_standby_alt_minus_pos = 0
 	end
@@ -4206,30 +4265,121 @@ end
 function B738_standby_alt_baro_up_CMDhandler(phase, duration)
 	
 	if phase == 0 then
-		if B738DR_standby_alt_baro < 40.00 then
-			B738DR_standby_alt_baro = B738DR_standby_alt_baro + 0.01
+		if B738DR_standby_alt_std_mode == 0 then		-- !!! TEMPORARY !!!
+			if standby_altimeter_baro < 40.00 then
+				standby_altimeter_baro = standby_altimeter_baro + 0.01
+			end
+			if B738DR_standby_alt_mode == 0 then
+				B738DR_standby_alt_baro = standby_altimeter_baro
+			else
+				B738DR_standby_alt_baro = 33.8638816 * standby_altimeter_baro
+			end
 		end
 	elseif phase == 1 and duration > 1.5 then
-		if B738DR_standby_alt_baro < 40.00 then
-			B738DR_standby_alt_baro = B738DR_standby_alt_baro + 0.01
+		if B738DR_standby_alt_std_mode == 0 then		-- !!! TEMPORARY !!!
+			if standby_altimeter_baro < 40.00 then
+				standby_altimeter_baro = standby_altimeter_baro + 0.01
+			end
+			if B738DR_standby_alt_mode == 0 then
+				B738DR_standby_alt_baro = standby_altimeter_baro
+			else
+				B738DR_standby_alt_baro = 33.8638816 * standby_altimeter_baro
+			end
 		end
 	end
 end
 
 function B738_standby_alt_baro_dn_CMDhandler(phase, duration)
 	
-	local standby_alt_baro = 0
-	
 	if phase == 0 then
-		if B738DR_standby_alt_baro > 0.00 then
-			B738DR_standby_alt_baro = B738DR_standby_alt_baro - 0.01
+		if B738DR_standby_alt_std_mode == 0 then		-- !!! TEMPORARY !!!
+			if standby_altimeter_baro > 0.00 then
+				standby_altimeter_baro = standby_altimeter_baro - 0.01
+			end
+			if B738DR_standby_alt_mode == 0 then
+				B738DR_standby_alt_baro = standby_altimeter_baro
+			else
+				B738DR_standby_alt_baro = 33.8638816 * standby_altimeter_baro
+			end
 		end
 	elseif phase == 1 and duration > 1.5 then
-		if B738DR_standby_alt_baro > 0.00 then
-			B738DR_standby_alt_baro = B738DR_standby_alt_baro - 0.01
+		if B738DR_standby_alt_std_mode == 0 then		-- !!! TEMPORARY !!!
+			if standby_altimeter_baro > 0.00 then
+				standby_altimeter_baro = standby_altimeter_baro - 0.01
+			end
+			if B738DR_standby_alt_mode == 0 then
+				B738DR_standby_alt_baro = standby_altimeter_baro
+			else
+				B738DR_standby_alt_baro = 33.8638816 * standby_altimeter_baro
+			end
 		end
 	end
 end
+
+function B738_standby_alt_bar_std_CMDhandler(phase, duration)
+	if phase == 0 then
+		B738DR_standby_alt_std_pos = 1
+		if B738DR_standby_alt_std_mode == 0 then
+			B738DR_standby_alt_std_mode = 1
+			--standby_altimeter_baro = 29.92
+		else
+			B738DR_standby_alt_std_mode = 0
+			if B738DR_standby_alt_mode == 0 then
+				B738DR_standby_alt_baro = standby_altimeter_baro
+			else
+				B738DR_standby_alt_baro = 33.8638816 * standby_altimeter_baro
+			end
+		end
+	elseif phase == 2 then
+		B738DR_standby_alt_std_pos = 0
+	end
+end
+
+-- OXYGEN TEST
+function B738_oxy_test_cpt_CMDhandler(phase, duration)
+	
+	if phase == 0 then
+		B738DR_oxy_test_cpt_pos = 1
+		B738DR_fmod_oxy = 1
+	elseif phase == 2 then
+		B738DR_oxy_test_cpt_pos = 0
+		B738DR_fmod_oxy = 0
+	end
+end
+
+function B738_oxy_test_fo_CMDhandler(phase, duration)
+	
+	if phase == 0 then
+		B738DR_oxy_test_fo_pos = 1
+		B738DR_fmod_oxy = 1
+	elseif phase == 2 then
+		B738DR_oxy_test_fo_pos = 0
+		B738DR_fmod_oxy = 0
+	end
+end
+
+function B738_oxy_test_cpt2_CMDhandler(phase, duration)
+	
+	if phase == 0 then
+		B738DR_oxy_test_cpt2_pos = 1
+		B738DR_fmod_oxy = 1
+	elseif phase == 2 then
+		B738DR_oxy_test_cpt2_pos = 0
+		B738DR_fmod_oxy = 0
+	end
+end
+
+function B738_oxy_test_fo2_CMDhandler(phase, duration)
+	
+	if phase == 0 then
+		B738DR_oxy_test_fo2_pos = 1
+		B738DR_fmod_oxy = 1
+	elseif phase == 2 then
+		B738DR_oxy_test_fo2_pos = 0
+		B738DR_fmod_oxy = 0
+	end
+end
+
 
 --*************************************************************************************--
 --** 				              CREATE CUSTOM COMMANDS              			     **--
@@ -4243,9 +4393,15 @@ B738CMD_standby_alt_app			= create_command("laminar/B738/toggle_switch/standby_a
 B738CMD_standby_alt_rst			= create_command("laminar/B738/toggle_switch/standby_alt_rst", "Standby altimeter RST", B738_standby_alt_rst_CMDhandler)
 B738CMD_standby_alt_plus		= create_command("laminar/B738/toggle_switch/standby_alt_plus", "Standby altimeter PLUS", B738_standby_alt_plus_CMDhandler)
 B738CMD_standby_alt_minus		= create_command("laminar/B738/toggle_switch/standby_alt_minus", "Standby altimeter MINUS", B738_standby_alt_minus_CMDhandler)
+B738CMD_standby_alt_baro_std	= create_command("laminar/B738/toggle_switch/standby_alt_baro_std", "Standby altimeter STD", B738_standby_alt_bar_std_CMDhandler)
 
 B738CMD_standby_bat_off		= create_command("laminar/B738/switch/standby_bat_off", "Standby battery off", B738_standby_bat_off_CMDhandler)
 B738CMD_standby_bat_on		= create_command("laminar/B738/switch/standby_bat_on", "Standby battery on", B738_standby_bat_on_CMDhandler)
+
+B738CMD_oxy_test_cpt		= create_command("laminar/B738/push_button/oxy_test_cpt", "Oxygen test Captain", B738_oxy_test_cpt_CMDhandler)
+B738CMD_oxy_test_fo			= create_command("laminar/B738/push_button/oxy_test_fo", "Oxygen test First Officier", B738_oxy_test_fo_CMDhandler)
+B738CMD_oxy_test_cpt		= create_command("laminar/B738/push_button/oxy_test_cpt2", "Oxygen test Captain 2", B738_oxy_test_cpt2_CMDhandler)
+B738CMD_oxy_test_fo			= create_command("laminar/B738/push_button/oxy_test_fo2", "Oxygen test First Officier 2", B738_oxy_test_fo2_CMDhandler)
 
 B738CMD_adf_ant1			= create_command("laminar/B738/toggle_switch/adf_ant1", "ADF1 ADF/ANT", B738_adf_ant1_CMDhandler)
 B738CMD_off_on1				= create_command("laminar/B738/toggle_switch/off_on1", "ADF1 OFF/ON", B738_off_on1_CMDhandler)
@@ -4768,9 +4924,9 @@ function B738_crossfeed_knob_animation()
 	B738DR_cross_feed_selector_knob = B738_set_anim_value(B738DR_cross_feed_selector_knob, B738_cross_feed_selector_knob_target, 0.0, 1.0, 5.0)
 
 	if B738_cross_feed_selector_knob_target == 0 then
-		B738DR_cross_feed_valve = B738_set_anim_time(B738DR_cross_feed_valve, B738_cross_feed_selector_knob_target, 0.0, 1.0, 0, 4.0)
+		B738DR_cross_feed_valve = B738_set_anim_time(B738DR_cross_feed_valve, B738_cross_feed_selector_knob_target, 0.0, 1.0, 0, 2.0)	--4.0
 	else
-		B738DR_cross_feed_valve = B738_set_anim_time(B738DR_cross_feed_valve, B738_cross_feed_selector_knob_target, 0.0, 1.0, 1, 4.0)
+		B738DR_cross_feed_valve = B738_set_anim_time(B738DR_cross_feed_valve, B738_cross_feed_selector_knob_target, 0.0, 1.0, 1, 2.0)	--4.0
 	end
 
 end
@@ -4986,7 +5142,7 @@ function B738_bleed_air_state()
 		and apu_bleed == 1
 		and eng2_bleed == 0 then
 --		simDR_bleed_air_mode = 5
-		if apu_protection == 0 then
+		if apu_protection_disabled == 0 then
 			pack_mode = 1
 		else
 			pack_mode = 5
@@ -5000,7 +5156,7 @@ function B738_bleed_air_state()
 		pack_mode = 5
 --		simDR_bleed_air_mode = 5
 		if B738bleedAir.isolation.bleed_air_valve.pos > 0.1 then
-			if apu_protection == 0 then
+			if apu_protection_disabled == 0 then
 				pack_mode = 3
 			else
 				dual_bleed = 1
@@ -5022,7 +5178,7 @@ function B738_bleed_air_state()
 		and apu_bleed == 1
 		and eng2_bleed == 1 then
 --		simDR_bleed_air_mode = 5
-		if apu_protection == 0 then
+		if apu_protection_disabled == 0 then
 			pack_mode = 2
 		else
 			pack_mode = 5
@@ -5065,29 +5221,7 @@ function B738_bleed_air_state()
 	
 	
 	------------------------------------------------------------------
-	-- if eng1_starting == 1 then		-- running start engine 1
-		-- if apu_start_eng1 == 0 then
-			-- if eng2_start_eng1 == 1 then
-				-- pack_mode = 2	-- bleed air eng 2
-			-- else
-				-- pack_mode = 0	-- bleed air off
-			-- end
-		-- else
-			-- pack_mode = 4	-- bleed air apu
-		-- end
-	-- end
-
-	-- if eng2_starting == 1 then		-- running start engine 2
-		-- if apu_start_eng2 == 0 then
-			-- if eng1_start_eng2 == 1 then
-				-- pack_mode = 1	-- bleed air eng 1
-			-- else
-				-- pack_mode = 0	-- bleed air off
-			-- end
-		-- else
-			-- pack_mode = 4	-- bleed air apu
-		-- end
-	-- end
+	
 	----------------------------------------------------------------------
 	
 	simDR_bleed_air_mode = pack_mode
@@ -5100,7 +5234,7 @@ function B738_bleed_air_state()
 	local busPower  = math.max(bus1Power, bus2Power)
 	local brightness_level = simDR_generic_brightness_ratio63 * busPower
 	
-	B738DR_dual_bleed_annun = dual_bleed * apu_protection * brightness_level
+	B738DR_dual_bleed_annun = dual_bleed * apu_protection_disabled * brightness_level
 
 
 	if B738DR_lights_test == 1 then
@@ -5116,7 +5250,10 @@ local seed = math.random(1, frac*1000.0)
 math.randomseed(seed)
 --local rndm_max_apu_bleed_psi    = math.random(40, 50) + math.random()	-- add 5 psi
 --local rndm_max_apu_bleed_psi    = math.random(34, 36) + math.random()	-- add 5 psi
-local rndm_max_apu_bleed_psi    = math.random(41, 43) + math.random()	-- add 5 psi
+
+--local rndm_max_apu_bleed_psi    = math.random(41, 43) + math.random()	-- add 5 psi
+local rndm_max_apu_bleed_psi    = math.random(11.2, 11.5) + math.random()
+
 local rndm_max_eng1_bleed_psi   = math.random(60, 62) + math.random()	-- add 5 psi
 --local rndm_max_eng2_bleed_psi   = math.random(61, 63) + math.random()	-- add 5 psi
 local diff						= math.random(0, 4) + math.random() - 2
@@ -5251,10 +5388,18 @@ function B738_bleed_air_supply()
 		-- B738bleedAir.engine1.psi = B738_rescale(19.0, 28.0, 105.0, rndm_max_eng1_bleed_psi, rescale)
 	-- end
 	
+	-- if B738DR_eng1_N1 < 18 then
+		-- B738bleedAir.engine1.psi = B738_rescale(0, 0, 18.0, 15.0, B738DR_eng1_N1)
+	-- else
+		-- B738bleedAir.engine1.psi = B738_rescale(18.0, 15.0, 105.0, rndm_max_eng1_bleed_psi, B738DR_eng1_N1)
+	-- end
+	
 	if B738DR_eng1_N1 < 18 then
 		B738bleedAir.engine1.psi = B738_rescale(0, 0, 18.0, 15.0, B738DR_eng1_N1)
+	elseif B738DR_eng1_N1 < 35 then
+		B738bleedAir.engine1.psi = B738_rescale(18.0, 15.0, 35.0, 27.0, B738DR_eng1_N1)
 	else
-		B738bleedAir.engine1.psi = B738_rescale(18.0, 15.0, 105.0, rndm_max_eng1_bleed_psi, B738DR_eng1_N1)
+		B738bleedAir.engine1.psi = B738_rescale(35.0, 27.0, 105.0, rndm_max_eng1_bleed_psi, B738DR_eng1_N1)
 	end
 	
 	
@@ -5272,12 +5417,19 @@ function B738_bleed_air_supply()
 		-- B738bleedAir.engine2.psi = B738_rescale(19.0, 28.0, 105.0, rndm_max_eng2_bleed_psi, rescale)
 	-- end
 	
+	-- if B738DR_eng2_N1 < 18 then
+		-- B738bleedAir.engine2.psi = B738_rescale(0, 0, 18.0, 15.0, B738DR_eng2_N1)
+	-- else
+		-- B738bleedAir.engine2.psi = B738_rescale(18.0, 15.0, 105.0, rndm_max_eng2_bleed_psi, B738DR_eng2_N1)
+	-- end
+	
 	if B738DR_eng2_N1 < 18 then
 		B738bleedAir.engine2.psi = B738_rescale(0, 0, 18.0, 15.0, B738DR_eng2_N1)
+	elseif B738DR_eng2_N1 < 35 then
+		B738bleedAir.engine2.psi = B738_rescale(18.0, 15.0, 35.0, 27.0, B738DR_eng2_N1)
 	else
-		B738bleedAir.engine2.psi = B738_rescale(18.0, 15.0, 105.0, rndm_max_eng2_bleed_psi, B738DR_eng2_N1)
+		B738bleedAir.engine2.psi = B738_rescale(35.0, 27.0, 105.0, rndm_max_eng2_bleed_psi, B738DR_eng2_N1)
 	end
-	
 
 end
 
@@ -5379,10 +5531,10 @@ function B738_bleed_air_valve_animation()
     B738bleedAir.engine2.bleed_air_valve.pos        = B738_set_anim_value(B738bleedAir.engine2.bleed_air_valve.pos, B738bleedAir.engine2.bleed_air_valve.target_pos, 0.0, 1.0, valve_anm_speed)
 
     -- PACK BLEED VALVE
-    --B738bleedAir.l_pack.bleed_air_valve.pos	        = B738_set_anim_value(B738bleedAir.l_pack.bleed_air_valve.pos, B738bleedAir.l_pack.bleed_air_valve.target_pos, 0.0, 1.0, valve_anm_speed)
-    --B738bleedAir.r_pack.bleed_air_valve.pos	        = B738_set_anim_value(B738bleedAir.r_pack.bleed_air_valve.pos, B738bleedAir.r_pack.bleed_air_valve.target_pos, 0.0, 1.0, valve_anm_speed)
-    B738bleedAir.l_pack.bleed_air_valve.pos	        = B738_set_anim_value(B738bleedAir.l_pack.bleed_air_valve.pos, B738bleedAir.l_pack.bleed_air_valve.target_pos, 0.0, 2.0, valve_anm_speed)
-    B738bleedAir.r_pack.bleed_air_valve.pos	        = B738_set_anim_value(B738bleedAir.r_pack.bleed_air_valve.pos, B738bleedAir.r_pack.bleed_air_valve.target_pos, 0.0, 2.0, valve_anm_speed)
+    B738bleedAir.l_pack.bleed_air_valve.pos	        = B738_set_anim_value(B738bleedAir.l_pack.bleed_air_valve.pos, B738bleedAir.l_pack.bleed_air_valve.target_pos, 0.0, 1.0, valve_anm_speed)
+    B738bleedAir.r_pack.bleed_air_valve.pos	        = B738_set_anim_value(B738bleedAir.r_pack.bleed_air_valve.pos, B738bleedAir.r_pack.bleed_air_valve.target_pos, 0.0, 1.0, valve_anm_speed)
+    --B738bleedAir.l_pack.bleed_air_valve.pos	        = B738_set_anim_value(B738bleedAir.l_pack.bleed_air_valve.pos, B738bleedAir.l_pack.bleed_air_valve.target_pos, 0.0, 2.0, valve_anm_speed)
+    --B738bleedAir.r_pack.bleed_air_valve.pos	        = B738_set_anim_value(B738bleedAir.r_pack.bleed_air_valve.pos, B738bleedAir.r_pack.bleed_air_valve.target_pos, 0.0, 2.0, valve_anm_speed)
 
 	-- ISOLATION VALVE
     B738bleedAir.isolation.bleed_air_valve.pos	    = B738_set_anim_value(B738bleedAir.isolation.bleed_air_valve.pos, B738bleedAir.isolation.bleed_air_valve.target_pos, 0.0, 1.0, valve_anm_speed)
@@ -5401,84 +5553,87 @@ function B738_bleed_air_duct_pressure()
 	local l_duct_delta = 0.00
 	local r_duct_delta = 0.00
 	local duct_delta = 0.00
-	local apu_duct = 0.00
-	
-	local l_pack_valve = 4 * (1 - B738bleedAir.l_pack.bleed_air_valve.pos)
-	local r_pack_valve = 4 * (1 - B738bleedAir.r_pack.bleed_air_valve.pos)
-	
-	local l_anti_ice = simDR_cowl_ice_0_on + (2 * simDR_wing_l_heat_on)
-	local r_anti_ice = simDR_cowl_ice_1_on + (2 * simDR_wing_l_heat_on)
 	
 	-- APU DUCT
-		apu_duct = B738bleedAir.apu.psi * B738bleedAir.apu.bleed_air_valve.pos
+	apu_duct = B738bleedAir.apu.psi * B738bleedAir.apu.bleed_air_valve.pos
 	
 	-- LEFT DUCT
-		-- l_duct_in = math.max(
-			-- (B738bleedAir.apu.psi * B738bleedAir.apu.bleed_air_valve.pos),
-			-- (B738bleedAir.engine1.psi * B738bleedAir.engine1.bleed_air_valve.pos))
-		
-		-- l_duct_in = math.max(apu_duct, (B738bleedAir.engine1.psi * B738bleedAir.engine1.bleed_air_valve.pos))
-		-- l_duct = l_duct_in
-		-- --l_duct = l_duct - (9.5 * (2 - B738bleedAir.l_pack.bleed_air_valve.pos))
-		-- l_duct = l_duct - (4.1 * (2 - B738bleedAir.l_pack.bleed_air_valve.pos))
-		-- l_duct = l_duct - (4.1 * (2 - B738bleedAir.r_pack.bleed_air_valve.pos) * B738bleedAir.isolation.bleed_air_valve.pos)
-		
-		
-		l_duct_in = math.max(apu_duct, (B738bleedAir.engine1.psi * B738bleedAir.engine1.bleed_air_valve.pos))
-		l_duct = l_duct_in + math.max(l_pack_valve, r_pack_valve * B738bleedAir.isolation.bleed_air_valve.pos) - l_anti_ice
-		l_duct = math.max(0, l_duct)
-		
+	l_duct = math.max(apu_duct, (B738bleedAir.engine1.psi * B738bleedAir.engine1.bleed_air_valve.pos))
 	
 	-- RIGHT DUCT
-		-- r_duct_in = B738bleedAir.engine2.psi * B738bleedAir.engine2.bleed_air_valve.pos
-		-- r_duct = r_duct_in
-		-- --r_duct = r_duct - (9.5 * (2 - B738bleedAir.r_pack.bleed_air_valve.pos))
-		-- r_duct = r_duct - (4.1 * (2 - B738bleedAir.r_pack.bleed_air_valve.pos))
-		-- r_duct = r_duct - (4.1 * (2 - B738bleedAir.l_pack.bleed_air_valve.pos) * B738bleedAir.isolation.bleed_air_valve.pos)
-		
-		r_duct_in = B738bleedAir.engine2.psi * B738bleedAir.engine2.bleed_air_valve.pos
-		r_duct = r_duct_in + math.max(r_pack_valve, l_pack_valve * B738bleedAir.isolation.bleed_air_valve.pos) - r_anti_ice
-		r_duct = math.max(0, r_duct)
-		
+	r_duct = B738bleedAir.engine2.psi * B738bleedAir.engine2.bleed_air_valve.pos
+	
 	-- ISOLATION VALVE
-		
-		
-		-- -- --duct_delta = (math.max(l_duct, r_duct) * 0.8817) 
-		-- duct_delta = (math.max(l_duct, r_duct) - 1.654) 
-		-- l_duct_delta = duct_delta - l_duct
-		-- r_duct_delta = duct_delta - r_duct
-		-- l_duct = l_duct + (l_duct_delta * B738bleedAir.isolation.bleed_air_valve.pos)
-		-- r_duct = r_duct + (r_duct_delta * B738bleedAir.isolation.bleed_air_valve.pos)
-		
-		
-		-- l_duct_out_target = l_duct
-		-- r_duct_out_target = r_duct
-		
-		l_duct_out_target = math.max(l_duct, r_duct * B738bleedAir.isolation.bleed_air_valve.pos)
-		r_duct_out_target = math.max(r_duct, l_duct * B738bleedAir.isolation.bleed_air_valve.pos)
-		
-		l_duct_out = B738_set_anim_value(l_duct_out, l_duct_out_target, 0.0, 80.0, 1.0)
-		r_duct_out = B738_set_anim_value(r_duct_out, r_duct_out_target, 0.0, 80.0, 1.0)
-		B738DR_duct_pressure_L = l_duct_out
-		B738DR_duct_pressure_R = r_duct_out
-
-	--- DUAL BLEED - APU damaged if pressure engine > 30 psi
+	local l_duct_out_target = math.max(l_duct, r_duct * B738bleedAir.isolation.bleed_air_valve.pos)
+	local r_duct_out_target = math.max(r_duct, l_duct * B738bleedAir.isolation.bleed_air_valve.pos)
+	
+	l_duct_out2 = B738_set_anim_value(l_duct_out2, l_duct_out_target, 0.0, 80.0, 1.0)
+	r_duct_out2 = B738_set_anim_value(r_duct_out2, r_duct_out_target, 0.0, 80.0, 1.0)
+	
+	--DR_sys_test = l_duct_out2
+	
+	local l_pack_valve = l_duct_out2 * 0.36 * (1 - B738bleedAir.l_pack.bleed_air_valve.pos)
+	local l_pack_valve2 = l_duct_out2 * 0.18 * B738bleedAir.isolation.bleed_air_valve.pos * B738bleedAir.r_pack.bleed_air_valve.pos
+	l_pack_valve = l_pack_valve - l_pack_valve2
+	l_pack_valve = math.max(0, l_pack_valve)
+	if l_pack_valve > 4 then
+		l_pack_valve = 4
+	end
+	local l_anti_ice = l_duct_out2 * 0.083 * simDR_cowl_ice_0_on
+	if l_anti_ice > 1 then
+		l_anti_ice = 1
+	end
+	local l_anti_ice2 = l_duct_out2 * 0.36 * simDR_wing_l_heat_on
+	if l_anti_ice2 > 4 then
+		l_anti_ice2 = 4
+	end
+	
+	local r_pack_valve = r_duct_out2 * 0.36 * (1 - B738bleedAir.r_pack.bleed_air_valve.pos)
+	local r_pack_valve2 = r_duct_out2 * 0.18 * B738bleedAir.isolation.bleed_air_valve.pos * B738bleedAir.l_pack.bleed_air_valve.pos
+	r_pack_valve = r_pack_valve - r_pack_valve2
+	r_pack_valve = math.max(0, r_pack_valve)
+	if r_pack_valve > 4 then
+		r_pack_valve = 4
+	end
+	local r_anti_ice = r_duct_out2 * 0.083 * simDR_cowl_ice_1_on
+	if r_anti_ice > 1 then
+		r_anti_ice = 1
+	end
+	local r_anti_ice2 = r_duct_out2 * 0.36 * simDR_wing_r_heat_on
+	if r_anti_ice2 > 4 then
+		r_anti_ice2 = 4
+	end
+	
+	l_duct_out_target = l_duct_out2 + math.max(l_pack_valve, r_pack_valve * B738bleedAir.isolation.bleed_air_valve.pos) - l_anti_ice - l_anti_ice2
+	l_duct_out_target = math.max(0, l_duct_out_target)
+	
+	r_duct_out_target = r_duct_out2 + math.max(r_pack_valve, l_pack_valve * B738bleedAir.isolation.bleed_air_valve.pos) - r_anti_ice - r_anti_ice2
+	r_duct_out_target = math.max(0, r_duct_out_target)
+	
+	l_duct_out = B738_set_anim_value(l_duct_out, l_duct_out_target, 0.0, 80.0, 1.0)
+	r_duct_out = B738_set_anim_value(r_duct_out, r_duct_out_target, 0.0, 80.0, 1.0)
+	
+	B738DR_duct_pressure_L = l_duct_out
+	B738DR_duct_pressure_R = r_duct_out
+	
+	
+	--- DUAL BLEED
 	eng1_duct = B738bleedAir.engine1.psi * B738bleedAir.engine1.bleed_air_valve.pos	-- ENG 1 pressure on L duct
 	eng2_duct = r_duct_in * B738bleedAir.isolation.bleed_air_valve.pos				-- ENG 2 pressure on L duct
 	
 	-- apu damage: duct > apu duct + 13 psi
-	apu_duct = rndm_max_apu_bleed_psi + 5
+	local apu_duct_max = rndm_max_apu_bleed_psi + 15
 	
-	apu_protection = 1
+	apu_protection_disabled = 1
 	if dual_bleed == 1 then
-		apu_duct = rndm_max_apu_bleed_psi + 5
-		if eng1_duct > apu_duct or eng2_duct > apu_duct then
+		--apu_duct_max = rndm_max_apu_bleed_psi + 5
+		if eng1_duct > apu_duct_max or eng2_duct > apu_duct_max then
 			--simDR_apu_bleed_fail = 1
-			apu_protection = 0
+			apu_protection_disabled = 0
 		end
-		apu_duct = rndm_max_apu_bleed_psi + 1
-		if eng1_duct < apu_duct and eng2_duct < apu_duct then
-			apu_protection = 1
+		apu_duct_max = rndm_max_apu_bleed_psi + 1
+		if eng1_duct < apu_duct_max and eng2_duct < apu_duct_max then
+			apu_protection_disabled = 1
 		end
 	end
 	
@@ -5750,19 +5905,44 @@ function B738_start_engine()
 	
 	---- ENGINES START
 	
+	-- local eng1_start_disable = 0
+	-- if apu_start_eng1 == 0 and eng2_start_eng1 == 0 then
+		-- if ignition1 == 4 and simDR_engine_N1_pct1 < 19 then
+			-- eng1_start_disable = 1
+		-- end
+	-- end
+	
+	-- local eng2_start_disable = 0
+	-- if apu_start_eng2 == 0 and eng1_start_eng2 == 0 then
+		-- if ignition2 == 4 and simDR_engine_N1_pct2 < 19 then
+			-- eng2_start_disable = 1
+		-- end
+	-- end
+	
+	local apu_duct2 = apu_duct * 0.36 * (1 - B738bleedAir.l_pack.bleed_air_valve.pos)
+	local apu_duct3 = apu_duct * 0.18 * B738bleedAir.isolation.bleed_air_valve.pos * B738bleedAir.r_pack.bleed_air_valve.pos
+	apu_duct2 = apu_duct2 - apu_duct3
+	apu_duct2 = math.max(0, apu_duct2)
+	apu_duct2 = apu_duct + apu_duct2
 	local eng1_start_disable = 0
-	if apu_start_eng1 == 0 and eng2_start_eng1 == 0 then
+	if l_duct_out < 30 and apu_duct2 < 14.98 then
 		if ignition1 == 4 and simDR_engine_N1_pct1 < 19 then
 			eng1_start_disable = 1
 		end
 	end
 	
+	apu_duct2 = apu_duct * 0.36 * (1 - B738bleedAir.r_pack.bleed_air_valve.pos)
+	apu_duct3 = apu_duct * 0.18 * B738bleedAir.isolation.bleed_air_valve.pos * B738bleedAir.l_pack.bleed_air_valve.pos
+	apu_duct2 = apu_duct2 - apu_duct3
+	apu_duct2 = math.max(0, apu_duct2)
+	apu_duct2 = apu_duct + apu_duct2
 	local eng2_start_disable = 0
-	if apu_start_eng2 == 0 and eng1_start_eng2 == 0 then
+	if r_duct_out < 30 and apu_duct2 < 14.98 then
 		if ignition2 == 4 and simDR_engine_N1_pct2 < 19 then
 			eng2_start_disable = 1
 		end
 	end
+	
 	if eng1_start_disable == 1 or eng2_start_disable == 1 then
 		simDR_starter_torque = 0.1
 		simDR_starter_max_rpm = 0.128
@@ -6161,8 +6341,8 @@ function B738_autobrake()
 	--if B738DR_parking_brake_pos > 0.1
 	--or parkbrake_force > 0.1
 	if B738DR_parking_brake_pos > 0.1
-	or brake_force > (autobrake_ratio + 0.05) then
-	--or brake_force > 0.27 then
+	--or brake_force > (autobrake_ratio + 0.05) then
+	or brake_force > 0.1 then
 		manual_brake = 1
 	end
 	
@@ -6286,7 +6466,7 @@ function B738_autobrake()
 				if B738DR_thrust1_leveler < 0.08
 				or B738DR_thrust2_leveler < 0.08 then		-- throttle idle
 					--simDR_brake = 0.24
-					autobrake_ratio = 0.31
+					autobrake_ratio = 0.55	--0.75	--0.44	--0.30
 					B738DR_autobrake_RTO_arm = 2		-- AUTOBRAKE RTO Engaged
 				end
 			end
@@ -6312,16 +6492,16 @@ function B738_autobrake()
 			B738DR_autobrake_arm = 2			-- AUTOBRAKE Engaged
 			if B738DR_autobrake_pos == 2 then
 				--simDR_brake = 0.055
-				autobrake_ratio = 0.05 --0.075
+				autobrake_ratio = 0.11	--0.16	--0.075	--0.05 --0.075
 			elseif B738DR_autobrake_pos == 3 then
 				--simDR_brake = 0.11
-				autobrake_ratio = 0.10 --0.15
+				autobrake_ratio = 0.22	--0.32	--0.15	--0.10 --0.15
 			elseif B738DR_autobrake_pos == 4 then
 				--simDR_brake = 0.165
-				autobrake_ratio = 0.15 --0.225
+				autobrake_ratio = 0.33	--0.48	--0.225	--0.15 --0.225
 			elseif B738DR_autobrake_pos == 5 then
 				--simDR_brake = 0.22
-				autobrake_ratio = 0.22 --0.30
+				autobrake_ratio = 0.44	--0.64	--0.30 --0.30
 			end
 		end
 	end
@@ -6347,7 +6527,7 @@ function B738_brake_temp_indicate(temp)
 
 end
 
-function B738_brake_cooling(temp, temp_outside)
+function B738_brake_cooling(temp, temp_outside, side)
 
 	local out_temp_100 = temp_outside / 100
 	local temp_100 = 0
@@ -6358,8 +6538,16 @@ function B738_brake_cooling(temp, temp_outside)
 	
 	out_temp_100 = 5 + out_temp_100
 	temp_100 = 5 + temp
-
-	if simDR_gear_deploy_0 > 0.1 then	-- landing gear down
+	
+	local gear_depl = 0
+	if side == 0 then
+		gear_depl = simDR_gear_deploy_1
+	else
+		gear_depl = simDR_gear_deploy_2
+	end
+	
+	--if simDR_gear_deploy_0 > 0.1 then	-- landing gear down
+	if gear_depl > 0.1 then	-- landing gear down
 		out_temp_k2 = qr_speed / 84
 		out_temp_100 = out_temp_100 - out_temp_k2
 		if out_temp_100 < 0 then
@@ -6429,10 +6617,10 @@ function B738_brake_temp()
 	B738DR_brake_temp_r_in = B738DR_brake_temp_r_in + B738_brake_power(brake, B738DR_tire_speed2)
 	-- air cooling
 	out_temp_100 = simDR_air_temp
-	B738DR_brake_temp_l_out = B738DR_brake_temp_l_out - B738_brake_cooling(B738DR_brake_temp_l_out, out_temp_100)
-	B738DR_brake_temp_r_out = B738DR_brake_temp_r_out - B738_brake_cooling(B738DR_brake_temp_r_out, out_temp_100)
-	B738DR_brake_temp_l_in = B738DR_brake_temp_l_in - B738_brake_cooling(B738DR_brake_temp_l_in, out_temp_100)
-	B738DR_brake_temp_r_in = B738DR_brake_temp_r_in - B738_brake_cooling(B738DR_brake_temp_r_in, out_temp_100)
+	B738DR_brake_temp_l_out = B738DR_brake_temp_l_out - B738_brake_cooling(B738DR_brake_temp_l_out, out_temp_100, 0)
+	B738DR_brake_temp_r_out = B738DR_brake_temp_r_out - B738_brake_cooling(B738DR_brake_temp_r_out, out_temp_100, 1)
+	B738DR_brake_temp_l_in = B738DR_brake_temp_l_in - B738_brake_cooling(B738DR_brake_temp_l_in, out_temp_100, 0)
+	B738DR_brake_temp_r_in = B738DR_brake_temp_r_in - B738_brake_cooling(B738DR_brake_temp_r_in, out_temp_100, 1)
 	out_temp_100 = out_temp_100 / 100
 	if B738DR_brake_temp_l_out < out_temp_100 then
 		B738DR_brake_temp_l_out = out_temp_100
@@ -6458,10 +6646,10 @@ function yaw_damp_on()
 		simDR_yaw_damper_switch = 1
 end
 
-function yaw_damp_off()
-		simDR_yaw_damper_switch = 0
-		B738DR_yaw_damper_switch_pos = 0
-end
+-- function yaw_damp_off()
+		-- simDR_yaw_damper_switch = 0
+		-- B738DR_yaw_damper_switch_pos = 0
+-- end
 
 
 
@@ -8322,11 +8510,11 @@ function B738_nose_steer()
 	
 	local yoke_steer = 0
 	local gs_limit = math.min(simDR_ground_speed, 15)
-	local gs_limit2 =  math.min(simDR_ground_speed, 51)
+	local gs_limit2 = math.min(simDR_ground_speed, 51)
 	local roll_co_max = 0
 	
 	local brake_max = 1.0	--0.15/0.25
-	local brake_min = 0.25	--0.15/0.25/0.08/0.15
+	local brake_min = 0.45	--0.25	--0.15/0.25/0.08/0.15
 	local steer_limit = 0
 	local steer_spd = 0
 	local brake_max2 = 0
@@ -8355,7 +8543,22 @@ function B738_nose_steer()
 			gear_rot_brake = 0.02
 		end
 	end
-	simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos, gear_rot_brake)
+	--simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos, gear_rot_brake)
+	
+	local brake_tgt = math.max(autobrake_ratio, B738DR_parking_brake_pos, gear_rot_brake) * 100
+	local brake_act = simDR_brake * 100
+	if B738DR_parking_brake_pos == 1 then
+		--simDR_brake = B738_set_animation_rate(brake_act, brake_tgt, 0, 100, 0.025) / 100
+		simDR_brake = B738_set_anim_value(brake_act, brake_tgt, 0, 100, 4.2) / 100
+	else
+		if brake_tgt < brake_act then
+			--simDR_brake = B738_set_animation_rate(brake_act, brake_tgt, 0, 100, 0.027) / 100
+			simDR_brake = B738_set_anim_value(brake_act, brake_tgt, 0, 100, 4.2) / 100
+		else
+			--simDR_brake = B738_set_animation_rate(brake_act, brake_tgt, 0, 100, 0.15) / 100
+			simDR_brake = B738_set_anim_value(brake_act, brake_tgt, 0, 100, 0.8) / 100
+		end
+	end
 	
 	-- if B738DR_toe_brakes_ovr == 0 then
 		-- simDR_brake = math.max(autobrake_ratio, B738DR_parking_brake_pos)
@@ -8380,7 +8583,8 @@ function B738_nose_steer()
 				steer_limit = B738_rescale(0, 78, 51, 6, gs_limit2)
 				nose_steer_deg_trg = B738_rescale(-1, -steer_limit, 1, steer_limit, B738DR_nosewheel_steer_ratio)
 				
-				if simDR_ground_speed > 23 then
+				--if simDR_ground_speed > 23 then
+				if simDR_ground_speed > 51 then
 					if nose_steer_deg_trg < -6 then
 						nose_steer_deg_trg = -6
 					end
@@ -8405,7 +8609,7 @@ function B738_nose_steer()
 				brake_sm_right_tgt = 0
 			else
 				brake_sm_left_tgt = TOE_BRAKE_FORCE * 100
-				brake_sm_right_tgt =TOE_BRAKE_FORCE * 100
+				brake_sm_right_tgt = TOE_BRAKE_FORCE * 100
 			end
 			brake_smoothly_left = brake_smoothly_left * 100
 			brake_smoothly_right = brake_smoothly_right * 100
@@ -8450,15 +8654,18 @@ function B738_nose_steer()
 				--if B738DR_nosewheel > 0 then
 				else
 					simDR_steer_ovr = 1
-					simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, 0.11)
+					--simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, 0.11)
+					simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, 0.05)
 					--simDR_steer_cmd = B738_set_animation_rate(simDR_steer_cmd, nose_steer_deg_trg, -78, 78, steer_speed)
 				end
 				
+				gs_limit2 = math.min(simDR_ground_speed, 70)
 				if simDR_steer_cmd < 0 then
 					steer_right_brake = 0
 					steer_left_brake = -B738_rescale(steer_pos_min, -brake_max, steer_pos_max, brake_max, simDR_steer_cmd)
 					steer_left_brake = steer_left_brake * steer_left_brake
-					brake_max2 = B738_rescale(0, brake_max, 51, brake_min, gs_limit2)
+					--brake_max2 = B738_rescale(0, brake_max, 51, brake_min, gs_limit2)
+					brake_max2 = B738_rescale(0, brake_max, 70, brake_min, gs_limit2)
 					if steer_left_brake > brake_max2 then
 						steer_left_brake = brake_max2
 					end
@@ -8472,7 +8679,8 @@ function B738_nose_steer()
 					steer_left_brake = 0
 					steer_right_brake = B738_rescale(steer_pos_min, -brake_max, steer_pos_max, brake_max, simDR_steer_cmd)
 					steer_right_brake = steer_right_brake * steer_right_brake
-					brake_max2 = B738_rescale(0, brake_max, 51, brake_min, gs_limit2)
+					--brake_max2 = B738_rescale(0, brake_max, 51, brake_min, gs_limit2)
+					brake_max2 = B738_rescale(0, brake_max, 70, brake_min, gs_limit2)
 					if steer_right_brake > brake_max2 then
 						steer_right_brake = brake_max2
 					end
@@ -8499,22 +8707,33 @@ function B738_nose_steer()
 			
 		end
 		
-		if autobrake_ratio == 0 then
-			roll_co_max = B738_rescale(0, 0.040, 225, 0.200, gs_limit * gs_limit)
+		--if autobrake_ratio == 0 then
+			--roll_co_max = B738_rescale(0, 0.040, 225, 0.200, gs_limit * gs_limit)
+			roll_co_max = B738_rescale(0, 0.040, 225, 0.10, gs_limit * gs_limit)
 			if simDR_steer_cmd < 0 then
 				simDR_roll_co = B738_rescale(-78, roll_co_max, 0, 0.025, simDR_steer_cmd)
 			else
 				simDR_roll_co = B738_rescale(0, 0.025, 78, roll_co_max, simDR_steer_cmd)
 			end
-		else
-			simDR_roll_co = 0.025
-		end
+		--else
+			--simDR_roll_co = 0.025
+		--end
 		
 	else
 		simDR_steer_ovr = 1
 	end
-	simDR_roll_brake = 0.8
 	
+	--gs_limit = math.min(simDR_ground_speed, 36)	-- 70 kts
+	gs_limit = math.min(simDR_ground_speed, 72)		-- 140 kts
+	local roll_brake_tgt = 55
+	--local roll_brake_tgt = 60
+	if gs_limit > 18 then
+		--roll_brake_tgt = B738_rescale(18, 55, 36, 28, gs_limit)		-- 35 kts to 70 kts
+		roll_brake_tgt = B738_rescale(18, 55, 72, 45, gs_limit)		-- 35 kts to 140 kts
+	end
+	simDR_roll_brake = roll_brake_tgt / 100
+	
+	--simDR_roll_brake = 0.35		--0.8
 	
 end
 
@@ -8706,6 +8925,7 @@ function B738_APU_fuel_burn()
 	
 	local tank_status = simDR_tank_r_status + simDR_tank_c_status + simDR_tank_l_status
 	local apu_fuel_ratio = APU_FUEL_BURN
+	local temp_fuel = 0
 	
 	if simDR_apu_run == 1 then
 		if tank_status == 0 then
@@ -8724,19 +8944,61 @@ function B738_APU_fuel_burn()
 					simDR_fuel_tank_weight_kg[1] = math.max (0, simDR_fuel_tank_weight_kg[1] - apu_fuel_ratio)
 				end
 			else
-				apu_fuel_ratio = APU_FUEL_BURN / tank_status
-				-- left tank
-				if simDR_tank_l_status == 1 then
-					simDR_fuel_tank_weight_kg[0] = math.max (0, simDR_fuel_tank_weight_kg[0] - apu_fuel_ratio)
-				end
+				-- apu_fuel_ratio = APU_FUEL_BURN / tank_status
+				-- -- left tank
+				-- if simDR_tank_l_status == 1 then
+					-- simDR_fuel_tank_weight_kg[0] = math.max (0, simDR_fuel_tank_weight_kg[0] - apu_fuel_ratio)
+				-- end
+				-- -- center tank
+				-- if simDR_tank_c_status == 1 then
+					-- simDR_fuel_tank_weight_kg[1] = math.max (0, simDR_fuel_tank_weight_kg[1] - apu_fuel_ratio)
+				-- end
+				-- -- right tank
+				-- if simDR_tank_r_status == 1 then
+					-- simDR_fuel_tank_weight_kg[2] = math.max (0, simDR_fuel_tank_weight_kg[2] - apu_fuel_ratio)
+				-- end
+				
 				-- center tank
 				if simDR_tank_c_status == 1 then
 					simDR_fuel_tank_weight_kg[1] = math.max (0, simDR_fuel_tank_weight_kg[1] - apu_fuel_ratio)
+				else
+					if simDR_tank_l_status == 1 and B738DR_fuel_tank_pos_ctr1 == 1 then
+						if simDR_fuel_tank_weight_kg[0] > simDR_fuel_tank_weight_kg[2] then
+							temp_fuel = simDR_fuel_tank_weight_kg[0] - simDR_fuel_tank_weight_kg[2]
+							apu_fuel_ratio = math.min(temp_fuel, APU_FUEL_BURN)
+							simDR_fuel_tank_weight_kg[0] = math.max (0, simDR_fuel_tank_weight_kg[0] - apu_fuel_ratio)
+							if temp_fuel < APU_FUEL_BURN then
+								apu_fuel_ratio = (APU_FUEL_BURN - temp_fuel) / 2
+								simDR_fuel_tank_weight_kg[0] = math.max (0, simDR_fuel_tank_weight_kg[0] - apu_fuel_ratio)
+								simDR_fuel_tank_weight_kg[2] = math.max (0, simDR_fuel_tank_weight_kg[2] - apu_fuel_ratio)
+							end
+						elseif simDR_fuel_tank_weight_kg[0] < simDR_fuel_tank_weight_kg[2] then
+							temp_fuel = simDR_fuel_tank_weight_kg[2] - simDR_fuel_tank_weight_kg[0]
+							apu_fuel_ratio = math.min(temp_fuel, APU_FUEL_BURN)
+							simDR_fuel_tank_weight_kg[2] = math.max (0, simDR_fuel_tank_weight_kg[2] - apu_fuel_ratio)
+							if temp_fuel < APU_FUEL_BURN then
+								apu_fuel_ratio = (APU_FUEL_BURN - temp_fuel) / 2
+								simDR_fuel_tank_weight_kg[0] = math.max (0, simDR_fuel_tank_weight_kg[0] - apu_fuel_ratio)
+								simDR_fuel_tank_weight_kg[2] = math.max (0, simDR_fuel_tank_weight_kg[2] - apu_fuel_ratio)
+							end
+						else
+							apu_fuel_ratio = APU_FUEL_BURN / 2
+							simDR_fuel_tank_weight_kg[0] = math.max (0, simDR_fuel_tank_weight_kg[0] - apu_fuel_ratio)
+							simDR_fuel_tank_weight_kg[2] = math.max (0, simDR_fuel_tank_weight_kg[2] - apu_fuel_ratio)
+						end
+					else
+						-- left tank
+						if simDR_tank_l_status == 1 then
+							simDR_fuel_tank_weight_kg[0] = math.max (0, simDR_fuel_tank_weight_kg[0] - apu_fuel_ratio)
+						end
+						-- right tank
+						if simDR_tank_r_status == 1 then
+							simDR_fuel_tank_weight_kg[2] = math.max (0, simDR_fuel_tank_weight_kg[2] - apu_fuel_ratio)
+						end
+					end
 				end
-				-- right tank
-				if simDR_tank_r_status == 1 then
-					simDR_fuel_tank_weight_kg[2] = math.max (0, simDR_fuel_tank_weight_kg[2] - apu_fuel_ratio)
-				end
+				
+				
 			end
 		end
 	end
@@ -9268,17 +9530,19 @@ function B738_gpws()
 			-- MODE 1
 			gpws_mode = 1
 			
-			local air_on_acf_ratio = B738DR_air_on_acf_ratio
-			if air_on_acf_ratio < 0 then
-				air_on_acf_ratio = -air_on_acf_ratio
-			end
-			if air_on_acf_ratio > 4.1 then
-				gpws_warning = WINDSHEAR
-			else
-				if gpws_warning == WINDSHEAR then
-					gpws_warning = 0
-				end
-			end
+			-- local air_on_acf_ratio = B738DR_air_on_acf_ratio / SIM_PERIOD
+			-- if simDR_radio_height_pilot_ft < 1500 and simDR_wind_spd > 15 then
+				-- if air_on_acf_ratio < 0 then
+					-- air_on_acf_ratio = -air_on_acf_ratio
+				-- end
+				-- if air_on_acf_ratio > 300 then	--6.1 / 4.1
+					-- gpws_warning = WINDSHEAR
+				-- else
+					-- if gpws_warning == WINDSHEAR then
+						-- gpws_warning = 0
+					-- end
+				-- end
+			-- end
 			
 			gpws_calc_vvi = B738_rescale(30, 1100, 2450, 5000, simDR_radio_height_pilot_ft)
 			if simDR_radio_height_pilot_ft < 270 then
@@ -10817,7 +11081,7 @@ function B738_electric_bus()
 	local ac_tnsbus2_status = 1 - (apu_gen2_off * gen2_off * gpu_off)
 	
 	-- transfer bus on
-	if simDR_bus_transfer_on == 1 then
+	if simDR_bus_transfer_on == 1 and simDR_glideslope_status < 2 and B738DR_autoland_status == 0 then
 		if ac_tnsbus1_status == 0 and ac_tnsbus2_status == 1 then
 			ac_tnsbus1_status = 1
 		end
@@ -10952,8 +11216,7 @@ function B738_brightness()
 	simDR_instrument_brightness[5] = B738DR_instrument_brightness[5] * B738DR_ac_tnsbus2_status	-- Lower DU
 	simDR_instrument_brightness[10] = B738DR_instrument_brightness[10] * B738DR_ac_stdbus_status	-- CPT FMC
 	simDR_instrument_brightness[11] = B738DR_instrument_brightness[11] * B738DR_ac_tnsbus2_status	-- FO FMC
-	
-	
+	simDR_instrument_brightness[20] = B738DR_instrument_brightness[20] * B738DR_ac_stdbus_status	-- Standby Alt
 	
 	local padeastel_ratio = 0
 	if simDR_panel_brightness[3] == 0 then
@@ -10989,10 +11252,22 @@ function B738_brightness()
 	-- AP backlight [15]
 	simDR_instrument_brightness[15] = 0.6
 	-- radio/nav/adf/transp [16]   radio2/nav2/adf2 [19]
-	simDR_instrument_brightness[16] = B738_rescale(0, 0, 1, 0.8, simDR_panel_brightness[3])		-- Captain side + Transponder
-	simDR_instrument_brightness[19] = B738_rescale(0, 0, 1, 0.8, simDR_panel_brightness[3])		-- FO side
+	-- simDR_instrument_brightness[16] = B738_rescale(0, 0, 1, 0.8, simDR_panel_brightness[3])		-- Captain side + Transponder
+	-- simDR_instrument_brightness[19] = B738_rescale(0, 0, 1, 0.8, simDR_panel_brightness[3])		-- FO side
+	
+	simDR_instrument_brightness[19] = padeastel_ratio		-- FO side
+	if B738DR_ac_tnsbus2_status == 0 then
+		simDR_instrument_brightness[16] = B738DR_batbus_status		-- Captain side + Transponder
+		simDR_instrument_brightness[17] = B738DR_batbus_status		-- pressurization
+	else
+		simDR_instrument_brightness[16] = padeastel_ratio		-- Captain side + Transponder
+		simDR_instrument_brightness[17] = overhead_ratio		-- pressurization
+	end
+	
+	
 	-- pressurization [17]
-	simDR_instrument_brightness[17] = simDR_panel_brightness[2]
+--	simDR_instrument_brightness[17] = simDR_panel_brightness[2]
+	
 	-- clock [18]
 	simDR_instrument_brightness[18] = 0.5
 	
@@ -11331,21 +11606,27 @@ end
 		-- std_pressure = 868.0187 * math.pow(228.65 / std_temperature, 12.2011)
 	-- end
 	-- std_pressure = (std_pressure / 100) * 0.02952998751		-- convert from hPa to inhg
-	-- standby_altimeter = (simDR_elevation_m * 3.28083989501) + ((B738DR_standby_alt_baro - std_pressure) * 915)
+	-- standby_altimeter = (simDR_elevation_m * 3.28083989501) + ((standby_altimeter_baro - std_pressure) * 915)
 	-- B738DR_standby_altimeter = B738_set_anim_value(B738DR_standby_altimeter, standby_altimeter, -10000, 47000, 3)
 	
 -- end
 
 function B738_standby_altimeter()
 	
-	local standby_altimeter = 145366.45 * (1 - (simDR_current_inhg / B738DR_standby_alt_baro)^0.190284)
-	if standby_altimeter < -5000 then
-		standby_altimeter = -5000
-	elseif standby_altimeter > 47000 then
-		standby_altimeter = 46900
-	elseif standby_altimeter > 0 and standby_altimeter <= 47000 then
-		standby_altimeter = B738_rescale(0, 0, 47000, 46900, standby_altimeter)
+	local stdby_alt_set = standby_altimeter_baro
+	if B738DR_standby_alt_std_mode == 1 then
+		stdby_alt_set = 29.92
+		--standby_altimeter_baro = 29.92		-- !!!! TEMPORARY !!!!
 	end
+	
+	local standby_altimeter = 145366.45 * (1 - (simDR_current_inhg / stdby_alt_set)^0.190284)
+	-- if standby_altimeter < -5000 then
+		-- standby_altimeter = -5000
+	-- elseif standby_altimeter > 47000 then
+		-- standby_altimeter = 46900
+	-- elseif standby_altimeter > 0 and standby_altimeter <= 47000 then
+		-- standby_altimeter = B738_rescale(0, 0, 47000, 46900, standby_altimeter)
+	-- end
 	B738DR_standby_altimeter = B738_set_anim_value(B738DR_standby_altimeter, standby_altimeter, -5000, 47000, 2)
 	
 end
@@ -11533,6 +11814,7 @@ B738_init_engineMGMT_fltStart()
 	B738DR_instrument_brightness[5] = 1
 	B738DR_instrument_brightness[10] = 1
 	B738DR_instrument_brightness[11] = 1
+	B738DR_instrument_brightness[20] = 1
 	
 	lost_inertial = 0
 	fmod_flap_sound = 0
@@ -11567,17 +11849,20 @@ B738_init_engineMGMT_fltStart()
 	brake_smoothly_right = 0
 	apu_door_target = 0
 	apu_start_avaiable = 0
-	apu_protection = 1
+	apu_protection_disabled = 1
 	
-	B738DR_ap_backlight = 0.6
-	B738DR_clock_backlight = 0.5
+	--B738DR_ap_backlight = 0.6
+	--B738DR_clock_backlight = 0.5
 	-- B738DR_padesteal_backlight = 0.5
 	-- B738DR_overhead_backlight = 0.5
 	
 	B738DR_panel_brightness[2] = 0.2
 	B738DR_panel_brightness[3] = 0.2
 	
+	standby_altimeter_baro = 29.92
 	B738DR_standby_alt_baro = 29.92
+	B738DR_standby_alt_std_mode = 0		-- no APP
+	B738DR_standby_alt_mode = 0		-- in
 	B738DR_standby_altimeter = 0
 	
 end

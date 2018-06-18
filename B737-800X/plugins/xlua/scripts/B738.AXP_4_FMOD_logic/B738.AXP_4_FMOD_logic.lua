@@ -173,6 +173,12 @@ bleed_valve_APU = find_dataref("laminar/B738/toggle_switch/bleed_air_apu_pos")
 eng_genL  = find_dataref("sim/cockpit/electrical/generator_on[0]")
 eng_genR  = find_dataref("sim/cockpit/electrical/generator_on[1]")
 
+is_eng1_on = find_dataref("sim/flightmodel/engine/ENGN_running[0]")
+is_eng2_on = find_dataref("sim/flightmodel/engine/ENGN_running[1]")
+
+is_eng1_starter = find_dataref("sim/flightmodel2/engines/starter_is_running[0]")
+is_eng2_starter = find_dataref("sim/flightmodel2/engines/starter_is_running[1]")
+
 vvi_dial_show		= find_dataref("laminar/B738/autopilot/vvi_dial_show")
 vvi_dial			= find_dataref("sim/cockpit2/autopilot/vvi_dial_fpm")
 
@@ -1383,7 +1389,7 @@ function bellhop()
 			cabindoor_closed = 1
 		end
 
-		if fuel_cutoff1 == 1 or fuel_cutoff2 == 1 then
+		if is_eng1_on == 1 or is_eng2_on == 1 or is_eng1_starter == 1 or  is_eng2_starter == 1 then
 			cabindoor_closed = 1
 		end
 

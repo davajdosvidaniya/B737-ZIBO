@@ -138,9 +138,9 @@ ANIM_begin
 	ANIM_begin
 		ANIM_trans	  -0.0122   -0.0050    0.0887	  -0.0122   -0.0050    0.0887	0 0	no_ref
 		ANIM_rotate	  -0.9502    0.2299   -0.2106	 80.92  80.92	0 1	none
-		LIGHT_PARAM	airplane_landing_core	   0.0000    0.0000   -0.0141 0 0 -1 1 0.33
+		LIGHT_PARAM	airplane_landing_core	   0.0000    0.0000   -0.0141 0 0 -1 1 0.5
 		LIGHT_PARAM	airplane_landing_glow	   0.0000    0.0000   -0.0141 0 0 -1 1 0.6
-		LIGHT_PARAM	airplane_landing_flare	   0.0000    0.0000   -0.0141 0 0 -1 1 1.1
+		LIGHT_PARAM	airplane_landing_flare	   0.0000    0.0000   -0.0141 0 0 -1 1 5.1
 		LIGHT_PARAM	airplane_landing_sp	   0.0000    0.0000   -0.0141 6.6 6.5 6.4 1 650 0.90
 	ANIM_end
 ANIM_end
@@ -150,25 +150,25 @@ ANIM_begin
 	ANIM_begin
 		ANIM_trans	   0.0122   -0.0050    0.0887	   0.0122   -0.0050    0.0887	0 0	no_ref
 		ANIM_rotate	  -0.9502   -0.2299    0.2106	 80.92  80.92	0 1	none
-		LIGHT_PARAM	airplane_landing_core	  -0.0000    0.0000   -0.0142 0 0 -1 2 0.33
+		LIGHT_PARAM	airplane_landing_core	  -0.0000    0.0000   -0.0142 0 0 -1 2 0.5
 		LIGHT_PARAM	airplane_landing_glow	  -0.0000    0.0000   -0.0142 0 0 -1 2 0.6
-		LIGHT_PARAM	airplane_landing_flare	  -0.0000    0.0000   -0.0142 0 0 -1 2 1.1
+		LIGHT_PARAM	airplane_landing_flare	  -0.0000    0.0000   -0.0142 0 0 -1 2 5.1
 		LIGHT_PARAM	airplane_landing_sp	  -0.0000    0.0000   -0.0142 6.6 6.5 6.4 2 650 0.90
 	ANIM_end
 ANIM_end
 ANIM_begin
 	ANIM_trans	  -2.2327   -0.8888   15.1823	  -2.2327   -0.8888   15.1823	0 0	no_ref
 	ANIM_rotate	  -1.0000   -0.0000   -0.0000	  10.00   10.00	0 1	none
-	LIGHT_PARAM	airplane_landing_core	  -0.0000    0.0000   -0.0000 0 0 -1 0 0.33
-	LIGHT_PARAM	airplane_landing_flare	  -0.0000    0.0000   -0.0000 0 0 -1 0 1.1
+	LIGHT_PARAM	airplane_landing_core	  -0.0000    0.0000   -0.0000 0 0 -1 0 0.5
+	LIGHT_PARAM	airplane_landing_flare	  -0.0000    0.0000   -0.0000 0 0 -1 0 5.1
 	LIGHT_PARAM	airplane_landing_glow	  -0.0000    0.0000   -0.0000 0 0 -1 0 0.6
 	LIGHT_PARAM	airplane_landing_sp	  -0.0000    0.0000    0.0000 6.6 6.5 6.4 0 650 0.94
 ANIM_end
 ANIM_begin
 	ANIM_trans	   2.2327   -0.8888   15.1823	   2.2327   -0.8888   15.1823	0 0	no_ref
 	ANIM_rotate	  -1.0000    0.0000    0.0000	  10.00   10.00	0 1	none
-	LIGHT_PARAM	airplane_landing_core	   0.0000    0.0000   -0.0000 0 0 -1 3 0.33
-	LIGHT_PARAM	airplane_landing_flare	   0.0000    0.0000   -0.0000 0 0 -1 3 1.1
+	LIGHT_PARAM	airplane_landing_core	   0.0000    0.0000   -0.0000 0 0 -1 3 0.5
+	LIGHT_PARAM	airplane_landing_flare	   0.0000    0.0000   -0.0000 0 0 -1 3 5.1
 	LIGHT_PARAM	airplane_landing_glow	   0.0000    0.0000   -0.0000 0 0 -1 3 0.6
 	LIGHT_PARAM	airplane_landing_sp	   0.0000    0.0000    0.0000 6.6 6.5 6.4 3 650 0.94
 ANIM_end

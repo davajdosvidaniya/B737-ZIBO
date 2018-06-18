@@ -153,6 +153,8 @@ six_pack_air_cond_last = 0
 off_sched_desc = 0
 last_alt = 0
 off_sched_desc_enable = 0
+max_allowable_alt_set = 0
+off_sched_desc_ann = 0
 
 six_fuel_center = 0
 
@@ -645,6 +647,7 @@ B738DR_gpws_test_running	= find_dataref("laminar/B738/system/gpws_test_running")
 B738DR_batbus_status		= find_dataref("laminar/B738/electric/batbus_status")
 B738DR_flaps_test_pos		= find_dataref("laminar/B738/push_button/flaps_test_pos")
 
+B738DR_parking_brake_pos	= find_dataref("laminar/B738/parking_brake_pos")
 
 --*************************************************************************************--
 --** 				              FIND CUSTOM COMMANDS              			     **--
@@ -1994,11 +1997,16 @@ function B738_annunciators()
 	local brightness_level = simDR_generic_brightness_ratio63 * busPower
 	local brightness_level2 = simDR_generic_brightness_ratio62 * busPower
 
+	-- local parking_brake_annun_on = 0
+		-- if simDR_parking_brake > 0.9 then
+		-- parking_brake_annun_on = 1
+		-- end
 	local parking_brake_annun_on = 0
-		if simDR_parking_brake > 0.9 then
+		if B738DR_parking_brake_pos == 1 then
 		parking_brake_annun_on = 1
 		end
-
+	
+	
 	B738DR_brightness2_export = brightness_level2
 
 	B738DR_parking_brake_annun = parking_brake_annun_on * brightness_level2
@@ -2864,6 +2872,7 @@ B738DR_audio_panel_obs_mic6_light = B738DR_audio_panel_obs_mic6_pos * brightness
 		or dual_bleed == 1
 		or simDR_bleed_trip_off1_annun == 1
 		or simDR_bleed_trip_off2_annun == 1
+		or off_sched_desc_ann == 1
 		or simDR_pack_annun == 6 then
 		six_pack_air_cond = 1
 		end
@@ -3200,7 +3209,8 @@ local takeoff_config_warn = 0
 		end
 
 	local park_brake_safe = 0
-		if simDR_parking_brake <= 0.5 then
+		--if simDR_parking_brake <= 0.5 then
+		if B738DR_parking_brake_pos == 0 then
 		park_brake_safe = 1
 		end
 
@@ -3757,32 +3767,52 @@ local takeoff_config_warn = 0
 		wing_ice_status_R = 1
 		end
 
-	wing_ice_L_time = B738_set_anim_value(wing_ice_L_time, simDR_wing_left_ice_on, 0.0, 1.0, 3.0)
-	if wing_ice_L_time < 0.95 then
+	wing_ice_L_time = B738_set_anim_value(wing_ice_L_time, simDR_wing_left_ice_on, 0.0, 1.0, 1.5)	--3.0
+	if wing_ice_L_time > 0.05 and wing_ice_L_time < 0.95 then
 		wing_ice_status_L = 1
+	elseif wing_ice_L_time < 0.05 and simDR_wing_left_ice_on == 0 then
+		wing_ice_status_L = 0
 	end
-	wing_ice_R_time = B738_set_anim_value(wing_ice_R_time, simDR_wing_right_ice_on, 0.0, 1.0, 3.0)
-	if wing_ice_R_time < 0.95 then
+	
+	wing_ice_R_time = B738_set_anim_value(wing_ice_R_time, simDR_wing_right_ice_on, 0.0, 1.0, 1.5)
+	if wing_ice_R_time > 0.05 and wing_ice_R_time < 0.95 then
 		wing_ice_status_R = 1
+	elseif wing_ice_R_time < 0.05 and simDR_wing_right_ice_on == 0 then
+		wing_ice_status_R = 0
 	end
-	cowl_ice_0_time = B738_set_anim_value(cowl_ice_0_time, simDR_cowl_ice_0_on, 0.0, 1.0, 3.0)
-	if cowl_ice_0_time < 0.95 then
+	
+	cowl_ice_0_time = B738_set_anim_value(cowl_ice_0_time, simDR_cowl_ice_0_on, 0.0, 1.0, 1.5)
+	if cowl_ice_0_time > 0.05 and cowl_ice_0_time < 0.95 then
 		cowl_ice_status_0 = 1
+	elseif cowl_ice_0_time < 0.05 and simDR_cowl_ice_0_on == 0 then
+		cowl_ice_status_0 = 0
 	end
-	cowl_ice_1_time = B738_set_anim_value(cowl_ice_1_time, simDR_cowl_ice_1_on, 0.0, 1.0, 3.0)
-	if cowl_ice_1_time < 0.95 then
+	
+	cowl_ice_1_time = B738_set_anim_value(cowl_ice_1_time, simDR_cowl_ice_1_on, 0.0, 1.0, 1.5)
+	if cowl_ice_1_time > 0.05 and cowl_ice_1_time < 0.95 then
 		cowl_ice_status_1 = 1
+	elseif cowl_ice_1_time < 0.05 and simDR_cowl_ice_1_on == 0 then
+		cowl_ice_status_1 = 0
 	end
 
+	-- cowl_ice_1_time = B738_set_anim_value(cowl_ice_1_time, simDR_cowl_ice_1_on, 0.0, 1.0, 1.5)
+	-- if cowl_ice_1_time < 0.95 then
+		-- cowl_ice_status_1 = 1
+	-- end
 		
 	B738DR_cowl_ice_0 = cowl_ice_0 * brightness_level
 	B738DR_cowl_ice_1 = cowl_ice_1 * brightness_level
 	
-	B738DR_cowl_ice_0_on = simDR_cowl_ice_0_on * brightness_level * cowl_ice_status_0
-	B738DR_cowl_ice_1_on = simDR_cowl_ice_1_on * brightness_level * cowl_ice_status_1
+	-- B738DR_cowl_ice_0_on = simDR_cowl_ice_0_on * brightness_level * cowl_ice_status_0
+	-- B738DR_cowl_ice_1_on = simDR_cowl_ice_1_on * brightness_level * cowl_ice_status_1
 	
-	B738DR_wing_ice_on_L = simDR_wing_left_ice_on * brightness_level * wing_ice_status_L
-	B738DR_wing_ice_on_R = simDR_wing_right_ice_on * brightness_level * wing_ice_status_R
+	-- B738DR_wing_ice_on_L = simDR_wing_left_ice_on * brightness_level * wing_ice_status_L
+	--B738DR_wing_ice_on_R = simDR_wing_right_ice_on * brightness_level * wing_ice_status_R
+	
+	B738DR_cowl_ice_0_on = brightness_level * cowl_ice_status_0
+	B738DR_cowl_ice_1_on = brightness_level * cowl_ice_status_1
+	B738DR_wing_ice_on_L = brightness_level * wing_ice_status_L
+	B738DR_wing_ice_on_R = brightness_level * wing_ice_status_R
 
 --	B738DR_wing_ice_on_L = simDR_wing_ice_on * brightness_level * wing_ice_status_L
 --	B738DR_wing_ice_on_R = simDR_wing_ice_on * brightness_level * wing_ice_status_R
@@ -4258,33 +4288,73 @@ local takeoff_config_warn = 0
 	
 	
 	-- OFF SCHED DESC
-	local off_sched_desc_ann = 0
+	--local off_sched_desc_ann = 0
 	local alt_500 = 0
 	
+	-- reset
 	if B738DR_flight_phase == 0 then
 		off_sched_desc_enable = 1
 		off_sched_desc = 0
 		last_alt = simDR_altitude_pilot
+	elseif simDR_radio_height_pilot_ft < 50 then
+		off_sched_desc_enable = 0
+		off_sched_desc = 0
 	end
 	
-	alt_500 = simDR_altitude_pilot + 1500
-	if last_alt > alt_500 and simDR_radio_height_pilot_ft < 10000 then
+	-- alt_500 = simDR_altitude_pilot + 1500
+	-- if last_alt > alt_500 and simDR_radio_height_pilot_ft < 10000 then
+		-- off_sched_desc_enable = 0
+	-- end
+	
+	-- disable
+	if max_allowable_alt_set ~= simDR_max_allowable_alt then
+		if max_allowable_alt_set > simDR_altitude_pilot + 1000 then
+			off_sched_desc_enable = 1
+			off_sched_desc_ann = 0
+		else
+			off_sched_desc_enable = 0
+		end
+	end
+	if B738DR_pressurization_mode == 3 	-- manual
+	or last_alt > simDR_max_allowable_alt then
 		off_sched_desc_enable = 0
 	end
 	
-	if off_sched_desc_enable == 1 then
-		alt_500 = simDR_altitude_pilot + 490
+	if off_sched_desc_enable == 0 then
+		off_sched_desc_ann = 0
+	else
+		alt_500 = simDR_altitude_pilot + 500
 		if alt_500 >= simDR_max_allowable_alt then
 			off_sched_desc = 1
+			off_sched_desc_ann = 0
 		end
-		alt_500 = simDR_altitude_pilot + 1500
-		if last_alt > alt_500 and off_sched_desc == 0 then
-			off_sched_desc_ann = 1
+		if off_sched_desc == 0 then
+			alt_500 = simDR_altitude_pilot + 1000
+			if last_alt > alt_500 then
+				off_sched_desc_ann = 1
+			end
+			if last_alt < simDR_altitude_pilot then
+				off_sched_desc_ann = 0
+			end
 		end
 	end
+	
+	
+	-- if off_sched_desc_enable == 1 then
+		-- alt_500 = simDR_altitude_pilot + 490
+		-- if alt_500 >= simDR_max_allowable_alt then
+			-- off_sched_desc = 1
+		-- end
+		-- alt_500 = simDR_altitude_pilot + 1500
+		-- if last_alt > alt_500 and off_sched_desc == 0 then
+			-- off_sched_desc_ann = 1
+		-- end
+	-- end
+	
 	if last_alt < simDR_altitude_pilot then
 		last_alt = simDR_altitude_pilot
 	end
+	max_allowable_alt_set = simDR_max_allowable_alt
 	
 	B738DR_off_sched_desc				= off_sched_desc_ann * brightness_level
 	
@@ -4505,7 +4575,7 @@ local takeoff_config_warn = 0
 		B738DR_fire_fault_inop_annun		= 1 * brightness_level
 		B738DR_engine1_ovht					= 1 * brightness_level
 		B738DR_engine2_ovht					= 1 * brightness_level
-		B738DR_wheel_well_fire				= 1 * brightness_level
+		--B738DR_wheel_well_fire				= 1 * brightness_level
 		B738DR_l_bottle_discharge			= 1 * brightness_level
 		B738DR_r_bottle_discharge			= 1 * brightness_level
 		B738DR_apu_bottle_discharge			= 1 * brightness_level
@@ -4834,6 +4904,8 @@ six_pack_air_cond_last = 0
 off_sched_desc = 0
 last_alt = 0
 off_sched_desc_enable = 0
+max_allowable_alt_set = 0
+off_sched_desc_ann = 0
 
 spar_valve_1_pos = 0
 spar_valve_1_tgt = 0
